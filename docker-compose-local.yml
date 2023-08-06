@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  pharmacy-recommendation-database:
+    container_name: my3d-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: jade0423786/my3d-database
+    environment:
+      - MARIADB_DATABASE=my3d
+      - MARIADB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./database/conf.d:/etc/mysql/conf.d
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3307"
