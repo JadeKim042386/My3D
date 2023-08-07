@@ -3,6 +3,7 @@ package joo.project.my3d.domain;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -28,27 +29,31 @@ public class Article extends AuditingFields {
     @JoinColumn(name = "userId")
     private UserAccount userAccount;
 
+    @Setter
     @Column(nullable = false)
     private String title;
+    @Setter
     @Column(nullable = false)
     private String content;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArticleType articleType;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article")
-    private final Set<Like> likes = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     protected Article() {
     }

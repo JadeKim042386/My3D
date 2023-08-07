@@ -9,13 +9,13 @@ import java.util.Objects;
 @Getter
 @ToString(callSuper = true)
 @Table(
-        name = "like",
+        name = "article_like",
         indexes = {
                 @Index(columnList = "id")
         }
 )
 @Entity
-public class Like extends AuditingFields {
+public class ArticleLike extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,22 +28,22 @@ public class Like extends AuditingFields {
     @JoinColumn(name = "articleId")
     private Article article;
 
-    protected Like() {
+    protected ArticleLike() {
     }
 
-    private Like(UserAccount userAccount, Article article) {
+    private ArticleLike(UserAccount userAccount, Article article) {
         this.userAccount = userAccount;
         this.article = article;
     }
 
-    public static Like of(UserAccount userAccount, Article article) {
-        return new Like(userAccount, article);
+    public static ArticleLike of(UserAccount userAccount, Article article) {
+        return new ArticleLike(userAccount, article);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Like that)) return false;
+        if (!(o instanceof ArticleLike that)) return false;
         return this.getId() != null && Objects.equals(this.getId(), that.getId());
     }
 

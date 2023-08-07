@@ -28,7 +28,6 @@ CREATE TABLE `article` (
 
 CREATE TABLE `article_comment` (
 	`id`	bigint	NOT NULL,
-	`user_id`	varchar(50)	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`content`	varchar(255)	NOT NULL,
 	`parent_comment_id`	bigint	NULL,
@@ -37,11 +36,10 @@ CREATE TABLE `article_comment` (
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='댓글';
 
-CREATE TABLE `like` (
+CREATE TABLE `article_like` (
 	`id`	bigint	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`user_id`	varchar(50)	NOT NULL,

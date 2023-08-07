@@ -1,6 +1,7 @@
 package joo.project.my3d.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -23,26 +24,26 @@ public class UserAccount extends AuditingFields {
     @Column(length = 50)
     private String userId;
 
+    @Setter
     @Column(nullable = false)
     private String userPassword;
+
+    @Setter
     @Column(nullable = false)
     private String email;
+
+    @Setter
     @Column(nullable = false)
     private String nickname;
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount")
-    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount")
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private final Set<Article> articles = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount")
-    private final Set<Like> likes = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     protected UserAccount() {
     }
@@ -54,8 +55,8 @@ public class UserAccount extends AuditingFields {
         this.nickname = nickname;
     }
 
-    public static UserAccount of(String userId, String password, String email, String nickname) {
-        return new UserAccount(userId, password, email, nickname);
+    public static UserAccount of(String userId, String userPassword, String email, String nickname) {
+        return new UserAccount(userId, userPassword, email, nickname);
     }
 
     @Override
