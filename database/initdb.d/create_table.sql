@@ -12,44 +12,44 @@
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
 CREATE TABLE `article` (
-	`article_id`	bigint	NOT NULL,
+	`id`	bigint	NOT NULL,
 	`user_id`	varchar(50)	NOT NULL,
 	`title`	varchar(255)	NOT NULL,
-	`content`	longtext	NOT NULL,
+	`content`	varchar(255)	NOT NULL,
 	`article_type`	varchar(50)	NOT NULL,
-	`category`	varchar(50)	NULL,
+	`article_category`	varchar(50)	NULL,
 	`created_at`	datetime	NOT NULL,
 	`modified_at`	datetime	NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NULL,
-    PRIMARY KEY (`article_id`),
+    PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='게시글';
 
 CREATE TABLE `article_comment` (
-	`article_comment_id`	bigint	NOT NULL,
+	`id`	bigint	NOT NULL,
 	`user_id`	varchar(50)	NOT NULL,
 	`article_id`	bigint	NOT NULL,
-	`content`	longtext	NOT NULL,
+	`content`	varchar(255)	NOT NULL,
 	`parent_comment_id`	bigint	NULL,
 	`created_at`	datetime	NOT NULL,
 	`modified_at`	datetime	NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NULL,
-    PRIMARY KEY (`article_comment_id`),
+    PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
-    FOREIGN KEY (`article_id`) REFERENCES `article` (`article_id`)
+    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='댓글';
 
 CREATE TABLE `like` (
-	`like_id`	bigint	NOT NULL,
+	`id`	bigint	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`user_id`	varchar(50)	NOT NULL,
 	`created_at`	datetime	NOT NULL,
 	`modified_at`	datetime	NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NULL,
-	PRIMARY KEY (`like_id`),
+	PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
-    FOREIGN KEY (`article_id`) REFERENCES `article` (`article_id`)
+    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='좋아요';
