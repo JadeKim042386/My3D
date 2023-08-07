@@ -1,6 +1,7 @@
 package joo.project.my3d.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class ArticleComment extends AuditingFields {
     @JoinColumn(name = "articleId")
     private Article article;
 
+    @Setter
     @Column(nullable = false)
     private String content;
 

@@ -41,7 +41,7 @@ CREATE TABLE `article_comment` (
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='댓글';
 
-CREATE TABLE `like` (
+CREATE TABLE `article_like` (
 	`id`	bigint	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`user_id`	varchar(50)	NOT NULL,
