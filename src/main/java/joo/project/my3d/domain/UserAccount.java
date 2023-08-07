@@ -39,11 +39,6 @@ public class UserAccount extends AuditingFields {
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private final Set<Article> articles = new LinkedHashSet<>();
 
     @ToString.Exclude

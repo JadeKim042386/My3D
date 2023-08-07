@@ -22,10 +22,6 @@ public class ArticleComment extends AuditingFields {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private UserAccount userAccount;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "articleId")
     private Article article;
 
@@ -39,19 +35,18 @@ public class ArticleComment extends AuditingFields {
     protected ArticleComment() {
     }
 
-    private ArticleComment(UserAccount userAccount, Article article, String content, Long parentCommentId) {
-        this.userAccount = userAccount;
+    private ArticleComment(Article article, String content, Long parentCommentId) {
         this.article = article;
         this.content = content;
         this.parentCommentId = parentCommentId;
     }
 
-    public static ArticleComment of(UserAccount userAccount, Article article, String content, Long parentCommentId) {
-        return new ArticleComment(userAccount, article, content, parentCommentId);
+    public static ArticleComment of(Article article, String content, Long parentCommentId) {
+        return new ArticleComment(article, content, parentCommentId);
     }
 
-    public static ArticleComment of(UserAccount userAccount, Article article, String content) {
-        return new ArticleComment(userAccount, article, content, null);
+    public static ArticleComment of(Article article, String content) {
+        return new ArticleComment(article, content, null);
     }
 
     @Override
