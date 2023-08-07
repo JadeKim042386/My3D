@@ -15,7 +15,7 @@ import java.util.Set;
 @Table(
         name = "article",
         indexes = {
-                @Index(columnList = "article_id")
+                @Index(columnList = "id")
         }
 )
 @Entity

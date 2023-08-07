@@ -11,7 +11,7 @@ import java.util.Objects;
 @Table(
         name = "article_comment",
         indexes = {
-                @Index(columnList = "article_comment_id")
+                @Index(columnList = "id")
         }
 )
 @Entity
