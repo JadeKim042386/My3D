@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+  <attr sel="header">
+    <attr sel="div/a" th:href="@{/}" th:method="get"></attr>
+    <attr sel="ul">
+      <attr sel="li[0]/a" th:href="@{/model_articles}" th:method="get"></attr>
+      <attr sel="li[1]/a" th:href="@{#}" th:method="get"></attr>
+    </attr>
+  </attr>
+</thlogic>

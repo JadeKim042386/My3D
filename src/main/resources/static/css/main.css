@@ -2,3 +2,7 @@ main {
     padding-top: 100px;
     padding-bottom: 100px;
 }
+
+p {
+    word-wrap: break-word;
+}
