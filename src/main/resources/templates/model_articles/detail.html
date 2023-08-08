@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My3D 홈페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+<!--헤더-->
+<header id="header"></header>
+<main class="container w-75">
+    <!--닉네임&작성일시-->
+    <div class="row mb-3">
+        <div class="col">
+            <p id="nickname">nickname</p>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-end">
+                <p id="created_at">2023-08-08</p>
+            </div>
+        </div>
+    </div>
+    <!--본문-->
+    <div class="row mb-4">
+        <!--모델 뷰-->
+        <div class="col-6">
+            <div class="online_3d_viewer"
+                 cameraMode=2
+                 model="/models/model.stl">
+            </div>
+        </div>
+        <!--내용-->
+        <div class="col-6">
+            <p id="title" class="fs-4">Title</p>
+            <p id="content">
+                업로드한 모델에 대해서 간단히 설명해주세요. <br>
+                단위: mm | inch | cm <br>
+                재질: Resin | Nylon | PEEK | ABS | PLA | PC | TPU | PETG | ASA | Aluminum | Stainless steel | Titanium | Tool steel | other material
+            </p>
+        </div>
+    </div>
+    <!--좋아요&요청 버튼-->
+    <div class="row mb-3">
+        <div class="col-6">
+            <div class="d-flex justify-content-start">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="align-self-center" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"/></svg>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary disabled">0</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary">3D 프린팅 요청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--댓글 작성-->
+    <form class="row mb-3">
+        <div class="mb-3">
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 text-right">
+                <button type="submit" class="btn btn-primary">작성</button>
+            </div>
+        </div>
+    </form>
+    <!--댓글 리스트-->
+    <div class="row">
+        <div class="d-flex flex-start">
+            <div class="flex-grow-1 flex-shrink-1">
+                <!--부모 댓글-->
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-1">
+                            Maria Smantha <span class="small">- 2 hours ago</span>
+                        </p>
+                        <a href="#" class="link-body-emphasis text-decoration-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z"/></svg>
+                            <span class="small"> 답글</span>
+                        </a>
+                    </div>
+                    <p class="small mb-0">
+                        It is a long established fact that a reader will be distracted by
+                        the readable content of a page.
+                    </p>
+                </div>
+                <!--자식 댓글-->
+                <div class="border-start border-2">
+                    <div class="d-flex flex-start mt-4 ms-4">
+                        <div class="flex-grow-1 flex-shrink-1">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <p class="mb-1">
+                                        Simona Disa <span class="small">- 3 hours ago</span>
+                                    </p>
+                                </div>
+                                <p class="small mb-0">
+                                    letters, as opposed to using 'Content here, content here',
+                                    making it look like readable English.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--푸터-->
+<footer id="footer"></footer>
+<!--스크립트-->
+<script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
+<script>
+    OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
+    OV.Init3DViewerElements();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+</body>
+</html>
