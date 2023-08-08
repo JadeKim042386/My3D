@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My3D 홈페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+    <!--헤더-->
+    <header id="header"></header>
+    <main class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="online_3d_viewer"
+                     cameraMode=2
+                     model="/models/model.stl">
+                </div>
+            </div>
+            <div class="col-6">
+                <p class="fs-2">내가 가지고 싶은 3D</p>
+                <p class="fs-5">만들어보고 싶었지만 머리 속에만 존재했었던 것, 더 잘 만들 수 있다고 생각하는 그것을 지금 여기서 도전해보세요.</p>
+                <p class="fs-5">모델링 프로그램을 다룰 수 없다면 요청할 수 있습니다.</p>
+                <p class="fs-5">직접 만들기 힘들다면 3D 프린팅을 업체에게 요청해보세요.</p>
+            </div>
+        </div>
+    </main>
+    <!--푸터-->
+    <footer id="footer"></footer>
+    <!--스크립트-->
+    <script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
+    <script>
+        OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
+        OV.Init3DViewerElements();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+</body>
+</html>
