@@ -29,6 +29,7 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  thymeleaf3.decoupled-logic: true
 
 ---
 
