@@ -30,21 +30,20 @@ public class ArticleFile extends AuditingFields {
     private String fileExtension;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "article_file", fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "articleFile")
     private Article article;
 
     protected ArticleFile() {
     }
 
-    private ArticleFile(Long byteSize, String fileName, String fileExtension, Article article) {
+    private ArticleFile(Long byteSize, String fileName, String fileExtension) {
         this.byteSize = byteSize;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
-        this.article = article;
     }
 
-    public static ArticleFile of(Long byteSize, String fileName, String fileExtension, Article article) {
-        return new ArticleFile(byteSize, fileName, fileExtension, article);
+    public static ArticleFile of(Long byteSize, String fileName, String fileExtension) {
+        return new ArticleFile(byteSize, fileName, fileExtension);
     }
 
     @Override

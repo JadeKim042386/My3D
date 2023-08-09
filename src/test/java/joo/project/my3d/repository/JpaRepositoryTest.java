@@ -2,10 +2,7 @@ package joo.project.my3d.repository;
 
 import joo.project.my3d.Fixture;
 import joo.project.my3d.config.TestJpaConfig;
-import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.ArticleComment;
-import joo.project.my3d.domain.ArticleLike;
-import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +34,9 @@ public class JpaRepositoryTest {
     public class ArticleJpaTest {
 
         @Autowired private ArticleRepository articleRepository;
+        @Autowired private ArticleCommentRepository articleCommentRepository;
+        @Autowired private ArticleLikeRepository articleLikeRepository;
+        @Autowired private ArticleFileRepository articleFileRepository;
 
         @DisplayName("게시글 findAll")
         @Test
@@ -60,23 +60,33 @@ public class JpaRepositoryTest {
             assertThat(article).isNotNull();
         }
 
-        @DisplayName("게시글 save")
+        @DisplayName("게시글&파일 save")
         @Test
         void saveArticle() {
             // Given
             UserAccount userAccount = Fixture.getUserAccount("joo", "pw", "joo@gmail.com", "Joo", UserRole.USER);
-            Article article = Fixture.getArticle(userAccount, "title", "content", ArticleType.REQUEST_MODELING);
+            ArticleFile articleFile = Fixture.getArticleFile(10000L, "test.stp", "stp");
+            Article article = Fixture.getArticle(userAccount, articleFile,"title", "content", ArticleType.REQUEST_MODELING);
             long previousCount = articleRepository.count();
+            long previousFileCount = articleFileRepository.count();
             log.info("previousCount: {}", previousCount);
+            log.info("previousFileCount: {}", previousFileCount);
             // When
             Article savedArticle = articleRepository.save(article);
+            ArticleFile savedArticleFile = articleFileRepository.save(articleFile);
             // Then
             long afterCount = articleRepository.count();
+            long afterFileCount = articleFileRepository.count();
             log.info("afterCount: {}", afterCount);
+            log.info("afterFileCount: {}", afterFileCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(afterFileCount).isEqualTo(previousFileCount + 1);
             assertThat(savedArticle)
                     .hasFieldOrPropertyWithValue("id", 11L)
                     .hasNoNullFieldsOrPropertiesExcept("articleCategory");
+            assertThat(savedArticleFile)
+                    .hasFieldOrPropertyWithValue("id", 11L)
+                    .hasNoNullFieldsOrPropertiesExcept("article");
         }
 
         @DisplayName("게시글 update")
@@ -97,17 +107,26 @@ public class JpaRepositoryTest {
 
         }
 
-        @DisplayName("게시글 delete")
+        @DisplayName("게시글&파일 delete")
         @Test
         void deleteArticle() {
             // Given
             Long articleId = 1L;
             long previousCount = articleRepository.count();
+            long previousFileCount = articleFileRepository.count();
+            long previousCommentCount = articleCommentRepository.count();
+            long previousLikeCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
+            log.info("previousFileCount: {}", previousFileCount);
+            log.info("previousCommentCount: {}", previousCommentCount);
+            log.info("previousLikeCount: {}", previousLikeCount);
             // When
             articleRepository.deleteById(articleId);
             // Then
             assertThat(articleRepository.count()).isEqualTo(previousCount - 1);
+            assertThat(articleCommentRepository.count()).isEqualTo(previousCommentCount - 1);
+            assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 1);
+            assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
         }
     }
 
@@ -120,6 +139,8 @@ public class JpaRepositoryTest {
     public class UserAccountJpaTest {
 
         @Autowired private UserAccountRepository userAccountRepository;
+        @Autowired private ArticleRepository articleRepository;
+        @Autowired private ArticleLikeRepository articleLikeRepository;
 
         @DisplayName("유저 계정 findAll")
         @Test
@@ -185,11 +206,17 @@ public class JpaRepositoryTest {
             // Given
             String userId = "joo";
             long previousCount = userAccountRepository.count();
+            long previousArticleCount = articleRepository.count();
+            long previousLikeCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
+            log.info("previousArticleCount: {}", previousArticleCount);
+            log.info("previousLikeCount: {}", previousLikeCount);
             // When
             userAccountRepository.deleteById(userId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
+            assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 6);
+            assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 3);
         }
     }
 
@@ -334,13 +361,45 @@ public class JpaRepositoryTest {
         @Test
         void deleteArticleLike() {
             // Given
-            Long articleCommentId = 1L;
+            Long articleLikeId = 1L;
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
-            articleLikeRepository.deleteById(articleCommentId);
+            articleLikeRepository.deleteById(articleLikeId);
             // Then
             assertThat(articleLikeRepository.count()).isEqualTo(previousCount - 1);
+        }
+    }
+
+    @ActiveProfiles("test")
+    @DisplayName("파일 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class ArticleFileJpaTest {
+        @Autowired private ArticleFileRepository articleFileRepository;
+
+        @DisplayName("파일 findAll")
+        @Test
+        void getArticleFiles() {
+            // Given
+
+            // When
+            List<ArticleFile> articleFiles = articleFileRepository.findAll();
+            // Then
+            assertThat(articleFiles).isNotNull().hasSize(10);
+        }
+
+        @DisplayName("파일 findById")
+        @Test
+        void getArticleFile() {
+            // Given
+            Long articleFileId = 1L;
+            // When
+            Optional<ArticleFile> articleFile = articleFileRepository.findById(articleFileId);
+            // Then
+            assertThat(articleFile).isNotNull();
         }
     }
 }

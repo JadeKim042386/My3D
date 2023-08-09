@@ -32,6 +32,11 @@ public class Article extends AuditingFields {
     private UserAccount userAccount;
 
     @Setter
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "article_file_id")
+    private ArticleFile articleFile;
+
+    @Setter
     @Column(nullable = false)
     private String title;
     @Setter
@@ -48,10 +53,6 @@ public class Article extends AuditingFields {
     @Column
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
 
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "article_id")
-    private ArticleFile articleFile;
-
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
@@ -64,20 +65,21 @@ public class Article extends AuditingFields {
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    private Article(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         this.userAccount = userAccount;
+        this.articleFile = articleFile;
         this.title = title;
         this.content = content;
         this.articleType = articleType;
         this.articleCategory = articleCategory;
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        return new Article(userAccount, title, content, articleType, articleCategory);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        return new Article(userAccount, articleFile, title, content, articleType, articleCategory);
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType) {
-        return Article.of(userAccount, title, content, articleType, null);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType) {
+        return Article.of(userAccount, articleFile, title, content, articleType, null);
     }
 
     @Override
