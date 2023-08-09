@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @ToString(callSuper = true)
 @Table(
@@ -45,6 +47,10 @@ public class Article extends AuditingFields {
     @Enumerated(EnumType.STRING)
     @Column
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
+
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "article_id")
+    private ArticleFile articleFile;
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")

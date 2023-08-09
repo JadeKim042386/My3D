@@ -7,6 +7,7 @@ import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -63,7 +64,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticle() {
             // Given
-            UserAccount userAccount = Fixture.getUserAccount("joo", "pw", "joo@gmail.com", "Joo");
+            UserAccount userAccount = Fixture.getUserAccount("joo", "pw", "joo@gmail.com", "Joo", UserRole.USER);
             Article article = Fixture.getArticle(userAccount, "title", "content", ArticleType.REQUEST_MODELING);
             long previousCount = articleRepository.count();
             log.info("previousCount: {}", previousCount);
@@ -147,7 +148,7 @@ public class JpaRepositoryTest {
         void saveUserAccount() {
             // Given
             String userId = "joo2";
-            UserAccount userAccount = Fixture.getUserAccount(userId, "pw", "joo@gmail.com", "Joo");
+            UserAccount userAccount = Fixture.getUserAccount(userId, "pw", "joo@gmail.com", "Joo", UserRole.USER);
             long previousCount = userAccountRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
