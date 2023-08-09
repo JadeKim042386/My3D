@@ -1,6 +1,6 @@
 package joo.project.my3d.repository;
 
-import joo.project.my3d.Fixture;
+import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleType;
@@ -64,9 +64,8 @@ public class JpaRepositoryTest {
         @Test
         void saveArticle() {
             // Given
-            UserAccount userAccount = Fixture.getUserAccount("joo", "pw", "joo@gmail.com", "Joo", UserRole.USER);
             ArticleFile articleFile = Fixture.getArticleFile(10000L, "test.stp", "stp");
-            Article article = Fixture.getArticle(userAccount, articleFile,"title", "content", ArticleType.REQUEST_MODELING);
+            Article article = Fixture.getArticle(articleFile, "title", "content", ArticleType.REQUEST_MODELING);
             long previousCount = articleRepository.count();
             long previousFileCount = articleFileRepository.count();
             log.info("previousCount: {}", previousCount);
@@ -227,8 +226,6 @@ public class JpaRepositoryTest {
     @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
     @Nested
     public class ArticleCommentJpaTest {
-
-        @Autowired private ArticleRepository articleRepository;
         @Autowired private ArticleCommentRepository articleCommentRepository;
 
         @DisplayName("댓글 findAll")
@@ -257,8 +254,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleComment() {
             // Given
-            Article article = articleRepository.findById(1L).get();
-            ArticleComment articleComment = Fixture.getArticleComment(article, "content");
+            ArticleComment articleComment = Fixture.getArticleComment("content");
             long previousCount = articleCommentRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -341,9 +337,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleLike() {
             // Given
-            UserAccount userAccount = userAccountRepository.findById("joo").get();
-            Article article = articleRepository.findById(1L).get();
-            ArticleLike articleLike = Fixture.getArticleLike(userAccount, article);
+            ArticleLike articleLike = Fixture.getArticleLike();
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

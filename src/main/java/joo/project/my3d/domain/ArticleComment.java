@@ -12,7 +12,8 @@ import java.util.Objects;
 @Table(
         name = "article_comment",
         indexes = {
-                @Index(columnList = "id")
+                @Index(columnList = "id"),
+                @Index(columnList = "articleId")
         }
 )
 @Entity
@@ -20,6 +21,10 @@ public class ArticleComment extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    UserAccount userAccount;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "articleId")
@@ -35,18 +40,19 @@ public class ArticleComment extends AuditingFields {
     protected ArticleComment() {
     }
 
-    private ArticleComment(Article article, String content, Long parentCommentId) {
+    private ArticleComment(UserAccount userAccount, Article article, String content, Long parentCommentId) {
+        this.userAccount = userAccount;
         this.article = article;
         this.content = content;
         this.parentCommentId = parentCommentId;
     }
 
-    public static ArticleComment of(Article article, String content, Long parentCommentId) {
-        return new ArticleComment(article, content, parentCommentId);
+    public static ArticleComment of(UserAccount userAccount, Article article, String content, Long parentCommentId) {
+        return new ArticleComment(userAccount, article, content, parentCommentId);
     }
 
-    public static ArticleComment of(Article article, String content) {
-        return new ArticleComment(article, content, null);
+    public static ArticleComment of(UserAccount userAccount, Article article, String content) {
+        return new ArticleComment(userAccount, article, content, null);
     }
 
     @Override
