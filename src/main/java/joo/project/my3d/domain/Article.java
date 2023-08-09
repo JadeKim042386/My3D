@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @ToString(callSuper = true)
 @Table(
@@ -28,6 +30,11 @@ public class Article extends AuditingFields {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private UserAccount userAccount;
+
+    @Setter
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "article_file_id")
+    private ArticleFile articleFile;
 
     @Setter
     @Column(nullable = false)
@@ -58,20 +65,21 @@ public class Article extends AuditingFields {
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    private Article(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         this.userAccount = userAccount;
+        this.articleFile = articleFile;
         this.title = title;
         this.content = content;
         this.articleType = articleType;
         this.articleCategory = articleCategory;
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        return new Article(userAccount, title, content, articleType, articleCategory);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        return new Article(userAccount, articleFile, title, content, articleType, articleCategory);
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType) {
-        return Article.of(userAccount, title, content, articleType, null);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType) {
+        return Article.of(userAccount, articleFile, title, content, articleType, null);
     }
 
     @Override

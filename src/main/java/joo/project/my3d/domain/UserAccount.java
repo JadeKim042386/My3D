@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.constant.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -36,6 +37,11 @@ public class UserAccount extends AuditingFields {
     @Column(nullable = false)
     private String nickname;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole userRole;
+
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
@@ -48,15 +54,16 @@ public class UserAccount extends AuditingFields {
     protected UserAccount() {
     }
 
-    private UserAccount(String userId, String userPassword, String email, String nickname) {
+    private UserAccount(String userId, String userPassword, String email, String nickname, UserRole userRole) {
         this.userId = userId;
         this.userPassword = userPassword;
         this.email = email;
         this.nickname = nickname;
+        this.userRole = userRole;
     }
 
-    public static UserAccount of(String userId, String userPassword, String email, String nickname) {
-        return new UserAccount(userId, userPassword, email, nickname);
+    public static UserAccount of(String userId, String userPassword, String email, String nickname, UserRole userRole) {
+        return new UserAccount(userId, userPassword, email, nickname, userRole);
     }
 
     @Override

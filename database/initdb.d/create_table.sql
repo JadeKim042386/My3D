@@ -3,6 +3,7 @@
 	`email`	varchar(100)	NOT NULL,
 	`user_password`	varchar(255)	NOT NULL,
 	`nickname`	varchar(100)	NOT NULL,
+	'user_role' varchar(10) NOT NULL,
 	`created_at`	datetime	NOT NULL,
 	`modified_at`	datetime	NULL,
 	`created_by`	varchar(100)	NOT NULL,
@@ -51,3 +52,17 @@ CREATE TABLE `article_like` (
     FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='좋아요';
+
+CREATE TABLE `article_file` (
+    `id`	bigint	NOT NULL,
+    `article_id`	bigint	NOT NULL,
+    `byte_size`	bigint	NOT NULL,
+    `file_name`	varchar(100)	NOT NULL,
+    `file_extension`	varchar(100)	NOT NULL,
+    `created_at`	datetime	NOT NULL,
+    `modified_at`	datetime	NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
