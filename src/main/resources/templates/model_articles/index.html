@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My3D 홈페이지</title>
+    <title>My3D 모델 게시판</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/content_ellipsis.css" rel="stylesheet">
 </head>
 <body>
 <!--헤더-->
@@ -13,7 +14,7 @@
 <main class="container">
     <div class="row">
         <!--카테고리 리스트-->
-        <div class="col-3">
+        <div class="col-2">
             <div class="list-group">
                 <a class="list-group-item disabled text-center"><strong>Category</strong></a>
                 <a href="#" class="list-group-item list-group-item-action">동물</a>
@@ -37,10 +38,10 @@
             </div>
         </div>
         <!--모델 게시글-->
-        <div class="col-9">
+        <div class="col-10">
             <div class="container">
                 <!--정렬&글쓰기 버튼-->
-                <div class="row mb-4">
+                <div class="row mb-4 px-4">
                     <div class="col">
                         <div class="dropdown">
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -59,25 +60,36 @@
                         </div>
                     </div>
                 </div>
-                <!--그리드 레이아웃-->
-                <div class="row mb-4">
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
-                    <div class="col">Preview</div>
+                <!--그리드 레이아웃 3x3-->
+                <div class="container overflow-hidden pb-4">
+                    <div class="row gx-3">
+                        <div id="model" class="col-4">
+                            <div class="model_view row mb-2">
+                                <div class="online_3d_viewer model_view_size"
+                                     cameraMode=2
+                                     model="/models/model.stl">
+                                </div>
+                            </div>
+                            <div class="title row mb-2 ellipsis p-2">
+                                Title
+                            </div>
+                            <div class="row">
+                                <div class="nickname col p-2">
+                                    nickname createdAt
+                                </div>
+                                <div class="col p-2">
+                                    <div class="like d-flex justify-content-end align-items-center px-5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"/></svg>
+                                        <span class="ms-1">likecount</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--페이지네이션-->
-            <div class="row">
+            <div class="row pt-4">
                 <nav aria-label="Page navigation" id="pagination">
                     <ul class="pagination justify-content-center">
                         <li class="page-item"><a class="page-link" href="#">Previous</a></li>
@@ -92,6 +104,11 @@
 <!--푸터-->
 <footer id="footer"></footer>
 <!--스크립트-->
+<script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
+<script>
+    OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
+    OV.Init3DViewerElements();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 </body>
 </html>

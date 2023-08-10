@@ -6,3 +6,8 @@ main {
 p {
     word-wrap: break-word;
 }
+
+.model_view_size {
+    width: 80%;
+    height: 80%;
+}
