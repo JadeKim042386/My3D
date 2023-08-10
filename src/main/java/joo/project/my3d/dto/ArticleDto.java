@@ -1,5 +1,6 @@
 package joo.project.my3d.dto;
 
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 
@@ -13,12 +14,41 @@ public record ArticleDto(
         String content,
         ArticleType articleType,
         ArticleCategory articleCategory,
+        int likeCount,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, likeCount, createdAt, createdBy, modifiedAt, modifiedBy);
+    }
+
+    public static ArticleDto from(Article article) {
+        return ArticleDto.of(
+                article.getId(),
+                UserAccountDto.from(article.getUserAccount()),
+                ArticleFileDto.from(article.getArticleFile()),
+                article.getTitle(),
+                article.getContent(),
+                article.getArticleType(),
+                article.getArticleCategory(),
+                article.getArticleLikes().size(),
+                article.getCreatedAt(),
+                article.getCreatedBy(),
+                article.getModifiedAt(),
+                article.getModifiedBy()
+        );
+    }
+
+    public Article toEntity() {
+        return Article.of(
+            userAccountDto.toEntity(),
+            articleFileDto.toEntity(),
+            title,
+            content,
+            articleType,
+            articleCategory
+        );
     }
 }

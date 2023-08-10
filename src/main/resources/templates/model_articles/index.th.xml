@@ -2,4 +2,12 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <!--모델 뷰-->
+    <attr sel="#model" th:each="article : ${articles}">
+        <attr sel="div.model_view/div"
+              th:model="${modelPath} + ${article.articleFileResponse.fileName}" />
+        <attr sel="div.title" th:text="${article.title}"/>
+        <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
+        <attr sel="div.like/span" th:text="${article.likeCount}"/>
+    </attr>
 </thlogic>

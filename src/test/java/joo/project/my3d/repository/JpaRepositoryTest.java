@@ -65,7 +65,7 @@ public class JpaRepositoryTest {
         void saveArticle() {
             // Given
             ArticleFile articleFile = Fixture.getArticleFile(10000L, "test.stp", "stp");
-            Article article = Fixture.getArticle(articleFile, "title", "content", ArticleType.REQUEST_MODELING);
+            Article article = Fixture.getArticle(articleFile, "title", "content", ArticleType.REQUEST_MODELING, null);
             long previousCount = articleRepository.count();
             long previousFileCount = articleFileRepository.count();
             log.info("previousCount: {}", previousCount);

@@ -13,7 +13,8 @@ import java.util.Objects;
 @Table(
         name = "article_file",
         indexes = {
-                @Index(columnList = "id")
+                @Index(columnList = "id"),
+                @Index(columnList = "fileName", unique = true)
         }
 )
 @Entity
