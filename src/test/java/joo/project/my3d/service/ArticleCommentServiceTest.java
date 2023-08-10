@@ -2,6 +2,7 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleComment;
+import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.fixture.Fixture;
@@ -19,9 +20,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 
 @DisplayName("비지니스 로직 - 댓글")
@@ -53,7 +52,7 @@ class ArticleCommentServiceTest {
     void saveComment() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         ArticleComment articleComment = Fixture.getArticleComment("content");
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(article);
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);

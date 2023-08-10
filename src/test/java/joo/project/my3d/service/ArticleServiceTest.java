@@ -5,6 +5,8 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.exception.ArticleException;
+import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleRepository;
@@ -16,15 +18,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
+@ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 모델 게시글")
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
@@ -38,7 +42,7 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         given(articleRepository.findAll(pageable)).willReturn(Page.empty());
         // When
-        List<Article> articles = articleService.getArticles(pageable);
+        Page<ArticleDto> articles = articleService.getArticles(pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(pageable);
@@ -49,7 +53,7 @@ class ArticleServiceTest {
     void getArticle() {
         // Given
         Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
         // When
         ArticleWithCommentsAndLikeCountDto dto = articleService.getArticle(articleId);
@@ -61,12 +65,26 @@ class ArticleServiceTest {
         then(articleRepository).should().findById(articleId);
     }
 
+    @DisplayName("[예외-없는 게시글] 단일 게시글 조회")
+    @Test
+    void getArticleNotExistArticle() {
+        // Given
+        Long articleId = 1L;
+        given(articleRepository.findById(articleId)).willReturn(Optional.empty());
+        // When
+        assertThatThrownBy(() -> articleService.getArticle(articleId))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
+        // Then
+        then(articleRepository).should().findById(articleId);
+    }
+
     @DisplayName("게시글 저장")
     @Test
     void saveArticle() {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL);
+        Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         // When
         articleService.saveArticle(articleDto);
@@ -74,12 +92,25 @@ class ArticleServiceTest {
         then(articleRepository).should().save(any(Article.class));
     }
 
+    @DisplayName("[예외-모델 게시글에 카테고리가 없음] 게시글 저장")
+    @Test
+    void saveModelArticleNotExistCategory() {
+        // Given
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, null);
+        // When
+        assertThatThrownBy(() -> articleService.saveArticle(articleDto))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_CATEGORY_NOT_FOUND);
+        // Then
+        then(articleRepository).shouldHaveNoInteractions();
+    }
+
     @DisplayName("게시글 수정")
     @Test
     void updateArticle() {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("new title", "new content", ArticleType.MODEL);
+        Article article = Fixture.getArticle("new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
         // When
         articleService.updateArticle(articleDto);
@@ -97,7 +128,9 @@ class ArticleServiceTest {
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.getReferenceById(articleDto.id())).willThrow(EntityNotFoundException.class);
         // When
-        articleService.updateArticle(articleDto);
+        assertThatThrownBy(() -> articleService.updateArticle(articleDto))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
         then(articleRepository).should().getReferenceById(articleDto.id());
     }
