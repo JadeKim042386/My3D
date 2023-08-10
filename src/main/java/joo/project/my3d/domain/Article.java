@@ -55,11 +55,11 @@ public class Article extends AuditingFields {
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "article")
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "article")
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     protected Article() {

@@ -8,4 +8,8 @@ import java.util.Optional;
 
 public interface ArticleCommentRepository extends JpaRepository<ArticleComment, Long> {
     List<ArticleComment> findByArticleId(Long articleId);
+
+    void deleteByArticleId(Long articleId);
+
+    void deleteByUserAccount_UserId(String userId);
 }

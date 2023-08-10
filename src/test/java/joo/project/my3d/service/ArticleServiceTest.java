@@ -9,6 +9,8 @@ import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.ArticleCommentRepository;
+import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ import static org.mockito.BDDMockito.*;
 class ArticleServiceTest {
     @InjectMocks private ArticleService articleService;
     @Mock private ArticleRepository articleRepository;
+    @Mock private ArticleCommentRepository articleCommentRepository;
+    @Mock private ArticleLikeRepository articleLikeRepository;
 
     @DisplayName("게시글 페이지 반환")
     @Test
@@ -46,6 +50,20 @@ class ArticleServiceTest {
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(pageable);
+    }
+
+    @DisplayName("카테고리로 게시글 검색")
+    @Test
+    void getArticleByArticleCategory() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        ArticleCategory articleCategory = ArticleCategory.MUSIC;
+        given(articleRepository.findByArticleCategory(articleCategory, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticlesByArticleCategory(articleCategory, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findByArticleCategory(articleCategory, pageable);
     }
 
     @DisplayName("단일 게시글 조회")
@@ -140,10 +158,14 @@ class ArticleServiceTest {
     void deleteArticle() {
         // Given
         Long articleId = 1L;
+        willDoNothing().given(articleCommentRepository).deleteByArticleId(articleId);
+        willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
         willDoNothing().given(articleRepository).deleteById(articleId);
         // When
         articleService.deleteArticle(articleId);
         // Then
+        then(articleCommentRepository).should().deleteByArticleId(articleId);
+        then(articleLikeRepository).should().deleteByArticleId(articleId);
         then(articleRepository).should().deleteById(articleId);
     }
 }

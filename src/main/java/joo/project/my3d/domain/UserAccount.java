@@ -48,8 +48,13 @@ public class UserAccount extends AuditingFields {
     private final Set<Article> articles = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userAccount")
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount")
+    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     protected UserAccount() {
     }

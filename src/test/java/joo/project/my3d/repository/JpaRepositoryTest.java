@@ -1,10 +1,11 @@
 package joo.project.my3d.repository;
 
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
+import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.fixture.Fixture;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -42,11 +45,11 @@ public class JpaRepositoryTest {
         @Test
         void getArticles() {
             // Given
-
+            Pageable pageable = Pageable.ofSize(9);
             // When
-            List<Article> articles = articleRepository.findAll();
+            Page<Article> articles = articleRepository.findAll(pageable);
             // Then
-            assertThat(articles).isNotNull().hasSize(10);
+            assertThat(articles).isNotNull().hasSize(9);
         }
 
         @DisplayName("게시글 findById")
@@ -58,6 +61,18 @@ public class JpaRepositoryTest {
             Optional<Article> article = articleRepository.findById(articleId);
             // Then
             assertThat(article).isNotNull();
+        }
+
+        @DisplayName("게시글 findByArticleCategory")
+        @Test
+        void getArticleByArticleCategory() {
+            // Given
+            Pageable pageable = Pageable.ofSize(9);
+            // When
+            Page<Article> articles = articleRepository.findByArticleCategory(ArticleCategory.MUSIC, pageable);
+            // Then
+            assertThat(articles).hasSize(6);
+            assertThat(articles.getContent().get(0).getArticleCategory()).isEqualTo(ArticleCategory.MUSIC);
         }
 
         @DisplayName("게시글&파일 save")
@@ -120,6 +135,8 @@ public class JpaRepositoryTest {
             log.info("previousCommentCount: {}", previousCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
+            articleCommentRepository.deleteByArticleId(articleId);
+            articleLikeRepository.deleteByArticleId(articleId);
             articleRepository.deleteById(articleId);
             // Then
             assertThat(articleRepository.count()).isEqualTo(previousCount - 1);
@@ -139,6 +156,7 @@ public class JpaRepositoryTest {
 
         @Autowired private UserAccountRepository userAccountRepository;
         @Autowired private ArticleRepository articleRepository;
+        @Autowired private ArticleCommentRepository articleCommentRepository;
         @Autowired private ArticleLikeRepository articleLikeRepository;
 
         @DisplayName("유저 계정 findAll")
@@ -206,15 +224,26 @@ public class JpaRepositoryTest {
             String userId = "joo";
             long previousCount = userAccountRepository.count();
             long previousArticleCount = articleRepository.count();
+            long previousArticleCommentCount = articleCommentRepository.count();
             long previousLikeCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             log.info("previousArticleCount: {}", previousArticleCount);
+            log.info("previousArticleCommentCount: {}", previousArticleCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
+            articleRepository.findAllByUserAccount_UserId(userId)
+                    .forEach(article -> {
+                        articleCommentRepository.deleteByArticleId(article.getId());
+                        articleCommentRepository.deleteByUserAccount_UserId(userId);
+                        articleLikeRepository.deleteByArticleId(article.getId());
+                        articleLikeRepository.deleteByUserAccount_UserId(userId);
+                        articleRepository.deleteById(article.getId());
+                    });
             userAccountRepository.deleteById(userId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
             assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 6);
+            assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 8);
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 3);
         }
     }
@@ -226,7 +255,10 @@ public class JpaRepositoryTest {
     @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
     @Nested
     public class ArticleCommentJpaTest {
+
         @Autowired private ArticleCommentRepository articleCommentRepository;
+        @Autowired private UserAccountRepository userAccountRepository;
+        @Autowired private ArticleRepository articleRepository;
 
         @DisplayName("댓글 findAll")
         @Test
@@ -254,7 +286,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleComment() {
             // Given
-            ArticleComment articleComment = Fixture.getArticleComment("content");
+            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById("joo").get(), articleRepository.findById(1L).get(), "content");
             long previousCount = articleCommentRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -337,7 +369,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleLike() {
             // Given
-            ArticleLike articleLike = Fixture.getArticleLike();
+            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById("joo").get(), articleRepository.findById(1L).get());
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
