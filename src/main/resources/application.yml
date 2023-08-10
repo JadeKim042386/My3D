@@ -31,6 +31,8 @@ spring:
     show-sql: true
   thymeleaf3.decoupled-logic: true
 
+model.path: ${MODEL_PATH}
+
 ---
 
 spring:
