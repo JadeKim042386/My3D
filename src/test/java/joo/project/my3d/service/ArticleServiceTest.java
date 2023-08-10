@@ -46,7 +46,7 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         given(articleRepository.findAll(pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(pageable);
+        Page<ArticleDto> articles = articleService.getArticles(null, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(pageable);
@@ -60,7 +60,7 @@ class ArticleServiceTest {
         ArticleCategory articleCategory = ArticleCategory.MUSIC;
         given(articleRepository.findByArticleCategory(articleCategory, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticlesByArticleCategory(articleCategory, pageable);
+        Page<ArticleDto> articles = articleService.getArticles(articleCategory, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findByArticleCategory(articleCategory, pageable);

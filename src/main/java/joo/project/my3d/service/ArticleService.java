@@ -27,11 +27,10 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
 
-    public Page<ArticleDto> getArticles(Pageable pageable) {
-        return articleRepository.findAll(pageable).map(ArticleDto::from);
-    }
-
-    public Page<ArticleDto> getArticlesByArticleCategory(ArticleCategory articleCategory, Pageable pageable) {
+    public Page<ArticleDto> getArticles(ArticleCategory articleCategory, Pageable pageable) {
+        if (articleCategory == null) {
+            return articleRepository.findAll(pageable).map(ArticleDto::from);
+        }
         return articleRepository.findByArticleCategory(articleCategory, pageable).map(ArticleDto::from);
     }
 
