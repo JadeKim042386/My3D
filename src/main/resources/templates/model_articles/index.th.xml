@@ -4,24 +4,10 @@
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <!--카테고리-->
     <attr sel="#category">
-        <attr sel="a.animals" th:href="@{/model_articles(articleCategory='ANIMALS_PETS')}"/>
-        <attr sel="a.architecture" th:href="@{/model_articles(articleCategory='ARCHITECTURE')}"/>
-        <attr sel="a.arts" th:href="@{/model_articles(articleCategory='ART_ABSTRACT')}"/>
-        <attr sel="a.cars" th:href="@{/model_articles(articleCategory='CARS_VEHICLES')}"/>
-        <attr sel="a.characters" th:href="@{/model_articles(articleCategory='CHARACTERS_CREATURES')}"/>
-        <attr sel="a.history" th:href="@{/model_articles(articleCategory='CULTURAL_HERITAGE_HISTORY')}"/>
-        <attr sel="a.electronics" th:href="@{/model_articles(articleCategory='ELECTRONICS_GADGETS')}"/>
-        <attr sel="a.fashion" th:href="@{/model_articles(articleCategory='FASHION_STYLE')}"/>
-        <attr sel="a.food" th:href="@{/model_articles(articleCategory='FOOD_DRINK')}"/>
-        <attr sel="a.furniture" th:href="@{/model_articles(articleCategory='FURNITURE_HOME')}"/>
-        <attr sel="a.music" th:href="@{/model_articles(articleCategory='MUSIC')}"/>
-        <attr sel="a.nature" th:href="@{/model_articles(articleCategory='NATURE_PLANTS')}"/>
-        <attr sel="a.news" th:href="@{/model_articles(articleCategory='NEWS_POLITICS')}"/>
-        <attr sel="a.people" th:href="@{/model_articles(articleCategory='PEOPLE')}"/>
-        <attr sel="a.travel" th:href="@{/model_articles(articleCategory='PLACES_TRAVEL')}"/>
-        <attr sel="a.science" th:href="@{/model_articles(articleCategory='SCIENCE_TECHNOLOGY')}"/>
-        <attr sel="a.sports" th:href="@{/model_articles(articleCategory='SPORTS_FITNESS')}"/>
-        <attr sel="a.weapons" th:href="@{/model_articles(articleCategory='WEAPONS_MILITARY')}"/>
+        <attr sel="a[1]"
+              th:each="category : ${categories}"
+              th:text="${category.description}"
+              th:href="@{/model_articles(articleCategory=${category})}"/>
     </attr>
     <!--검색-->
     <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">

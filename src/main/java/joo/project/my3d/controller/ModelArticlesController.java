@@ -2,6 +2,7 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.response.ArticleResponse;
@@ -55,6 +56,7 @@ public class ModelArticlesController {
         }
 
         model.addAttribute("modelPath", modelPath);
+        model.addAttribute("categories", ArticleCategory.values());
 
         return "model_articles/index";
     }
