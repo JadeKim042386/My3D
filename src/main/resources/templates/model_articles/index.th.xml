@@ -23,6 +23,10 @@
         <attr sel="a.sports" th:href="@{/model_articles(articleCategory='SPORTS_FITNESS')}"/>
         <attr sel="a.weapons" th:href="@{/model_articles(articleCategory='WEAPONS_MILITARY')}"/>
     </attr>
+    <!--검색-->
+    <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">
+        <attr sel="#article-category" th:value="${param.articleCategory}"/>
+    </attr>
     <!--모델 뷰-->
     <attr sel="#model" th:each="article : ${articles}">
         <attr sel="div.model_view/div"

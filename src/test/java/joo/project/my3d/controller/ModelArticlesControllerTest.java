@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,7 +32,7 @@ class ModelArticlesControllerTest {
     @Test
     void modelArticles() throws Exception {
         // Given
-        given(articleService.getArticles(eq(null), any(Pageable.class))).willReturn(Page.empty());
+        given(articleService.getArticles(any(Predicate.class), any(Pageable.class))).willReturn(Page.empty());
         // When
         mvc.perform(
                 get("/model_articles")
@@ -40,10 +40,11 @@ class ModelArticlesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("model_articles/index"))
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("modelPath"));
 
         // Then
-        then(articleService).should().getArticles(eq(null), any(Pageable.class));
+        then(articleService).should().getArticles(any(Predicate.class), any(Pageable.class));
     }
 
     @DisplayName("[GET] 게시글 페이지")

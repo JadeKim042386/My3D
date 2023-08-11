@@ -1,7 +1,7 @@
 package joo.project.my3d.service;
 
+import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
@@ -27,11 +27,9 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
 
-    public Page<ArticleDto> getArticles(ArticleCategory articleCategory, Pageable pageable) {
-        if (articleCategory == null) {
-            return articleRepository.findAll(pageable).map(ArticleDto::from);
-        }
-        return articleRepository.findByArticleCategory(articleCategory, pageable).map(ArticleDto::from);
+    public Page<ArticleDto> getArticles(Predicate predicate, Pageable pageable) {
+
+        return articleRepository.findAll(predicate, pageable).map(ArticleDto::from);
     }
 
     public ArticleWithCommentsAndLikeCountDto getArticle(Long articleId) {

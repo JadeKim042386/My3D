@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
     <link href="/css/content_ellipsis.css" rel="stylesheet">
+    <link href="/css/search-bar.css" rel="stylesheet">
 </head>
 <body>
 <!--헤더-->
@@ -48,9 +49,9 @@
                                 정렬
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item active" href="#">최신순</a></li>
+                                <li><a class="dropdown-item" href="#">오래된순</a></li>
+                                <li><a class="dropdown-item" href="#">인기순</a></li>
                             </ul>
                         </div>
                     </div>
@@ -98,6 +99,24 @@
                     </ul>
                 </nav>
             </div>
+            <!--검색-->
+            <form id="search-form">
+                <div class="row pt-4 justify-content-center">
+                    <div class="col-lg-8 col-md-6 col-sm-12 p-0">
+                        <input type="hidden" id="article-category" name="articleCategory">
+                        <label for="search-value" hidden>검색어</label>
+                        <input type="text" class="form-control" id="search-value" name="title">
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-12 p-0">
+                        <button type="submit" class="btn btn-base">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>
@@ -109,6 +128,7 @@
     OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
     OV.Init3DViewerElements();
 </script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 </body>
 </html>

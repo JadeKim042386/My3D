@@ -1,6 +1,10 @@
 package joo.project.my3d.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.PredicateOperation;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.QArticle;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
@@ -39,17 +43,19 @@ class ArticleServiceTest {
     @Mock private ArticleCommentRepository articleCommentRepository;
     @Mock private ArticleLikeRepository articleLikeRepository;
 
+
     @DisplayName("게시글 페이지 반환")
     @Test
     void getArticles() {
         // Given
         Pageable pageable = Pageable.ofSize(9);
-        given(articleRepository.findAll(pageable)).willReturn(Page.empty());
+        Predicate predicate = new BooleanBuilder();
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(null, pageable);
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("카테고리로 게시글 검색")
@@ -58,12 +64,45 @@ class ArticleServiceTest {
         // Given
         Pageable pageable = Pageable.ofSize(9);
         ArticleCategory articleCategory = ArticleCategory.MUSIC;
-        given(articleRepository.findByArticleCategory(articleCategory, pageable)).willReturn(Page.empty());
+        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(articleCategory, pageable);
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findByArticleCategory(articleCategory, pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
+    }
+
+    @DisplayName("제목으로 게시글 검색")
+    @Test
+    void getArticleByTitle() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        String title = "title";
+        Predicate predicate = QArticle.article.title.eq(title);
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findAll(predicate, pageable);
+    }
+
+    @DisplayName("카테고리+제목으로 게시글 검색")
+    @Test
+    void getArticleByArticleCategoryAndTitle() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        ArticleCategory articleCategory = ArticleCategory.MUSIC;
+        String title = "title";
+        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory)
+                .and(QArticle.article.title.eq(title));
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("단일 게시글 조회")
