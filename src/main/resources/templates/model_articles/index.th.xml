@@ -11,6 +11,21 @@
               th:classappend="${#strings.equals(param.articleCategory, category.name)} ? 'active' : ''"
         />
     </attr>
+    <!--정렬-->
+    <attr sel="#sorting">
+        <attr sel="li[0]/a"
+              th:href="@{/model_articles(articleCategory=${param.articleCategory}, page=${articles.number}, sort='createdAt,desc')}"
+              th:classappend="${articles.sort.getOrderFor('createdAt')} == null ? (${articles.sort.getOrderFor('likeCount')} == null ? 'active' : '') : (${articles.sort.getOrderFor('createdAt').direction.name} == 'DESC' ? 'active' : '')"
+        />
+        <attr sel="li[1]/a"
+              th:href="@{/model_articles(articleCategory=${param.articleCategory}, page=${articles.number}, sort='createdAt')}"
+              th:classappend="${articles.sort.getOrderFor('createdAt')} == null ? '' : (${articles.sort.getOrderFor('createdAt').direction.name} != 'DESC' ? 'active' : '')"
+        />
+        <attr sel="li[2]/a"
+              th:href="@{/model_articles(articleCategory=${param.articleCategory}, page=${articles.number}, sort='likeCount,desc')}"
+              th:classappend="${articles.sort.getOrderFor('likeCount')} != null ? 'active' : ''"
+        />
+    </attr>
     <!--검색-->
     <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">
         <attr sel="#article-category" th:value="${param.articleCategory}"/>

@@ -33,7 +33,7 @@ public record ArticleDto(
                 article.getContent(),
                 article.getArticleType(),
                 article.getArticleCategory(),
-                article.getArticleLikes().size(),
+                article.getLikeCount(),
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),

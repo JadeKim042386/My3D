@@ -53,6 +53,10 @@ public class Article extends AuditingFields {
     @Column
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
 
+    @Setter
+    @Column(nullable = false)
+    private int likeCount = 0;
+
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article")
