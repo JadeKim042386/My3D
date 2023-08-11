@@ -39,7 +39,7 @@ public record ArticleWithCommentsAndLikeCountDto(
                 article.getArticleComments().stream()
                         .map(ArticleCommentDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
-                article.getArticleLikes().size(),
+                article.getLikeCount(),
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),
