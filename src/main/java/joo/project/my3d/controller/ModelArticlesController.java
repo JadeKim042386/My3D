@@ -8,9 +8,11 @@ import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.service.ArticleService;
+import joo.project.my3d.service.PaginationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -29,6 +31,7 @@ import java.util.List;
 public class ModelArticlesController {
 
     private final ArticleService articleService;
+    private final PaginationService paginationService;
 
     @Value("${model.path}")
     private String modelPath;
@@ -40,23 +43,29 @@ public class ModelArticlesController {
             Model model
     ) {
         Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         if (articles.isEmpty()) {
             model.addAttribute(
                     "articles",
-                    List.of()
+                    Page.empty()
             );
         } else {
             model.addAttribute(
                     "articles",
-                    articles
+                    new PageImpl<>(
+                            articles
                             .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
                             .map(ArticleResponse::from)
-                            .stream().toList()
+                            .toList(),
+                            pageable,
+                            articles.getTotalElements()
+                    )
             );
         }
 
         model.addAttribute("modelPath", modelPath);
         model.addAttribute("categories", ArticleCategory.values());
+        model.addAttribute("paginationBarNumbers", barNumbers);
 
         return "model_articles/index";
     }

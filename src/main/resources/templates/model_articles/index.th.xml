@@ -7,7 +7,9 @@
         <attr sel="a[1]"
               th:each="category : ${categories}"
               th:text="${category.description}"
-              th:href="@{/model_articles(articleCategory=${category})}"/>
+              th:href="@{/model_articles(articleCategory=${category})}"
+              th:classappend="${#strings.equals(param.articleCategory, category.name)} ? 'active' : ''"
+        />
     </attr>
     <!--검색-->
     <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">
@@ -20,5 +22,25 @@
         <attr sel="#title" th:text="${article.title}" th:href="@{'/model_articles/' + ${article.id}}"/>
         <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
         <attr sel="div.like/span" th:text="${article.likeCount}"/>
+    </attr>
+    <!--페이지네이션-->
+    <attr sel="#pagination">
+        <attr sel="li[0]/a"
+              th:text="'Prev'"
+              th:href="@{/model_articles(page=${articles.number - 1})}"
+              th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
+        />
+        <attr sel="li[1]" th:class="page-item" th:each="pageNumber : ${paginationBarNumbers}">
+            <attr sel="a"
+                  th:text="${pageNumber + 1}"
+                  th:href="@{/model_articles(page=${pageNumber})}"
+                  th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' disabled' : '')"
+            />
+        </attr>
+        <attr sel="li[2]/a"
+              th:text="'Next'"
+              th:href="@{/model_articles(page=${articles.number + 1})}"
+              th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
+        />
     </attr>
 </thlogic>
