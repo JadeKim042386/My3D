@@ -1,7 +1,6 @@
 package joo.project.my3d.controller;
 
-
-import joo.project.my3d.controller.ModelArticlesController;
+import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
@@ -33,7 +32,7 @@ class ModelArticlesControllerTest {
     @Test
     void modelArticles() throws Exception {
         // Given
-        given(articleService.getArticles(any(Pageable.class))).willReturn(Page.empty());
+        given(articleService.getArticles(any(Predicate.class), any(Pageable.class))).willReturn(Page.empty());
         // When
         mvc.perform(
                 get("/model_articles")
@@ -41,10 +40,11 @@ class ModelArticlesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("model_articles/index"))
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("modelPath"));
 
         // Then
-        then(articleService).should().getArticles(any(Pageable.class));
+        then(articleService).should().getArticles(any(Predicate.class), any(Pageable.class));
     }
 
     @DisplayName("[GET] 게시글 페이지")

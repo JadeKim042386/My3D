@@ -1,6 +1,10 @@
 package joo.project.my3d.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.PredicateOperation;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.QArticle;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
@@ -9,6 +13,8 @@ import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.ArticleCommentRepository;
+import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,18 +40,69 @@ import static org.mockito.BDDMockito.*;
 class ArticleServiceTest {
     @InjectMocks private ArticleService articleService;
     @Mock private ArticleRepository articleRepository;
+    @Mock private ArticleCommentRepository articleCommentRepository;
+    @Mock private ArticleLikeRepository articleLikeRepository;
+
 
     @DisplayName("게시글 페이지 반환")
     @Test
     void getArticles() {
         // Given
         Pageable pageable = Pageable.ofSize(9);
-        given(articleRepository.findAll(pageable)).willReturn(Page.empty());
+        Predicate predicate = new BooleanBuilder();
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(pageable);
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
+    }
+
+    @DisplayName("카테고리로 게시글 검색")
+    @Test
+    void getArticleByArticleCategory() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        ArticleCategory articleCategory = ArticleCategory.MUSIC;
+        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findAll(predicate, pageable);
+    }
+
+    @DisplayName("제목으로 게시글 검색")
+    @Test
+    void getArticleByTitle() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        String title = "title";
+        Predicate predicate = QArticle.article.title.eq(title);
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findAll(predicate, pageable);
+    }
+
+    @DisplayName("카테고리+제목으로 게시글 검색")
+    @Test
+    void getArticleByArticleCategoryAndTitle() {
+        // Given
+        Pageable pageable = Pageable.ofSize(9);
+        ArticleCategory articleCategory = ArticleCategory.MUSIC;
+        String title = "title";
+        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory)
+                .and(QArticle.article.title.eq(title));
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        // When
+        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        // Then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("단일 게시글 조회")
@@ -140,10 +197,14 @@ class ArticleServiceTest {
     void deleteArticle() {
         // Given
         Long articleId = 1L;
+        willDoNothing().given(articleCommentRepository).deleteByArticleId(articleId);
+        willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
         willDoNothing().given(articleRepository).deleteById(articleId);
         // When
         articleService.deleteArticle(articleId);
         // Then
+        then(articleCommentRepository).should().deleteByArticleId(articleId);
+        then(articleLikeRepository).should().deleteByArticleId(articleId);
         then(articleRepository).should().deleteById(articleId);
     }
 }

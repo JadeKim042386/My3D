@@ -1,11 +1,14 @@
 package joo.project.my3d.service;
 
+import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.repository.ArticleCommentRepository;
+import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,9 +24,12 @@ import javax.persistence.EntityNotFoundException;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final ArticleLikeRepository articleLikeRepository;
+    private final ArticleCommentRepository articleCommentRepository;
 
-    public Page<ArticleDto> getArticles(Pageable pageable) {
-        return articleRepository.findAll(pageable).map(ArticleDto::from);
+    public Page<ArticleDto> getArticles(Predicate predicate, Pageable pageable) {
+
+        return articleRepository.findAll(predicate, pageable).map(ArticleDto::from);
     }
 
     public ArticleWithCommentsAndLikeCountDto getArticle(Long articleId) {
@@ -71,6 +77,10 @@ public class ArticleService {
     @Transactional
     public void deleteArticle(Long articleId) {
         //TODO: 작성자 또는 Admin이 게시글을 삭제 할 수 있음
+
+        //게시글에 속한 댓글, 좋아요도 같이 삭제
+        articleCommentRepository.deleteByArticleId(articleId);
+        articleLikeRepository.deleteByArticleId(articleId);
         articleRepository.deleteById(articleId);
     }
 }

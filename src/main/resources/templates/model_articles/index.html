@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
     <link href="/css/content_ellipsis.css" rel="stylesheet">
+    <link href="/css/search-bar.css" rel="stylesheet">
 </head>
 <body>
 <!--헤더-->
@@ -15,26 +16,9 @@
     <div class="row">
         <!--카테고리 리스트-->
         <div class="col-2">
-            <div class="list-group">
+            <div id="category" class="list-group">
                 <a class="list-group-item disabled text-center"><strong>Category</strong></a>
-                <a href="#" class="list-group-item list-group-item-action">동물</a>
-                <a href="#" class="list-group-item list-group-item-action">건축</a>
-                <a href="#" class="list-group-item list-group-item-action">미술</a>
-                <a href="#" class="list-group-item list-group-item-action">자동차&이동수단</a>
-                <a href="#" class="list-group-item list-group-item-action">캐릭터</a>
-                <a href="#" class="list-group-item list-group-item-action">문화유산&역사</a>
-                <a href="#" class="list-group-item list-group-item-action">전기전자</a>
-                <a href="#" class="list-group-item list-group-item-action">패션</a>
-                <a href="#" class="list-group-item list-group-item-action">음식&음료</a>
-                <a href="#" class="list-group-item list-group-item-action">가구</a>
-                <a href="#" class="list-group-item list-group-item-action">음악&악기</a>
-                <a href="#" class="list-group-item list-group-item-action">자연&식물</a>
-                <a href="#" class="list-group-item list-group-item-action">뉴스&정치</a>
-                <a href="#" class="list-group-item list-group-item-action">사람</a>
-                <a href="#" class="list-group-item list-group-item-action">여행</a>
-                <a href="#" class="list-group-item list-group-item-action">과학&기술</a>
-                <a href="#" class="list-group-item list-group-item-action">스포츠&운동</a>
-                <a href="#" class="list-group-item list-group-item-action">무기&군대</a>
+                <a href="#" class="animals list-group-item list-group-item-action">카테고리</a>
             </div>
         </div>
         <!--모델 게시글-->
@@ -48,9 +32,9 @@
                                 정렬
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item active" href="#">최신순</a></li>
+                                <li><a class="dropdown-item" href="#">오래된순</a></li>
+                                <li><a class="dropdown-item" href="#">인기순</a></li>
                             </ul>
                         </div>
                     </div>
@@ -70,8 +54,8 @@
                                      model="/models/model.stl">
                                 </div>
                             </div>
-                            <div class="title row mb-2 ellipsis p-2">
-                                Title
+                            <div class="row mb-2 ellipsis p-2">
+                                <a id="title" href="#" class="p-0 link-body-emphasis text-decoration-none">Title</a>
                             </div>
                             <div class="row">
                                 <div class="nickname col p-2">
@@ -98,6 +82,24 @@
                     </ul>
                 </nav>
             </div>
+            <!--검색-->
+            <form id="search-form">
+                <div class="row pt-4 justify-content-center">
+                    <div class="col-lg-8 col-md-6 col-sm-12 p-0">
+                        <input type="hidden" id="article-category" name="articleCategory">
+                        <label for="search-value" hidden>검색어</label>
+                        <input type="text" class="form-control" id="search-value" name="title">
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-12 p-0">
+                        <button type="submit" class="btn btn-base">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>
@@ -109,6 +111,7 @@
     OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
     OV.Init3DViewerElements();
 </script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 </body>
 </html>
