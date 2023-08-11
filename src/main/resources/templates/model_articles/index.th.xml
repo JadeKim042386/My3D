@@ -17,7 +17,7 @@
     <attr sel="#model" th:each="article : ${articles}">
         <attr sel="div.model_view/div"
               th:model="${modelPath} + ${article.articleFileResponse.fileName}" />
-        <attr sel="div.title" th:text="${article.title}"/>
+        <attr sel="#title" th:text="${article.title}" th:href="@{'/model_articles/' + ${article.id}}"/>
         <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
         <attr sel="div.like/span" th:text="${article.likeCount}"/>
     </attr>
