@@ -1,22 +1,29 @@
 package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
+import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.ArticleService;
+import joo.project.my3d.service.PaginationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,12 +34,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ModelArticlesControllerTest {
     @Autowired private MockMvc mvc;
     @MockBean private ArticleService articleService;
+    @MockBean private PaginationService paginationService;
 
     @DisplayName("[GET] 게시판 페이지")
+    @WithMockUser
     @Test
     void modelArticles() throws Exception {
         // Given
         given(articleService.getArticles(any(Predicate.class), any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of());
         // When
         mvc.perform(
                 get("/model_articles")
@@ -45,9 +55,11 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().getArticles(any(Predicate.class), any(Pageable.class));
+        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
     @DisplayName("[GET] 게시글 페이지")
+    @WithMockUser
     @Test
     void modelArticle() throws Exception {
         // Given
