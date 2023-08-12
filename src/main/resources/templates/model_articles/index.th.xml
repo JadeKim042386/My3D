@@ -26,10 +26,8 @@
               th:classappend="${articles.sort.getOrderFor('likeCount')} != null ? 'active' : ''"
         />
     </attr>
-    <!--검색-->
-    <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">
-        <attr sel="#article-category" th:value="${param.articleCategory}"/>
-    </attr>
+    <!--글쓰기-->
+    <attr sel="#write-article" th:href="@{/model_articles/form}" th:method="get"/>
     <!--모델 뷰-->
     <attr sel="#model" th:each="article : ${articles}">
         <attr sel="div.model_view/div"
@@ -57,5 +55,9 @@
               th:href="@{/model_articles(page=${articles.number + 1})}"
               th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
         />
+    </attr>
+    <!--검색-->
+    <attr sel="#search-form" th:action="@{/model_articles}" th:method="get">
+        <attr sel="#article-category" th:value="${param.articleCategory}"/>
     </attr>
 </thlogic>

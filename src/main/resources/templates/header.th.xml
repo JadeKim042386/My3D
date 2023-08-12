@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thlogic>
+  <!--헤더-->
   <attr sel="header">
-    <attr sel="div/a" th:href="@{/}" th:method="get"></attr>
-    <attr sel="ul">
-      <attr sel="li[0]/a" th:href="@{/model_articles}" th:method="get"></attr>
-      <attr sel="li[1]/a" th:href="@{#}" th:method="get"></attr>
-    </attr>
+    <attr sel="#home" th:href="@{/}" th:method="get"/>
+    <attr sel="#models" th:href="@{/model_articles}" th:method="get"/>
+    <attr sel="#request-modeling" th:href="@{#}" th:method="get"/>
+    <!--로그인-->
+    <attr sel="#username"
+          sec:authorize="isAuthenticated()"
+          sec:authentication="principal.nickname"
+    />
+    <attr sel="#login"
+          sec:authorize="!isAuthenticated()"
+          th:href="@{/login}"
+          th:method="get"
+    />
+    <attr sel="#logout"
+          sec:authorize="isAuthenticated()"
+          th:href="@{/logout}"
+    />
   </attr>
 </thlogic>
