@@ -32,16 +32,16 @@ insert into article (user_id, article_file_id, title, content, created_by, modif
 
 -- 댓글 10개
 insert into article_comment (user_id, article_id, content, parent_comment_id, created_by, modified_at, modified_by, created_at) values
-("joo", 6, 'Aliquam sit amet diam in magna bibendum imperdiet.', null, 'joo', '2023-02-22 05:42:56', 'joo', '2023-02-22 05:42:56'),
-("a", 8, 'Ut at dolor quis odio consequat varius.', null, 'joo', '2023-02-27 11:43:51', 'joo', '2022-12-28 19:25:53'),
-("joo", 1, 'In hac habitasse platea dictumst.', null, 'joo', '2023-06-10 10:38:09', 'joo', '2023-06-20 03:54:32'),
-("a", 10, 'Aliquam quis turpis eget elit sodales scelerisque.', null, 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-("jujoo", 5, 'In hac habitasse platea dictumst.', null, 'a', '2022-08-21 15:51:26', 'a', '2022-08-21 15:51:26'),
-("a", 6, 'Proin leo odio, porttitor id, consequat in, consequat ut, nulla.', 1, 'a', '2023-06-20 21:55:40', 'a', '2022-07-21 16:24:58'),
-("joo", 9, 'Curabitur convallis.', null, 'jujoo', '2022-09-10 06:39:06', 'jujoo', '2022-09-10 06:39:06'),
-("a", 3, 'Cras in purus eu magna vulputate luctus.', null, 'jujoo', '2022-08-23 13:29:00', 'jujoo', '2022-10-02 21:19:58'),
-("jujoo", 5, 'Aenean auctor gravida sem.', 5, 'jujoo', '2022-07-15 03:56:20', 'jujoo', '2023-01-20 15:00:17'),
-("jujoo", 2, 'Curabitur gravida nisi at nibh.', null, 'jujoo', '2023-03-23 16:56:34', 'jujoo', '2022-12-10 23:41:13');
+('joo', 6, 'Aliquam sit amet diam in magna bibendum imperdiet.', null, 'joo', '2023-02-22 05:42:56', 'joo', '2023-02-22 05:42:56'),
+('a', 8, 'Ut at dolor quis odio consequat varius.', null, 'joo', '2023-02-27 11:43:51', 'joo', '2022-12-28 19:25:53'),
+('joo', 1, 'In hac habitasse platea dictumst.', null, 'joo', '2023-06-10 10:38:09', 'joo', '2023-06-20 03:54:32'),
+('a', 10, 'Aliquam quis turpis eget elit sodales scelerisque.', null, 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('jujoo', 5, 'In hac habitasse platea dictumst.', null, 'a', '2022-08-21 15:51:26', 'a', '2022-08-21 15:51:26'),
+('a', 6, 'Proin leo odio, porttitor id, consequat in, consequat ut, nulla.', 1, 'a', '2023-06-20 21:55:40', 'a', '2022-07-21 16:24:58'),
+('joo', 9, 'Curabitur convallis.', null, 'jujoo', '2022-09-10 06:39:06', 'jujoo', '2022-09-10 06:39:06'),
+('a', 3, 'Cras in purus eu magna vulputate luctus.', null, 'jujoo', '2022-08-23 13:29:00', 'jujoo', '2022-10-02 21:19:58'),
+('jujoo', 5, 'Aenean auctor gravida sem.', 5, 'jujoo', '2022-07-15 03:56:20', 'jujoo', '2023-01-20 15:00:17'),
+('jujoo', 2, 'Curabitur gravida nisi at nibh.', null, 'jujoo', '2023-03-23 16:56:34', 'jujoo', '2022-12-10 23:41:13');
 
 -- 좋아요 6개
 insert into article_like (article_id, user_id, created_at, modified_at, created_by, modified_by) values
