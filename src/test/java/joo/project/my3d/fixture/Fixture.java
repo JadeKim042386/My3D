@@ -4,6 +4,12 @@ import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Fixture {
 
@@ -41,5 +47,18 @@ public class Fixture {
 
     public static ArticleFile getArticleFile(Long byteSize, String fileName, String fileExtension) {
         return ArticleFile.of(byteSize, fileName, fileExtension);
+    }
+
+    public static MockMultipartFile getMultipartFile() throws IOException {
+        String fileName = "test.txt";
+        String content = "Hello, World!";
+
+        return new MockMultipartFile(
+                fileName,
+                fileName,
+                "text/plain",
+                content.getBytes(StandardCharsets.UTF_8)
+        );
+
     }
 }
