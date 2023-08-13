@@ -12,6 +12,10 @@ public record ArticleFileDto(
         return new ArticleFileDto(id, byteSize, fineName, fileExtension);
     }
 
+    public static ArticleFileDto of(Long byteSize, String fineName, String fileExtension) {
+        return new ArticleFileDto(null, byteSize, fineName, fileExtension);
+    }
+
     public static ArticleFileDto from(ArticleFile articleFile) {
         return ArticleFileDto.of(
                 articleFile.getId(),

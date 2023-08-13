@@ -4,9 +4,12 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.request.ArticleRequest;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +20,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -82,5 +88,28 @@ public class ModelArticlesController {
         model.addAttribute("articleFile", article.articleFileResponse());
 
         return "model_articles/detail";
+    }
+
+    @GetMapping("/form")
+    public String articleForm(Model model) {
+        model.addAttribute("formStatus", FormStatus.CREATE);
+        model.addAttribute("categories", ArticleCategory.values());
+        return "model_articles/form";
+    }
+
+    @PostMapping("/form")
+    public String postNewArticle(
+            ArticleRequest articleRequest,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
+
+        articleService.saveArticle(
+                articleRequest.toDto(
+                        boardPrincipal.toDto(),
+                        ArticleType.MODEL,
+                        0
+                )
+        );
+        return "redirect:/model_articles";
     }
 }
