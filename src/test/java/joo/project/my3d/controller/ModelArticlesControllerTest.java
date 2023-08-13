@@ -8,6 +8,7 @@ import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,7 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,6 +43,7 @@ class ModelArticlesControllerTest {
     @Autowired private MockMvc mvc;
     @MockBean private ArticleService articleService;
     @MockBean private PaginationService paginationService;
+    @MockBean private ArticleFileService articleFileService;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser
@@ -89,6 +92,7 @@ class ModelArticlesControllerTest {
     void addNewModelArticle() throws Exception {
         // Given
         byte[] file = Fixture.getMultipartFile().getBytes();
+        willDoNothing().given(articleFileService).saveArticleFile(any(MultipartFile.class));
         willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
         // When
         mvc.perform(
@@ -104,6 +108,7 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
+        then(articleFileService).should().saveArticleFile(any(MultipartFile.class));
         then(articleService).should().saveArticle(any(ArticleDto.class));
     }
 

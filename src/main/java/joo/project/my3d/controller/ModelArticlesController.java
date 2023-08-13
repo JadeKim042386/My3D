@@ -10,6 +10,7 @@ import joo.project.my3d.dto.request.ArticleRequest;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class ModelArticlesController {
 
     private final ArticleService articleService;
     private final PaginationService paginationService;
+    private final ArticleFileService articleFileService;
 
     @Value("${model.path}")
     private String modelPath;
@@ -112,6 +114,7 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
 
+        articleFileService.saveArticleFile(articleRequest.file());
         articleService.saveArticle(
                 articleRequest.toDto(
                         boardPrincipal.toDto(),
