@@ -5,13 +5,21 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.validation.InCategory;
+import joo.project.my3d.dto.validation.MultipartFileSizeValid;
 import joo.project.my3d.utils.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+
 public record ArticleRequest(
+        @NotBlank
         String title,
+        @NotBlank
         String content,
+        @MultipartFileSizeValid
         MultipartFile file,
+        @InCategory
         String articleCategory
 ) {
 

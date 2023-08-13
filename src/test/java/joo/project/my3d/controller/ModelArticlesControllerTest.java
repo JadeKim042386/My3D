@@ -88,12 +88,12 @@ class ModelArticlesControllerTest {
     @Test
     void addNewModelArticle() throws Exception {
         // Given
-
+        byte[] file = Fixture.getMultipartFile().getBytes();
         willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
         // When
         mvc.perform(
                         multipart("/model_articles/form")
-                                .file("file", Fixture.getMultipartFile().getBytes())
+                                .file("file", file)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
                                 .param("content", "content")
@@ -105,6 +105,90 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().saveArticle(any(ArticleDto.class));
+    }
+
+    @DisplayName("[POST] 게시글 추가 - 파일 누락")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void addNewModelArticleWithoutFile() throws Exception {
+        // Given
+
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form")
+                                .file("file", null)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("content", "content")
+                                .param("articleCategory", "MUSIC")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("model_articles/form"));
+
+        // Then
+    }
+
+    @DisplayName("[POST] 게시글 추가 - 카테고리 누락")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void addNewModelArticleWithoutCategory() throws Exception {
+        // Given
+        byte[] file = Fixture.getMultipartFile().getBytes();
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form")
+                                .file("file", file)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("content", "content")
+                                .param("articleCategory", "카테고리를 선택해주세요.")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("model_articles/form"));
+
+        // Then
+    }
+
+    @DisplayName("[POST] 게시글 추가 - 제목 누락")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void addNewModelArticleWithoutTitle() throws Exception {
+        // Given
+        byte[] file = Fixture.getMultipartFile().getBytes();
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form")
+                                .file("file", file)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "")
+                                .param("content", "content")
+                                .param("articleCategory", "MUSIC")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("model_articles/form"));
+
+        // Then
+    }
+
+    @DisplayName("[POST] 게시글 추가 - 본문 누락")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void addNewModelArticleWithoutContent() throws Exception {
+        // Given
+        byte[] file = Fixture.getMultipartFile().getBytes();
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form")
+                                .file("file", file)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("content", "")
+                                .param("articleCategory", "MUSIC")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("model_articles/form"));
+
+        // Then
     }
 
     @DisplayName("[GET] 게시글 페이지")

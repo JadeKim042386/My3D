@@ -13,6 +13,7 @@ import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,14 +24,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/model_articles")
 @RequiredArgsConstructor
@@ -92,6 +92,7 @@ public class ModelArticlesController {
 
     @GetMapping("/form")
     public String articleForm(Model model) {
+        model.addAttribute("article", new ArticleRequest(null, null, null, null));
         model.addAttribute("formStatus", FormStatus.CREATE);
         model.addAttribute("categories", ArticleCategory.values());
         return "model_articles/form";
@@ -99,9 +100,17 @@ public class ModelArticlesController {
 
     @PostMapping("/form")
     public String postNewArticle(
-            ArticleRequest articleRequest,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+            @Validated @ModelAttribute("article") ArticleRequest articleRequest,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
+            Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            log.warn("bindingResult={}", bindingResult);
+            model.addAttribute("formStatus", FormStatus.CREATE);
+            model.addAttribute("categories", ArticleCategory.values());
+            return "model_articles/form";
+        }
 
         articleService.saveArticle(
                 articleRequest.toDto(
