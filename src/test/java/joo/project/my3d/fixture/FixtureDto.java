@@ -11,7 +11,11 @@ import java.util.Set;
 public class FixtureDto {
 
     public static UserAccountDto getUserAccountDto() {
-        return UserAccountDto.of("joo", "joo@gmail.com", "Joo", "pw", UserRole.USER);
+        return UserAccountDto.of("joo", "pw",  "joo@gmail.com", "Joo", UserRole.USER);
+    }
+
+    public static UserAccountDto getUserAccountDto(String userId, UserRole userRole) {
+        return UserAccountDto.of(userId, "pw",  userId + "@gmail.com", userId, userRole);
     }
 
     public static ArticleFileDto getArticleFileDto() {

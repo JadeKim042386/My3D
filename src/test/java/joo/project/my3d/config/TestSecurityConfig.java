@@ -2,6 +2,7 @@ package joo.project.my3d.config;
 
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.UserAccountService;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -19,8 +20,12 @@ public class TestSecurityConfig {
 
     @BeforeTestMethod
     public void securitySetUp() {
-        given(userAccountService.searchUser(anyString()))
-                .willReturn(Optional.of(createUserAccountDto()));
+        given(userAccountService.searchUser("jooCompany"))
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY)));
+        given(userAccountService.searchUser("jooUser"))
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER)));
+        given(userAccountService.searchUser("jooAdmin"))
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN)));
         given(userAccountService.saveUser(anyString(), anyString(), anyString(), anyString(), any(UserRole.class)))
                 .willReturn(createUserAccountDto());
     }
@@ -31,7 +36,7 @@ public class TestSecurityConfig {
                 "pw",
                 "joo-test@gmail.com",
                 "joo-test",
-                UserRole.USER
+                UserRole.COMPANY
         );
     }
 }

@@ -1,13 +1,11 @@
 package joo.project.my3d.config;
 
-import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.UserAccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -38,7 +36,7 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/model_articles/[0-9]+"
                         ).permitAll()
-                        .mvcMatchers("/model_articles/form").hasAnyRole("COMPANY, ADMIN")
+                        .mvcMatchers("/model_articles/form").hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling()
@@ -52,11 +50,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(UserAccountRepository userAccountRepository) {
+    public UserDetailsService userDetailsService(UserAccountService userAccountService) {
         //loadUserByUsername
-        return username -> userAccountRepository
-                .findById(username)
-                .map(UserAccountDto::from)
+        return username -> userAccountService
+                .searchUser(username)
                 .map(BoardPrincipal::from)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - username: " + username));
     }
