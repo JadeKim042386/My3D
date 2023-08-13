@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Uno Kim">
+  <title>새 게시글 등록</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link href="/css/main.css" rel="stylesheet">
+  <link href="/css/file-form.less" rel="stylesheet/less" type="text/css">
+</head>
+<body>
+  <!--헤더-->
+  <header id="header"></header>
+  <div class="container">
+    <form id="article-form" enctype="multipart/form-data">
+      <!--제목-->
+      <div class="row mb-3 justify-content-md-center">
+        <div id="title" class="col-sm-8 col-lg-9">
+          <input type="text" class="form-control" name="title" placeholder="제목" required>
+        </div>
+      </div>
+      <!--본문-->
+      <div class="row mb-3 justify-content-md-center">
+        <div id="content" class="col-sm-8 col-lg-9">
+          <textarea class="form-control" name="content" rows="5" placeholder="본문" required></textarea>
+        </div>
+      </div>
+      <!--파일-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <div class="input-group custom-file-button">
+            <label class="input-group-text" for="inputGroupFile">파일 선택</label>
+            <input type="file" accept=".stl,.stp" class="form-control" id="inputGroupFile" name="file">
+          </div>
+          <p id="file-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--카테고리-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <select class="form-select" id="category" name="articleCategory">
+            <option> 카테고리를 선택해주세요.</option>
+            <option>All</option>
+          </select>
+          <p id="category-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--저장&취소-->
+      <div class="row mb-5 justify-content-md-end">
+        <div class="col-sm-8 col-lg-9">
+          <div class="col-sm-10 d-grid d-sm-flex justify-content-sm-end">
+            <button type="submit" class="btn btn-primary me-2" id="submit-button">저장</button>
+            <button type="button" class="btn btn-secondary" id="cancel-button">취소</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--푸터-->
+  <footer id="footer"></footer>
+  <!--스크립트-->
+  <script src="https://cdn.jsdelivr.net/npm/less" ></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -20,8 +20,13 @@ public record ArticleDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
+
     public static ArticleDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
         return new ArticleDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, likeCount, createdAt, createdBy, modifiedAt, modifiedBy);
+    }
+
+    public static ArticleDto of(UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount) {
+        return new ArticleDto(null, userAccountDto, articleFileDto, title, content, articleType, articleCategory, likeCount, null, null, null, null);
     }
 
     public static ArticleDto from(Article article) {

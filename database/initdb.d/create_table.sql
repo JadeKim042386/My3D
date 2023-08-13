@@ -9,7 +9,8 @@
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`user_id`),
-    UNIQUE (`email`)
+    UNIQUE (`email`),
+    UNIQUE (`nickname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
 CREATE TABLE `article_file` (

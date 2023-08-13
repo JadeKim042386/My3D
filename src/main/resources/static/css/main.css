@@ -11,3 +11,8 @@ p {
     width: 80%;
     height: 80%;
 }
+
+.field-error {
+    border-color: #dc3545;
+    color: #dc3545;
+}

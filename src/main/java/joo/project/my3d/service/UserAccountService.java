@@ -21,6 +21,7 @@ public class UserAccountService {
         return userAccountRepository.findById(userId).map(UserAccountDto::from);
     }
 
+    @Transactional
     public UserAccountDto saveUser(String username, String userPassword, String email, String nickname, UserRole userRole) {
         return UserAccountDto.from(
                 userAccountRepository.save(

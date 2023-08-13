@@ -16,7 +16,8 @@ import java.util.Set;
         name = "user_account",
         indexes = {
                 @Index(columnList = "userId"),
-                @Index(columnList = "email", unique = true)
+                @Index(columnList = "email", unique = true),
+                @Index(columnList = "nickname", unique = true)
         }
 )
 @Entity
