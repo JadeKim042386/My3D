@@ -6,16 +6,16 @@ insert into user_account (user_id, user_password, nickname, email, user_role, cr
 
 -- 파일 10개
 insert into article_file (byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
-(4172, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
-(9598, 'model1.stl', 'da50408b-7655-4a80-9927-2890007e9e30.stl', 'stl', '2023-04-20 13:15:23', '2023-04-12 14:04:14', 'jujoo', 'jujoo'),
-(3861, 'model2.stl','9d495214-d376-4b0e-a03b-67b5c2b5afdb.stl', 'stl', '2023-03-19 17:20:14', '2023-05-08 04:26:34', 'jujoo', 'jujoo'),
-(9412, 'model3.stl', '36bab91a-ab82-49c6-a17c-911761eb892c.stl', 'stl', '2023-05-24 09:10:39', '2022-09-11 06:27:46', 'a', 'a'),
-(3957, 'model4.stl', '18f39d74-294c-49bb-b31d-ec0d64c193a5.stl', 'stl', '2022-08-10 15:43:09', '2022-09-09 19:17:20', 'a', 'a'),
-(4692, 'model5.stl', 'e6cbed0d-f1df-4002-bc25-27998f7ab44f.stl', 'stl', '2022-09-26 17:37:48', '2023-02-08 13:22:56', 'joo', 'joo'),
-(8659, 'model6.stl', '9bc6cfbf-8740-4981-a331-f8f0fa2565c9.stl', 'stl', '2023-02-06 04:49:18', '2023-08-05 15:54:58', 'joo', 'joo'),
-(1605, 'model7.stl', '575612c8-d349-4951-89c8-3c748dc9b884.stl', 'stl', '2023-01-21 23:34:41', '2022-09-14 00:52:47', 'joo', 'joo'),
-(1973, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
-(5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
+(684, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
+(684, 'model1.stl', 'da50408b-7655-4a80-9927-2890007e9e30.stl', 'stl', '2023-04-20 13:15:23', '2023-04-12 14:04:14', 'jujoo', 'jujoo'),
+(684, 'model2.stl','9d495214-d376-4b0e-a03b-67b5c2b5afdb.stl', 'stl', '2023-03-19 17:20:14', '2023-05-08 04:26:34', 'jujoo', 'jujoo'),
+(684, 'model3.stl', '36bab91a-ab82-49c6-a17c-911761eb892c.stl', 'stl', '2023-05-24 09:10:39', '2022-09-11 06:27:46', 'a', 'a'),
+(684, 'model4.stl', '18f39d74-294c-49bb-b31d-ec0d64c193a5.stl', 'stl', '2022-08-10 15:43:09', '2022-09-09 19:17:20', 'a', 'a'),
+(684, 'model5.stl', 'e6cbed0d-f1df-4002-bc25-27998f7ab44f.stl', 'stl', '2022-09-26 17:37:48', '2023-02-08 13:22:56', 'joo', 'joo'),
+(684, 'model6.stl', '9bc6cfbf-8740-4981-a331-f8f0fa2565c9.stl', 'stl', '2023-02-06 04:49:18', '2023-08-05 15:54:58', 'joo', 'joo'),
+(684, 'model7.stl', '575612c8-d349-4951-89c8-3c748dc9b884.stl', 'stl', '2023-01-21 23:34:41', '2022-09-14 00:52:47', 'joo', 'joo'),
+(684, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
+(684, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
 
 -- 게시글 10
 insert into article (user_id, article_file_id, title, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count) values
