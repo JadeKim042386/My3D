@@ -26,6 +26,8 @@ public class ArticleFile extends AuditingFields {
     @Column(nullable = false)
     private Long byteSize;
     @Column(nullable = false)
+    private String originalFileName;
+    @Column(nullable = false)
     private String fileName;
     @Column(nullable = false)
     private String fileExtension;
@@ -37,14 +39,15 @@ public class ArticleFile extends AuditingFields {
     protected ArticleFile() {
     }
 
-    private ArticleFile(Long byteSize, String fileName, String fileExtension) {
+    private ArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension) {
         this.byteSize = byteSize;
+        this.originalFileName = originalFileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
     }
 
-    public static ArticleFile of(Long byteSize, String fileName, String fileExtension) {
-        return new ArticleFile(byteSize, fileName, fileExtension);
+    public static ArticleFile of(Long byteSize, String originalFileName, String fileName, String fileExtension) {
+        return new ArticleFile(byteSize, originalFileName, fileName, fileExtension);
     }
 
     @Override

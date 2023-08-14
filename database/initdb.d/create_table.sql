@@ -16,6 +16,7 @@
 CREATE TABLE `article_file` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
     `byte_size`	bigint	NOT NULL,
+    `original_file_name`	varchar(100)	NOT NULL,
     `file_name`	varchar(100)	NOT NULL,
     `file_extension`	varchar(100)	NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,

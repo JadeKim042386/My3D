@@ -19,7 +19,7 @@ public class FixtureDto {
     }
 
     public static ArticleFileDto getArticleFileDto() {
-        return ArticleFileDto.of(11L, 5555L, "test.stp", "stp");
+        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
     public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
