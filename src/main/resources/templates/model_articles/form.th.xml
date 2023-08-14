@@ -3,7 +3,7 @@
     <attr sel="#header" th:replace="header :: header" />
     <attr sel="#footer" th:replace="footer :: footer" />
 
-    <attr sel="#article-form" th:object="${article}" th:action="${formStatus?.update} ? '/model_articles/' + ${article.id} + '/form' : '/model_articles/form'" th:method="post">
+    <attr sel="#article-form" th:object="${article}" th:action="${formStatus?.update} ? '/model_articles/form/' + ${article.id} : '/model_articles/form'" th:method="post">
         <!--제목-->
         <attr sel="#title">
             <attr sel="input" th:value="*{title} ?: _"/>
@@ -13,6 +13,7 @@
             <attr sel="textarea" th:text="*{content} ?: _"/>
         </attr>
         <!--파일-->
+        <attr sel="#fileName" th:value="*{file?.originalFileName} ?: _"/>
         <attr sel="#file-error" th:errors="*{file}" th:classappend="field-error"/>
         <!--카테고리-->
         <attr sel="#category">

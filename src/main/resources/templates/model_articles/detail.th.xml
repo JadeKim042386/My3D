@@ -2,4 +2,12 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <!--수정&삭제-->
+    <attr sel="#article-main" th:object="${article}">
+        <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{userId} == ${#authentication.name}">
+            <attr sel="#delete-article" th:method="post">
+                <attr sel="#update-article" th:href="@{'/model_articles/form/' + *{id}}"/>
+            </attr>
+        </attr>
+    </attr>
 </thlogic>
