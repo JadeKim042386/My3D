@@ -10,7 +10,20 @@
 <body>
 <!--헤더-->
 <header id="header"></header>
-<main class="container w-75">
+<main class="container w-75" id="article-main">
+    <!--수정&삭제-->
+    <div class="row mb-3" id="article-buttons">
+        <div class="col">
+            <div class="d-flex justify-content-end">
+                <form id="delete-article">
+                    <div class="d-grid d-md-block">
+                        <a class="btn btn-success me-md-2" role="button" id="update-article">수정</a>
+                        <button class="btn btn-danger" type="submit">삭제</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!--닉네임&작성일시-->
     <div class="row mb-3">
         <div class="col">

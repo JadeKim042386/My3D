@@ -79,7 +79,7 @@ public class JpaRepositoryTest {
         @Test
         void saveArticle() {
             // Given
-            ArticleFile articleFile = Fixture.getArticleFile(10000L, "test.stp", "stp");
+            ArticleFile articleFile = Fixture.getArticleFile();
             Article article = Fixture.getArticle(articleFile, "title", "content", ArticleType.REQUEST_MODELING, null);
             long previousCount = articleRepository.count();
             long previousFileCount = articleFileRepository.count();
@@ -186,7 +186,7 @@ public class JpaRepositoryTest {
         void saveUserAccount() {
             // Given
             String userId = "joo2";
-            UserAccount userAccount = Fixture.getUserAccount(userId, "pw", "joo@gmail.com", "Joo", UserRole.USER);
+            UserAccount userAccount = Fixture.getUserAccount(userId, "pw", "joo@gmail.com", "Joo2", UserRole.USER);
             long previousCount = userAccountRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

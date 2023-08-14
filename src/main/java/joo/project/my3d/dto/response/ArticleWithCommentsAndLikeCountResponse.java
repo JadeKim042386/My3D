@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public record ArticleWithCommentsAndLikeCountResponse(
         Long id,
+        String userId,
         String nickname,
         ArticleFileResponse articleFileResponse,
         String title,
@@ -24,13 +25,14 @@ public record ArticleWithCommentsAndLikeCountResponse(
         int likeCount,
         LocalDateTime createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String nickname, ArticleFileResponse articleFileResponse, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, nickname, articleFileResponse, title, content, articleType, articleCategory, articleCommentResponses, likeCount, createdAt);
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String userId, String nickname, ArticleFileResponse articleFileResponse, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, userId, nickname, articleFileResponse, title, content, articleType, articleCategory, articleCommentResponses, likeCount, createdAt);
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
         return ArticleWithCommentsAndLikeCountResponse.of(
                 dto.id(),
+                dto.userAccountDto().userId(),
                 dto.userAccountDto().nickname(),
                 ArticleFileResponse.from(dto.articleFileDto()),
                 dto.title(),

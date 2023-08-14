@@ -2,15 +2,21 @@ package joo.project.my3d.service;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleFile;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
+import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -26,13 +33,20 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final UserAccountRepository userAccountRepository;
 
     public Page<ArticleDto> getArticles(Predicate predicate, Pageable pageable) {
 
         return articleRepository.findAll(predicate, pageable).map(ArticleDto::from);
     }
 
-    public ArticleWithCommentsAndLikeCountDto getArticle(Long articleId) {
+    public ArticleDto getArticle(Long articleId) {
+        return articleRepository.findById(articleId)
+                .map(ArticleDto::from)
+                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
+    }
+
+    public ArticleWithCommentsAndLikeCountDto getArticleWithComments(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentsAndLikeCountDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
@@ -49,25 +63,32 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(ArticleDto articleDto) {
-        //TODO: 작성자가 게시글을 수정할 수 있음
+    public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
-            Article article = articleRepository.getReferenceById(articleDto.id());
-            // title, content, articleType, articleCategory, articleFile
-            if (articleDto.title() != null) {
-                article.setTitle(articleDto.title());
-            }
-            if (articleDto.content() != null) {
-                article.setContent(articleDto.content());
-            }
-            if (articleDto.articleType() != null) {
-                article.setArticleType(articleDto.articleType());
-            }
-            if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
-                article.setArticleCategory(articleDto.articleCategory());
-            }
-            if (articleDto.articleFileDto() != null) {
-                article.setArticleFile(articleDto.articleFileDto().toEntity());
+            Article article = articleRepository.getReferenceById(articleId);
+            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId());
+            //작성자와 수정자가 같은지 확인
+            if (article.getUserAccount().equals(userAccount)) {
+                if (articleDto.title() != null) {
+                    article.setTitle(articleDto.title());
+                }
+                if (articleDto.content() != null) {
+                    article.setContent(articleDto.content());
+                }
+                if (articleDto.articleType() != null) {
+                    article.setArticleType(articleDto.articleType());
+                }
+                if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
+                    article.setArticleCategory(articleDto.articleCategory());
+                }
+                if (articleDto.articleFileDto() != null) {
+                    article.setArticleFile(articleDto.articleFileDto().toEntity());
+                }
+            } else {
+                log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
+                        article.getUserAccount().getUserId(),
+                        userAccount.getUserId());
+                throw new ArticleException(ErrorCode.ARTICLE_NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
             throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND);
@@ -82,5 +103,11 @@ public class ArticleService {
         articleCommentRepository.deleteByArticleId(articleId);
         articleLikeRepository.deleteByArticleId(articleId);
         articleRepository.deleteById(articleId);
+    }
+
+    public ArticleFileDto getArticleFile(Long articleId) {
+        return articleRepository.findById(articleId)
+                .map(article -> ArticleFileDto.from(article.getArticleFile()))
+                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
     }
 }

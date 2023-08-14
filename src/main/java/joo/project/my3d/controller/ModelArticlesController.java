@@ -6,7 +6,9 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.ArticleDto;
-import joo.project.my3d.dto.request.ArticleRequest;
+import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -83,7 +85,7 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
-        ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleService.getArticle(articleId));
+        ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleService.getArticleWithComments(articleId));
 
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
@@ -94,7 +96,7 @@ public class ModelArticlesController {
 
     @GetMapping("/form")
     public String articleForm(Model model) {
-        model.addAttribute("article", new ArticleRequest(null, null, null, null));
+        model.addAttribute("article", new ArticleFormResponse(null, null, null, null, null));
         model.addAttribute("formStatus", FormStatus.CREATE);
         model.addAttribute("categories", ArticleCategory.values());
         return "model_articles/form";
@@ -102,7 +104,7 @@ public class ModelArticlesController {
 
     @PostMapping("/form")
     public String postNewArticle(
-            @Validated @ModelAttribute("article") ArticleRequest articleRequest,
+            @Validated @ModelAttribute("article") ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
@@ -114,13 +116,48 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
 
-        articleFileService.saveArticleFile(articleRequest.file());
+        String savedFileName = articleFileService.saveArticleFile(articleFormRequest.file());
         articleService.saveArticle(
-                articleRequest.toDto(
+                articleFormRequest.toDto(
                         boardPrincipal.toDto(),
                         ArticleType.MODEL,
-                        0
+                        savedFileName
                 )
+        );
+        return "redirect:/model_articles";
+    }
+
+    @GetMapping("/form/{articleId}")
+    public String updateArticle(
+            @PathVariable Long articleId,
+            Model model
+    ) {
+        model.addAttribute("article", ArticleFormResponse.from(articleService.getArticle(articleId)));
+        model.addAttribute("formStatus", FormStatus.UPDATE);
+        model.addAttribute("categories", ArticleCategory.values());
+        return "model_articles/form";
+    }
+
+    @PostMapping("/form/{articleId}")
+    public String postUpdateArticle(
+            @PathVariable Long articleId,
+            @Validated @ModelAttribute("article") ArticleFormRequest articleFormRequest,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            log.warn("bindingResult={}", bindingResult);
+            model.addAttribute("formStatus", FormStatus.UPDATE);
+            model.addAttribute("categories", ArticleCategory.values());
+            return "model_articles/form";
+        }
+
+        ArticleFileDto articleFile = articleService.getArticleFile(articleId); //저장되어있는 파일
+        boolean isUpdated = articleFileService.updateArticleFile(articleFormRequest.file(), articleFile);
+        articleService.updateArticle(
+                articleId,
+                articleFormRequest.toDto(boardPrincipal.toDto(), articleFile.fileName(), isUpdated)
         );
         return "redirect:/model_articles";
     }
