@@ -5,7 +5,9 @@ import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.ArticleFileService;
@@ -60,7 +62,9 @@ class ModelArticlesControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("model_articles/index"))
                 .andExpect(model().attributeExists("articles"))
-                .andExpect(model().attributeExists("modelPath"));
+                .andExpect(model().attributeExists("modelPath"))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("paginationBarNumbers"));
 
         // Then
         then(articleService).should().getArticles(any(Predicate.class), any(Pageable.class));
@@ -80,19 +84,20 @@ class ModelArticlesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("model_articles/form"))
+                .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("formStatus"))
                 .andExpect(model().attributeExists("categories"));
 
         // Then
     }
 
-    @DisplayName("[POST] 게시글 추가")
+    @DisplayName("[POST] 게시글 추가 - 정상")
     @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addNewModelArticle() throws Exception {
         // Given
         byte[] file = Fixture.getMultipartFile().getBytes();
-        willDoNothing().given(articleFileService).saveArticleFile(any(MultipartFile.class));
+        given(articleFileService.saveArticleFile(any(MultipartFile.class))).willReturn("text.stl");
         willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
         // When
         mvc.perform(
@@ -203,7 +208,7 @@ class ModelArticlesControllerTest {
         // Given
         Long articleId = 1L;
         ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleService.getArticle(articleId)).willReturn(dto);
+        given(articleService.getArticleWithComments(articleId)).willReturn(dto);
         // When
         mvc.perform(
                         get("/model_articles/1")
@@ -216,6 +221,57 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("articleFile"));
 
         // Then
-        then(articleService).should().getArticle(articleId);
+        then(articleService).should().getArticleWithComments(articleId);
+    }
+
+    @DisplayName("[GET] 게시글 수정 페이지")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void updateModelArticle() throws Exception {
+        // Given
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
+        given(articleService.getArticle(anyLong())).willReturn(articleDto);
+        // When
+        mvc.perform(
+                        get("/model_articles/form/1")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("model_articles/form"))
+                .andExpect(model().attributeExists("article"))
+                .andExpect(model().attributeExists("formStatus"))
+                .andExpect(model().attributeExists("categories"));
+
+        // Then
+        then(articleService).should().getArticle(anyLong());
+    }
+
+    @DisplayName("[POST] 게시글 수정 - 정상")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void updateRequestModelArticle() throws Exception {
+        // Given
+        byte[] file = Fixture.getMultipartFile().getBytes();
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        given(articleService.getArticleFile(anyLong())).willReturn(articleFileDto);
+        given(articleFileService.updateArticleFile(any(MultipartFile.class), eq(articleFileDto))).willReturn(true);
+        willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form/1")
+                                .file("file", file)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("content", "content")
+                                .param("articleCategory", "MUSIC")
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/model_articles"))
+                .andExpect(redirectedUrl("/model_articles"));
+
+        // Then
+        then(articleService).should().getArticleFile(anyLong());
+        then(articleFileService).should().updateArticleFile(any(MultipartFile.class), any(ArticleFileDto.class));
+        then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
     }
 }

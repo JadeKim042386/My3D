@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public record ArticleResponse(
         Long id,
         String nickname,
-        ArticleFileResponse articleFileResponse,
+        ArticleFileResponse file,
         String title,
         String content,
         ArticleType articleType,
@@ -18,8 +18,8 @@ public record ArticleResponse(
         int likeCount,
         String createdAt
 ) {
-    public static ArticleResponse of(Long id, String nickname, ArticleFileResponse articleFileResponse, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, LocalDateTime createdAt) {
-        return new ArticleResponse(id, nickname, articleFileResponse, title, content, articleType, articleCategory, likeCount, LocalDateTimeUtils.passedTime(createdAt));
+    public static ArticleResponse of(Long id, String nickname, ArticleFileResponse file, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, LocalDateTime createdAt) {
+        return new ArticleResponse(id, nickname, file, title, content, articleType, articleCategory, likeCount, LocalDateTimeUtils.passedTime(createdAt));
     }
 
     public static ArticleResponse from(ArticleDto dto) {
