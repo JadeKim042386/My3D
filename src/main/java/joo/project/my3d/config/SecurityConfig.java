@@ -36,7 +36,11 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/model_articles/[0-9]+"
                         ).permitAll()
-                        .mvcMatchers("/model_articles/form").hasAnyRole("COMPANY", "ADMIN")
+                        .regexMatchers(
+                                "/model_articles/form",
+                                "/model_articles/form/[0-9]+",
+                                "/model_articles/[0-9]+/delete"
+                        ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling()

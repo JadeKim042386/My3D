@@ -65,8 +65,8 @@ public class ArticleService {
     @Transactional
     public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
-            Article article = articleRepository.getReferenceById(articleId);
-            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId());
+            Article article = articleRepository.getReferenceById(articleId); //작성자
+            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId()); //수정자
             //작성자와 수정자가 같은지 확인
             if (article.getUserAccount().equals(userAccount)) {
                 if (articleDto.title() != null) {
@@ -96,13 +96,15 @@ public class ArticleService {
     }
 
     @Transactional
-    public void deleteArticle(Long articleId) {
-        //TODO: 작성자 또는 Admin이 게시글을 삭제 할 수 있음
-
-        //게시글에 속한 댓글, 좋아요도 같이 삭제
-        articleCommentRepository.deleteByArticleId(articleId);
-        articleLikeRepository.deleteByArticleId(articleId);
-        articleRepository.deleteById(articleId);
+    public void deleteArticle(Long articleId, String userId) {
+        Article article = articleRepository.getReferenceById(articleId); //작성자
+        //작성자와 삭제를 요청한 유저가 같은지 확인
+        if (article.getUserAccount().getUserId().equals(userId)) {
+            //게시글에 속한 댓글, 좋아요도 같이 삭제
+            articleCommentRepository.deleteByArticleId(articleId);
+            articleLikeRepository.deleteByArticleId(articleId);
+            articleRepository.delete(article);
+        }
     }
 
     public ArticleFileDto getArticleFile(Long articleId) {

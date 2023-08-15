@@ -5,7 +5,7 @@
     <!--수정&삭제-->
     <attr sel="#article-main" th:object="${article}">
         <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{userId} == ${#authentication.name}">
-            <attr sel="#delete-article" th:method="post">
+            <attr sel="#delete-article" th:action="'/model_articles/' + *{id} + '/delete'" th:method="post">
                 <attr sel="#update-article" th:href="@{'/model_articles/form/' + *{id}}"/>
             </attr>
         </attr>

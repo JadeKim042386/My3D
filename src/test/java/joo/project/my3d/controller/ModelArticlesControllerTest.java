@@ -7,7 +7,6 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.ArticleFileService;
@@ -33,8 +32,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("View 컨트롤러 - 게시글")
@@ -273,5 +271,58 @@ class ModelArticlesControllerTest {
         then(articleService).should().getArticleFile(anyLong());
         then(articleFileService).should().updateArticleFile(any(MultipartFile.class), any(ArticleFileDto.class));
         then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
+    }
+
+    @DisplayName("[POST] 게시글 수정 - 권한이 없는 User가 요청")
+    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void updateRequestModelArticleByUser() throws Exception {
+        // Given
+        byte[] file = Fixture.getMultipartFile().getBytes();
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form/1")
+                                .file("file", file)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("content", "content")
+                                .param("articleCategory", "MUSIC")
+                )
+                .andExpect(status().isForbidden());
+
+        // Then
+    }
+
+    @DisplayName("[POST] 게시글 삭제 - 정상")
+    @WithUserDetails(value = "jooCompany", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void deleteModelArticle() throws Exception {
+        // Given
+        willDoNothing().given(articleService).deleteArticle(anyLong(), anyString());
+        // When
+        mvc.perform(
+                        post("/model_articles/1/delete")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                )
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/model_articles"))
+                .andExpect(redirectedUrl("/model_articles"));
+        // Then
+        then(articleService).should().deleteArticle(anyLong(), anyString());
+    }
+
+    @DisplayName("[POST] 게시글 삭제 - 권한이 없는 User가 요청")
+    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void deleteModelArticleByUser() throws Exception {
+        // Given
+
+        // When
+        mvc.perform(
+                        post("/model_articles/1/delete")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                )
+                .andExpect(status().isForbidden());
+        // Then
     }
 }
