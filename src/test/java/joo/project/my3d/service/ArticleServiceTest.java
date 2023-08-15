@@ -247,16 +247,20 @@ class ArticleServiceTest {
     @Test
     void deleteArticle() {
         // Given
-        Long articleId = 1L;
+        Article article = Fixture.getArticle();
+        Long articleId = article.getId();
+        String userId = "joo";
+        given(articleRepository.getReferenceById(articleId)).willReturn(article);
         willDoNothing().given(articleCommentRepository).deleteByArticleId(articleId);
         willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
-        willDoNothing().given(articleRepository).deleteById(articleId);
+        willDoNothing().given(articleRepository).delete(article);
         // When
-        articleService.deleteArticle(articleId);
+        articleService.deleteArticle(articleId, userId);
         // Then
+        then(articleRepository).should().getReferenceById(articleId);
         then(articleCommentRepository).should().deleteByArticleId(articleId);
         then(articleLikeRepository).should().deleteByArticleId(articleId);
-        then(articleRepository).should().deleteById(articleId);
+        then(articleRepository).should().delete(article);
     }
 
     @DisplayName("게시글 모델 파일 반환")
