@@ -5,10 +5,13 @@ import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleCommentDto;
+import joo.project.my3d.exception.CommentException;
+import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
+import joo.project.my3d.repository.UserAccountRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
@@ -32,9 +36,10 @@ import static org.mockito.BDDMockito.*;
 class ArticleCommentServiceTest {
     @InjectMocks private ArticleCommentService articleCommentService;
     @Mock private ArticleRepository articleRepository;
+    @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleCommentRepository articleCommentRepository;
 
-    @DisplayName("게시글 ID로 단일 댓글 조회")
+    @DisplayName("게시글 ID로 댓글 조회")
     @Test
     void getCommentWithArticleId() {
         // Given
@@ -56,14 +61,15 @@ class ArticleCommentServiceTest {
     void saveComment() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         ArticleComment articleComment = Fixture.getArticleComment("content");
-        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(article);
+        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
+        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().userId())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
+        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().userId());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
     }
 
@@ -77,7 +83,25 @@ class ArticleCommentServiceTest {
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
+        then(userAccountRepository).shouldHaveNoInteractions();
         then(articleCommentRepository).shouldHaveNoInteractions();
+    }
+
+    @DisplayName("대댓글 저장")
+    @Test
+    void saveChildComment() {
+        // Given
+        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content", 5L);
+        ArticleComment articleComment = Fixture.getArticleComment("content");
+        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
+        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().userId())).willReturn(articleComment.getUserAccount());
+        given(articleCommentRepository.getReferenceById(articleCommentDto.parentCommentId())).willReturn(articleComment);
+        // When
+        articleCommentService.saveComment(articleCommentDto);
+        // Then
+        then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
+        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().userId());
+        then(articleCommentRepository).should().getReferenceById(articleCommentDto.parentCommentId());
     }
 
     @DisplayName("댓글 수정")
@@ -107,13 +131,30 @@ class ArticleCommentServiceTest {
 
     @DisplayName("댓글 삭제")
     @Test
-    void deleteComment() {
+     void deleteComment() {
         // Given
         Long articleCommentId = 1L;
+        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
+        given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
         willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
         // When
-        articleCommentService.deleteComment(articleCommentId);
+        articleCommentService.deleteComment(articleCommentId, articleCommentDto.userAccountDto().userId());
         // Then
+        then(articleCommentRepository).should().getReferenceById(articleCommentId);
         then(articleCommentRepository).should().deleteById(articleCommentId);
+    }
+
+    @DisplayName("댓글 삭제 - 작성자와 삭제 요청 유저가 다름")
+    @Test
+    void deleteCommentNotWriter() {
+        // Given
+        Long articleCommentId = 1L;
+        given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
+        // When
+        assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, "a"))
+                .isInstanceOf(CommentException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.COMMENT_NOT_WRITER);
+        // Then
+        then(articleCommentRepository).should().getReferenceById(articleCommentId);
     }
 }

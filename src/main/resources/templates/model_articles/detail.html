@@ -6,6 +6,14 @@
     <title>My3D 게시글</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
+    <style>
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <!--헤더-->
@@ -17,7 +25,7 @@
             <div class="d-flex justify-content-end">
                 <form id="delete-article">
                     <div class="d-grid d-md-block">
-                        <a class="btn btn-success me-md-2" role="button" id="update-article">수정</a>
+                        <a class="update-article btn btn-success me-md-2" role="button">수정</a>
                         <button class="btn btn-danger" type="submit">삭제</button>
                     </div>
                 </form>
@@ -76,52 +84,92 @@
         </div>
     </div>
     <!--댓글 작성-->
-    <form class="row mb-5">
+    <form class="row mb-5 comment-form">
         <div class="mb-3">
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <textarea class="form-control comment-textbox" name="content" rows="3"></textarea>
         </div>
-        <div class="row justify-content-end">
-            <div class="col-sm-6 text-end">
+        <div class="row justify-content-end pe-0">
+            <div class="col-sm-6 text-end pe-0">
                 <button type="submit" class="btn btn-primary">작성</button>
             </div>
         </div>
     </form>
     <!--댓글 리스트-->
-    <div class="row">
+    <div class="row" id="article-comments">
         <div class="d-flex flex-start">
             <div class="flex-grow-1 flex-shrink-1">
                 <!--부모 댓글-->
-                <div>
+                <div id="parent-comment">
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="mb-1">
-                            Maria Smantha <span class="small">- 2 hours ago</span>
+                            <strong class="comment-nickname">Maria Smantha</strong> <span class="small comment-createdAt">- 2 hours ago</span>
                         </p>
-                        <a href="#" class="link-body-emphasis text-decoration-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z"/></svg>
-                            <span class="small"> 답글</span>
-                        </a>
                     </div>
-                    <p class="small mb-0">
+                    <p class="small mb-0 comment-content">
                         It is a long established fact that a reader will be distracted by
                         the readable content of a page.
                     </p>
-                </div>
-                <!--자식 댓글-->
-                <div class="border-start border-2">
-                    <div class="d-flex flex-start mt-4 ms-4">
-                        <div class="flex-grow-1 flex-shrink-1">
-                            <div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <p class="mb-1">
-                                        Simona Disa <span class="small">- 3 hours ago</span>
-                                    </p>
-                                </div>
-                                <p class="small mb-0">
-                                    letters, as opposed to using 'Content here, content here',
-                                    making it look like readable English.
-                                </p>
+                    <div class="row mb-3 article-comment-buttons">
+                        <div class="col">
+                            <div class="d-flex justify-content-end">
+                                <form class="delete-article-comment">
+                                    <div class="d-grid d-md-block">
+                                        <button class="btn btn-danger" type="submit">삭제</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
+                    </div>
+                    <!--자식 댓글-->
+                    <div id="child-comments">
+                        <div class="child-comment border-start border-2">
+                            <div class="d-flex flex-start mt-4 ms-4">
+                                <div class="flex-grow-1 flex-shrink-1">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-1">
+                                                <strong class="comment-nickname">Simona Disa</strong> <span class="small comment-createdAt">- 3 hours ago</span>
+                                            </p>
+                                        </div>
+                                        <p class="comment-content small mb-0">
+                                            letters, as opposed to using 'Content here, content here',
+                                            making it look like readable English.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3 article-comment-buttons">
+                                <div class="col">
+                                    <div class="d-flex justify-content-end">
+                                        <form class="delete-article-comment">
+                                            <div class="d-grid d-md-block">
+                                                <button class="btn btn-danger" type="submit">삭제</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--대댓글 작성 폼-->
+                    <div class="row text-end pe-4">
+                        <details class="mb-4 mt-4">
+                            <summary class="mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z"/></svg>
+                                <span class="small"> 답글</span>
+                            </summary>
+                            <form class="row mb-5 comment-form">
+                                <div class="mb-3">
+                                    <input type="hidden" class="parent-comment-id">
+                                    <textarea class="form-control comment-textbox" name="content" rows="3"></textarea>
+                                </div>
+                                <div class="row justify-content-end pe-0">
+                                    <div class="col-sm-6 text-end pe-0">
+                                        <button type="submit" class="btn btn-primary">작성</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </details>
                     </div>
                 </div>
             </div>

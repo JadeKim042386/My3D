@@ -35,7 +35,9 @@ public class SecurityConfig {
                         .regexMatchers(
                                 "/model_articles/[0-9]+",
                                 "/like/[0-9]+",
-                                "/like/[0-9]+/delete"
+                                "/like/[0-9]+/delete",
+                                "/comments/new",
+                                "/comments/[0-9]+/delete"
                         ).authenticated()
                         .regexMatchers(
                                 "/model_articles/form",

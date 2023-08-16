@@ -30,7 +30,12 @@ public class FixtureDto {
 
     public static ArticleCommentDto getArticleCommentDto(String content) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return ArticleCommentDto.of(1L, content, 1L, userAccountDto, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
+        return ArticleCommentDto.of(1L, content, 1L, null, userAccountDto, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
+    }
+
+    public static ArticleCommentDto getArticleCommentDto(String content, Long parentCommentId) {
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
     }
 
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {

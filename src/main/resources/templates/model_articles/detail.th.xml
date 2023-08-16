@@ -2,19 +2,46 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
-    <!--수정&삭제-->
+    <!--게시글 수정&삭제-->
     <attr sel="#article-main" th:object="${article}">
         <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{userId} == ${#authentication.name}">
             <attr sel="#delete-article" th:action="'/model_articles/' + *{id} + '/delete'" th:method="post">
-                <attr sel="#update-article" th:href="@{'/model_articles/form/' + *{id}}"/>
+                <attr sel=".update-article" th:href="@{'/model_articles/form/' + *{id}}"/>
             </attr>
         </attr>
-    </attr>
-    <!--좋아요-->
-    <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
-        <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
-        <attr sel="#addedLikeIcon" th:hidden="${!addedLike}"/>
-        <attr sel="#like" th:onclick="|location.href=${addedLike} ? '/like/' + *{id} + '/delete' : '/like/' + *{id}|"/>
-        <attr sel="#likeCount" th:text="*{likeCount}"/>
+        <!--좋아요-->
+        <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
+            <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
+            <attr sel="#addedLikeIcon" th:hidden="${!addedLike}"/>
+            <attr sel="#like" th:onclick="|location.href=${addedLike} ? '/like/' + *{id} + '/delete' : '/like/' + *{id}|"/>
+            <attr sel="#likeCount" th:text="*{likeCount}"/>
+        </attr>
+        <!--댓글 작성 폼-->
+        <attr sel=".comment-form" th:action="@{/comments/new(articleId=*{id})}" th:method="post"/>
+        <!--댓글-->
+        <attr sel="#article-comments" th:remove="all-but-first">
+            <!--부모 댓글-->
+            <attr sel="#parent-comment" th:each="articleComment : ${articleComments}">
+                <attr sel=".comment-nickname" th:text="${articleComment.nickname}"/>
+                <attr sel=".comment-createdAt" th:text="'- ' + ${articleComment.createdAt}"/>
+                <attr sel=".comment-content" th:text="${articleComment.content}"/>
+                <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${articleComment.userId} == ${#authentication.name}">
+                    <attr sel=".delete-article-comment" th:action="'/comments/' + ${articleComment.id} + '/delete?articleId=' + *{id}" th:method="post"/>
+                </attr>
+                <!--자식 댓글-->
+                <attr sel="#child-comments" th:if="${!articleComment.childComments.isEmpty}" th:remove="all-but-first">
+                    <attr sel=".child-comment" th:each="childComment : ${articleComment.childComments}">
+                        <attr sel=".comment-nickname" th:text="${childComment.nickname}"/>
+                        <attr sel=".comment-createdAt" th:text="'- ' + ${childComment.createdAt}"/>
+                        <attr sel=".comment-content" th:text="${childComment.content}"/>
+                        <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${childComment.userId} == ${#authentication.name}">
+                            <attr sel=".delete-article-comment" th:action="'/comments/' + ${childComment.id} + '/delete?articleId=' + *{id}" th:method="post"/>
+                        </attr>
+                    </attr>
+                </attr>
+                <!--부모 댓글이 있다면 부모 댓글 ID 추가-->
+                <attr sel=".parent-comment-id" th:name="parentCommentId" th:value="${articleComment.id}"/>
+            </attr>
+        </attr>
     </attr>
 </thlogic>
