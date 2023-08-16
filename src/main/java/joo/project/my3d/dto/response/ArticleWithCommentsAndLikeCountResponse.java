@@ -1,12 +1,10 @@
 package joo.project.my3d.dto.response;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleCommentDto;
-import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.utils.LocalDateTimeUtils;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -20,17 +18,17 @@ public record ArticleWithCommentsAndLikeCountResponse(
         Long id,
         String userId,
         String nickname,
-        ArticleFileResponse articleFileResponse,
+        ArticleFileResponse file,
         String title,
         String content,
         ArticleType articleType,
         ArticleCategory articleCategory,
         Set<ArticleCommentResponse> articleCommentResponses,
         int likeCount,
-        LocalDateTime createdAt
+        String createdAt
 ) {
     public static ArticleWithCommentsAndLikeCountResponse of(Long id, String userId, String nickname, ArticleFileResponse articleFileResponse, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, userId, nickname, articleFileResponse, title, content, articleType, articleCategory, articleCommentResponses, likeCount, createdAt);
+        return new ArticleWithCommentsAndLikeCountResponse(id, userId, nickname, articleFileResponse, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {

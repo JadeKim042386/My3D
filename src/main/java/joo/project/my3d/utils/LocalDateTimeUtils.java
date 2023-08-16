@@ -1,9 +1,18 @@
 package joo.project.my3d.utils;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class LocalDateTimeUtils {
+
+    /**
+     * 년-월-일
+     */
+    public static String format(final LocalDateTime localDateTime) {
+        DateTimeFormatter YYYY_MM_DD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return localDateTime.format(YYYY_MM_DD);
+    }
 
     /**
      * 게시글 작성한 시간으로부터 얼만큼의 시간이 지났는지를 계산하여 다음과 같이 반환

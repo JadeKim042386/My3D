@@ -95,8 +95,9 @@ public class ModelArticlesController {
 
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
-        model.addAttribute("articleFile", article.articleFileResponse());
+        model.addAttribute("articleFile", article.file());
         model.addAttribute("addedLike", articleLike.isPresent());
+        model.addAttribute("modelPath", modelPath);
 
         return "model_articles/detail";
     }

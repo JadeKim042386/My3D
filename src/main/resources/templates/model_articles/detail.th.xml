@@ -2,13 +2,22 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
-    <!--게시글 수정&삭제-->
+
     <attr sel="#article-main" th:object="${article}">
+        <!--게시글 수정&삭제-->
         <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{userId} == ${#authentication.name}">
             <attr sel="#delete-article" th:action="'/model_articles/' + *{id} + '/delete'" th:method="post">
                 <attr sel=".update-article" th:href="@{'/model_articles/form/' + *{id}}"/>
             </attr>
         </attr>
+        <!--닉네임&작성일시-->
+        <attr sel="#nickname" th:text="*{nickname}"/>
+        <attr sel="#created_at" th:text="*{createdAt}"/>
+        <!--모델 뷰-->
+        <attr sel="#model-view" th:model="${modelPath} + *{file.fileName}"/>
+        <!--제목&본문 내용-->
+        <attr sel="#title" th:text="*{title}"/>
+        <attr sel="#content" th:text="*{content}"/>
         <!--좋아요-->
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
             <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
