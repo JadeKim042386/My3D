@@ -2,6 +2,7 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
@@ -12,6 +13,7 @@ import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
@@ -24,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -43,6 +45,7 @@ public class ModelArticlesController {
     private final ArticleService articleService;
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
+    private final ArticleLikeRepository articleLikeRepository;
 
     @Value("${model.path}")
     private String modelPath;
@@ -84,13 +87,16 @@ public class ModelArticlesController {
     @GetMapping("/{articleId}")
     public String article(
             @PathVariable Long articleId,
-            Model model
+            Model model,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
+        Optional<ArticleLike> articleLike = articleLikeRepository.findByUserAccount_UserIdAndArticle_Id(boardPrincipal.username(), articleId);
         ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleService.getArticleWithComments(articleId));
 
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
         model.addAttribute("articleFile", article.articleFileResponse());
+        model.addAttribute("addedLike", articleLike.isPresent());
 
         return "model_articles/detail";
     }

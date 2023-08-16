@@ -4,8 +4,10 @@ import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -41,6 +43,11 @@ public class Fixture {
 
     public static ArticleLike getArticleLike() {
         UserAccount userAccount = Fixture.getUserAccount();
+        Article article = Fixture.getArticle();
+        return ArticleLike.of(userAccount, article);
+    }
+
+    public static ArticleLike getArticleLike(UserAccount userAccount) {
         Article article = Fixture.getArticle();
         return ArticleLike.of(userAccount, article);
     }
