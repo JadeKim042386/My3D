@@ -9,10 +9,13 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
     ARTICLE_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "모델 게시글은 카테고리 정보를 포함해야합니다."),
-    ARTICLE_NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 수정자가 일치하지 않습니다."),
+    ARTICLE_NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
     FILE_CANT_SAVE(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 저장 할 수 없습니다. 파일 경로를 다시 확인해주세요."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
-    FILE_NOT_VALID(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 파일입니다.")
+    FILE_NOT_VALID(HttpStatus.INTERNAL_SERVER_ERROR, "잘못된 파일입니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    DATA_FOR_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글에 필요한 정보를 찾을 수 없습니다."),
+    COMMENT_NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다.")
     ;
 
     private HttpStatus status;
