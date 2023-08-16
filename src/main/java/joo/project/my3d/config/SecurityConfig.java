@@ -27,15 +27,16 @@ public class SecurityConfig {
                                 "/models/**",
                                 "/node_modules/**"
                         ).permitAll()
-                        .mvcMatchers(
+                        .regexMatchers(
                                 HttpMethod.GET,
                                 "/",
                                 "/model_articles"
                         ).permitAll()
                         .regexMatchers(
-                                HttpMethod.GET,
-                                "/model_articles/[0-9]+"
-                        ).permitAll()
+                                "/model_articles/[0-9]+",
+                                "/like/[0-9]+",
+                                "/like/[0-9]+/delete"
+                        ).authenticated()
                         .regexMatchers(
                                 "/model_articles/form",
                                 "/model_articles/form/[0-9]+",

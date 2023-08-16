@@ -2,13 +2,17 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.config.TestSecurityConfig;
+import joo.project.my3d.domain.ArticleLike;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
@@ -28,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -44,6 +49,7 @@ class ModelArticlesControllerTest {
     @MockBean private ArticleService articleService;
     @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
+    @MockBean private ArticleLikeRepository articleLikeRepository;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser
@@ -200,12 +206,15 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("[GET] 게시글 페이지")
-    @WithMockUser
+    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void modelArticle() throws Exception {
         // Given
         Long articleId = 1L;
         ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        UserAccount userAccount = FixtureDto.getUserAccountDto("jooUser", UserRole.USER).toEntity();
+        ArticleLike articleLike = Fixture.getArticleLike(userAccount);
+        given(articleLikeRepository.findByUserAccount_UserIdAndArticle_Id(articleLike.getUserAccount().getUserId(), articleId)).willReturn(Optional.of(articleLike));
         given(articleService.getArticleWithComments(articleId)).willReturn(dto);
         // When
         mvc.perform(
@@ -216,9 +225,11 @@ class ModelArticlesControllerTest {
                 .andExpect(view().name("model_articles/detail"))
                 .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("articleComments"))
-                .andExpect(model().attributeExists("articleFile"));
+                .andExpect(model().attributeExists("articleFile"))
+                .andExpect(model().attributeExists("addedLike"));
 
         // Then
+        then(articleLikeRepository).should().findByUserAccount_UserIdAndArticle_Id(articleLike.getUserAccount().getUserId(), articleId);
         then(articleService).should().getArticleWithComments(articleId);
     }
 
