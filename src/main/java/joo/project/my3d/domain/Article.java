@@ -97,4 +97,12 @@ public class Article extends AuditingFields {
     public int hashCode() {
         return Objects.hash(this.getId());
     }
+
+    public void addLike() {
+        this.likeCount += 1;
+    }
+
+    public void deleteLike() {
+        this.likeCount -= 1;
+    }
 }
