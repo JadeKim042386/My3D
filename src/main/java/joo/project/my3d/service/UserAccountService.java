@@ -30,7 +30,8 @@ public class UserAccountService {
                             userPassword,
                             email,
                             nickname,
-                            userRole
+                            userRole,
+                            username
                     )
                 )
             );

@@ -5,8 +5,10 @@ import joo.project.my3d.dto.UserAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public record BoardPrincipal(
@@ -14,8 +16,9 @@ public record BoardPrincipal(
         String password,
         Collection<? extends GrantedAuthority> authorities,
         String email,
-        String nickname
-        ) implements UserDetails {
+        String nickname,
+        Map<String, Object> oAuth2Attributes
+        ) implements UserDetails, OAuth2User {
 
     public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole) {
 
@@ -24,7 +27,20 @@ public record BoardPrincipal(
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 email,
-                nickname
+                nickname,
+                Map.of()
+        );
+    }
+
+    public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole, Map<String, Object> oAuth2Attributes) {
+
+        return new BoardPrincipal(
+                username,
+                password,
+                Set.of(new SimpleGrantedAuthority(userRole.getName())),
+                email,
+                nickname,
+                oAuth2Attributes
         );
     }
 
@@ -45,6 +61,15 @@ public record BoardPrincipal(
               email,
               nickname
         );
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return oAuth2Attributes;
+    }
+    @Override
+    public String getName() {
+        return username;
     }
 
     @Override
