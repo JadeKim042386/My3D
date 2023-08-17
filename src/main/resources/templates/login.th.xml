@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#kakao-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/kakao}'|" />
+</thlogic>
