@@ -83,20 +83,17 @@ public class SecurityConfig {
         return userRequest -> {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
             KakaoOauth2Response kakaoResponse = KakaoOauth2Response.from(oAuth2User.getAttributes());
-            String registrationId = userRequest.getClientRegistration().getRegistrationId();
-            String providerId = String.valueOf(kakaoResponse.id());
-            String username = registrationId + "_" + providerId;
+            String email = kakaoResponse.email();
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
             //회원이 존재하지 않는다면 해당 회원을 저장
-            return userAccountService.searchUser(username)
+            return userAccountService.searchUser(email)
                     .map(BoardPrincipal::from)
                     .orElseGet(() ->
                             BoardPrincipal.from(
                                     userAccountService.saveUser(
-                                            username,
+                                            email,
                                             dummyPassword,
-                                            kakaoResponse.email(),
                                             kakaoResponse.nickname(),
                                             UserRole.USER
                                     )
@@ -107,10 +104,10 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserAccountService userAccountService) {
         //loadUserByUsername
-        return username -> userAccountService
-                .searchUser(username)
+        return email -> userAccountService
+                .searchUser(email)
                 .map(BoardPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email));
     }
 
     @Bean

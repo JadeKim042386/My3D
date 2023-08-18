@@ -11,5 +11,5 @@ public interface ArticleCommentRepository extends JpaRepository<ArticleComment, 
 
     void deleteByArticleId(Long articleId);
 
-    void deleteByUserAccount_UserId(String userId);
+    void deleteByUserAccount_Email(String email);
 }

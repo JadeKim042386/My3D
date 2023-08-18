@@ -12,33 +12,30 @@ import java.util.Map;
 import java.util.Set;
 
 public record BoardPrincipal(
-        String username,
+        String email,
         String password,
         Collection<? extends GrantedAuthority> authorities,
-        String email,
         String nickname,
         Map<String, Object> oAuth2Attributes
         ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole) {
 
         return new BoardPrincipal(
-                username,
+                email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
-                email,
                 nickname,
                 Map.of()
         );
     }
 
-    public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
-                username,
+                email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
-                email,
                 nickname,
                 oAuth2Attributes
         );
@@ -46,9 +43,8 @@ public record BoardPrincipal(
 
     public static BoardPrincipal from(UserAccountDto dto) {
         return BoardPrincipal.of(
-                dto.userId(),
-                dto.userPassword(),
                 dto.email(),
+                dto.userPassword(),
                 dto.nickname(),
                 dto.userRole()
         );
@@ -56,9 +52,8 @@ public record BoardPrincipal(
 
     public UserAccountDto toDto() {
         return UserAccountDto.of(
-              username,
-              password,
               email,
+              password,
               nickname
         );
     }
@@ -69,7 +64,7 @@ public record BoardPrincipal(
     }
     @Override
     public String getName() {
-        return username;
+        return email;
     }
 
     @Override
@@ -83,7 +78,7 @@ public record BoardPrincipal(
     }
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

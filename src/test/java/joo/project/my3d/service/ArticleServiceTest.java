@@ -36,6 +36,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
 
 @ActiveProfiles("test")
@@ -200,7 +201,7 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount userAccount = Fixture.getUserAccount();
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().userId())).willReturn(userAccount);
+        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().email())).willReturn(userAccount);
         // When
         articleService.updateArticle(1L, articleDto);
         // Then
@@ -208,7 +209,7 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("title", articleDto.title())
                 .hasFieldOrPropertyWithValue("content", articleDto.content());
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().userId());
+        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().email());
     }
 
     @DisplayName("[예외-없는 게시글] 게시글 수정")
@@ -231,16 +232,16 @@ class ArticleServiceTest {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        UserAccount wrongUserAccount = Fixture.getUserAccount("a", "pw", "a@gmail.com", "A", UserRole.COMPANY);
+        UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", UserRole.COMPANY);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().userId())).willReturn(wrongUserAccount);
+        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_WRITER);
         // Then
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().userId());
+        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().email());
     }
 
     @DisplayName("게시글 삭제")
@@ -248,16 +249,16 @@ class ArticleServiceTest {
     void deleteArticle() {
         // Given
         Article article = Fixture.getArticle();
-        Long articleId = article.getId();
-        String userId = "joo";
-        given(articleRepository.getReferenceById(articleId)).willReturn(article);
+        Long articleId = 1L;
+        String email = "jk042386@gmail.com";
+        given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willDoNothing().given(articleCommentRepository).deleteByArticleId(articleId);
         willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
         willDoNothing().given(articleRepository).delete(article);
         // When
-        articleService.deleteArticle(articleId, userId);
+        articleService.deleteArticle(articleId, email);
         // Then
-        then(articleRepository).should().getReferenceById(articleId);
+        then(articleRepository).should().getReferenceById(anyLong());
         then(articleCommentRepository).should().deleteByArticleId(articleId);
         then(articleLikeRepository).should().deleteByArticleId(articleId);
         then(articleRepository).should().delete(article);
@@ -281,7 +282,6 @@ class ArticleServiceTest {
     void getArticleFileNotExist() {
         // Given
         Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findById(articleId)).willReturn(Optional.empty());
         // When
         assertThatThrownBy(() -> articleService.getArticleFile(articleId))

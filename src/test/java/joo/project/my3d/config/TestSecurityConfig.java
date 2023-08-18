@@ -26,15 +26,14 @@ public class TestSecurityConfig {
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER)));
         given(userAccountService.searchUser("jooAdmin"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN)));
-        given(userAccountService.saveUser(anyString(), anyString(), anyString(), anyString(), any(UserRole.class)))
+        given(userAccountService.saveUser(anyString(), anyString(), anyString(), any(UserRole.class)))
                 .willReturn(createUserAccountDto());
     }
 
     private UserAccountDto createUserAccountDto() {
         return UserAccountDto.of(
-                "jooTest",
-                "pw",
                 "joo-test@gmail.com",
+                "pw",
                 "joo-test",
                 UserRole.COMPANY
         );

@@ -66,7 +66,7 @@ public class ArticleService {
     public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
             Article article = articleRepository.getReferenceById(articleId); //작성자
-            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId()); //수정자
+            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().email()); //수정자
             //작성자와 수정자가 같은지 확인
             if (article.getUserAccount().equals(userAccount)) {
                 if (articleDto.title() != null) {
@@ -86,8 +86,8 @@ public class ArticleService {
                 }
             } else {
                 log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
-                        article.getUserAccount().getUserId(),
-                        userAccount.getUserId());
+                        article.getUserAccount().getEmail(),
+                        userAccount.getEmail());
                 throw new ArticleException(ErrorCode.ARTICLE_NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
@@ -96,10 +96,10 @@ public class ArticleService {
     }
 
     @Transactional
-    public void deleteArticle(Long articleId, String userId) {
+    public void deleteArticle(Long articleId, String email) {
         Article article = articleRepository.getReferenceById(articleId); //작성자
         //작성자와 삭제를 요청한 유저가 같은지 확인
-        if (article.getUserAccount().getUserId().equals(userId)) {
+        if (article.getUserAccount().getEmail().equals(email)) {
             //게시글에 속한 댓글, 좋아요도 같이 삭제
             articleCommentRepository.deleteByArticleId(articleId);
             articleLikeRepository.deleteByArticleId(articleId);

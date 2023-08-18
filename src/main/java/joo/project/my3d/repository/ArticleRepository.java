@@ -30,5 +30,5 @@ public interface ArticleRepository extends
 
     Page<Article> findByArticleCategory(ArticleCategory articleCategory, Pageable pageable);
 
-    List<Article> findAllByUserAccount_UserId(String userId);
+    List<Article> findAllByUserAccount_Email(String email);
 }

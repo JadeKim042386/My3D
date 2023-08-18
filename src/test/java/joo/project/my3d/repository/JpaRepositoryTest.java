@@ -174,9 +174,9 @@ public class JpaRepositoryTest {
         @Test
         void getUserAccount() {
             // Given
-            String userId = "joo";
+            String email = "jk042386@gmail.com";
             // When
-            Optional<UserAccount> userAccount = userAccountRepository.findById(userId);
+            Optional<UserAccount> userAccount = userAccountRepository.findById(email);
             // Then
             assertThat(userAccount).isNotNull();
         }
@@ -185,8 +185,8 @@ public class JpaRepositoryTest {
         @Test
         void saveUserAccount() {
             // Given
-            String userId = "joo2";
-            UserAccount userAccount = Fixture.getUserAccount(userId, "pw", "joo@gmail.com", "Joo2", UserRole.USER);
+            String email = "joo2@gmail.com";
+            UserAccount userAccount = Fixture.getUserAccount(email, "pw", "Joo2", UserRole.USER);
             long previousCount = userAccountRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -196,23 +196,23 @@ public class JpaRepositoryTest {
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
             assertThat(savedUserAccount)
-                    .hasFieldOrPropertyWithValue("userId", userId)
-                    .hasNoNullFieldsOrProperties();
+                    .hasFieldOrPropertyWithValue("email", email)
+                    .hasNoNullFieldsOrPropertiesExcept("phone", "address");
         }
 
         @DisplayName("유저 계정 update")
         @Test
         void updateUserAccount() {
             // Given
-            String userId = "joo";
-            String modified_email = "jk@gmail.com";
-            UserAccount userAccount = userAccountRepository.getReferenceById(userId);
-            userAccount.setEmail(modified_email);
+            String email = "jk042386@gmail.com";
+            String modified_phone = "01043214321";
+            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            userAccount.setPhone(modified_phone);
             LocalDateTime previousModifiedAt = userAccount.getModifiedAt();
             // When
             userAccountRepository.saveAndFlush(userAccount);
             // Then
-            assertThat(userAccount).hasFieldOrPropertyWithValue("email", modified_email);
+            assertThat(userAccount).hasFieldOrPropertyWithValue("phone", modified_phone);
             assertThat(userAccount.getModifiedBy()).isEqualTo(userAccount.getCreatedBy());
             assertThat(userAccount.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
@@ -221,7 +221,7 @@ public class JpaRepositoryTest {
         @Test
         void deleteUsrAccount() {
             // Given
-            String userId = "joo";
+            String email = "jk042386@gmail.com";
             long previousCount = userAccountRepository.count();
             long previousArticleCount = articleRepository.count();
             long previousArticleCommentCount = articleCommentRepository.count();
@@ -231,19 +231,19 @@ public class JpaRepositoryTest {
             log.info("previousArticleCommentCount: {}", previousArticleCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
-            articleRepository.findAllByUserAccount_UserId(userId)
+            articleRepository.findAllByUserAccount_Email(email)
                     .forEach(article -> {
                         articleCommentRepository.deleteByArticleId(article.getId());
-                        articleCommentRepository.deleteByUserAccount_UserId(userId);
+                        articleCommentRepository.deleteByUserAccount_Email(email);
                         articleLikeRepository.deleteByArticleId(article.getId());
-                        articleLikeRepository.deleteByUserAccount_UserId(userId);
+                        articleLikeRepository.deleteByUserAccount_Email(email);
                         articleRepository.deleteById(article.getId());
                     });
-            userAccountRepository.deleteById(userId);
+            userAccountRepository.deleteById(email);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
             assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 6);
-            assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 8);
+            assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 9); //부모 + 자식 댓글 + 게시글
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 3);
         }
     }
@@ -286,7 +286,8 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleComment() {
             // Given
-            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById("joo").get(), articleRepository.findById(1L).get(), "content");
+            String email = "jk042386@gmail.com";
+            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById(email).get(), articleRepository.findById(1L).get(), "content");
             long previousCount = articleCommentRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -327,7 +328,7 @@ public class JpaRepositoryTest {
             // When
             articleCommentRepository.deleteById(articleCommentId);
             // Then
-            assertThat(articleCommentRepository.count()).isEqualTo(previousCount - 1);
+            assertThat(articleCommentRepository.count()).isEqualTo(previousCount - 2); //부모 + 자식 댓글
         }
     }
 
@@ -369,7 +370,8 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleLike() {
             // Given
-            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById("joo").get(), articleRepository.findById(1L).get());
+            String email = "jk042386@gmail.com";
+            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById(email).get(), articleRepository.findById(1L).get());
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

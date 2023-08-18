@@ -15,7 +15,6 @@ import java.util.Set;
 @Table(
         name = "user_account",
         indexes = {
-                @Index(columnList = "userId"),
                 @Index(columnList = "email", unique = true),
                 @Index(columnList = "nickname", unique = true)
         }
@@ -23,8 +22,8 @@ import java.util.Set;
 @Entity
 public class UserAccount extends AuditingFields {
     @Id
-    @Column(length = 50)
-    private String userId;
+    @Column(length = 100)
+    private String email;
 
     @Setter
     @Column(nullable = false)
@@ -32,11 +31,16 @@ public class UserAccount extends AuditingFields {
 
     @Setter
     @Column(nullable = false)
-    private String email;
+    private String nickname;
 
     @Setter
-    @Column(nullable = false)
-    private String nickname;
+    @Column(length = 11)
+    private String phone;
+
+    @Setter
+    @Column
+    @Embedded
+    private Address address;
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -60,33 +64,46 @@ public class UserAccount extends AuditingFields {
     protected UserAccount() {
     }
 
-    private UserAccount(String userId, String userPassword, String email, String nickname, UserRole userRole, String createdBy) {
-        this.userId = userId;
-        this.userPassword = userPassword;
+    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, String createdBy) {
         this.email = email;
+        this.userPassword = userPassword;
         this.nickname = nickname;
+        this.phone = phone;
+        this.address = address;
         this.userRole = userRole;
         this.createdBy = createdBy;
         this.modifiedBy = createdBy;
     }
 
-    public static UserAccount of(String userId, String userPassword, String email, String nickname, UserRole userRole) {
-        return new UserAccount(userId, userPassword, email, nickname, userRole, null);
+    public static UserAccount of(String email, String userPassword, String nickname, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, null, null, userRole, null);
     }
 
-    public static UserAccount of(String userId, String userPassword, String email, String nickname, UserRole userRole, String createdBy) {
-        return new UserAccount(userId, userPassword, email, nickname, userRole, createdBy);
+    public static UserAccount of(String email, String userPassword, String nickname, Address address, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, null, address, userRole, null);
+    }
+
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, phone, null, userRole, null);
+    }
+
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, phone, address, userRole, null);
+    }
+
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, phone, address, userRole, createdBy);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserAccount that)) return false;
-        return this.getUserId() != null && Objects.equals(this.getUserId(), that.getUserId());
+        return this.getEmail() != null && Objects.equals(this.getEmail(), that.getEmail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getUserId());
+        return Objects.hash(this.getEmail());
     }
 }

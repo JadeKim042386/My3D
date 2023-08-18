@@ -21,7 +21,7 @@ public class ArticleLike extends AuditingFields {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "email")
     private UserAccount userAccount;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

@@ -90,7 +90,7 @@ public class ModelArticlesController {
             Model model,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        Optional<ArticleLike> articleLike = articleLikeRepository.findByUserAccount_UserIdAndArticle_Id(boardPrincipal.username(), articleId);
+        Optional<ArticleLike> articleLike = articleLikeRepository.findByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
         ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleService.getArticleWithComments(articleId));
 
         model.addAttribute("article", article);
@@ -175,7 +175,7 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleService.deleteArticle(articleId, boardPrincipal.username());
+        articleService.deleteArticle(articleId, boardPrincipal.email());
 
         return "redirect:/model_articles";
     }
