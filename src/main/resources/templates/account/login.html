@@ -6,10 +6,14 @@
   <meta name="description" content="">
   <meta name="author" content="Joo">
   <title>로그인</title>
+  <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/oAuth-Buttons/css/oauth-buttons.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
+  <!--헤더-->
+  <header id="header"></header>
+  <!--로그인-->
   <section class="vh-100">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -18,6 +22,20 @@
             <div class="card-body p-5 text-center">
 
               <h3 class="mb-5">로그인</h3>
+
+              <!--login form-->
+              <div class="form-outline mb-4">
+                <input type="text" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
+              </div>
+              <div id="login-error">
+                <p class="field-error"> 이메일을 다시 입력해주세요.</p>
+              </div>
+
+              <div class="d-grid gap-2 mx-auto">
+                <button id="login" class="btn btn-dark btn-lg btn-block" type="submit">이메일로 시작하기</button>
+              </div>
+
+              <hr class="my-4">
 
               <!--oauth login form-->
               <div class="row d-flex justify-content-center">
@@ -46,12 +64,21 @@
                   </div>
                 </button>
               </div>
+
+              <hr class="my-4">
+
+              <!--비밀번호 찾기-->
+              <a href="#" class="link-body-emphasis text-decoration-none me-5"><strong>비밀번호 찾기</strong></a>
+              <a href="#" class="link-body-emphasis text-decoration-none"><strong>회원가입</strong></a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!--푸터-->
+  <footer id="footer"></footer>
+  <!--스크립트-->
   <script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
 </body>
 </html>
