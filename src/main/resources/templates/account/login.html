@@ -24,16 +24,15 @@
               <h3 class="mb-5">로그인</h3>
 
               <!--login form-->
-              <div class="form-outline mb-4">
-                <input type="text" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
-              </div>
-              <div id="login-error">
-                <p class="field-error"> 이메일을 다시 입력해주세요.</p>
-              </div>
-
-              <div class="d-grid gap-2 mx-auto">
-                <button id="login" class="btn btn-dark btn-lg btn-block" type="submit">이메일로 시작하기</button>
-              </div>
+              <form id="login">
+                <div class="form-outline mb-4">
+                  <input type="email" name="email" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
+                </div>
+                <p id="login-error" class="field-error"></p>
+                <div class="d-grid gap-2 mx-auto">
+                  <button class="btn btn-dark btn-lg btn-block" type="submit">이메일로 시작하기</button>
+                </div>
+              </form>
 
               <hr class="my-4">
 
@@ -68,17 +67,18 @@
               <hr class="my-4">
 
               <!--비밀번호 찾기-->
-              <a href="#" class="link-body-emphasis text-decoration-none me-5"><strong>비밀번호 찾기</strong></a>
-              <a href="#" class="link-body-emphasis text-decoration-none"><strong>회원가입</strong></a>
+              <a id="find-pass" href="#" class="link-body-emphasis text-decoration-none me-5"><strong>비밀번호 찾기</strong></a>
+              <!--회원가입 (회원 유형 페이지로 이동)-->
+              <a id="sign-up" href="#" class="link-body-emphasis text-decoration-none"><strong>회원가입</strong></a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  <!--푸터-->
-  <footer id="footer"></footer>
-  <!--스크립트-->
-  <script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
 </body>
+<!--푸터-->
+<footer id="footer"></footer>
+<!--스크립트-->
+<script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
 </html>
