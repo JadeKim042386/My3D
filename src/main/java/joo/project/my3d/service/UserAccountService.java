@@ -17,21 +17,21 @@ public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
 
-    public Optional<UserAccountDto> searchUser(String userId) {
-        return userAccountRepository.findById(userId).map(UserAccountDto::from);
+    public Optional<UserAccountDto> searchUser(String email) {
+        return userAccountRepository.findById(email).map(UserAccountDto::from);
     }
 
     @Transactional
-    public UserAccountDto saveUser(String username, String userPassword, String email, String nickname, UserRole userRole) {
+    public UserAccountDto saveUser(String email, String userPassword, String nickname, UserRole userRole, boolean signUp) {
         return UserAccountDto.from(
                 userAccountRepository.save(
                     UserAccount.of(
-                            username,
-                            userPassword,
                             email,
+                            userPassword,
                             nickname,
+                            signUp,
                             userRole,
-                            username
+                            email
                     )
                 )
             );

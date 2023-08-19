@@ -6,18 +6,18 @@
     <attr sel="#models" th:href="@{/model_articles}" th:method="get"/>
     <attr sel="#request-modeling" th:href="@{#}" th:method="get"/>
     <!--로그인-->
-    <attr sel="#username"
+    <attr sel="#nickname"
           sec:authorize="isAuthenticated()"
           sec:authentication="principal.nickname"
     />
     <attr sel="#login"
           sec:authorize="!isAuthenticated()"
-          th:href="@{/login}"
+          th:href="@{/account/login}"
           th:method="get"
     />
     <attr sel="#logout"
           sec:authorize="isAuthenticated()"
-          th:href="@{/logout}"
+          th:href="@{/account/logout}"
     />
   </attr>
 </thlogic>

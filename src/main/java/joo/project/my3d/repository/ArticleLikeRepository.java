@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
     void deleteByArticleId(Long articleId);
-    void deleteByUserAccount_UserId(String userId);
+    void deleteByUserAccount_Email(String email);
 
-    Optional<ArticleLike> findByUserAccount_UserIdAndArticle_Id(String username, Long articleId);
+    Optional<ArticleLike> findByUserAccount_EmailAndArticle_Id(String email, Long articleId);
 }

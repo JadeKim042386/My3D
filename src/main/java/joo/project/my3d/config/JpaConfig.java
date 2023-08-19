@@ -22,6 +22,6 @@ public class JpaConfig {
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getPrincipal)
                 .map(BoardPrincipal.class::cast)
-                .map(BoardPrincipal::username);
+                .map(BoardPrincipal::email);
     }
 }

@@ -1,15 +1,18 @@
 ﻿CREATE TABLE `user_account` (
-	`user_id`	varchar(50)	NOT NULL,
 	`email`	varchar(100)	NOT NULL,
 	`user_password`	varchar(255)	NOT NULL,
 	`nickname`	varchar(100)	NOT NULL,
+    `phone`	varchar(11) NULL,
+    `city` varchar(50) NULL,
+    `street` varchar(100) NULL,
+    `zipcode` varchar(10) NULL,
+    `sign_up` boolean DEFAULT false NOT NULL,
 	`user_role` varchar(10) NOT NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
-	PRIMARY KEY (`user_id`),
-    UNIQUE (`email`),
+	PRIMARY KEY (`email`),
     UNIQUE (`nickname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
@@ -29,7 +32,7 @@ CREATE TABLE `article_file` (
 
 CREATE TABLE `article` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
-	`user_id`   varchar(50)	NOT NULL,
+	`email`   varchar(50)	NOT NULL,
     `article_file_id`   bigint  NOT NULL,
 	`title`	varchar(255)	NOT NULL,
 	`content`	varchar(255)	NOT NULL,
@@ -41,13 +44,13 @@ CREATE TABLE `article` (
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
+    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`),
     FOREIGN KEY (`article_file_id`) REFERENCES `article_file` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='게시글';
 
 CREATE TABLE `article_comment` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
-    `user_id`   varchar(50)	NOT NULL,
+    `email`   varchar(50)	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`content`	varchar(255)	NOT NULL,
 	`parent_comment_id`	bigint	NULL,
@@ -56,19 +59,19 @@ CREATE TABLE `article_comment` (
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
+    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='댓글';
 
 CREATE TABLE `article_like` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
 	`article_id`	bigint	NOT NULL,
-	`user_id`	varchar(50)	NOT NULL,
+	`email`	varchar(50)	NOT NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`),
+    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='좋아요';

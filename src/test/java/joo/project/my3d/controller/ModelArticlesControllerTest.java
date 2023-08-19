@@ -212,9 +212,9 @@ class ModelArticlesControllerTest {
         // Given
         Long articleId = 1L;
         ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        UserAccount userAccount = FixtureDto.getUserAccountDto("jooUser", UserRole.USER).toEntity();
+        UserAccount userAccount = FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true).toEntity();
         ArticleLike articleLike = Fixture.getArticleLike(userAccount);
-        given(articleLikeRepository.findByUserAccount_UserIdAndArticle_Id(articleLike.getUserAccount().getUserId(), articleId)).willReturn(Optional.of(articleLike));
+        given(articleLikeRepository.findByUserAccount_EmailAndArticle_Id(articleLike.getUserAccount().getEmail(), articleId)).willReturn(Optional.of(articleLike));
         given(articleService.getArticleWithComments(articleId)).willReturn(dto);
         // When
         mvc.perform(
@@ -229,7 +229,7 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("addedLike"));
 
         // Then
-        then(articleLikeRepository).should().findByUserAccount_UserIdAndArticle_Id(articleLike.getUserAccount().getUserId(), articleId);
+        then(articleLikeRepository).should().findByUserAccount_EmailAndArticle_Id(articleLike.getUserAccount().getEmail(), articleId);
         then(articleService).should().getArticleWithComments(articleId);
     }
 

@@ -52,12 +52,12 @@ public class Fixture {
         return ArticleLike.of(userAccount, article);
     }
 
-    public static UserAccount getUserAccount(String userId, String userPassword, String email, String nickname, UserRole userRole) {
-        return UserAccount.of(userId, userPassword, email, nickname, userRole);
+    public static UserAccount getUserAccount(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
+        return UserAccount.of(email, userPassword, nickname, null, null, signUp, userRole);
     }
 
     public static UserAccount getUserAccount() {
-        return Fixture.getUserAccount("joo", "pw", "joo@gmail.com", "Joo", UserRole.USER);
+        return Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
     }
 
     public static ArticleFile getArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension) {

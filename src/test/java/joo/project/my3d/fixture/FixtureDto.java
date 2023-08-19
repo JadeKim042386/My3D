@@ -11,11 +11,11 @@ import java.util.Set;
 public class FixtureDto {
 
     public static UserAccountDto getUserAccountDto() {
-        return UserAccountDto.of("joo", "pw",  "joo@gmail.com", "Joo", UserRole.USER);
+        return UserAccountDto.of("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
     }
 
-    public static UserAccountDto getUserAccountDto(String userId, UserRole userRole) {
-        return UserAccountDto.of(userId, "pw",  userId + "@gmail.com", userId, userRole);
+    public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole, boolean signUp) {
+        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, signUp, userRole);
     }
 
     public static ArticleFileDto getArticleFileDto() {
@@ -25,17 +25,17 @@ public class FixtureDto {
     public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        return ArticleDto.of(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, 1, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
+        return ArticleDto.of(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, 1, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return ArticleCommentDto.of(1L, content, 1L, null, userAccountDto, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
+        return ArticleCommentDto.of(1L, content, 1L, null, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content, Long parentCommentId) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.userId(), LocalDateTime.now(), userAccountDto.userId());
+        return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
@@ -52,9 +52,9 @@ public class FixtureDto {
                 Set.of(),
                 2,
                 LocalDateTime.now(),
-                userAccountDto.userId(),
+                userAccountDto.email(),
                 LocalDateTime.now(),
-                userAccountDto.userId()
+                userAccountDto.email()
         );
     }
 }

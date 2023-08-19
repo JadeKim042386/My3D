@@ -21,7 +21,7 @@ public class ArticleLikeController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleLikeService.addArticleLike(articleId, boardPrincipal.username());
+        articleLikeService.addArticleLike(articleId, boardPrincipal.email());
 
         return "redirect:/model_articles/" + articleId;
     }

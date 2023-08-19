@@ -63,13 +63,13 @@ class ArticleCommentServiceTest {
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
         ArticleComment articleComment = Fixture.getArticleComment("content");
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().userId())).willReturn(articleComment.getUserAccount());
+        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().userId());
+        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().email());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
     }
 
@@ -94,13 +94,13 @@ class ArticleCommentServiceTest {
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content", 5L);
         ArticleComment articleComment = Fixture.getArticleComment("content");
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().userId())).willReturn(articleComment.getUserAccount());
+        given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.getReferenceById(articleCommentDto.parentCommentId())).willReturn(articleComment);
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().userId());
+        then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().email());
         then(articleCommentRepository).should().getReferenceById(articleCommentDto.parentCommentId());
     }
 
@@ -138,7 +138,7 @@ class ArticleCommentServiceTest {
         given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
         willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
         // When
-        articleCommentService.deleteComment(articleCommentId, articleCommentDto.userAccountDto().userId());
+        articleCommentService.deleteComment(articleCommentId, articleCommentDto.userAccountDto().email());
         // Then
         then(articleCommentRepository).should().getReferenceById(articleCommentId);
         then(articleCommentRepository).should().deleteById(articleCommentId);

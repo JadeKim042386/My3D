@@ -2,5 +2,13 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <!--이메일로 시작하기-->
+    <attr sel="#login" th:action="@{/account/login}" th:method="post"/>
+    <attr sel="#login-error" th:if="${param.error}" th:text="|이메일을 다시 입력해주세요.|"/>
+    <!--OAuth 로그인-->
     <attr sel="#kakao-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/kakao}'|" />
+    <!--비밀번호 찾기-->
+    <attr sel="#find-pass" th:href="@{/account/find_pass}"/>
+    <!--회원가입 (회원 유형 페이지로 이동)-->
+    <attr sel="#sign-up" th:href="@{/account/type}"/>
 </thlogic>

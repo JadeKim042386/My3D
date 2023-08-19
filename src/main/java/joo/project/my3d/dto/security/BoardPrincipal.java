@@ -12,54 +12,54 @@ import java.util.Map;
 import java.util.Set;
 
 public record BoardPrincipal(
-        String username,
+        String email,
         String password,
         Collection<? extends GrantedAuthority> authorities,
-        String email,
         String nickname,
+        boolean signUp, //회원가입 여부
         Map<String, Object> oAuth2Attributes
         ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp) {
 
         return new BoardPrincipal(
-                username,
+                email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
-                email,
                 nickname,
+                signUp,
                 Map.of()
         );
     }
 
-    public static BoardPrincipal of(String username, String password, String email, String nickname, UserRole userRole, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
-                username,
+                email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
-                email,
                 nickname,
+                signUp,
                 oAuth2Attributes
         );
     }
 
     public static BoardPrincipal from(UserAccountDto dto) {
         return BoardPrincipal.of(
-                dto.userId(),
-                dto.userPassword(),
                 dto.email(),
+                dto.userPassword(),
                 dto.nickname(),
-                dto.userRole()
+                dto.userRole(),
+                dto.signUp()
         );
     }
 
     public UserAccountDto toDto() {
         return UserAccountDto.of(
-              username,
-              password,
-              email,
-              nickname
+                email,
+                password,
+                nickname,
+                signUp
         );
     }
 
@@ -69,7 +69,7 @@ public record BoardPrincipal(
     }
     @Override
     public String getName() {
-        return username;
+        return email;
     }
 
     @Override
@@ -83,7 +83,7 @@ public record BoardPrincipal(
     }
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
@@ -101,5 +101,9 @@ public record BoardPrincipal(
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean notSignUp() {
+        return !signUp;
     }
 }

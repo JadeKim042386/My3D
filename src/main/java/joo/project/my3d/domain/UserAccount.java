@@ -15,7 +15,6 @@ import java.util.Set;
 @Table(
         name = "user_account",
         indexes = {
-                @Index(columnList = "userId"),
                 @Index(columnList = "email", unique = true),
                 @Index(columnList = "nickname", unique = true)
         }
@@ -23,8 +22,8 @@ import java.util.Set;
 @Entity
 public class UserAccount extends AuditingFields {
     @Id
-    @Column(length = 50)
-    private String userId;
+    @Column(length = 100)
+    private String email;
 
     @Setter
     @Column(nullable = false)
@@ -32,11 +31,20 @@ public class UserAccount extends AuditingFields {
 
     @Setter
     @Column(nullable = false)
-    private String email;
+    private String nickname;
 
     @Setter
-    @Column(nullable = false)
-    private String nickname;
+    @Column(length = 11)
+    private String phone;
+
+    @Setter
+    @Column
+    @Embedded
+    private Address address;
+
+    @Setter
+    @Column
+    private boolean signUp = false; //회원가입 여부
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -60,33 +68,50 @@ public class UserAccount extends AuditingFields {
     protected UserAccount() {
     }
 
-    private UserAccount(String userId, String userPassword, String email, String nickname, UserRole userRole, String createdBy) {
-        this.userId = userId;
-        this.userPassword = userPassword;
+    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
         this.email = email;
+        this.userPassword = userPassword;
         this.nickname = nickname;
+        this.phone = phone;
+        this.address = address;
+        this.signUp = signUp;
         this.userRole = userRole;
         this.createdBy = createdBy;
         this.modifiedBy = createdBy;
     }
 
-    public static UserAccount of(String userId, String userPassword, String email, String nickname, UserRole userRole) {
-        return new UserAccount(userId, userPassword, email, nickname, userRole, null);
+    /**
+     * 회원 저장(saveUser)시 사용<br>
+     * 폰번호, 주소 제외
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, null, null, signUp, userRole, createdBy);
     }
 
-    public static UserAccount of(String userId, String userPassword, String email, String nickname, UserRole userRole, String createdBy) {
-        return new UserAccount(userId, userPassword, email, nickname, userRole, createdBy);
+    /**
+     * DTO 를 Entity 로 변환시 사용 <br>
+     * 생성자 제외
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, null);
+    }
+
+    /**
+     * 모든 필드 주입
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, createdBy);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserAccount that)) return false;
-        return this.getUserId() != null && Objects.equals(this.getUserId(), that.getUserId());
+        return this.getEmail() != null && Objects.equals(this.getEmail(), that.getEmail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getUserId());
+        return Objects.hash(this.getEmail());
     }
 }
