@@ -43,6 +43,10 @@ public class UserAccount extends AuditingFields {
     private Address address;
 
     @Setter
+    @Column
+    private boolean signUp = false; //회원가입 여부
+
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;
@@ -64,35 +68,39 @@ public class UserAccount extends AuditingFields {
     protected UserAccount() {
     }
 
-    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, String createdBy) {
+    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
         this.email = email;
         this.userPassword = userPassword;
         this.nickname = nickname;
         this.phone = phone;
         this.address = address;
+        this.signUp = signUp;
         this.userRole = userRole;
         this.createdBy = createdBy;
         this.modifiedBy = createdBy;
     }
 
-    public static UserAccount of(String email, String userPassword, String nickname, UserRole userRole) {
-        return new UserAccount(email, userPassword, nickname, null, null, userRole, null);
+    /**
+     * 회원 저장(saveUser)시 사용<br>
+     * 폰번호, 주소 제외
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, null, null, signUp, userRole, createdBy);
     }
 
-    public static UserAccount of(String email, String userPassword, String nickname, Address address, UserRole userRole) {
-        return new UserAccount(email, userPassword, nickname, null, address, userRole, null);
+    /**
+     * DTO 를 Entity 로 변환시 사용 <br>
+     * 생성자 제외
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, null);
     }
 
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, UserRole userRole) {
-        return new UserAccount(email, userPassword, nickname, phone, null, userRole, null);
-    }
-
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole) {
-        return new UserAccount(email, userPassword, nickname, phone, address, userRole, null);
-    }
-
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, String createdBy) {
-        return new UserAccount(email, userPassword, nickname, phone, address, userRole, createdBy);
+    /**
+     * 모든 필드 주입
+     */
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, createdBy);
     }
 
     @Override

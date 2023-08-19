@@ -11,6 +11,7 @@ import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.anyString;
 import static org.mockito.BDDMockito.given;
 
@@ -21,12 +22,14 @@ public class TestSecurityConfig {
     @BeforeTestMethod
     public void securitySetUp() {
         given(userAccountService.searchUser("jooCompany"))
-                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY)));
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY, true)));
         given(userAccountService.searchUser("jooUser"))
-                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER)));
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true)));
+        given(userAccountService.searchUser("notSignedJooUser"))
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("notSignedJooUser", UserRole.USER, false)));
         given(userAccountService.searchUser("jooAdmin"))
-                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN)));
-        given(userAccountService.saveUser(anyString(), anyString(), anyString(), any(UserRole.class)))
+                .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN, true)));
+        given(userAccountService.saveUser(anyString(), anyString(), anyString(), any(UserRole.class), anyBoolean()))
                 .willReturn(createUserAccountDto());
     }
 
@@ -35,6 +38,7 @@ public class TestSecurityConfig {
                 "joo-test@gmail.com",
                 "pw",
                 "joo-test",
+                true,
                 UserRole.COMPANY
         );
     }

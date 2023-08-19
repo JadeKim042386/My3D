@@ -22,14 +22,16 @@ public class UserAccountService {
     }
 
     @Transactional
-    public UserAccountDto saveUser(String email, String userPassword, String nickname, UserRole userRole) {
+    public UserAccountDto saveUser(String email, String userPassword, String nickname, UserRole userRole, boolean signUp) {
         return UserAccountDto.from(
                 userAccountRepository.save(
                     UserAccount.of(
                             email,
                             userPassword,
                             nickname,
-                            userRole
+                            signUp,
+                            userRole,
+                            email
                     )
                 )
             );

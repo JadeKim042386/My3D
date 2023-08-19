@@ -1,6 +1,8 @@
 package joo.project.my3d.config;
 
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.KakaoOauth2Response;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.UserAccountService;
@@ -40,7 +42,10 @@ public class SecurityConfig {
                         .regexMatchers(
                                 HttpMethod.GET,
                                 "/",
-                                "/model_articles"
+                                "/model_articles",
+                                "/account/sign_up",
+                                "/account/find_pass",
+                                "/account/type"
                         ).permitAll()
                         .regexMatchers(
                                 "/model_articles/[0-9]+",
@@ -59,16 +64,19 @@ public class SecurityConfig {
                 .exceptionHandling()
                 .and()
                     .formLogin(form -> form
-                            .loginPage("/login")
+                            .loginPage("/account/login")
+                            .usernameParameter("email")
                             .permitAll()
                     )
                     .logout(logout -> logout
-                            .logoutUrl("/logout")
+                            .logoutUrl("/account/logout")
+                            .logoutSuccessUrl("/")
                     )
                     .oauth2Login(oAuth -> oAuth
-                            .loginPage("/login")
+                            .loginPage("/account/login")
                             .userInfoEndpoint(userInfo -> userInfo
                                     .userService(oAuth2UserService))
+                            .defaultSuccessUrl("/account/type", true)
                     )
                 .build();
     }
@@ -86,16 +94,20 @@ public class SecurityConfig {
             String email = kakaoResponse.email();
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
-            //회원이 존재하지 않는다면 해당 회원을 저장
+            //회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
             return userAccountService.searchUser(email)
                     .map(BoardPrincipal::from)
                     .orElseGet(() ->
                             BoardPrincipal.from(
-                                    userAccountService.saveUser(
-                                            email,
-                                            dummyPassword,
-                                            kakaoResponse.nickname(),
-                                            UserRole.USER
+                                    UserAccountDto.from(
+                                            UserAccount.of(
+                                                    email,
+                                                    dummyPassword,
+                                                    kakaoResponse.nickname(),
+                                                    false,
+                                                    UserRole.USER,
+                                                    email
+                                            )
                                     )
                             ));
         };

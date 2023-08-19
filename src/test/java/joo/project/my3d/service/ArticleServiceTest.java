@@ -232,7 +232,7 @@ class ArticleServiceTest {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", UserRole.COMPANY);
+        UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
         given(userAccountRepository.getReferenceById(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);
         // When

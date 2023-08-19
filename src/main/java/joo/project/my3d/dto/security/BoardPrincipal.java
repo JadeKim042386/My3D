@@ -16,27 +16,30 @@ public record BoardPrincipal(
         String password,
         Collection<? extends GrantedAuthority> authorities,
         String nickname,
+        boolean signUp, //회원가입 여부
         Map<String, Object> oAuth2Attributes
         ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp) {
 
         return new BoardPrincipal(
                 email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
+                signUp,
                 Map.of()
         );
     }
 
-    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
                 email,
                 password,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
+                signUp,
                 oAuth2Attributes
         );
     }
@@ -46,15 +49,17 @@ public record BoardPrincipal(
                 dto.email(),
                 dto.userPassword(),
                 dto.nickname(),
-                dto.userRole()
+                dto.userRole(),
+                dto.signUp()
         );
     }
 
     public UserAccountDto toDto() {
         return UserAccountDto.of(
-              email,
-              password,
-              nickname
+                email,
+                password,
+                nickname,
+                signUp
         );
     }
 
@@ -96,5 +101,9 @@ public record BoardPrincipal(
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean notSignUp() {
+        return !signUp;
     }
 }
