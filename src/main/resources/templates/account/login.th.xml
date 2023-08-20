@@ -4,7 +4,7 @@
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <!--이메일로 시작하기-->
     <attr sel="#login" th:action="@{/account/login}" th:method="post"/>
-    <attr sel="#login-error" th:if="${param.error}" th:text="|이메일을 다시 입력해주세요.|"/>
+    <attr sel="#login-error" th:if="${param.error}" th:text="|이메일과 비밀번호가 일치하지 않습니다.|"/>
     <!--OAuth 로그인-->
     <attr sel="#kakao-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/kakao}'|" />
     <!--비밀번호 찾기-->

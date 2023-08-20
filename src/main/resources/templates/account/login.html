@@ -14,9 +14,9 @@
   <!--헤더-->
   <header id="header"></header>
   <!--로그인-->
-  <section class="vh-100">
-    <div class="container py-5 h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
+  <section>
+    <div class="container py-5">
+      <div class="row d-flex justify-content-center align-items-center">
         <div class="col-12 col-md-8 col-lg-6 col-xl-5">
           <div class="card shadow-2-strong" style="border-radius: 1rem;">
             <div class="card-body p-5 text-center">
@@ -25,10 +25,13 @@
 
               <!--login form-->
               <form id="login">
+                <p id="login-error" class="field-error"></p>
                 <div class="form-outline mb-4">
                   <input type="email" name="email" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
                 </div>
-                <p id="login-error" class="field-error"></p>
+                <div class="form-outline mb-4">
+                  <input type="password" name="password" class="form-control form-control-lg" placeholder="비밀번호를 입력해주세요." />
+                </div>
                 <div class="d-grid gap-2 mx-auto">
                   <button class="btn btn-dark btn-lg btn-block" type="submit">이메일로 시작하기</button>
                 </div>
@@ -76,9 +79,9 @@
       </div>
     </div>
   </section>
+  <!--푸터-->
+  <footer id="footer"></footer>
+  <!--스크립트-->
+  <script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
 </body>
-<!--푸터-->
-<footer id="footer"></footer>
-<!--스크립트-->
-<script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
 </html>
