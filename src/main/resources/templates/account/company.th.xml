@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#header" th:replace="header :: header"></attr>
+    <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <!--기업확인 폼-->
+    <attr sel="#certification-form" th:action="@{/account/company}" th:method="(${b_stt_cd} == '01' and ${b_no}) ? 'get' : 'post'"/>
+    <attr sel="#companyCCC" th:value="${b_no} ? ${b_no}: _" th:disabled="${b_stt_cd} == '01' and ${b_no}"/>
+    <!--사업인증 에러-->
+    <attr sel="#certification-error" th:text="${b_stt_cd} == '01' ? '인증되었습니다.' : (${b_stt_cd} == '02' ? '휴업 상태입니다.' : (${b_stt_cd} == '03' ? '폐업 상태입니다.' : _))" th:classappend="${b_stt_cd} == '01' ? 'field-success' : 'field-error'" />
+    <attr sel="#validation-error" th:text="${b_stt_cd} == '04' ? '사업자 등록번호 10자를 입력해주세요.' : _" th:classappend="field-error"/>
+    <!--회원가입 페이지로 이동-->
+    <attr sel="#next" th:if="${b_stt_cd} == '01'" th:href="@{/account/sign_up(userRole='COMPANY')}"/>
+    <!--스크립트-->
+    <attr sel="#script" th:inline="javascript"/>
+</thlogic>
