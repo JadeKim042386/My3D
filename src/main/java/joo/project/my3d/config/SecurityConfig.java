@@ -39,24 +39,26 @@ public class SecurityConfig {
                                 "/node_modules/**",
                                 "/oAuth-Buttons/**"
                         ).permitAll()
-                        .regexMatchers(
+                        .mvcMatchers(
                                 HttpMethod.GET,
                                 "/",
-                                "/model_articles",
+                                "/model_articles"
+                        ).permitAll()
+                        .mvcMatchers(
+                                "/account/login",
                                 "/account/sign_up",
                                 "/account/find_pass",
-                                "/account/type"
-                        ).permitAll()
+                                "/account/type",
+                                "/account/company"
+                        ).hasRole("ANONYMOUS")
                         .regexMatchers(
+                                "/account/logout",
                                 "/model_articles/[0-9]+",
-                                "/like/[0-9]+",
-                                "/like/[0-9]+/delete",
-                                "/comments/new",
-                                "/comments/[0-9]+/delete"
+                                "/like/[0-9]+.*",
+                                "/comments.*"
                         ).authenticated()
                         .regexMatchers(
-                                "/model_articles/form",
-                                "/model_articles/form/[0-9]+",
+                                "/model_articles/form.*",
                                 "/model_articles/[0-9]+/delete"
                         ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
@@ -66,7 +68,6 @@ public class SecurityConfig {
                     .formLogin(form -> form
                             .loginPage("/account/login")
                             .usernameParameter("email")
-                            .permitAll()
                     )
                     .logout(logout -> logout
                             .logoutUrl("/account/logout")
@@ -105,7 +106,7 @@ public class SecurityConfig {
                                                     dummyPassword,
                                                     kakaoResponse.nickname(),
                                                     false,
-                                                    UserRole.USER,
+                                                    UserRole.ANONYMOUS,
                                                     email
                                             )
                                     )
