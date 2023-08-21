@@ -16,3 +16,8 @@ p {
     border-color: #dc3545;
     color: #dc3545;
 }
+
+.field-success {
+    border-color: #068d06;
+    color: #068d06;
+}

@@ -19,14 +19,14 @@
             <div class="card-body p-5 text-center">
               <h3 class="mb-5">회원 유형을 선택해주세요</h3>
               <div class="form-check mb-3">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                <label class="form-check-label" for="flexRadioDefault1">
+                <input class="form-check-input" type="radio" name="role" id="company">
+                <label class="form-check-label" for="company">
                   기업 / 기관
                 </label>
               </div>
               <div class="form-check mb-4">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                <label class="form-check-label" for="flexRadioDefault2">
+                <input class="form-check-input" type="radio" name="role" id="personal" checked>
+                <label class="form-check-label" for="personal">
                   개인 사용자
                 </label>
               </div>
@@ -41,5 +41,19 @@
   </section>
   <!--푸터-->
   <footer id="footer"></footer>
+  <!--스크립트-->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function() {
+        $('#next').on('click', function () {
+          if ($('#company').is(':checked')) {
+            location.href = 'company'
+          } else {
+            location.href = 'sign_up?userRole=USER'
+          }
+        })
+    })
+  </script>
 </body>
+
 </html>

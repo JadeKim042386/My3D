@@ -2,5 +2,4 @@
 <thlogic>
   <attr sel="#header" th:replace="header :: header"></attr>
   <attr sel="#footer" th:replace="footer :: footer"></attr>
-  <attr sel="#next" th:href="@{/templates/account/signup}"/>
 </thlogic>
