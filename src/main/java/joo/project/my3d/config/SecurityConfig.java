@@ -6,10 +6,12 @@ import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.KakaoOauth2Response;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.UserAccountService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -26,6 +29,18 @@ import java.util.UUID;
 public class SecurityConfig {
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers(
+                "/static/**",
+                "/models/**",
+                "/node_modules/**",
+                "/oAuth-Buttons/**",
+                "/js/**",
+                "/css/**"
+        );
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService
@@ -33,12 +48,7 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers(
-                                "/css/**",
-                                "/models/**",
-                                "/node_modules/**",
-                                "/oAuth-Buttons/**"
-                        ).permitAll()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
                                 HttpMethod.GET,
                                 "/",
@@ -78,6 +88,10 @@ public class SecurityConfig {
                             .userInfoEndpoint(userInfo -> userInfo
                                     .userService(oAuth2UserService))
                             .defaultSuccessUrl("/account/type", true)
+                    )
+                    .addFilterAfter(
+                            new CustomOAuth2LoginAuthenticationFilter(),
+                            OAuth2LoginAuthenticationFilter.class
                     )
                 .build();
     }
