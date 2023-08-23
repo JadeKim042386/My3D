@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +17,11 @@ import java.util.Optional;
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+
+    public List<UserAccountDto> findAllUser() {
+        return userAccountRepository.findAll().stream()
+                .map(UserAccountDto::from).toList();
+    }
 
     public Optional<UserAccountDto> searchUser(String email) {
         return userAccountRepository.findById(email).map(UserAccountDto::from);
@@ -35,5 +41,13 @@ public class UserAccountService {
                     )
                 )
             );
+    }
+
+    /**
+     * 회원가입된 유저 저장
+     */
+    @Transactional
+    public void saveUser(UserAccount userAccount) {
+        userAccountRepository.save(userAccount);
     }
 }
