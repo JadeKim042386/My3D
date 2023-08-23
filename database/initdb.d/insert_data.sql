@@ -1,8 +1,8 @@
 -- 테스트 계정 3개
-insert into user_account (email, user_password, nickname, phone, city, street, zipcode, sign_up, user_role, created_at, created_by, modified_at, modified_by) values
-('jk042386@gmail.com', '{noop}1234asdf', 'Joo', '01012341234', null, null, null, true, 'ADMIN', now(), 'joo', now(), 'joo'),
-('a@gmail.com', '{noop}1234asdf', 'A', '01011111111', null, null, null, true, 'USER', now(), 'a', now(), 'a'),
-('jujoo042386@gmail.com', '{noop}1234asdf', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', now(), 'jujoo', now(), 'jujoo');
+insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, sign_up, user_role, company_name, homepage, created_at, created_by, modified_at, modified_by) values
+('jk042386@gmail.com', '{noop}1234asdf', 'Joo', '01012341234', null, null, null, true, 'ADMIN', null, null, now(), 'joo', now(), 'joo'),
+('a@gmail.com', '{noop}1234asdf', 'A', '01011111111', null, null, null, true, 'USER', null, null, now(), 'a', now(), 'a'),
+('jujoo042386@gmail.com', '{noop}1234asdf', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', '주식회사 My3D', null, now(), 'jujoo', now(), 'jujoo');
 
 -- 파일 10개
 insert into article_file (byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
