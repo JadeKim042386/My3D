@@ -45,6 +45,9 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-authentication-method: POST
+            scope:
+              - "account_email"
+              - "profile_nickname"
         provider:
           kakao:
             # https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-code
@@ -54,6 +57,17 @@ spring:
             # https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true # 사용자 인증 시도 여부
+          timeout: 5000
+          starttls.enable: true # TLS 활성화 여부
 model.path: ${MODEL_PATH}
 nts.service-key: ${NTS_BUSINESS_KEY}
 
