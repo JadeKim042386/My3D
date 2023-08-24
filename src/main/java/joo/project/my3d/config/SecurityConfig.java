@@ -58,9 +58,11 @@ public class SecurityConfig {
                                 "/account/login",
                                 "/account/sign_up",
                                 "/account/find_pass",
+                                "/account/find_pass_success",
                                 "/account/type",
                                 "/account/company",
-                                "/mail/send_code"
+                                "/mail/send_code",
+                                "/mail/find_pass"
                         ).hasRole("ANONYMOUS")
                         .regexMatchers(
                                 "/account/logout",
