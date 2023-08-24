@@ -112,9 +112,12 @@
                             <p id="signup-email-error" class="field-error" hidden>이메일 인증이 안되었습니다</p>
                             <p id="signup-nickname-error" class="field-error" hidden>닉네임을 수정해주세요</p>
                             <p id="signup-company-error" class="field-error" hidden>기업명을 수정해주세요</p>
-                            <p id="signup-password-error" class="field-error" hidden>비밀번호를 입력해주세요</p>
-                            <p id="signup-address-error" class="field-error" hidden>주소를 입력해주세요</p>
-                            <p id="signup-detailAddress-error" class="field-error" hidden>상세주소를 입력해주세요</p>
+                            <p id="signup-password-error" class="field-error" hidden>비밀번호를 수정해주세요</p>
+                            <p id="signup-validation-userRole-error" class="field-error"></p>
+                            <p id="signup-validation-nickname-error" class="field-error"></p>
+                            <p id="signup-validation-password-error" class="field-error"></p>
+                            <p id="signup-validation-address-error" class="field-error"></p>
+                            <p id="signup-validation-detailAddress-error" class="field-error"></p>
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <a id="next" class="btn btn-dark" href="#" role="button">회원가입</a>
                             </div>
@@ -161,21 +164,18 @@
             }
         })
         $('#next').on('click', function () {
-            var emailSuccess = $('#email-certification').prop("hidden");
-            var pwSuccess = $('#password').val() !== ''
-                && $('#passwordCheck-error').prop("hidden")
+            var emailSuccess = $('#email-certification').prop("hidden"); //이메일 인증 여부
+            var pwSuccess = $('#passwordCheck-error').prop("hidden")
                 && $('#number-error').prop("hidden")
                 && $('#english-error').prop("hidden")
-                && $('#special-error').prop("hidden");
-            var addressSuccess = $('#address').val() !== '';
-            var detailAddressSuccess = $('#detailAddress').val() !== '';
-            var NotDuplicatedNickname = $('#duplicated-nickname').prop("hidden");
+                && $('#special-error').prop("hidden"); //비밀번호 유효성 통과 여부
+            var notDuplicatedNickname = $('#duplicated-nickname').prop("hidden"); //닉네임 중복 여부
             //기본적으로 이메일 인증과 닉네임 중복 체크 확인
-            if (emailSuccess && NotDuplicatedNickname && pwSuccess && addressSuccess && detailAddressSuccess) {
+            if (emailSuccess && notDuplicatedNickname && pwSuccess) {
                 //기업일 경우 기업명 중복 체크
                 if ($('#userRole').val() === "COMPANY") {
-                    var NotDuplicatedCompany = $('#duplicated-company').prop("hidden");
-                    if (NotDuplicatedCompany) {
+                    var notDuplicatedCompany = $('#duplicated-company').prop("hidden");
+                    if (notDuplicatedCompany) {
                         requestRegister()
                     } else {
                         $('#signup-company-error').attr("hidden", false);
@@ -186,15 +186,16 @@
             } else {
                 if (!emailSuccess) {
                     $('#signup-email-error').attr("hidden", false);
-                } else if (!NotDuplicatedNickname) {
+                } else if (!notDuplicatedNickname) {
                     $('#signup-nickname-error').attr("hidden", false);
                 } else if (!pwSuccess) {
                     $('#signup-password-error').attr("hidden", false);
-                } else if (!addressSuccess) {
-                    $('#signup-address-error').attr("hidden", false);
-                } else if (!detailAddressSuccess) {
-                    $('#signup-detailAddress-error').attr("hidden", false);
                 }
+                $('#signup-validation-userRole-error').attr("hidden", true);
+                $('#signup-validation-nickname-error').attr("hidden", true);
+                $('#signup-validation-password-error').attr("hidden", true);
+                $('#signup-validation-address-error').attr("hidden", true);
+                $('#signup-validation-detailAddress-error').attr("hidden", true);
             }
         })
     })

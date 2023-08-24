@@ -7,6 +7,7 @@ import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.request.BusinessCertificationRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
+import joo.project.my3d.dto.response.SignUpResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
@@ -82,9 +83,7 @@ public class LoginController {
         //세션에 저장된 정보 전달
         Object oauthLogin = session.getAttribute("oauthLogin");
         Object email = session.getAttribute("email");
-        Object nickname = session.getAttribute("nickname");
         Object code = session.getAttribute("emailCode"); //이메일 인증 코드
-        userRole = (UserRole) session.getAttribute("userRole");
         Object duplicatedEmail = session.getAttribute("duplicatedEmail"); //이메일 중복 여부
         if (Objects.nonNull(oauthLogin)) {
             model.addAttribute("oauthLogin", oauthLogin);
@@ -92,18 +91,23 @@ public class LoginController {
         if (Objects.nonNull(email)) {
             model.addAttribute("email", email);
         }
-        if (Objects.nonNull(nickname)) {
-            model.addAttribute("nickname", nickname);
-        }
         if (Objects.nonNull(code)) {
             model.addAttribute("code", code);
-        }
-        if (Objects.nonNull(userRole)) {
-            model.addAttribute("userRole", userRole);
         }
         if (Objects.nonNull(duplicatedEmail)) {
             model.addAttribute("duplicatedEmail", duplicatedEmail);
         }
+
+        SignUpResponse response = SignUpResponse.of(
+                (UserRole) session.getAttribute("userRole"),
+                null,
+                (String) session.getAttribute("nickname"),
+                null,
+                null,
+                null,
+                null
+        );
+        model.addAttribute("signUpData", response);
 
         //닉네임, 기업명 중복 체크를 위해 추가
         List<UserAccountDto> userAccountDtos = userAccountService.findAllUser();
@@ -123,10 +127,19 @@ public class LoginController {
     @PostMapping("/sign_up")
     public String signup(
             HttpServletRequest request,
-            SignUpRequest signUpRequest
+            @Validated @ModelAttribute("signUpData") SignUpRequest signUpRequest,
+            BindingResult bindingResult,
+            Model model
     ) {
         HttpSession session = request.getSession();
         Object email = session.getAttribute("email");
+
+        if (bindingResult.hasErrors()) {
+            log.warn("bindingResult={}", bindingResult);
+            model.addAttribute("email", email);
+            session.removeAttribute("emailCode");
+            return "account/signup";
+        }
 
         UserAccount userAccount = signUpRequest.toEntity((String) email);
         UserAccountDto userAccountDto = UserAccountDto.from(userAccount);
