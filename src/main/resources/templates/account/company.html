@@ -30,9 +30,10 @@
                                 <div class="col-3 ps-2 text-start">
                                     <button type="submit" id="submit-button" class="btn btn-dark">기업확인</button>
                                 </div>
+                                <p id="validation-error" class="mt-2"></p>
+                                <p id="certification-error" class="mt-2"></p>
                             </form>
-                            <p id="certification-error"></p>
-                            <p id="validation-error"></p>
+
                         </div>
                         <div class="d-grid gap-2 col-6 mx-auto">
                             <a id="next" class="btn btn-dark" href="#" role="button">다음으로</a>
@@ -47,9 +48,10 @@
 <footer id="footer"></footer>
 <!--스크립트-->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-<script>
+<script id="inline-js">
+    var b_stt_cd = [[${certification.b_stt_cd}]];
     $(document).ready(function() {
-        if ([[${b_stt_cd}]] == '01' && ![[${#strings.isEmpty(b_no)}]]) {
+        if (b_stt_cd === '01' && ![[${#strings.isEmpty(certification.b_no)}]]) {
             $('#submit-button').text("수정");
         } else {
             $('#submit-button').text("기업확인");

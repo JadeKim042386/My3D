@@ -4,11 +4,14 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.request.BusinessCertificationRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
+import joo.project.my3d.dto.response.BusinessCertificationResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,10 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
@@ -157,40 +160,48 @@ public class LoginController {
      * 사업자 인증 페이지
      */
     @GetMapping("/company")
-    public String businessCertification(HttpServletRequest request, Model model) {
+    public String businessCertification(
+            HttpServletRequest request,
+            Model model
+    ) {
         HttpSession session = request.getSession();
-        Object b_stt_cd = session.getAttribute("b_stt_cd");
-        Object b_no = session.getAttribute("b_no");
-        if (!Objects.isNull(b_stt_cd)) {
-            model.addAttribute("b_stt_cd", b_stt_cd);
-            //수정 요청이 들어오면 b_stt_cd는 존재하면 안되므로 삭제
-            session.removeAttribute("b_stt_cd");
-        }
-        if (!Objects.isNull(b_no)) {
-            model.addAttribute("b_no", b_no);
-        }
+        BusinessCertificationResponse response = BusinessCertificationResponse.of(
+                (String) session.getAttribute("b_no"),
+                (String) session.getAttribute("b_stt_cd")
+        );
+        //수정 요청이 들어오면 b_stt_cd는 존재하면 안되므로 삭제
+        session.removeAttribute("b_stt_cd");
+        model.addAttribute("certification", response);
 
         return "account/company";
     }
 
     /**
      * 사업자 인증 요청<br>
-     * 04: 사업자 등록번호 길이가 10이 이닌 경우
+     * [b_stt_cd]<br>
+     * 01: 계속사업자<br>
+     * 02: 휴업<br>
+     * 03: 폐업<br>
+     * 04: 존재하지않는 기업
      */
     @PostMapping("/company")
     public String requestBusinessCertification(
             HttpServletRequest request,
-            @RequestParam String b_no
+            @Validated @ModelAttribute("certification") BusinessCertificationRequest businessCertificationRequest,
+            BindingResult bindingResult
     ) {
         HttpSession session = request.getSession();
-        session.setAttribute("b_no", b_no);
+        session.setAttribute("b_no", businessCertificationRequest.b_no());
 
-        if (b_no.length() != 10) {
-            session.setAttribute("b_stt_cd", "04");
-            return "redirect:/account/company";
+        if (bindingResult.hasErrors()) {
+            log.warn("bindingResult={}", bindingResult);
+            return "/account/company";
         }
 
-        String b_stt_cd = signUpService.businessCertification(b_no);
+        String b_stt_cd = signUpService.businessCertification(businessCertificationRequest.b_no());
+        if (b_stt_cd.equals("")) {
+            b_stt_cd = "04";
+        }
         session.setAttribute("b_stt_cd", b_stt_cd);
 
         return "redirect:/account/company";
