@@ -50,4 +50,13 @@ public class UserAccountService {
     public void saveUser(UserAccount userAccount) {
         userAccountRepository.save(userAccount);
     }
+
+    /**
+     * 비밀번호 변경
+     */
+    @Transactional
+    public void changePassword(String email, String changedPassword) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(email);
+        userAccount.setUserPassword(changedPassword);
+    }
 }
