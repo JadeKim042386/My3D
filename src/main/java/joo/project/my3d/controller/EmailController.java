@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/mail")
@@ -29,16 +30,24 @@ public class EmailController {
     ) {
         HttpSession session = request.getSession();
         session.setAttribute("email", email);
+
+        //이메일 형식 체크
+        String pattern = "^(?:\\w+\\.?)*\\w+@(?:\\w+\\.)+\\w+$";
+        if (!Pattern.matches(pattern, email)) {
+            session.setAttribute("emailError", "format");
+            return "redirect:/account/sign_up";
+        }
+
         //이메일 중복 체크
         if (userAccountService.searchUser(email).isPresent()) {
-            session.setAttribute("duplicatedEmail", true);
+            session.setAttribute("emailError", "duplicated");
             return "redirect:/account/sign_up";
         }
         String subject = "[My3D] 이메일 인증";
         String code = String.valueOf(Math.round(Math.random() * 10000));
         emailService.sendEmail(email, subject, code);
         session.setAttribute("emailCode", code);
-        session.setAttribute("duplicatedEmail", false);
+        session.removeAttribute("emailError");
 
         return "redirect:/account/sign_up";
     }

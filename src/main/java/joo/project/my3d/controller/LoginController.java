@@ -84,7 +84,7 @@ public class LoginController {
         Object oauthLogin = session.getAttribute("oauthLogin");
         Object email = session.getAttribute("email");
         Object code = session.getAttribute("emailCode"); //이메일 인증 코드
-        Object duplicatedEmail = session.getAttribute("duplicatedEmail"); //이메일 중복 여부
+        Object emailError = session.getAttribute("emailError"); //이메일 중복 여부
         if (Objects.nonNull(oauthLogin)) {
             model.addAttribute("oauthLogin", oauthLogin);
         }
@@ -94,8 +94,8 @@ public class LoginController {
         if (Objects.nonNull(code)) {
             model.addAttribute("code", code);
         }
-        if (Objects.nonNull(duplicatedEmail)) {
-            model.addAttribute("duplicatedEmail", duplicatedEmail);
+        if (Objects.nonNull(emailError)) {
+            model.addAttribute("emailError", emailError);
         }
 
         SignUpResponse response = SignUpResponse.of(

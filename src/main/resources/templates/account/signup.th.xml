@@ -7,10 +7,10 @@
     <attr sel="#email-form" th:class="${oauthLogin} ? 'col-12' : 'col-9'"/>
     <attr sel="#email-certification" th:hidden="${oauthLogin}"/>
     <!--이메일 중복 에러-->
-    <attr sel="#duplicated-email" th:hidden="!${duplicatedEmail}"/>
+    <attr sel="#email-error" th:hidden="!${emailError}" th:text="${emailError} == 'format' ? '이메일 형식이 잘못되었습니다' : '이미 존재하는 이메일입니다'"/>
     <!--이메일 인증-->
     <attr sel="#certification-form" th:action="@{/mail/send_code}" th:method="post"/>
-    <attr sel="#certification-check" th:if="${code}"/>
+    <attr sel="#certification-check" th:if="${code} and !${emailError}"/>
     <attr sel="#register-form" th:object="${signUpData}">
         <!--회원 유형-->
         <attr sel="#userRole" th:name="userRole" th:value="*{userRole}"/>
