@@ -103,11 +103,11 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/signup"))
+                .andExpect(model().attributeDoesNotExist("oauthLogin"))
                 .andExpect(model().attributeDoesNotExist("email"))
-                .andExpect(model().attributeDoesNotExist("nickname"))
                 .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeDoesNotExist("duplicatedEmail"))
-                .andExpect(model().attributeExists("userRole"))
+                .andExpect(model().attributeDoesNotExist("emailError"))
+                .andExpect(model().attributeExists("signUpData"))
                 .andExpect(model().attributeExists("nicknames"))
                 .andExpect(model().attributeExists("companyNames"));
         // Then
@@ -117,6 +117,7 @@ class LoginControllerTest {
     void signupOauthAfterSelectedType() throws Exception {
         // Given
         MockHttpSession session = new MockHttpSession();
+        session.setAttribute("oauthLogin", true);
         session.setAttribute("email", "tester@gmail.com");
         session.setAttribute("nickname", "tester");
         // When
@@ -128,17 +129,17 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/signup"))
+                .andExpect(model().attributeExists("oauthLogin"))
                 .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeDoesNotExist("duplicatedEmail"))
-                .andExpect(model().attributeExists("userRole"))
+                .andExpect(model().attributeDoesNotExist("emailError"))
+                .andExpect(model().attributeExists("signUpData"))
                 .andExpect(model().attributeExists("nicknames"))
                 .andExpect(model().attributeExists("companyNames"));
         // Then
     }
 
-    @DisplayName("[GET] 회원가입 페이지 - 메일 전송 후 redirect")
+    @DisplayName("[GET] 회원가입 페이지 - 메일 전송 후 redirect (OAuth 로그인 여부 생략)")
     @Test
     void signupAfterRedirect() throws Exception {
         // Given
@@ -156,10 +157,9 @@ class LoginControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/signup"))
                 .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeExists("code"))
-                .andExpect(model().attributeDoesNotExist("duplicatedEmail"))
-                .andExpect(model().attributeExists("userRole"))
+                .andExpect(model().attributeDoesNotExist("emailError"))
+                .andExpect(model().attributeExists("signUpData"))
                 .andExpect(model().attributeExists("nicknames"))
                 .andExpect(model().attributeExists("companyNames"));
         // Then
@@ -173,7 +173,7 @@ class LoginControllerTest {
         session.setAttribute("userRole", UserRole.USER);
         session.setAttribute("email", "tester@gmail.com");
         session.setAttribute("nickname", "tester");
-        session.setAttribute("duplicatedEmail", true);
+        session.setAttribute("emailError", "duplicated");
         // When
         mvc.perform(
                         get("/account/sign_up")
@@ -183,10 +183,9 @@ class LoginControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/signup"))
                 .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeExists("duplicatedEmail"))
-                .andExpect(model().attributeExists("userRole"))
+                .andExpect(model().attributeExists("emailError"))
+                .andExpect(model().attributeExists("signUpData"))
                 .andExpect(model().attributeExists("nicknames"))
                 .andExpect(model().attributeExists("companyNames"));
         // Then
@@ -199,7 +198,7 @@ class LoginControllerTest {
         String email = "tester@gmail.com";
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("email", email);
-        SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw", "1234", "address", "detailAddress");
+        SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
         willDoNothing().given(userAccountService).saveUser(request.toEntity(email));
         // When
         mvc.perform(
@@ -224,6 +223,19 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/find-pass"));
+        // Then
+    }
+
+    @DisplayName("[GET] 임시 비밀번호 전송 완료 페이지")
+    @Test
+    void findPasswordSuccess() throws Exception {
+        // Given
+
+        // When
+        mvc.perform(get("/account/find_pass_success"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("account/find-pass-success"));
         // Then
     }
 
@@ -256,7 +268,7 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/company"))
-                .andExpect(model().attributeExists("b_no"));
+                .andExpect(model().attributeExists("certification"));
         // Then
     }
 
@@ -275,8 +287,7 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/company"))
-                .andExpect(model().attributeExists("b_stt_cd"))
-                .andExpect(model().attributeExists("b_no"));
+                .andExpect(model().attributeExists("certification"));
         // Then
     }
 
@@ -307,9 +318,8 @@ class LoginControllerTest {
                         post("/account/company")
                                 .queryParam("b_no", "22081627")
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/company"))
-                .andExpect(redirectedUrl("/account/company"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("/account/company"));
         // Then
         then(signUpService).shouldHaveNoInteractions();
     }

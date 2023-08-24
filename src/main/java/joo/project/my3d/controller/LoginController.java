@@ -165,8 +165,22 @@ public class LoginController {
      * 비밀번호 찾기 페이지
      */
     @GetMapping("/find_pass")
-    public String findPassword() {
+    public String findPassword(
+            HttpServletRequest request,
+            Model model
+    ) {
+        HttpSession session = request.getSession();
+        model.addAttribute("email", session.getAttribute("email"));
+        model.addAttribute("emailError", session.getAttribute("emailError"));
         return "account/find-pass";
+    }
+
+    /**
+     * 임시 비밀번호 전송 완료 페이지
+     */
+    @GetMapping("/find_pass_success")
+    public String findPasswordSuccess() {
+        return "account/find-pass-success";
     }
 
     /**
