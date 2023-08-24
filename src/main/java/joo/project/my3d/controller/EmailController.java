@@ -1,12 +1,11 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.UserAccountDto;
-import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.EmailService;
+import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +23,7 @@ import java.util.regex.Pattern;
 public class EmailController {
 
     private final EmailService emailService;
+    private final SignUpService signUpService;
     private final UserAccountService userAccountService;
 
     @Value("${admin.email}")
@@ -83,14 +83,8 @@ public class EmailController {
 
         //수정한 AuditiorAware를 위해 Admin 계정을 SecurityContextHolder에 추가
         UserAccountDto userAccountDto = userAccountService.searchUser(adminEmail).get();
-        BoardPrincipal principal = BoardPrincipal.from(userAccountDto);
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        principal,
-                        principal.password(),
-                        principal.authorities()
-                )
-        );
+        signUpService.setPrincipal(userAccountDto);
+
         //임시 비밀번호로 변경
         userAccountService.changePassword(email, code);
         //변경 완료 후 principal 제거

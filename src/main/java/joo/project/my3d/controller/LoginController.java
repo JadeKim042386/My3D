@@ -13,10 +13,8 @@ import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -145,14 +143,7 @@ public class LoginController {
         UserAccountDto userAccountDto = UserAccountDto.from(userAccount);
 
         //auditorAware를 위해 principal을 먼저 등록
-        BoardPrincipal principal = BoardPrincipal.from(userAccountDto);
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        principal,
-                        principal.password(),
-                        principal.authorities()
-                )
-        );
+        signUpService.setPrincipal(userAccountDto);
 
         userAccountService.saveUser(
                     userAccount
