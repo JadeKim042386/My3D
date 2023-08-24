@@ -7,16 +7,20 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 public class Address {
-    private String city; //시
-    private String street; //주소
     private String zipcode; //우편번호
+    private String street; //주소
+    private String detail; //상세주소
 
     protected Address() {
     }
 
-    public Address(String city, String street, String zipcode) {
-        this.city = city;
-        this.street = street;
+    private Address(String zipcode, String street, String detail) {
         this.zipcode = zipcode;
+        this.street = street;
+        this.detail = detail;
+    }
+
+    public static Address of(String zipcode, String street, String detail) {
+        return new Address(zipcode, street, detail);
     }
 }

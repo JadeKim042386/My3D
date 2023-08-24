@@ -53,7 +53,7 @@ public class Fixture {
     }
 
     public static UserAccount getUserAccount(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return UserAccount.of(email, userPassword, nickname, null, null, signUp, userRole);
+        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Company.of(null, null));
     }
 
     public static UserAccount getUserAccount() {

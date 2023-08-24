@@ -51,6 +51,11 @@ public class UserAccount extends AuditingFields {
     @Column(nullable = false)
     private UserRole userRole;
 
+    @Setter
+    @Column
+    @Embedded
+    private Company compnay;
+
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
@@ -68,7 +73,7 @@ public class UserAccount extends AuditingFields {
     protected UserAccount() {
     }
 
-    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
+    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, Company company, String createdBy) {
         this.email = email;
         this.userPassword = userPassword;
         this.nickname = nickname;
@@ -76,6 +81,7 @@ public class UserAccount extends AuditingFields {
         this.address = address;
         this.signUp = signUp;
         this.userRole = userRole;
+        this.compnay = company;
         this.createdBy = createdBy;
         this.modifiedBy = createdBy;
     }
@@ -85,22 +91,22 @@ public class UserAccount extends AuditingFields {
      * 폰번호, 주소 제외
      */
     public static UserAccount of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, String createdBy) {
-        return new UserAccount(email, userPassword, nickname, null, null, signUp, userRole, createdBy);
+        return new UserAccount(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Company.of(null, null), createdBy);
     }
 
     /**
      * DTO 를 Entity 로 변환시 사용 <br>
      * 생성자 제외
      */
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole) {
-        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, null);
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, Company company) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, company, null);
     }
 
     /**
      * 모든 필드 주입
      */
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, String createdBy) {
-        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, createdBy);
+    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, Company company, String createdBy) {
+        return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, company, createdBy);
     }
 
     @Override

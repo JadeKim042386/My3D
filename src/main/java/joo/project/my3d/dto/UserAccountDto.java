@@ -1,10 +1,12 @@
 package joo.project.my3d.dto;
 
 import joo.project.my3d.domain.Address;
+import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 1. BoardPrincipal 로 변환
@@ -14,9 +16,10 @@ public record UserAccountDto(
         String userPassword,
         String nickname,
         String phone,
-        Address address,
+        AddressDto addressDto,
         boolean signUp,
         UserRole userRole,
+        CompanyDto companyDto,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
@@ -26,22 +29,29 @@ public record UserAccountDto(
     /**
      * 모든 필드 주입
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto address, boolean signUp, UserRole userRole, CompanyDto company, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, company, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     /**
      *  생성일시, 생성자, 수정일시, 수정자 제외
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole) {
-        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, null, null, null, null);
+    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto address, boolean signUp, UserRole userRole, CompanyDto company) {
+        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, company, null, null, null, null);
     }
 
     /**
-     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외
+     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 회사 정보 제외 (개인 사용저)
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, userRole, null, null, null, null);
+        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, userRole, null, null, null, null, null);
+    }
+
+    /**
+     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
+     */
+    public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, CompanyDto company) {
+        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, userRole, company, null, null, null, null);
     }
 
     /**
@@ -49,18 +59,22 @@ public record UserAccountDto(
      *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 권한 제외
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp) {
-        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, null, null, null, null, null);
+        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, null, null, null, null, null, null);
     }
 
     public static UserAccountDto from(UserAccount userAccount) {
+        Address address = userAccount.getAddress();
+        Company compnay = userAccount.getCompnay();
+
         return UserAccountDto.of(
                 userAccount.getEmail(),
                 userAccount.getUserPassword(),
                 userAccount.getNickname(),
                 userAccount.getPhone(),
-                userAccount.getAddress(),
+                Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
                 userAccount.isSignUp(),
-                userAccount.getUserRole()
+                userAccount.getUserRole(),
+                Objects.isNull(compnay) ? CompanyDto.of() : CompanyDto.from(compnay)
         );
     }
 
@@ -70,9 +84,11 @@ public record UserAccountDto(
                 userPassword,
                 nickname,
                 phone,
-                address,
+                addressDto.toEntity(),
                 signUp,
-                userRole
+                userRole,
+                companyDto.toEntity()
         );
     }
+
 }

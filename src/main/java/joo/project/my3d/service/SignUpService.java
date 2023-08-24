@@ -1,6 +1,6 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.dto.response.BusinessCertificationResponse;
+import joo.project.my3d.dto.response.BusinessCertificationApiResponse;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,9 +39,9 @@ public class SignUpService {
         body.put("b_no", new String[]{b_no});
 
         HttpEntity<Object> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<BusinessCertificationResponse> response = restTemplate.exchange(uri, HttpMethod.POST, entity, BusinessCertificationResponse.class);
+        ResponseEntity<BusinessCertificationApiResponse> response = restTemplate.exchange(uri, HttpMethod.POST, entity, BusinessCertificationApiResponse.class);
 
         return Optional.ofNullable(response.getBody())
-                .orElseGet(BusinessCertificationResponse::empty).data().get(0).b_stt_cd();
+                .orElseGet(BusinessCertificationApiResponse::empty).data().get(0).b_stt_cd();
     }
 }

@@ -5,13 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Joo">
     <title>My3D</title>
+    <link rel="stylesheet" href="/css/main.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <style>
-        .text-crl {
-            --tw-text-opacity: 1;
-            color: rgb(255 92 57 / var(--tw-text-opacity));
-        }
-    </style>
 </head>
 <body>
 <!--헤더-->
@@ -24,41 +19,109 @@
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">회원가입</h3>
+                        <!--이메일-->
+                        <div class="d-flex justify-content-start mb-1">
+                            이메일
+                        </div>
+                        <form id="certification-form">
+                            <div class="row mb-2">
+                                <div class="col-9" id="email-form">
+                                    <input type="text" id="email" name="email" class="form-control" placeholder="email@gmail.com" required/>
+                                    <p id="certification-success" class="field-success mb-0" hidden>인증되었습니다</p>
+                                    <p id="email-error" class="field-error mb-0" hidden></p>
+                                </div>
+                                <div class="col-3 text-end ps-0" id="email-certification">
+                                    <button type="submit" class="btn btn-dark">본인인증</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row mb-2" id="certification-check">
+                            <form>
+                                <div class="mb-2">
+                                    <input type="text" id="emailCode" name="code" class="form-control" placeholder="인증 번호를 입력해 주세요" required/>
+                                </div>
+                                <div class="text-start ps-0">
+                                    <button type="button" id="certification" class="btn btn-dark me-2">확인</button>
+                                    <span id="certification-error" class="field-error" hidden>인증 실패</span>
+                                </div>
+                            </form>
+                        </div>
                         <form id="register-form" enctype="application/x-www-form-urlencoded">
+                            <input type="hidden" id="userRole"/>
+                            <div id="companyNames" hidden></div>
+                            <div id="nicknames" hidden></div>
+                            <!--기업명-->
+                            <div id="company">
+                                <div class="d-flex justify-content-start mb-1">
+                                    기업명
+                                </div>
+                                <div class="row mb-3 justify-content-md-center">
+                                    <div class="col-12">
+                                        <input type="text" class="form-control" id="companyName" name="companyName" onchange="check_company()" placeholder="주식회사 My3D" required>
+                                        <p id="duplicated-company" class="field-error mb-0" hidden>이미 존재하는 기업입니다</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--닉네임-->
                             <div class="d-flex justify-content-start mb-1">
                                 닉네임
                             </div>
                             <div class="row mb-3 justify-content-md-center">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" name="nickname" placeholder="닉네임" required>
+                                    <input type="text" class="form-control" id="nickname" name="nickname" onchange="check_nickname()" placeholder="닉네임" required>
+                                    <p id="duplicated-nickname" class="field-error mb-0" hidden>이미 존재하는 닉네임입니다</p>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-start mb-1">
-                                이메일
-                            </div>
-                            <div class="row mb-3 justify-content-md-center">
-                                <div class="col-12">
-                                    <input type="text" class="form-control" name="email" placeholder="이메일을 입력해 주세요" required>
-                                </div>
-                            </div>
+                            <!--비밀번호-->
                             <div class="d-flex justify-content-start mb-1">
                                 비밀번호
                             </div>
-                            <div class="row mb-3 justify-content-md-center">
+                            <div class="row mb-2 justify-content-md-center">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" name="password" placeholder="영문자,숫자,특수문자 포함 최소 8~20자" required>
+                                    <input type="password" class="form-control" id="password" name="password" onchange="check_pw()" placeholder="영문자,숫자,특수문자 포함 최소 8~20자" required>
+                                    <p id="english-error" class="field-error mb-0" hidden>영문자를 포함해야합니다</p>
+                                    <p id="number-error" class="field-error mb-0" hidden>숫자를 포함해야합니다</p>
+                                    <p id="special-error" class="field-error mb-0" hidden>특수문자(!@#$%)를 포함해야합니다</p>
                                 </div>
                             </div>
                             <div class="row mb-3 justify-content-md-center">
                                 <div class="col-12">
-                                    <input type="text" class="form-control" name="passwordCheck" placeholder="비밀번호를 확인해 주세요" required>
+                                    <input type="password" class="form-control" id="passwordCheck" name="passwordCheck" onchange="check_pw()" placeholder="비밀번호를 확인해 주세요" required>
+                                    <p id="passwordCheck-error" class="field-error mb-0" hidden>비밀번호가 일치하지 않습니다</p>
                                 </div>
                             </div>
+                            <!--주소-->
+                            <div class="d-flex justify-content-start mb-1">
+                                주소
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-9">
+                                    <input type="text" id="zipcode" name="zipcode" class="form-control" disabled/>
+                                </div>
+                                <div class="col-3 text-end ps-0">
+                                    <button type="button" id="search-address" class="btn btn-dark">주소찾기</button>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <input type="text" id="address" name="address" class="form-control" disabled/>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="text" id="detailAddress" name="detailAddress" class="form-control" onchange="check_detailAddress()" placeholder="상세주소"/>
+                            </div>
+                            <!--Submit-->
+                            <p id="signup-email-error" class="field-error" hidden>이메일 인증이 안되었습니다</p>
+                            <p id="signup-nickname-error" class="field-error" hidden>닉네임을 수정해주세요</p>
+                            <p id="signup-company-error" class="field-error" hidden>기업명을 수정해주세요</p>
+                            <p id="signup-password-error" class="field-error" hidden>비밀번호를 수정해주세요</p>
+                            <p id="signup-validation-userRole-error" class="field-error"></p>
+                            <p id="signup-validation-nickname-error" class="field-error"></p>
+                            <p id="signup-validation-password-error" class="field-error"></p>
+                            <p id="signup-validation-address-error" class="field-error"></p>
+                            <p id="signup-validation-detailAddress-error" class="field-error"></p>
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <a id="next" class="btn btn-dark" href="#" role="button">회원가입</a>
                             </div>
                         </form>
-
                     </div>
                 </div>
             </div>
@@ -67,5 +130,152 @@
 </section>
 <!--푸터-->
 <footer id="footer"></footer>
+<!--스크립트-->
+<!--https://postcode.map.daum.net/guide-->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script>
+    window.onload = function() {
+        document.getElementById("search-address").addEventListener("click", function(){
+
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById("zipcode").value = data.zonecode;
+                    document.getElementById("address").value = data.address;
+                    $('#signup-address-error').attr("hidden", true);
+                }
+            }).open();
+        });
+    }
+    $(document).ready(function() {
+        $('#certification').on('click', function () {
+            var inputCode = $('#emailCode').val();
+            var code = String([[${code}]]);
+            if (code != null && code == inputCode) {
+                $('#certification-check').attr("hidden", true);
+                $('#certification-success').attr("hidden", false);
+                $('#email').attr('disabled', true);
+                $('#email-certification').attr('hidden', true);
+                $('#signup-email-error').attr("hidden", true);
+                $('#email-form').removeClass("col-9");
+                $('#email-form').addClass("col-12");
+            } else {
+                $('#certification-error').attr("hidden", false);
+            }
+        })
+        $('#next').on('click', function () {
+            var emailSuccess = $('#email-certification').prop("hidden"); //이메일 인증 여부
+            var pwSuccess = $('#passwordCheck-error').prop("hidden")
+                && $('#number-error').prop("hidden")
+                && $('#english-error').prop("hidden")
+                && $('#special-error').prop("hidden"); //비밀번호 유효성 통과 여부
+            var notDuplicatedNickname = $('#duplicated-nickname').prop("hidden"); //닉네임 중복 여부
+            //기본적으로 이메일 인증과 닉네임 중복 체크 확인
+            if (emailSuccess && notDuplicatedNickname && pwSuccess) {
+                //기업일 경우 기업명 중복 체크
+                if ($('#userRole').val() === "COMPANY") {
+                    var notDuplicatedCompany = $('#duplicated-company').prop("hidden");
+                    if (notDuplicatedCompany) {
+                        requestRegister()
+                    } else {
+                        $('#signup-company-error').attr("hidden", false);
+                    }
+                } else {
+                    requestRegister()
+                }
+            } else {
+                if (!emailSuccess) {
+                    $('#signup-email-error').attr("hidden", false);
+                } else if (!notDuplicatedNickname) {
+                    $('#signup-nickname-error').attr("hidden", false);
+                } else if (!pwSuccess) {
+                    $('#signup-password-error').attr("hidden", false);
+                }
+                $('#signup-validation-userRole-error').attr("hidden", true);
+                $('#signup-validation-nickname-error').attr("hidden", true);
+                $('#signup-validation-password-error').attr("hidden", true);
+                $('#signup-validation-address-error').attr("hidden", true);
+                $('#signup-validation-detailAddress-error').attr("hidden", true);
+            }
+        })
+    })
+    function requestRegister() {
+        $('#zipcode').attr("disabled", false);
+        $('#address').attr("disabled", false);
+        var form = $('#register-form');
+        form.attr("action", "/account/sign_up");
+        form.attr("method", "POST");
+        form.submit();
+    }
+    function check_pw() {
+        var pw = $('#password').val();
+        var pw2 = $('#passwordCheck').val();
+
+        var hasLetter = /[a-zA-z]/.test(pw);
+        var hasNumber = /\d/.test(pw);
+        var hasSpecialChar = /[!@#$%]/.test(pw);
+
+        if (pw !== "") {
+            $('#signup-password-error').attr("hidden", true);
+        }
+
+        if (!hasLetter) {
+            $('#english-error').attr("hidden", false);
+        } else {
+            $('#english-error').attr("hidden", true);
+        }
+        if (!hasNumber) {
+            $('#number-error').attr("hidden", false);
+        } else {
+            $('#number-error').attr("hidden", true);
+        }
+        if (!hasSpecialChar) {
+            $('#special-error').attr("hidden", false);
+        } else {
+            $('#special-error').attr("hidden", true);
+        }
+
+        if (pw !== "" && pw !== pw2) {
+            $('#passwordCheck-error').attr("hidden", false);
+        } else {
+            $('#passwordCheck-error').attr("hidden", true);
+        }
+    }
+    function check_nickname() {
+        var nicknames = $('#nicknames').text();
+        var parsedNicknames = JSON.parse(wrapedList(nicknames));
+        var nickname = $('#nickname').val();
+        if (parsedNicknames.indexOf(nickname) !== -1) {
+            $('#duplicated-nickname').attr("hidden", false);
+        } else {
+            $('#duplicated-nickname').attr("hidden", true);
+            $('#signup-nickname-error').attr("hidden", true);
+        }
+    }
+    function check_company() {
+        var companyNames = $('#companyNames').text();
+        var parsedCompanyNames = JSON.parse(wrapedList(companyNames));
+        var companyName = $('#companyName').val();
+        if (parsedCompanyNames.indexOf(companyName) !== -1) {
+            $('#duplicated-company').attr("hidden", false);
+        } else {
+            $('#duplicated-company').attr("hidden", true);
+            $('#signup-company-error').attr("hidden", true);
+        }
+    }
+    function wrapedList(target_list) {
+        return '['
+            + target_list.substring(1, target_list.length - 1).split(',')
+                .map(function(item) {
+                    return '"' + item.trim() + '"';})
+                .join(',')
+            + ']';
+    }
+    function check_detailAddress() {
+        if ($('#detailAddress') !== '') {
+            $('#signup-detailAddress-error').attr("hidden", true);
+        }
+    }
+</script>
 </body>
 </html>

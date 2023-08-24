@@ -1,26 +1,10 @@
 package joo.project.my3d.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.List;
-
 public record BusinessCertificationResponse(
-        @JsonProperty("data") List<Data> data
+        String b_no,
+        String b_stt_cd
 ) {
-    public static BusinessCertificationResponse empty() {
-        return new BusinessCertificationResponse(
-                List.of(
-                        new Data(
-                        null,
-                        null,
-                        null)
-                )
-        );
+    public static BusinessCertificationResponse of(String b_no, String b_stt_cd) {
+        return new BusinessCertificationResponse(b_no, b_stt_cd);
     }
-
-    public record Data(
-            String b_no,
-            String b_stt_cd,
-            String tax_type_cd
-    ) {}
 }
