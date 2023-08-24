@@ -79,22 +79,12 @@ public class LoginController {
         }
 
         //세션에 저장된 정보 전달
-        Object oauthLogin = session.getAttribute("oauthLogin");
-        Object email = session.getAttribute("email");
-        Object code = session.getAttribute("emailCode"); //이메일 인증 코드
-        Object emailError = session.getAttribute("emailError"); //이메일 중복 여부
-        if (Objects.nonNull(oauthLogin)) {
-            model.addAttribute("oauthLogin", oauthLogin);
-        }
-        if (Objects.nonNull(email)) {
-            model.addAttribute("email", email);
-        }
-        if (Objects.nonNull(code)) {
-            model.addAttribute("code", code);
-        }
-        if (Objects.nonNull(emailError)) {
-            model.addAttribute("emailError", emailError);
-        }
+        model.addAttribute("oauthLogin", session.getAttribute("oauthLogin"));
+        model.addAttribute("email", session.getAttribute("email"));
+        //이메일 인증 코드
+        model.addAttribute("code", session.getAttribute("emailCode"));
+        //이메일 중복 여부
+        model.addAttribute("emailError", session.getAttribute("emailError"));
 
         SignUpResponse response = SignUpResponse.of(
                 (UserRole) session.getAttribute("userRole"),
