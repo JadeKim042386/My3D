@@ -1,8 +1,12 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.service.EmailService;
+import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Controller
@@ -18,7 +23,11 @@ import java.util.regex.Pattern;
 public class EmailController {
 
     private final EmailService emailService;
+    private final SignUpService signUpService;
     private final UserAccountService userAccountService;
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
     /**
      *  인증 코드 전송 후 코드와 이메일을 세션에 저장
@@ -32,8 +41,7 @@ public class EmailController {
         session.setAttribute("email", email);
 
         //이메일 형식 체크
-        String pattern = "^(?:\\w+\\.?)*\\w+@(?:\\w+\\.)+\\w+$";
-        if (!Pattern.matches(pattern, email)) {
+        if (invalidEmailFormat(email)) {
             session.setAttribute("emailError", "format");
             return "redirect:/account/sign_up";
         }
@@ -50,5 +58,43 @@ public class EmailController {
         session.removeAttribute("emailError");
 
         return "redirect:/account/sign_up";
+    }
+
+    @PostMapping("/find_pass")
+    public String sendEmailFindPass(
+            HttpServletRequest request,
+            @RequestParam String email
+    ) {
+        HttpSession session = request.getSession();
+        session.setAttribute("email", email);
+        //이메일 형식 체크
+        if (invalidEmailFormat(email)) {
+            session.setAttribute("emailError", "format");
+            return "redirect:/account/find_pass";
+        }
+        if (userAccountService.searchUser(email).isEmpty()) {
+            session.setAttribute("emailError", "notFound");
+            return "redirect:/account/find_pass";
+        }
+        session.removeAttribute("emailError");
+        String subject = "[My3D] 이메일 임시 비밀번호";
+        String code = "{noop}" + String.valueOf(UUID.randomUUID()).split("-")[0];
+        emailService.sendEmail(email, subject, code);
+
+        //수정한 AuditiorAware를 위해 Admin 계정을 SecurityContextHolder에 추가
+        UserAccountDto userAccountDto = userAccountService.searchUser(adminEmail).get();
+        signUpService.setPrincipal(userAccountDto);
+
+        //임시 비밀번호로 변경
+        userAccountService.changePassword(email, code);
+        //변경 완료 후 principal 제거
+        SecurityContextHolder.clearContext();
+
+        return "redirect:/account/find_pass_success";
+    }
+
+    private boolean invalidEmailFormat(String email) {
+        String pattern = "^(?:\\w+\\.?)*\\w+@(?:\\w+\\.)+\\w+$";
+        return !Pattern.matches(pattern, email);
     }
 }

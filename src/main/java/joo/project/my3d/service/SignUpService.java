@@ -1,10 +1,14 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.BusinessCertificationApiResponse;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -43,5 +47,19 @@ public class SignUpService {
 
         return Optional.ofNullable(response.getBody())
                 .orElseGet(BusinessCertificationApiResponse::empty).data().get(0).b_stt_cd();
+    }
+
+    /**
+     * 직접 authentication 등록
+     */
+    public void setPrincipal(UserAccountDto dto) {
+        BoardPrincipal principal = BoardPrincipal.from(dto);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        principal,
+                        principal.password(),
+                        principal.authorities()
+                )
+        );
     }
 }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -72,5 +73,19 @@ class UserAccountServiceTest {
         userAccountService.saveUser(userAccount);
         // Then
         then(userAccountRepository).should().save(any(UserAccount.class));
+    }
+
+    @DisplayName("회원 비밀번호 변경")
+    @Test
+    @WithAnonymousUser
+    void changePassword() {
+        // Given
+        String email = "jk042386@gmail.com";
+        String changedPassword = "changedPassword";
+        given(userAccountRepository.getReferenceById(email)).willReturn(Fixture.getUserAccount());
+        // When
+        userAccountService.changePassword(email, changedPassword);
+        // Then
+        then(userAccountRepository).should().getReferenceById(email);
     }
 }

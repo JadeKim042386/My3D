@@ -22,7 +22,7 @@ public class CustomOAuth2LoginAuthenticationFilter extends OncePerRequestFilter 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String url = String.valueOf(request.getRequestURL());
         //로그인과 회원가입 관련 URL에서만 실행
-        if (url.contains("account") || url.contains("/mail/send_code")) {
+        if (url.contains("account") || url.contains("mail")) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (!Objects.isNull(authentication)) {
                 BoardPrincipal boardPrincipal = (BoardPrincipal) authentication.getPrincipal();

@@ -70,6 +70,7 @@ spring:
           starttls.enable: true # TLS 활성화 여부
 model.path: ${MODEL_PATH}
 nts.service-key: ${NTS_BUSINESS_KEY}
+admin.email: ${ADMIN_EMAIL}
 
 ---
 

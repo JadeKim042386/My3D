@@ -13,10 +13,8 @@ import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -81,22 +79,12 @@ public class LoginController {
         }
 
         //세션에 저장된 정보 전달
-        Object oauthLogin = session.getAttribute("oauthLogin");
-        Object email = session.getAttribute("email");
-        Object code = session.getAttribute("emailCode"); //이메일 인증 코드
-        Object emailError = session.getAttribute("emailError"); //이메일 중복 여부
-        if (Objects.nonNull(oauthLogin)) {
-            model.addAttribute("oauthLogin", oauthLogin);
-        }
-        if (Objects.nonNull(email)) {
-            model.addAttribute("email", email);
-        }
-        if (Objects.nonNull(code)) {
-            model.addAttribute("code", code);
-        }
-        if (Objects.nonNull(emailError)) {
-            model.addAttribute("emailError", emailError);
-        }
+        model.addAttribute("oauthLogin", session.getAttribute("oauthLogin"));
+        model.addAttribute("email", session.getAttribute("email"));
+        //이메일 인증 코드
+        model.addAttribute("code", session.getAttribute("emailCode"));
+        //이메일 중복 여부
+        model.addAttribute("emailError", session.getAttribute("emailError"));
 
         SignUpResponse response = SignUpResponse.of(
                 (UserRole) session.getAttribute("userRole"),
@@ -145,14 +133,7 @@ public class LoginController {
         UserAccountDto userAccountDto = UserAccountDto.from(userAccount);
 
         //auditorAware를 위해 principal을 먼저 등록
-        BoardPrincipal principal = BoardPrincipal.from(userAccountDto);
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        principal,
-                        principal.password(),
-                        principal.authorities()
-                )
-        );
+        signUpService.setPrincipal(userAccountDto);
 
         userAccountService.saveUser(
                     userAccount
@@ -165,8 +146,22 @@ public class LoginController {
      * 비밀번호 찾기 페이지
      */
     @GetMapping("/find_pass")
-    public String findPassword() {
+    public String findPassword(
+            HttpServletRequest request,
+            Model model
+    ) {
+        HttpSession session = request.getSession();
+        model.addAttribute("email", session.getAttribute("email"));
+        model.addAttribute("emailError", session.getAttribute("emailError"));
         return "account/find-pass";
+    }
+
+    /**
+     * 임시 비밀번호 전송 완료 페이지
+     */
+    @GetMapping("/find_pass_success")
+    public String findPasswordSuccess() {
+        return "account/find-pass-success";
     }
 
     /**
