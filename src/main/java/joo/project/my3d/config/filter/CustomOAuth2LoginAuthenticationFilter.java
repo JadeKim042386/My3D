@@ -1,4 +1,4 @@
-package joo.project.my3d.config;
+package joo.project.my3d.config.filter;
 
 import joo.project.my3d.dto.security.BoardPrincipal;
 import lombok.extern.slf4j.Slf4j;

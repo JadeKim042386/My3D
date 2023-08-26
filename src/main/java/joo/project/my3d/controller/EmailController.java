@@ -7,6 +7,7 @@ import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class EmailController {
     private final EmailService emailService;
     private final SignUpService signUpService;
     private final UserAccountService userAccountService;
+    private final BCryptPasswordEncoder encoder;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -86,7 +88,7 @@ public class EmailController {
         signUpService.setPrincipal(userAccountDto);
 
         //임시 비밀번호로 변경
-        userAccountService.changePassword(email, code);
+        userAccountService.changePassword(email, encoder.encode(code));
         //변경 완료 후 principal 제거
         SecurityContextHolder.clearContext();
 

@@ -1,20 +1,25 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.request.BusinessCertificationRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
+import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
 import joo.project.my3d.dto.response.SignUpResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.utils.CookieUtils;
+import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -36,6 +42,8 @@ public class LoginController {
 
     private final SignUpService signUpService;
     private final UserAccountService userAccountService;
+    private final BCryptPasswordEncoder encoder;
+    private final JwtProperties jwtProperties;
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
     @GetMapping("/login")
@@ -43,9 +51,34 @@ public class LoginController {
         return "account/login";
     }
 
+    @PostMapping("/login")
+    public String requestLogin(
+            UserLoginRequest request,
+            HttpServletResponse response
+    ) {
+        String token = userAccountService.login(request.email(), request.password());
+        Cookie cookie = CookieUtils.createCookie(
+                jwtProperties.cookieName(),
+                token,
+                (int) (jwtProperties.expiredTimeMs() / 1000),
+                "/"
+        );
+        response.addCookie(cookie);
+
+        return "redirect:/";
+    }
+
     @GetMapping("/logout")
     public String logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         this.logoutHandler.logout(request, response, authentication);
+        Cookie cookie = CookieUtils.createCookie(
+                jwtProperties.cookieName(),
+                null,
+                0,
+                "/"
+        );
+        response.addCookie(cookie);
+
         return "redirect:/";
     }
 
@@ -115,6 +148,7 @@ public class LoginController {
     @PostMapping("/sign_up")
     public String signup(
             HttpServletRequest request,
+            HttpServletResponse response,
             @Validated @ModelAttribute("signUpData") SignUpRequest signUpRequest,
             BindingResult bindingResult,
             Model model
@@ -129,15 +163,28 @@ public class LoginController {
             return "account/signup";
         }
 
-        UserAccount userAccount = signUpRequest.toEntity((String) email);
-        UserAccountDto userAccountDto = UserAccountDto.from(userAccount);
+        UserAccountDto userAccountDto = UserAccountDto.from(
+                signUpRequest.toEntity((String) email),
+                encoder
+        );
 
         //auditorAware를 위해 principal을 먼저 등록
         signUpService.setPrincipal(userAccountDto);
+        userAccountService.saveUser(userAccountDto.toEntity());
 
-        userAccountService.saveUser(
-                    userAccount
+        //jwt 토큰 추가
+        Cookie cookie = CookieUtils.createCookie(
+                jwtProperties.cookieName(),
+                JwtTokenUtils.generateToken(
+                        userAccountDto.email(),
+                        userAccountDto.nickname(),
+                        jwtProperties.secretKey(),
+                        jwtProperties.expiredTimeMs()
+                ),
+                (int) jwtProperties.expiredTimeMs() / 1000,
+                "/"
         );
+        response.addCookie(cookie);
 
         return "redirect:/";
     }
