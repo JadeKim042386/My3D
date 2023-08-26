@@ -4,6 +4,8 @@ import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -69,6 +71,25 @@ public record UserAccountDto(
         return UserAccountDto.of(
                 userAccount.getEmail(),
                 userAccount.getUserPassword(),
+                userAccount.getNickname(),
+                userAccount.getPhone(),
+                Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
+                userAccount.isSignUp(),
+                userAccount.getUserRole(),
+                Objects.isNull(compnay) ? CompanyDto.of() : CompanyDto.from(compnay)
+        );
+    }
+
+    /**
+     * 추가로 비밀번호를 인코딩
+     */
+    public static <T extends PasswordEncoder> UserAccountDto from(UserAccount userAccount, T encoder) {
+        Address address = userAccount.getAddress();
+        Company compnay = userAccount.getCompnay();
+
+        return UserAccountDto.of(
+                userAccount.getEmail(),
+                encoder.encode(userAccount.getUserPassword()),
                 userAccount.getNickname(),
                 userAccount.getPhone(),
                 Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
