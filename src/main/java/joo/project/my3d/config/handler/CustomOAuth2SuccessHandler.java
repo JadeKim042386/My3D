@@ -5,7 +5,6 @@ import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -40,6 +39,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         );
         response.addCookie(cookie);
 
-        getRedirectStrategy().sendRedirect(request, response, "/");
+        //회원가입이 안된 유저면 회원가입 페이지로 이동
+        if(principal.notSignUp()) {
+            getRedirectStrategy().sendRedirect(request, response, "/account/type");
+        } else {
+            getRedirectStrategy().sendRedirect(request, response, "/");
+        }
     }
 }
