@@ -3,6 +3,7 @@ package joo.project.my3d.config.filter;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String token;
 
+        //회원가입관련 URL일 경우 생략
+        String url = request.getRequestURL().toString();
+        if (url.contains("account") || url.contains("mail")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         //쿠키에서 JWT 토큰을 가져옴 (이후 프론트엔드에서 토큰을 관리할 경우 이 부분을 수정)
         header = getJwtTokenFromCookie(request, header);
 
@@ -74,10 +81,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.error("Error occurs while getting header, header is null or invalid {}", request.getRequestURL());
                 return null;
             }
-            Cookie jwtTokenCookie = Arrays.stream(request.getCookies())
-                    .filter(cookie -> cookie.getName().equals("jwtToken"))
-                    .findFirst()
-                    .orElse(null);
+            Cookie jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
             if (jwtTokenCookie == null) {
                 log.error("Error occurs while getting header, jwtToken is null or invalid {}", request.getRequestURL());
                 return null;
