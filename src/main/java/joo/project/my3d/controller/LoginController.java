@@ -9,16 +9,13 @@ import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
 import joo.project.my3d.dto.response.SignUpResponse;
-import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -26,11 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,13 +68,6 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         this.logoutHandler.logout(request, response, authentication);
-        Cookie cookie = CookieUtils.createCookie(
-                jwtProperties.cookieName(),
-                null,
-                0,
-                "/"
-        );
-        response.addCookie(cookie);
 
         return "redirect:/";
     }
@@ -87,11 +77,7 @@ public class LoginController {
      * 2. 회원가입
      */
     @GetMapping("/type")
-    public String type(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        //OAuth 로그인 후 회원가입이 되어있다면 홈페이지로 이동
-        if (!Objects.isNull(boardPrincipal) && boardPrincipal.signUp()) {
-            return "redirect:/";
-        }
+    public String type() {
 
         return "account/type";
     }
@@ -102,27 +88,37 @@ public class LoginController {
     @GetMapping("/sign_up")
     public String signup(
             HttpServletRequest request,
-            @RequestParam(required = false) UserRole userRole,
+            @RequestParam UserRole userRole,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String emailError,
+            @RequestParam(required = false) String emailCode,
             Model model
     ) {
-        HttpSession session = request.getSession();
-        //회원 유형 선택 페이지에서 선택된 유형 저장
-        if (Objects.nonNull(userRole)) {
-            session.setAttribute("userRole", userRole);
+        //OAuth 로그인으로 저장된 cookie에서 유저 정보를 추출
+        Cookie jwtTokenCookie = null;
+        String nickname = null;
+        if (Objects.nonNull(request.getCookies())){
+            jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
+            if (Objects.nonNull(jwtTokenCookie)){
+                if (Objects.isNull(email)){
+                    email = JwtTokenUtils.getUserEmail(jwtTokenCookie.getValue(), jwtProperties.secretKey());
+                }
+                nickname = JwtTokenUtils.getUserNickname(jwtTokenCookie.getValue(), jwtProperties.secretKey());
+            }
         }
 
         //세션에 저장된 정보 전달
-        model.addAttribute("oauthLogin", session.getAttribute("oauthLogin"));
-        model.addAttribute("email", session.getAttribute("email"));
+        model.addAttribute("oauthLogin", Objects.nonNull(jwtTokenCookie));
+        model.addAttribute("email", email);
         //이메일 인증 코드
-        model.addAttribute("code", session.getAttribute("emailCode"));
-        //이메일 중복 여부
-        model.addAttribute("emailError", session.getAttribute("emailError"));
+        model.addAttribute("code", emailCode);
+        //이메일 전송 에러
+        model.addAttribute("emailError", emailError);
 
         SignUpResponse response = SignUpResponse.of(
-                (UserRole) session.getAttribute("userRole"),
+                userRole,
                 null,
-                (String) session.getAttribute("nickname"),
+                nickname,
                 null,
                 null,
                 null,
@@ -147,24 +143,20 @@ public class LoginController {
 
     @PostMapping("/sign_up")
     public String signup(
-            HttpServletRequest request,
             HttpServletResponse response,
+            @RequestParam String email,
             @Validated @ModelAttribute("signUpData") SignUpRequest signUpRequest,
             BindingResult bindingResult,
             Model model
     ) {
-        HttpSession session = request.getSession();
-        Object email = session.getAttribute("email");
-
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
             model.addAttribute("email", email);
-            session.removeAttribute("emailCode");
             return "account/signup";
         }
 
         UserAccountDto userAccountDto = UserAccountDto.from(
-                signUpRequest.toEntity((String) email),
+                signUpRequest.toEntity(email),
                 encoder
         );
 
@@ -194,12 +186,12 @@ public class LoginController {
      */
     @GetMapping("/find_pass")
     public String findPassword(
-            HttpServletRequest request,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String emailError,
             Model model
     ) {
-        HttpSession session = request.getSession();
-        model.addAttribute("email", session.getAttribute("email"));
-        model.addAttribute("emailError", session.getAttribute("emailError"));
+        model.addAttribute("email", email);
+        model.addAttribute("emailError", emailError);
         return "account/find-pass";
     }
 
@@ -216,16 +208,14 @@ public class LoginController {
      */
     @GetMapping("/company")
     public String businessCertification(
-            HttpServletRequest request,
+            @RequestParam(required = false) String b_no,
+            @RequestParam(required = false) String b_stt_cd,
             Model model
     ) {
-        HttpSession session = request.getSession();
         BusinessCertificationResponse response = BusinessCertificationResponse.of(
-                (String) session.getAttribute("b_no"),
-                (String) session.getAttribute("b_stt_cd")
+                b_no,
+                b_stt_cd
         );
-        //수정 요청이 들어오면 b_stt_cd는 존재하면 안되므로 삭제
-        session.removeAttribute("b_stt_cd");
         model.addAttribute("certification", response);
 
         return "account/company";
@@ -241,12 +231,11 @@ public class LoginController {
      */
     @PostMapping("/company")
     public String requestBusinessCertification(
-            HttpServletRequest request,
             @Validated @ModelAttribute("certification") BusinessCertificationRequest businessCertificationRequest,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes
     ) {
-        HttpSession session = request.getSession();
-        session.setAttribute("b_no", businessCertificationRequest.b_no());
+        redirectAttributes.addAttribute("b_no", businessCertificationRequest.b_no());
 
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
@@ -257,7 +246,7 @@ public class LoginController {
         if (b_stt_cd.equals("")) {
             b_stt_cd = "04";
         }
-        session.setAttribute("b_stt_cd", b_stt_cd);
+        redirectAttributes.addAttribute("b_stt_cd", b_stt_cd);
 
         return "redirect:/account/company";
     }

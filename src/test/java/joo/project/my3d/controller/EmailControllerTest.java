@@ -3,8 +3,10 @@ package joo.project.my3d.controller;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.EmailService;
+import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -30,6 +32,7 @@ class EmailControllerTest {
     @Autowired private MockMvc mvc;
     @Autowired private UserAccountService userAccountService;
     @MockBean private EmailService emailService;
+    @MockBean private SignUpService signUpService;
 
     @DisplayName("[POST] 이메일 인증 발송 - 정상 발송")
     @Test
@@ -43,10 +46,11 @@ class EmailControllerTest {
         mvc.perform(
                         post("/mail/send_code")
                                 .queryParam("email", email)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/sign_up"))
-                .andExpect(redirectedUrl("/account/sign_up"));
+                .andExpect(redirectedUrlPattern("/account/sign_up*"));
         // Then
         then(userAccountService).should().searchUser(email);
         then(emailService).should().sendEmail(eq(email), eq(subject), anyString());
@@ -63,10 +67,11 @@ class EmailControllerTest {
         mvc.perform(
                         post("/mail/send_code")
                                 .queryParam("email", email)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/sign_up"))
-                .andExpect(redirectedUrl("/account/sign_up"));
+                .andExpect(redirectedUrlPattern("/account/sign_up*"));
         // Then
         then(userAccountService).should().searchUser(email);
         then(emailService).shouldHaveNoInteractions();
@@ -88,7 +93,7 @@ class EmailControllerTest {
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/find_pass_success"))
-                .andExpect(redirectedUrl("/account/find_pass_success"));
+                .andExpect(redirectedUrlPattern("/account/find_pass_success*"));
         // Then
         then(userAccountService).should(times(2)).searchUser(anyString());
         then(emailService).should().sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
@@ -108,7 +113,7 @@ class EmailControllerTest {
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/find_pass"))
-                .andExpect(redirectedUrl("/account/find_pass"));
+                .andExpect(redirectedUrlPattern("/account/find_pass*"));
         // Then
         then(userAccountService).should(times(1)).searchUser(anyString());
         then(emailService).shouldHaveNoInteractions();
