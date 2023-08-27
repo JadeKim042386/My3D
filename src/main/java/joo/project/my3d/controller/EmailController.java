@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.SignUpService;
@@ -12,9 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -36,51 +36,49 @@ public class EmailController {
      */
     @PostMapping("/send_code")
     public String sendEmailCertification(
-            HttpServletRequest request,
-            @RequestParam String email
+            @RequestParam String email,
+            @RequestParam UserRole userRole,
+            RedirectAttributes redirectAttributes
     ) {
-        HttpSession session = request.getSession();
-        session.setAttribute("email", email);
+        redirectAttributes.addAttribute("email", email);
+        redirectAttributes.addAttribute("userRole", userRole);
 
         //이메일 형식 체크
         if (invalidEmailFormat(email)) {
-            session.setAttribute("emailError", "format");
+            redirectAttributes.addAttribute("emailError", "format");
             return "redirect:/account/sign_up";
         }
 
         //이메일 중복 체크
         if (userAccountService.searchUser(email).isPresent()) {
-            session.setAttribute("emailError", "duplicated");
+            redirectAttributes.addAttribute("emailError", "duplicated");
             return "redirect:/account/sign_up";
         }
         String subject = "[My3D] 이메일 인증";
         String code = String.valueOf(Math.round(Math.random() * 10000));
         emailService.sendEmail(email, subject, code);
-        session.setAttribute("emailCode", code);
-        session.removeAttribute("emailError");
+        redirectAttributes.addAttribute("emailCode", code);
 
         return "redirect:/account/sign_up";
     }
 
     @PostMapping("/find_pass")
     public String sendEmailFindPass(
-            HttpServletRequest request,
-            @RequestParam String email
+            @RequestParam String email,
+            RedirectAttributes redirectAttributes
     ) {
-        HttpSession session = request.getSession();
-        session.setAttribute("email", email);
+        redirectAttributes.addAttribute("email", email);
         //이메일 형식 체크
         if (invalidEmailFormat(email)) {
-            session.setAttribute("emailError", "format");
+            redirectAttributes.addAttribute("emailError", "format");
             return "redirect:/account/find_pass";
         }
         if (userAccountService.searchUser(email).isEmpty()) {
-            session.setAttribute("emailError", "notFound");
+            redirectAttributes.addAttribute("emailError", "notFound");
             return "redirect:/account/find_pass";
         }
-        session.removeAttribute("emailError");
         String subject = "[My3D] 이메일 임시 비밀번호";
-        String code = "{noop}" + String.valueOf(UUID.randomUUID()).split("-")[0];
+        String code = String.valueOf(UUID.randomUUID()).split("-")[0];
         emailService.sendEmail(email, subject, code);
 
         //수정한 AuditiorAware를 위해 Admin 계정을 SecurityContextHolder에 추가

@@ -202,8 +202,9 @@
     function requestRegister() {
         $('#zipcode').attr("disabled", false);
         $('#address').attr("disabled", false);
+        var email = $('#email').val();
         var form = $('#register-form');
-        form.attr("action", "/account/sign_up");
+        form.attr("action", "/account/sign_up?email=" + email);
         form.attr("method", "POST");
         form.submit();
     }

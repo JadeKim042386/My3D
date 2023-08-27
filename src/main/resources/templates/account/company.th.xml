@@ -3,7 +3,9 @@
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <!--기업확인 폼-->
-    <attr sel="#certification-form" th:object="${certification}" th:action="@{/account/company}" th:method="(*{b_stt_cd} == '01' and *{b_no}) ? 'get' : 'post'">
+    <attr sel="#certification-form" th:object="${certification}" th:action="@{/account/company}" th:method="post">
+        <attr sel="#submit-button" th:if="!(*{b_stt_cd} == '01' and *{b_no})"/>
+        <attr sel="#modify-button" th:if="(*{b_stt_cd} == '01' and *{b_no})" th:href="@{/account/company(b_no=*{b_no})}"/>
         <attr sel="#companyCCC" th:value="*{b_no} ? *{b_no}: _" th:disabled="(*{b_stt_cd} == '01' and *{b_no})"/>
         <!--사업인증 에러-->
         <attr sel="#certification-error"
@@ -19,7 +21,5 @@
         />
     </attr>
     <!--회원가입 페이지로 이동-->
-    <attr sel="#next" th:if="${b_stt_cd} == '01'" th:href="@{/account/sign_up(userRole='COMPANY')}"/>
-    <!--스크립트-->
-    <attr sel="#inline-js" th:inline="javascript"/>
+    <attr sel="#next" th:if="${certification.b_stt_cd} == '01'" th:href="@{/account/sign_up(userRole='COMPANY')}"/>
 </thlogic>

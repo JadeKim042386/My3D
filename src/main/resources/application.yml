@@ -98,4 +98,39 @@ spring:
       hibernate.format_sql: true
     defer-datasource-initialization: true
   sql.init.mode: always
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_OAUTH_CLIENT_ID}
+            client-secret: ${KAKAO_OAUTH_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-authentication-method: POST
+            scope:
+              - "account_email"
+              - "profile_nickname"
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls.enable: true
 model.path: ${MODEL_PATH}
+jwt:
+  token:
+    cookie-name: "token"
+    secret-key: "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" # >= 256bits
+    expired-time-ms: 2592000000

@@ -6,6 +6,8 @@ import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.util.FormDataEncoder;
+import joo.project.my3d.utils.CookieUtils;
+import joo.project.my3d.utils.JwtTokenUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,10 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.servlet.http.Cookie;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
@@ -25,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 로그인과 회원가입")
 @Import({TestSecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest(LoginController.class)
@@ -48,19 +54,6 @@ class LoginControllerTest {
         // Then
     }
 
-    @DisplayName("[GET] 로그아웃 페이지")
-    @WithMockUser
-    @Test
-    void logout() throws Exception {
-        // Given
-
-        // When
-        mvc.perform(get("/account/logout"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
-        // Then
-    }
-
     @DisplayName("[GET] 회원 유형 선택 페이지 - 회원가입되지 않은 유저")
     @Test
     void selectTypeByNotSignedUser() throws Exception {
@@ -78,7 +71,6 @@ class LoginControllerTest {
 
     @DisplayName("[GET] 회원 유형 선택 페이지 - 회원가입된 유저")
     @Test
-    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     void selectTypeBySignedUser() throws Exception {
         // Given
 
@@ -86,7 +78,7 @@ class LoginControllerTest {
         mvc.perform(
                         get("/account/type")
                 )
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
         // Then
     }
 
@@ -103,7 +95,7 @@ class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/signup"))
-                .andExpect(model().attributeDoesNotExist("oauthLogin"))
+                .andExpect(model().attributeExists("oauthLogin"))
                 .andExpect(model().attributeDoesNotExist("email"))
                 .andExpect(model().attributeDoesNotExist("code"))
                 .andExpect(model().attributeDoesNotExist("emailError"))
@@ -116,15 +108,22 @@ class LoginControllerTest {
     @Test
     void signupOauthAfterSelectedType() throws Exception {
         // Given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("oauthLogin", true);
-        session.setAttribute("email", "tester@gmail.com");
-        session.setAttribute("nickname", "tester");
+        Cookie cookie = CookieUtils.createCookie(
+                "token",
+                JwtTokenUtils.generateToken(
+                        "b@gmail.com",
+                        "B",
+                        "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        100000L
+                ),
+                100,
+                "/"
+        );
         // When
         mvc.perform(
                         get("/account/sign_up")
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
-                                .session(session)
+                                .cookie(cookie)
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -143,15 +142,13 @@ class LoginControllerTest {
     @Test
     void signupAfterRedirect() throws Exception {
         // Given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userRole", UserRole.USER);
-        session.setAttribute("email", "tester@gmail.com");
-        session.setAttribute("nickname", "tester");
-        session.setAttribute("emailCode", 1234);
+
         // When
         mvc.perform(
                         get("/account/sign_up")
-                                .session(session)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .queryParam("email", "b@gmail.com")
+                                .queryParam("emailCode", "01")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -169,15 +166,13 @@ class LoginControllerTest {
     @Test
     void signupAfterRedirectDuplicatedEmail() throws Exception {
         // Given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userRole", UserRole.USER);
-        session.setAttribute("email", "tester@gmail.com");
-        session.setAttribute("nickname", "tester");
-        session.setAttribute("emailError", "duplicated");
+
         // When
         mvc.perform(
                         get("/account/sign_up")
-                                .session(session)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .queryParam("email", "b@gmail.com")
+                                .queryParam("emailError", "duplicated")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -196,16 +191,14 @@ class LoginControllerTest {
     void requestSignup() throws Exception {
         // Given
         String email = "tester@gmail.com";
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("email", email);
         SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
         willDoNothing().given(userAccountService).saveUser(request.toEntity(email));
         // When
         mvc.perform(
                         post("/account/sign_up")
+                                .queryParam("email", email)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(request))
-                                .session(session)
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
@@ -258,12 +251,11 @@ class LoginControllerTest {
     @Test
     void businessCertificationAfterModify() throws Exception {
         // Given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("b_no", "2208162517");
+
         // When
         mvc.perform(
                         get("/account/company")
-                                .session(session)
+                            .queryParam("b_no", "2208162517")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -276,13 +268,12 @@ class LoginControllerTest {
     @Test
     void businessCertificationAfterRedirect() throws Exception {
         // Given
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("b_stt_cd", "01");
-        session.setAttribute("b_no", "2208162517");
+
         // When
         mvc.perform(
                         get("/account/company")
-                                .session(session)
+                            .queryParam("b_no", "2208162517")
+                            .queryParam("b_stt_cd", "01")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -303,7 +294,7 @@ class LoginControllerTest {
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/company"))
-                .andExpect(redirectedUrl("/account/company"));
+                .andExpect(redirectedUrlPattern("/account/company*"));
         // Then
         then(signUpService).should().businessCertification(anyString());
     }

@@ -29,6 +29,7 @@
                                 </div>
                                 <div class="col-3 ps-2 text-start">
                                     <button type="submit" id="submit-button" class="btn btn-dark">기업확인</button>
+                                    <a id="modify-button" class="btn btn-dark" role="button">수정</a>
                                 </div>
                                 <p id="validation-error" class="mt-2"></p>
                                 <p id="certification-error" class="mt-2"></p>
@@ -46,17 +47,5 @@
 </section>
 <!--푸터-->
 <footer id="footer"></footer>
-<!--스크립트-->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-<script id="inline-js">
-    var b_stt_cd = [[${certification.b_stt_cd}]];
-    $(document).ready(function() {
-        if (b_stt_cd === '01' && ![[${#strings.isEmpty(certification.b_no)}]]) {
-            $('#submit-button').text("수정");
-        } else {
-            $('#submit-button').text("기업확인");
-        }
-    })
-</script>
 </body>
 </html>
