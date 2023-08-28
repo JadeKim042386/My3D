@@ -17,27 +17,18 @@
         <div class="row d-flex justify-content-center align-items-center">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                    <div class="card-body p-4 text-center">
+                    <div id="certification-form" class="card-body p-4 text-center">
                         <h3 class="mb-5">사업자 정보를 입력해주세요</h3>
                         <div class="d-flex justify-content-start mb-1">
                             사업자 등록변호
                         </div>
-                        <div class="form-outline mb-4">
-                            <form id="certification-form" class="row align-items-center mb-2">
-                                <div class="col-9 pe-0">
-                                    <input type="text" id="companyCCC" name="b_no" class="form-control" placeholder="-없이 숫자 열자리를 입력해주세요"/>
-                                </div>
-                                <div class="col-3 ps-2 text-start">
-                                    <button type="submit" id="submit-button" class="btn btn-dark">기업확인</button>
-                                    <a id="modify-button" class="btn btn-dark" role="button">수정</a>
-                                </div>
-                                <p id="validation-error" class="mt-2"></p>
-                                <p id="certification-error" class="mt-2"></p>
-                            </form>
-
-                        </div>
-                        <div class="d-grid gap-2 col-6 mx-auto">
-                            <a id="next" class="btn btn-dark" href="#" role="button">다음으로</a>
+                        <div class="row align-items-center mb-2">
+                            <div class="col-9 pe-0">
+                                <input type="text" id="companyCCC" name="b_no" class="form-control" placeholder="-없이 숫자 열자리를 입력해주세요"/>
+                            </div>
+                            <div class="col-3 ps-2 text-start">
+                                <a id="submit-button" class="btn btn-dark" role="button">기업확인</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,5 +38,79 @@
 </section>
 <!--푸터-->
 <footer id="footer"></footer>
+<!--스크립트-->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script id="inline-js">
+    var serviceKey = [[${serviceKey}]];
+    $('#submit-button').click(
+        function () {
+            var b_no = $('#companyCCC').val();
+            var data = {
+                "b_no": [b_no]
+            };
+            var nextButton = $("<a id='next' class='btn btn-dark' href='javascript:void(0)' role='button'>다음으로</a>");
+            nextButton.click(
+                function () {
+                    location.href = '/account/sign_up?userRole=COMPANY';
+                }
+            );
+            //수정
+            if ($('#submit-button').text() == '수정') {
+                $('#submit-button').text('기업확인');
+                $('#companyCCC').attr('disabled', false);
+                $('#next').remove();
+                return;
+            }
+            //숫자 10자리인지 확인
+            if (/^\d{10}$/.test(b_no)) {
+                $.ajax({
+                    url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + serviceKey,
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    dataType: "JSON",
+                    contentType: "application/json",
+                    accept: "application/json",
+                    beforeSend: function () {
+                      $('html').css('cursor', 'wait');
+                    },
+                    success: function (result) {
+                        $('html').css('cursor', 'auto');
+                        $('#certification-result').remove();
+                        $('#next').remove();
+                        var msg;
+                        var fieldClass = 'field-error';
+                        var b_stt_cd = result.data[0].b_stt_cd;
+                        console.log(b_stt_cd);
+                        if (b_stt_cd == '01') {
+                            msg = '인증되었습니다';
+                            fieldClass = 'field-success';
+                            $('#submit-button').text("수정");
+                            $('#companyCCC').attr('disabled', true);
+                            $('#certification-form').append(nextButton);
+                        } else if (b_stt_cd == '02') {
+                            msg = '휴업 상태입니다';
+                        } else if (b_stt_cd == '03') {
+                            msg = '폐업 상태입니다';
+                        } else if (b_stt_cd == '') {
+                            msg = '존재하지않는 기업입니다';
+                        }
+                        var innerHtml = $("<p id='certification-result'></p>");
+                        innerHtml.addClass(fieldClass);
+                        innerHtml.text(msg);
+                        $('#certification-form').append(innerHtml);
+                    },
+                    error: function (result) {
+                        console.log(result.responseText);
+                    }
+                });
+            } else {
+                $('#next').remove();
+                $('#certification-result').remove();
+                var errorElement = $("<p id='certification-result' class='field-error'>사업자 등록번호 숫자 10자리를 입력해주세요</p>");
+                $('#certification-form').append(errorElement);
+            }
+        }
+    );
+</script>
 </body>
 </html>
