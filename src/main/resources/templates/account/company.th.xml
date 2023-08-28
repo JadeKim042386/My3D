@@ -2,24 +2,5 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
-    <!--기업확인 폼-->
-    <attr sel="#certification-form" th:object="${certification}" th:action="@{/account/company}" th:method="post">
-        <attr sel="#submit-button" th:if="!(*{b_stt_cd} == '01' and *{b_no})"/>
-        <attr sel="#modify-button" th:if="(*{b_stt_cd} == '01' and *{b_no})" th:href="@{/account/company(b_no=*{b_no})}"/>
-        <attr sel="#companyCCC" th:value="*{b_no} ? *{b_no}: _" th:disabled="(*{b_stt_cd} == '01' and *{b_no})"/>
-        <!--사업인증 에러-->
-        <attr sel="#certification-error"
-              th:if="*{b_stt_cd}"
-              th:text="*{b_stt_cd} == '01' ? '인증되었습니다.' : (*{b_stt_cd} == '02' ? '휴업 상태입니다.' : (*{b_stt_cd} == '03' ? '폐업 상태입니다.' : (*{b_stt_cd} == '04' ? '존재하지않는 기업입니다.' : _)))"
-              th:classappend="*{b_stt_cd} == '01' ? 'field-success' : 'field-error'"
-        />
-        <attr sel="#validation-error"
-              th:field="*{b_no}"
-              th:if="${#fields.hasErrors('b_no')}"
-              th:errors="*{b_no}"
-              th:classappend="field-error"
-        />
-    </attr>
-    <!--회원가입 페이지로 이동-->
-    <attr sel="#next" th:if="${certification.b_stt_cd} == '01'" th:href="@{/account/sign_up(userRole='COMPANY')}"/>
+    <attr sel="#inline-js" th:inline="javascript"/>
 </thlogic>

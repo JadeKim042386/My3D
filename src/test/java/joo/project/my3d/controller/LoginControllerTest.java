@@ -282,23 +282,6 @@ class LoginControllerTest {
         // Then
     }
 
-    @DisplayName("[POST] 사업자 인증 페이지 - 정상 인증")
-    @Test
-    void requestBusinessCertification() throws Exception {
-        // Given
-        given(signUpService.businessCertification(anyString())).willReturn(anyString());
-        // When
-        mvc.perform(
-                    post("/account/company")
-                            .queryParam("b_no", "2208162517")
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/company"))
-                .andExpect(redirectedUrlPattern("/account/company*"));
-        // Then
-        then(signUpService).should().businessCertification(anyString());
-    }
-
     @DisplayName("[POST] 사업자 인증 페이지 - 사업자 등록번호 길이가 10이 아닌 경우")
     @Test
     void requestBusinessCertificationLengthError() throws Exception {

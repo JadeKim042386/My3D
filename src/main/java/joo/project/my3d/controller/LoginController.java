@@ -15,6 +15,7 @@ import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -41,6 +42,9 @@ public class LoginController {
     private final UserAccountService userAccountService;
     private final BCryptPasswordEncoder encoder;
     private final JwtProperties jwtProperties;
+
+    @Value("${nts.service-key}")
+    private String serviceKey;
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
     @GetMapping("/login")
@@ -217,37 +221,8 @@ public class LoginController {
                 b_stt_cd
         );
         model.addAttribute("certification", response);
+        model.addAttribute("serviceKey", serviceKey);
 
         return "account/company";
-    }
-
-    /**
-     * 사업자 인증 요청<br>
-     * [b_stt_cd]<br>
-     * 01: 계속사업자<br>
-     * 02: 휴업<br>
-     * 03: 폐업<br>
-     * 04: 존재하지않는 기업
-     */
-    @PostMapping("/company")
-    public String requestBusinessCertification(
-            @Validated @ModelAttribute("certification") BusinessCertificationRequest businessCertificationRequest,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes
-    ) {
-        redirectAttributes.addAttribute("b_no", businessCertificationRequest.b_no());
-
-        if (bindingResult.hasErrors()) {
-            log.warn("bindingResult={}", bindingResult);
-            return "/account/company";
-        }
-
-        String b_stt_cd = signUpService.businessCertification(businessCertificationRequest.b_no());
-        if (b_stt_cd.equals("")) {
-            b_stt_cd = "04";
-        }
-        redirectAttributes.addAttribute("b_stt_cd", b_stt_cd);
-
-        return "redirect:/account/company";
     }
 }

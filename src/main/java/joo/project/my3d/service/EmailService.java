@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -16,6 +17,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
+    @Async
     public void sendEmail(String to, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
@@ -24,6 +26,7 @@ public class EmailService {
             mimeMessageHelper.setSubject(subject); // 메일 제목
             mimeMessageHelper.setText(text); // 메일 본문 내용
             javaMailSender.send(mimeMessage);
+            log.info("이메일 전송 완료");
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
