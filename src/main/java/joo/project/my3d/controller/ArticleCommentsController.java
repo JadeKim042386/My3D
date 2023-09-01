@@ -3,15 +3,13 @@ package joo.project.my3d.controller;
 import joo.project.my3d.dto.request.ArticleCommentRequest;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleCommentService;
-import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/comments")

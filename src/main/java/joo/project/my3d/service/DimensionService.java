@@ -2,14 +2,11 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.Dimension;
-import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.dto.GoodOptionDto;
 import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.DimensionRepository;
-import joo.project.my3d.repository.GoodOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

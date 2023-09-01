@@ -3,7 +3,6 @@ package joo.project.my3d.repository;
 import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
-import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.fixture.Fixture;

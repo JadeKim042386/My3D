@@ -3,7 +3,6 @@ package joo.project.my3d.controller;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
-import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.SignUpService;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;

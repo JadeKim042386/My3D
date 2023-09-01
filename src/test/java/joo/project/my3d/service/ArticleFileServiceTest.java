@@ -1,8 +1,6 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleFileRepository;
@@ -19,12 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 @ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 모델 파일")
