@@ -2,7 +2,6 @@ package joo.project.my3d.service;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -81,9 +81,6 @@ public class ArticleService {
                 if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
                     article.setArticleCategory(articleDto.articleCategory());
                 }
-                if (articleDto.articleFileDto() != null) {
-                    article.setArticleFile(articleDto.articleFileDto().toEntity());
-                }
             } else {
                 log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
                         article.getUserAccount().getEmail(),
@@ -107,9 +104,12 @@ public class ArticleService {
         }
     }
 
-    public ArticleFileDto getArticleFile(Long articleId) {
+    public List<ArticleFileDto> getArticleFiles(Long articleId) {
         return articleRepository.findById(articleId)
-                .map(article -> ArticleFileDto.from(article.getArticleFile()))
+                .map(article -> article.getArticleFiles().stream()
+                        .map(ArticleFileDto::from)
+                        .toList()
+                )
                 .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
     }
 }

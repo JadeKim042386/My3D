@@ -46,14 +46,14 @@ public record UserAccountDto(
      *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 회사 정보 제외 (개인 사용저)
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, userRole, null, null, null, null, null);
+        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, userRole, CompanyDto.of(), null, null, null, null);
     }
 
     /**
      *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, CompanyDto company) {
-        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, userRole, company, null, null, null, null);
+        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, userRole, company, null, null, null, null);
     }
 
     /**
@@ -61,7 +61,7 @@ public record UserAccountDto(
      *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 권한 제외
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp) {
-        return new UserAccountDto(email, userPassword, nickname, null, null, signUp, null, null, null, null, null, null);
+        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, null, CompanyDto.of(), null, null, null, null);
     }
 
     public static UserAccountDto from(UserAccount userAccount) {

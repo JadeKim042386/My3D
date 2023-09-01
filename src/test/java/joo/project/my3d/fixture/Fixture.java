@@ -3,10 +3,12 @@ package joo.project.my3d.fixture;
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.domain.constant.UserRole;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,24 +17,19 @@ import java.nio.charset.StandardCharsets;
 
 public class Fixture {
 
-    public static Article getArticle(ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
-        return Article.of(userAccount, articleFile, title, content, articleType, articleCategory);
+        Price price = Fixture.getPrice();
+        return Article.of(userAccount, title, summary, content, articleType, articleCategory, price);
     }
 
-    public static Article getArticle(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        ArticleFile articleFile = Fixture.getArticleFile();
-        return Article.of(userAccount, articleFile, title, content, articleType, articleCategory);
-    }
-
-    public static Article getArticle(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        UserAccount userAccount = Fixture.getUserAccount();
-        ArticleFile articleFile = Fixture.getArticleFile();
-        return Article.of(userAccount, articleFile, title, content, articleType, articleCategory);
+    public static Article getArticle(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        Price price = Fixture.getPrice();
+        return Article.of(userAccount, summary, title, content, articleType, articleCategory, price);
     }
 
     public static Article getArticle() {
-        return Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        return Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
     }
 
     public static ArticleComment getArticleComment(String content) {
@@ -60,12 +57,8 @@ public class Fixture {
         return Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
     }
 
-    public static ArticleFile getArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension) {
-        return ArticleFile.of(byteSize, originalFileName, fileName, fileExtension);
-    }
-
-    public static ArticleFile getArticleFile() {
-        return Fixture.getArticleFile(5555L, "test.stp", "uuid.stp", "stp");
+    public static ArticleFile getArticleFile(Article article) {
+        return ArticleFile.of(article, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
     public static MockMultipartFile getMultipartFile() throws IOException {
@@ -81,5 +74,17 @@ public class Fixture {
                 "text/plain",
                 content.getBytes(StandardCharsets.UTF_8)
         );
+    }
+
+    public static GoodOption getGoodOption(Article article) {
+        return GoodOption.of(article, "option3", 3000, "LSA", "lesin");
+    }
+
+    public static Price getPrice() {
+        return Price.of(10000, 3000);
+    }
+
+    public static Dimension getDimension(Article article) {
+        return Dimension.of(article, "너비", 10.0f, DimUnit.MM);
     }
 }
