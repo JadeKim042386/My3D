@@ -24,10 +24,12 @@ public class ArticleComment extends AuditingFields {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "email")
     UserAccount userAccount;
 
+    @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "articleId")
     private Article article;

@@ -32,9 +32,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -95,7 +95,7 @@ public class ModelArticlesController {
 
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
-        model.addAttribute("articleFile", article.file());
+        model.addAttribute("articleFiles", article.files());
         model.addAttribute("addedLike", articleLike.isPresent());
         model.addAttribute("modelPath", modelPath);
 
@@ -124,14 +124,19 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
 
-        String savedFileName = articleFileService.saveArticleFile(articleFormRequest.file());
-        articleService.saveArticle(
-                articleFormRequest.toDto(
-                        boardPrincipal.toDto(),
-                        ArticleType.MODEL,
-                        savedFileName
-                )
-        );
+        //TODO: 게시글 저장과 첨부 파일 저장 구현
+//        List<ArticleFileDto> articleFileDtos = new ArrayList<>();
+//        for (MultipartFile file : articleFormRequest.files()) {
+//            articleFileDtos.add(articleFileService.saveArticleFile(file));
+//        }
+
+
+//        articleService.saveArticle(
+//                articleFormRequest.toArticleDto(
+//                        boardPrincipal.toDto(),
+//                        ArticleType.MODEL
+//                )
+//        );
         return "redirect:/model_articles";
     }
 
@@ -161,11 +166,15 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
 
-        ArticleFileDto articleFile = articleService.getArticleFile(articleId); //저장되어있는 파일
-        boolean isUpdated = articleFileService.updateArticleFile(articleFormRequest.file(), articleFile);
+        List<ArticleFileDto> articleFileDtos = articleService.getArticleFiles(articleId); //저장되어있는 파일
+        boolean isUpdated = articleFileService.updateArticleFile(articleFormRequest.getFiles(), articleFileDtos);
         articleService.updateArticle(
                 articleId,
-                articleFormRequest.toDto(boardPrincipal.toDto(), articleFile.fileName(), isUpdated)
+                articleFormRequest.toDto(
+                    boardPrincipal.toDto(),
+                    articleFileDtos,
+                    isUpdated
+                )
         );
         return "redirect:/model_articles";
     }

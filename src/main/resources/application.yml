@@ -129,6 +129,8 @@ spring:
           timeout: 5000
           starttls.enable: true
 model.path: ${MODEL_PATH}
+nts.service-key: ${NTS_BUSINESS_KEY}
+admin.email: "admin@gmail.com"
 jwt:
   token:
     cookie-name: "token"

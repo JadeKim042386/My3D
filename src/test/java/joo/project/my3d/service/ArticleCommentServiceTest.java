@@ -29,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@Disabled("구현 중...")
 @ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 댓글")
 @ExtendWith(MockitoExtension.class)

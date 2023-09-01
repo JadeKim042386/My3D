@@ -4,6 +4,7 @@ import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.fixture.Fixture;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,9 @@ public class JpaRepositoryTest {
         @Autowired private ArticleCommentRepository articleCommentRepository;
         @Autowired private ArticleLikeRepository articleLikeRepository;
         @Autowired private ArticleFileRepository articleFileRepository;
+        @Autowired private DimensionRepository dimensionRepository;
+        @Autowired private GoodOptionRepository goodOptionRepository;
+        @Autowired private PriceRepository priceRepository;
 
         @DisplayName("게시글 findAll")
         @Test
@@ -79,28 +83,18 @@ public class JpaRepositoryTest {
         @Test
         void saveArticle() {
             // Given
-            ArticleFile articleFile = Fixture.getArticleFile();
-            Article article = Fixture.getArticle(articleFile, "title", "content", ArticleType.REQUEST_MODELING, null);
+            Article article = Fixture.getArticle();
             long previousCount = articleRepository.count();
-            long previousFileCount = articleFileRepository.count();
             log.info("previousCount: {}", previousCount);
-            log.info("previousFileCount: {}", previousFileCount);
             // When
             Article savedArticle = articleRepository.save(article);
-            ArticleFile savedArticleFile = articleFileRepository.save(articleFile);
             // Then
             long afterCount = articleRepository.count();
-            long afterFileCount = articleFileRepository.count();
             log.info("afterCount: {}", afterCount);
-            log.info("afterFileCount: {}", afterFileCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(afterFileCount).isEqualTo(previousFileCount + 1);
             assertThat(savedArticle)
                     .hasFieldOrPropertyWithValue("id", 11L)
                     .hasNoNullFieldsOrPropertiesExcept("articleCategory");
-            assertThat(savedArticleFile)
-                    .hasFieldOrPropertyWithValue("id", 11L)
-                    .hasNoNullFieldsOrPropertiesExcept("article");
         }
 
         @DisplayName("게시글 update")
@@ -130,10 +124,16 @@ public class JpaRepositoryTest {
             long previousFileCount = articleFileRepository.count();
             long previousCommentCount = articleCommentRepository.count();
             long previousLikeCount = articleLikeRepository.count();
+            long previousDimension = dimensionRepository.count();
+            long previousGoodOption = goodOptionRepository.count();
+            long previousPrice = priceRepository.count();
             log.info("previousCount: {}", previousCount);
             log.info("previousFileCount: {}", previousFileCount);
             log.info("previousCommentCount: {}", previousCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
+            log.info("previousDimension: {}", previousDimension);
+            log.info("previousGoodOption: {}", previousGoodOption);
+            log.info("previousPrice: {}", previousPrice);
             // When
             articleCommentRepository.deleteByArticleId(articleId);
             articleLikeRepository.deleteByArticleId(articleId);
@@ -143,6 +143,9 @@ public class JpaRepositoryTest {
             assertThat(articleCommentRepository.count()).isEqualTo(previousCommentCount - 1);
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 1);
             assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
+            assertThat(dimensionRepository.count()).isEqualTo(previousDimension - 2);
+            assertThat(goodOptionRepository.count()).isEqualTo(previousGoodOption - 2);
+            assertThat(priceRepository.count()).isEqualTo(previousPrice - 1);
         }
     }
 
@@ -407,6 +410,7 @@ public class JpaRepositoryTest {
     @Nested
     public class ArticleFileJpaTest {
         @Autowired private ArticleFileRepository articleFileRepository;
+        @Autowired private ArticleRepository articleRepository;
 
         @DisplayName("파일 findAll")
         @Test
@@ -428,6 +432,236 @@ public class JpaRepositoryTest {
             Optional<ArticleFile> articleFile = articleFileRepository.findById(articleFileId);
             // Then
             assertThat(articleFile).isNotNull();
+        }
+
+        @DisplayName("파일 save")
+        @Test
+        void saveArticleFile() {
+            // Given
+            Article article = articleRepository.getReferenceById(1L);
+            ArticleFile articleFile = Fixture.getArticleFile(article);
+            long previousCount = articleFileRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            ArticleFile savedArticleFile = articleFileRepository.save(articleFile);
+            // Then
+            long afterCount = articleFileRepository.count();
+            log.info("afterCount: {}", afterCount);
+            assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(savedArticleFile)
+                    .hasFieldOrPropertyWithValue("id", 11L);
+        }
+
+        @DisplayName("파일 delete")
+        @Test
+        void deleteArticleFile() {
+            // Given
+            Long articleFileId = 1L;
+            long previousCount = articleFileRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            articleFileRepository.deleteById(articleFileId);
+            // Then
+            assertThat(articleFileRepository.count()).isEqualTo(previousCount - 1);
+        }
+    }
+
+    @ActiveProfiles("test")
+    @DisplayName("상품옵션 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class GoodOptionJpaTest {
+
+        @Autowired private GoodOptionRepository goodOptionRepository;
+        @Autowired private ArticleRepository articleRepository;
+
+        @DisplayName("상품옵션 findAll")
+        @Test
+        void getGoodOptions() {
+            // Given
+
+            // When
+            List<GoodOption> goodOptions = goodOptionRepository.findAll();
+            // Then
+            assertThat(goodOptions).isNotNull().hasSize(2);
+        }
+
+        @DisplayName("상품옵션 findById")
+        @Test
+        void getGoodOption() {
+            // Given
+            Long goodOptionId = 1L;
+            // When
+            Optional<GoodOption> goodOption = goodOptionRepository.findById(goodOptionId);
+            // Then
+            assertThat(goodOption).isNotNull();
+        }
+
+        @DisplayName("상품옵션 save")
+        @Test
+        void saveGoodOption() {
+            // Given
+            Article article = articleRepository.getReferenceById(1L);
+            GoodOption goodOption = Fixture.getGoodOption(article);
+            long previousCount = goodOptionRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            GoodOption savedGoodOption = goodOptionRepository.save(goodOption);
+            // Then
+            long afterCount = goodOptionRepository.count();
+            log.info("afterCount: {}", afterCount);
+            assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(savedGoodOption)
+                    .hasFieldOrPropertyWithValue("id", 3L);
+        }
+
+        @DisplayName("상품옵션 update")
+        @Test
+        void updateGoodOption() {
+            // Given
+            Long goodOptionId = 1L;
+            int modified_price = 5000;
+            GoodOption goodOption = goodOptionRepository.getReferenceById(goodOptionId);
+            goodOption.setAddPrice(modified_price);
+            LocalDateTime previousModifiedAt = goodOption.getModifiedAt();
+            // When
+            goodOptionRepository.saveAndFlush(goodOption);
+            // Then
+            assertThat(goodOption).hasFieldOrPropertyWithValue("addPrice", modified_price);
+            assertThat(goodOption.getModifiedBy()).isEqualTo(goodOption.getCreatedBy());
+            assertThat(goodOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
+
+        }
+
+        @DisplayName("상품옵션 delete")
+        @Test
+        void deleteGoodOption() {
+            // Given
+            Long goodOptionId = 1L;
+            long previousCount = goodOptionRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            goodOptionRepository.deleteById(goodOptionId);
+            // Then
+            assertThat(goodOptionRepository.count()).isEqualTo(previousCount - 1);
+        }
+    }
+
+    @ActiveProfiles("test")
+    @DisplayName("치수 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class DimensionJpaTest {
+
+        @Autowired private DimensionRepository dimensionRepository;
+        @Autowired private ArticleRepository articleRepository;
+
+        @DisplayName("치수 findAll")
+        @Test
+        void getDimensions() {
+            // Given
+
+            // When
+            List<Dimension> dimensions = dimensionRepository.findAll();
+            // Then
+            assertThat(dimensions).isNotNull().hasSize(2);
+        }
+
+        @DisplayName("치수 findById")
+        @Test
+        void getDimension() {
+            // Given
+            Long dimensionId = 1L;
+            // When
+            Optional<Dimension> dimension = dimensionRepository.findById(dimensionId);
+            // Then
+            assertThat(dimension).isNotNull();
+        }
+
+        @DisplayName("치수 save")
+        @Test
+        void saveDimension() {
+            // Given
+            Article article = articleRepository.getReferenceById(1L);
+            Dimension dimension = Fixture.getDimension(article);
+            long previousCount = dimensionRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            Dimension savedDimension = dimensionRepository.save(dimension);
+            // Then
+            long afterCount = dimensionRepository.count();
+            log.info("afterCount: {}", afterCount);
+            assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(savedDimension)
+                    .hasFieldOrPropertyWithValue("id", 3L);
+        }
+
+        @DisplayName("치수 update")
+        @Test
+        void updateDimension() {
+            // Given
+            Long dimensionId = 1L;
+            DimUnit modified_unit = DimUnit.INCH;
+            Dimension dimension = dimensionRepository.getReferenceById(dimensionId);
+            dimension.setDimUnit(modified_unit);
+            LocalDateTime previousModifiedAt = dimension.getModifiedAt();
+            // When
+            dimensionRepository.saveAndFlush(dimension);
+            // Then
+            assertThat(dimension).hasFieldOrPropertyWithValue("dimUnit", modified_unit);
+            assertThat(dimension.getModifiedBy()).isEqualTo(dimension.getCreatedBy());
+            assertThat(dimension.getModifiedAt()).isNotEqualTo(previousModifiedAt);
+
+        }
+
+        @DisplayName("치수 delete")
+        @Test
+        void deleteDimension() {
+            // Given
+            Long dimensionId = 1L;
+            long previousCount = dimensionRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            dimensionRepository.deleteById(dimensionId);
+            // Then
+            assertThat(dimensionRepository.count()).isEqualTo(previousCount - 1);
+        }
+    }
+
+    @ActiveProfiles("test")
+    @DisplayName("가격 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class PriceJpaTest {
+
+        @Autowired private PriceRepository priceRepository;
+
+        @DisplayName("가격 findAll")
+        @Test
+        void getPrices() {
+            // Given
+
+            // When
+            List<Price> prices = priceRepository.findAll();
+            // Then
+            assertThat(prices).isNotNull().hasSize(10);
+        }
+
+        @DisplayName("가격 findById")
+        @Test
+        void getPrice() {
+            // Given
+            Long priceId = 1L;
+            // When
+            Optional<Price> price = priceRepository.findById(priceId);
+            // Then
+            assertThat(price).isNotNull();
         }
     }
 }

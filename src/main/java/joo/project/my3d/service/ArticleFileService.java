@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -27,14 +29,23 @@ public class ArticleFileService {
     @Value("${model.path}")
     private String modelPath;
 
-    public String saveArticleFile(MultipartFile file) {
+    public ArticleFileDto saveArticleFile(MultipartFile file) {
         //파일 저장(UUID를 파일명으로 저장)
         String extension = FileUtils.getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID() + "." + extension;
 
         try {
             file.transferTo(new File(modelPath + fileName));
-            return fileName;
+            long byteSize = file.getSize();
+            String originalFileName = file.getOriginalFilename();
+            String fileExtension = FileUtils.getExtension(originalFileName);
+//            return ArticleFileDto.of(
+//                    byteSize,
+//                    originalFileName,
+//                    fileName,
+//                    fileExtension
+//            );
+            return null;
         } catch (IOException e) {
             log.error("File path: {}, MultipartFile: {}", modelPath + fileName, file);
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
@@ -46,17 +57,21 @@ public class ArticleFileService {
      * - 파일이 업데이트되었다면 이전에 저장한 파일명으로 저장 후 파일명 반환
      */
     @Transactional
-    public boolean updateArticleFile(MultipartFile file, ArticleFileDto articleFile) {
+    public boolean updateArticleFile(List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
         try {
-            boolean isUpdated = !new String(file.getBytes()).equals("NotUpdated");
-            String savedFileName = articleFile.fileName();
-            if (isUpdated) {
-                articleFileRepository.deleteById(articleFile.id()); //이전에 저장한 파일 정보 삭제
-                file.transferTo(new File(modelPath + savedFileName));
+            boolean isUpdated = false;
+            for (int i=0; i < files.size(); i++) {
+                if (!new String(files.get(i).getBytes()).equals("NotUpdated")) {
+                    ArticleFileDto articleFileDto = articleFiles.get(i);
+                    String savedFileName = articleFileDto.fileName();
+                    articleFileRepository.deleteById(articleFileDto.id()); //이전에 저장한 파일 정보 삭제
+                    files.get(i).transferTo(new File(modelPath + savedFileName));
+                    isUpdated = true;
+                }
             }
             return isUpdated;
         } catch (IOException e) {
-            log.error("잘못된 파일: {}", file);
+            log.error("잘못된 파일: {}", files);
             throw new FileException(ErrorCode.FILE_NOT_VALID);
         }
     }

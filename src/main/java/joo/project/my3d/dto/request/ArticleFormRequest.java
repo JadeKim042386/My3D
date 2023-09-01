@@ -4,65 +4,72 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.PriceDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
-import joo.project.my3d.utils.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public record ArticleFormRequest(
         @NotBlank
         String title,
         @NotBlank
+        String summary,
+        @NotBlank
         String content,
+        @NotNull
+        Integer priceValue,
+        @NotNull
+        Integer deliveryPrice,
         @MultipartFileSizeValid
-        MultipartFile file,
+        MultipartFile modelFile,
+        List<MultipartFile> imgFiles,
         @InCategory
         String articleCategory
 ) {
 
-    public static ArticleFormRequest of(String title, String content, MultipartFile file, String articleCategory) {
-        return new ArticleFormRequest(title, content, file, articleCategory);
+    public List<MultipartFile> getFiles() {
+        List<MultipartFile> files = new ArrayList<>();
+        if (imgFiles != null){
+            files.addAll(imgFiles);
+        }
+        files.add(modelFile);
+        return files;
     }
 
-    public ArticleDto toDto(UserAccountDto userAccountDto, ArticleType articleType, String savedFileName) {
+    public ArticleDto toDto(UserAccountDto userAccountDto, ArticleType articleType, List<ArticleFileDto> articleFileDtos) {
         return ArticleDto.of(
                 userAccountDto,
-                getFileDto(savedFileName),
+                articleFileDtos,
                 title,
+                summary,
                 content,
                 articleType,
                 ArticleCategory.valueOf(articleCategory),
-                null
+                null,
+                PriceDto.of(priceValue, deliveryPrice)
         );
     }
 
     /**
      * 파일이 업데이트되지 않았다면 FileDto는 추가하지 않음
      */
-    public ArticleDto toDto(UserAccountDto userAccountDto, String savedFileName, boolean isUpdated) {
+    public ArticleDto toDto(UserAccountDto userAccountDto, List<ArticleFileDto> articleFileDtos, boolean isUpdated) {
         return ArticleDto.of(
                 userAccountDto,
-                isUpdated ? getFileDto(savedFileName) : null,
+                isUpdated ? articleFileDtos : null,
                 title,
+                summary,
                 content,
                 null,
                 ArticleCategory.valueOf(articleCategory),
-                null
-        );
-    }
-
-    private ArticleFileDto getFileDto(String savedFileName) {
-        long byteSize = file.getSize();
-        String originalFileName = file.getOriginalFilename();
-        String fileExtension = FileUtils.getExtension(originalFileName);
-        return ArticleFileDto.of(
-                byteSize,
-                originalFileName,
-                savedFileName,
-                fileExtension
+                null,
+                PriceDto.of(priceValue, deliveryPrice)
         );
     }
 }

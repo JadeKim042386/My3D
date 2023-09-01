@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,7 +58,7 @@ class ArticleFileServiceTest {
         Long articleFileId = articleFile.id();
         willDoNothing().given(articleFileRepository).deleteById(articleFileId);
         // When
-        articleFileService.updateArticleFile(file, articleFile);
+        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
         // Then
         then(articleFileRepository).should().deleteById(articleFileId);
     }
@@ -69,7 +70,7 @@ class ArticleFileServiceTest {
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
         // When
-        articleFileService.updateArticleFile(file, articleFile);
+        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
         // Then
         then(articleFileRepository).shouldHaveNoInteractions();
     }

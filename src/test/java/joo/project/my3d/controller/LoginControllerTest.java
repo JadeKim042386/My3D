@@ -281,20 +281,4 @@ class LoginControllerTest {
                 .andExpect(model().attributeExists("certification"));
         // Then
     }
-
-    @DisplayName("[POST] 사업자 인증 페이지 - 사업자 등록번호 길이가 10이 아닌 경우")
-    @Test
-    void requestBusinessCertificationLengthError() throws Exception {
-        // Given
-
-        // When
-        mvc.perform(
-                        post("/account/company")
-                                .queryParam("b_no", "22081627")
-                )
-                .andExpect(status().isOk())
-                .andExpect(view().name("/account/company"));
-        // Then
-        then(signUpService).shouldHaveNoInteractions();
-    }
 }

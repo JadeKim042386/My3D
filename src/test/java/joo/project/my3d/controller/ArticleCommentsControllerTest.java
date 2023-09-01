@@ -1,6 +1,7 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
+import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.ArticleCommentService;
@@ -12,14 +13,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,15 +37,16 @@ class ArticleCommentsControllerTest {
     @MockBean private ArticleCommentService articleCommentService;
 
     @DisplayName("[GET] 댓글 추가")
-    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addComment() throws Exception {
         // Given
         willDoNothing().given(articleCommentService).saveComment(any(ArticleCommentDto.class));
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooUser", UserRole.USER);
         // When
         mvc.perform(
                 post("/comments/new")
                         .queryParam("articleId", "1")
+                        .with(authentication(authentication))
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles/1"))
@@ -50,17 +56,18 @@ class ArticleCommentsControllerTest {
     }
 
     @DisplayName("[GET] 댓글 삭제")
-    @WithUserDetails(value = "jooUser", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void deleteComment() throws Exception {
         // Given
         Long articleCommentId = 1L;
         Long articleId = 1L;
         willDoNothing().given(articleCommentService).deleteComment(anyLong(), anyString());
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooUser", UserRole.USER);
         // When
         mvc.perform(
                         post("/comments/" + articleCommentId + "/delete")
                                 .queryParam("articleId", String.valueOf(articleId))
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles/" + articleId))
