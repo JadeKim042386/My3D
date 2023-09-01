@@ -1,6 +1,7 @@
 package joo.project.my3d.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -9,43 +10,44 @@ import java.util.Objects;
 @Getter
 @ToString(callSuper = true)
 @Table(
-        name = "article_like",
+        name = "price",
         indexes = {
                 @Index(columnList = "id")
         }
 )
 @Entity
-public class ArticleLike extends AuditingFields {
+public class Price extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ToString.Exclude
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "email")
-    private UserAccount userAccount;
+    @Setter
+    @Column(nullable = false)
+    private Integer priceValue = 0; //상품금액
+    @Setter
+    @Column(nullable = false)
+    private Integer deliveryPrice = 0; //배송료
 
     @ToString.Exclude
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "articleId")
+    @OneToOne(mappedBy = "price")
     private Article article;
 
-    protected ArticleLike() {
+    protected Price() {
     }
 
-    private ArticleLike(UserAccount userAccount, Article article) {
-        this.userAccount = userAccount;
-        this.article = article;
+    private Price(Integer priceValue, Integer deliveryPrice) {
+        this.priceValue = priceValue;
+        this.deliveryPrice = deliveryPrice;
     }
 
-    public static ArticleLike of(UserAccount userAccount, Article article) {
-        return new ArticleLike(userAccount, article);
+    public static Price of(Integer priceValue, Integer deliveryPrice) {
+        return new Price(priceValue, deliveryPrice);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ArticleLike that)) return false;
+        if (!(o instanceof Price that)) return false;
         return this.getId() != null && Objects.equals(this.getId(), that.getId());
     }
 

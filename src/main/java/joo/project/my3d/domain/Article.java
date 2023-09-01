@@ -32,16 +32,14 @@ public class Article extends AuditingFields {
     private UserAccount userAccount;
 
     @Setter
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "article_file_id")
-    private ArticleFile articleFile;
-
-    @Setter
     @Column(nullable = false)
     private String title;
     @Setter
     @Column(nullable = false)
-    private String content;
+    private String summary; //요약 내용
+    @Setter
+    @Column(nullable = false)
+    private String content; //본문
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -58,6 +56,10 @@ public class Article extends AuditingFields {
     private int likeCount = 0;
 
     @ToString.Exclude
+    @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
+    private final Set<ArticleFile> articleFiles = new LinkedHashSet<>();
+
+    @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article")
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
@@ -66,24 +68,38 @@ public class Article extends AuditingFields {
     @OneToMany(mappedBy = "article")
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
+    private final Set<GoodOption> goodOptions = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
+    private final Set<Dimension> dimensions = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "price_id")
+    private Price price;
+
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    private Article(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Price price) {
         this.userAccount = userAccount;
-        this.articleFile = articleFile;
         this.title = title;
+        this.summary = summary;
         this.content = content;
         this.articleType = articleType;
         this.articleCategory = articleCategory;
+        this.price = price;
     }
 
-    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        return new Article(userAccount, articleFile, title, content, articleType, articleCategory);
+    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Price price) {
+        return new Article(userAccount, title, summary, content, articleType, articleCategory, price);
     }
 
-    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType) {
-        return Article.of(userAccount, articleFile, title, content, articleType, null);
+    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, Price price) {
+        return Article.of(userAccount, title, summary, content, articleType, null, price);
     }
 
     @Override
