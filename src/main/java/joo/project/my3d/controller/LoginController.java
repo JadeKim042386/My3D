@@ -4,7 +4,6 @@ import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
-import joo.project.my3d.dto.request.BusinessCertificationRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
@@ -24,7 +23,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

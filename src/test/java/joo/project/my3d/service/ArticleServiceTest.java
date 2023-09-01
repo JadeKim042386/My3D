@@ -2,7 +2,6 @@ package joo.project.my3d.service;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.PredicateOperation;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.QArticle;
 import joo.project.my3d.domain.UserAccount;
