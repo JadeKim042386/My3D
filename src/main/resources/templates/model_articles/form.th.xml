@@ -13,8 +13,8 @@
             <attr sel="textarea" th:text="*{content} ?: _"/>
         </attr>
         <!--파일-->
-        <attr sel="#fileName" th:value="*{file?.originalFileName} ?: _"/>
-        <attr sel="#file-error" th:errors="*{file}" th:classappend="field-error"/>
+        <attr sel="#modelFileName" th:value="*{file?.originalFileName} ?: _"/>
+        <attr sel="#model-file-error" th:errors="*{file}" th:classappend="field-error"/>
         <!--카테고리-->
         <attr sel="#category">
             <attr sel="option[1]"
