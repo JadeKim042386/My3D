@@ -26,6 +26,10 @@ public record ArticleFormRequest(
         Integer priceValue,
         @NotNull
         Integer deliveryPrice,
+        @NotNull
+        GoodOptionRequest goodOptionRequest,
+        @NotNull
+        DimensionRequest dimensionRequest,
         @MultipartFileSizeValid
         MultipartFile modelFile,
         List<MultipartFile> imgFiles,

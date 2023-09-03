@@ -19,21 +19,147 @@
           <input type="text" class="form-control" name="title" placeholder="제목" required>
         </div>
       </div>
+      <!--요약-->
+      <div class="row mb-3 justify-content-md-center">
+        <div id="summary" class="col-sm-8 col-lg-9">
+          <textarea class="form-control" name="summary" rows="3" placeholder="상품에 대해서 간단하게 설명해주세요." required></textarea>
+        </div>
+      </div>
       <!--본문-->
       <div class="row mb-3 justify-content-md-center">
         <div id="content" class="col-sm-8 col-lg-9">
-          <textarea class="form-control" name="content" rows="5" placeholder="본문" required></textarea>
+          <textarea class="form-control" name="content" rows="5" placeholder="상품에 대해서 자세히 설명해주세요." required></textarea>
         </div>
       </div>
-      <!--파일-->
+      <!--모델 파일-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
           <div class="input-group custom-file-button">
-            <label class="input-group-text" for="inputGroupFile">파일 선택</label>
-            <input type="file" accept=".stl,.stp" class="form-control" id="inputGroupFile" name="file">
-            <label id="fileName" for="inputGroupFile" hidden></label>
+            <label class="input-group-text" for="inputGroupFile">모델 파일 선택</label>
+            <input type="file" accept=".stl,.stp" class="form-control" id="inputGroupFile" name="modelFile">
+            <label id="modelFileName" for="inputGroupFile" hidden></label>
           </div>
-          <p id="file-error" class="mb-0"></p>
+          <p id="model-file-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--이미지 파일-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <div class="input-group custom-file-button">
+            <label class="input-group-text" for="imgFiles">촬영 이미지 선택</label>
+            <input type="file" multiple accept="image/*" class="form-control" id="imgFiles" name="imgFiles">
+            <label id="imgFileName" for="imgFiles" hidden></label>
+          </div>
+          <p id="img-file-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--상품옵션 모달-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <input type="button" value="상품옵션 추가" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#goodOptionModal">
+        </div>
+      </div>
+      <div class="modal fade" id="goodOptionModal" tabindex="-1" aria-labelledby="goodOptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="goodOptionModalLabel">상품옵션</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="optionName" placeholder="상품명" required>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="addPrice" placeholder="추가금액" required>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="printingTech" placeholder="프린팅 방식" required>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="material" placeholder="프린팅 소재" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-primary" onclick="addGoodOptionRow()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--상품옵션 테이블-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="goodOptionTable">
+              <thead>
+              <tr>
+                <th>상품명</th>
+                <th>추가금액</th>
+                <th>프린팅 방식</th>
+                <th>프린팅 소재</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!--치수 모달-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <input type="button" value="치수 추가" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionModal">
+        </div>
+      </div>
+      <div class="modal fade" id="dimensionModal" tabindex="-1" aria-labelledby="dimensionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="dimensionModalLabel">상품옵션</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="dimName" placeholder="치수명" required>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="dimValue" placeholder="치수값" required>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <select id="dimUnit" class="form-control input-xs">
+                  <option>MM</option>
+                  <option>INCH</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-primary" onclick="addDimensionRow()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--치수 테이블-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="dimensionTable">
+              <thead>
+              <tr>
+                <th>치수명</th>
+                <th>치수</th>
+                <th>단위</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <!--카테고리-->
@@ -44,6 +170,17 @@
             <option>All</option>
           </select>
           <p id="category-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--상품 가격-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-2 text-center">
+          <label for="priceValue" class="mb-2">가격</label>
+          <input type="text" class="form-control" id="priceValue" name="priceValue" value="0" required>
+        </div>
+        <div class="col-sm-8 col-lg-2 text-center">
+          <label for="deliveryPrice" class="mb-2">배송료</label>
+          <input type="text" class="form-control" id="deliveryPrice" name="deliveryPrice" value="0" required>
         </div>
       </div>
       <!--저장&취소-->
@@ -64,6 +201,47 @@
   <script src="/js/file_input.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/less" ></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+  <script>
+    function addGoodOptionRow() {
+      const table = document.getElementById('goodOptionTable');
+      const newRow = table.insertRow();
+      const optionName = newRow.insertCell(0);
+      const addPrice = newRow.insertCell(1);
+      const printingTech = newRow.insertCell(2);
+      const material = newRow.insertCell(3);
+      const removeButton = newRow.insertCell(4);
+
+      optionName.innerText = $('#goodName').val();
+      addPrice.innerText = $('#addPrice').val();
+      printingTech.innerText = $('#printingTech').val();
+      material.innerText = $('#material').val();
+      removeButton.innerHTML = "<button class='btn btn-danger btn-sm' onclick='removeRow(this)'>X</button>"
+
+      $('#goodOptionModal').modal('hide')
+    }
+
+    function addDimensionRow() {
+      const table = document.getElementById('dimensionTable');
+      const newRow = table.insertRow();
+      const dimName = newRow.insertCell(0);
+      const dimValue = newRow.insertCell(1);
+      const dimUnit = newRow.insertCell(2);
+      const removeButton = newRow.insertCell(3);
+
+      dimName.innerText = $('#dimName').val();
+      dimValue.innerText = $('#dimValue').val();
+      dimUnit.innerText = $('#dimUnit').val();
+      removeButton.innerHTML = "<button class='btn btn-danger btn-sm' onclick='removeRow(this)'>X</button>"
+
+      $('#dimensionModal').modal('hide')
+    }
+
+    function removeRow(row) {
+      var th = $(row).parent().parent();
+      th.remove();
+    }
+  </script>
 </body>
 </html>
