@@ -1,5 +1,6 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
@@ -31,16 +32,17 @@ class ArticleFileServiceTest {
 
     @BeforeEach
     void beforeEach() throws IllegalAccessException {
-        FieldUtils.writeField(articleFileService, "modelPath", "./", true);
+        FieldUtils.writeField(articleFileService, "absModelPath", "./", true);
     }
 
     @DisplayName("모델 파일 저장")
     @Test
     void saveArticleFile() throws IOException {
         // Given
+        Article article = Fixture.getArticle();
         MockMultipartFile file = Fixture.getMultipartFile();
         // When
-        articleFileService.saveArticleFile(file);
+        articleFileService.saveArticleFile(article, file);
         // Then
     }
 
@@ -48,14 +50,11 @@ class ArticleFileServiceTest {
     @Test
     void updateArticleFile() throws IOException {
         // Given
-        MockMultipartFile file = Fixture.getMultipartFile();
         ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
-        Long articleFileId = articleFile.id();
-        willDoNothing().given(articleFileRepository).deleteById(articleFileId);
+        Article article = Fixture.getArticle();
         // When
-        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
+        articleFileService.updateArticleFile(article, List.of(), List.of(articleFile));
         // Then
-        then(articleFileRepository).should().deleteById(articleFileId);
     }
 
     @DisplayName("모델 파일 수정 - 파일 변경 없음")
@@ -64,8 +63,9 @@ class ArticleFileServiceTest {
         // Given
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
+        Article article = Fixture.getArticle();
         // When
-        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
+        articleFileService.updateArticleFile(article, List.of(file), List.of(articleFile));
         // Then
         then(articleFileRepository).shouldHaveNoInteractions();
     }

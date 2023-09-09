@@ -2,24 +2,25 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.config.TestSecurityConfig;
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.ArticleDto;
-import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.request.GoodOptionRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
-import joo.project.my3d.service.ArticleFileService;
-import joo.project.my3d.service.ArticleService;
-import joo.project.my3d.service.PaginationService;
+import joo.project.my3d.repository.DimensionRepository;
+import joo.project.my3d.repository.GoodOptionRepository;
+import joo.project.my3d.service.*;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,6 +55,8 @@ class ModelArticlesControllerTest {
     @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
     @MockBean private ArticleLikeRepository articleLikeRepository;
+    @MockBean private GoodOptionService goodOptionService;
+    @MockBean private DimensionService dimensionService;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser
@@ -98,117 +102,199 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @Disabled("구현 중...")
     @DisplayName("[POST] 게시글 추가 - 정상")
     @Test
     void addNewModelArticle() throws Exception {
         // Given
-        byte[] file = Fixture.getMultipartFile().getBytes();
-        given(articleFileService.saveArticleFile(any(MultipartFile.class))).willReturn(any(ArticleFileDto.class));
-        willDoNothing().given(articleService).saveArticle(any(ArticleDto.class));
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        Article article = Fixture.getArticle();
+        given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
+        willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
+        willDoNothing().given(goodOptionService).saveGoodOption(any(GoodOptionDto.class));
+        willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form")
-                                .file("file", file)
+                                .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
+                                .param("summary", "summary")
                                 .param("content", "content")
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .with(user("jooCompany").password("pw").roles("COMPANY"))
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles"))
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleFileService).should().saveArticleFile(any(MultipartFile.class));
+        then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));
         then(articleService).should().saveArticle(any(ArticleDto.class));
+        then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
+        then(dimensionService).should().saveDimension(any(DimensionDto.class));
     }
 
-    @Disabled("구현 중...")
     @DisplayName("[POST] 게시글 추가 - 파일 누락")
     @Test
     void addNewModelArticleWithoutFile() throws Exception {
         // Given
-
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form")
                                 .file("modelFile", null)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
+                                .param("title", "")
+                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .with(user("jooCompany").password("pw").roles("COMPANY"))
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
+                                .param("articleCategory", "카테고리를 선택해주세요.")
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
-                .andExpect(view().name("model_articles/form"));
+                .andExpect(view().name("/model_articles/form"));
 
         // Then
     }
 
-    @Disabled("구현 중...")
     @DisplayName("[POST] 게시글 추가 - 카테고리 누락")
     @Test
     void addNewModelArticleWithoutCategory() throws Exception {
         // Given
-        byte[] file = Fixture.getMultipartFile().getBytes();
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form")
-                                .file("file", file)
+                                .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
+                                .param("title", "")
+                                .param("summary", "summary")
                                 .param("content", "content")
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "카테고리를 선택해주세요.")
-                                .with(user("jooCompany").password("pw").roles("COMPANY"))
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
-                .andExpect(view().name("model_articles/form"));
+                .andExpect(view().name("/model_articles/form"));
 
         // Then
     }
 
-    @Disabled("구현 중...")
     @DisplayName("[POST] 게시글 추가 - 제목 누락")
     @Test
     void addNewModelArticleWithoutTitle() throws Exception {
         // Given
-        byte[] file = Fixture.getMultipartFile().getBytes();
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form")
-                                .file("file", file)
+                                .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
+                                .param("summary", "summary")
                                 .param("content", "content")
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .with(user("jooCompany").password("pw").roles("COMPANY"))
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
-                .andExpect(view().name("model_articles/form"));
+                .andExpect(view().name("/model_articles/form"));
 
         // Then
     }
 
-    @Disabled("구현 중...")
     @DisplayName("[POST] 게시글 추가 - 본문 누락")
     @Test
     void addNewModelArticleWithoutContent() throws Exception {
         // Given
-        byte[] file = Fixture.getMultipartFile().getBytes();
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form")
-                                .file("modelFile", file)
+                                .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
+                                .param("summary", "summary")
                                 .param("content", "")
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .with(user("jooCompany").password("pw").roles("COMPANY"))
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
-                .andExpect(view().name("model_articles/form"));
+                .andExpect(view().name("/model_articles/form"));
+
+        // Then
+    }
+
+    @DisplayName("[POST] 게시글 추가 - 상품옵션 누락")
+    @Test
+    void addNewModelArticleWithoutGoodOption() throws Exception {
+        // Given
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
+        // When
+        mvc.perform(
+                        multipart("/model_articles/form")
+                                .file(multipartFile)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .param("title", "title")
+                                .param("summary", "summary")
+                                .param("content", "content")
+                                .param("priceValue", String.valueOf(10000))
+                                .param("deliveryPrice", String.valueOf(3000))
+                                .param("articleCategory", "MUSIC")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .with(authentication(authentication))
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("/model_articles/form"));
 
         // Then
     }
@@ -235,8 +321,10 @@ class ModelArticlesControllerTest {
                 .andExpect(view().name("model_articles/detail"))
                 .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("articleComments"))
-                .andExpect(model().attributeExists("articleFiles"))
-                .andExpect(model().attributeExists("addedLike"));
+                .andExpect(model().attributeExists("modelFile"))
+                .andExpect(model().attributeExists("imgFiles"))
+                .andExpect(model().attributeExists("addedLike"))
+                .andExpect(model().attributeExists("modelPath"));
 
         // Then
         then(articleLikeRepository).should().findByUserAccount_EmailAndArticle_Id(articleLike.getUserAccount().getEmail(), articleId);
@@ -248,7 +336,11 @@ class ModelArticlesControllerTest {
     void updateModelArticle() throws Exception {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        given(goodOptionService.getGoodOptions(anyLong())).willReturn(List.of());
+        given(dimensionService.getDimensions(anyLong())).willReturn(List.of());
         given(articleService.getArticle(anyLong())).willReturn(articleDto);
+        given(articleFileService.getArticleFiles(anyLong())).willReturn(List.of(articleFileDto));
         // When
         mvc.perform(
                         get("/model_articles/form/1")
@@ -263,22 +355,33 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("categories"));
 
         // Then
+        then(goodOptionService).should().getGoodOptions(anyLong());
+        then(dimensionService).should().getDimensions(anyLong());
         then(articleService).should().getArticle(anyLong());
+        then(articleFileService).should().getArticleFiles(anyLong());
     }
 
     @DisplayName("[POST] 게시글 수정 - 정상")
     @Test
     void updateRequestModelArticle() throws Exception {
         // Given
-        byte[] file = Fixture.getMultipartFile().getBytes();
+        MockMultipartFile multipartFile = Fixture.getMultipartFile();
+        Article article = Fixture.getArticle();
+        FieldUtils.writeField(article, "id", 1L, true);
         given(articleService.getArticleFiles(anyLong())).willReturn(List.of());
-        given(articleFileService.updateArticleFile(anyList(), anyList())).willReturn(true);
+        given(articleService.getArticle(eq(1L))).willReturn(ArticleDto.from(article));
+        given(articleFileService.updateArticleFile(any(Article.class), eq(List.of(multipartFile)), eq(List.of()))).willReturn(true);
+        willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
+        willDoNothing().given(goodOptionService).deleteGoodOptions(eq(1L));
+        willDoNothing().given(goodOptionService).saveGoodOption(any(GoodOptionDto.class));
+        willDoNothing().given(dimensionService).deleteDimensions(eq(1L));
+        willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
                         multipart("/model_articles/form/1")
-                                .file("modelFile", file)
+                                .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
                                 .param("summary", "summary")
@@ -286,6 +389,13 @@ class ModelArticlesControllerTest {
                                 .param("priceValue", String.valueOf(10000))
                                 .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
+                                .param("goodOptionRequests[0].optionName", "option1")
+                                .param("goodOptionRequests[0].addPrice", String.valueOf(123))
+                                .param("goodOptionRequests[0].printingTech", "123")
+                                .param("goodOptionRequests[0].material", "123")
+                                .param("dimensionRequests[0].dimName", "dimName")
+                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().is3xxRedirection())
@@ -294,7 +404,13 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().getArticleFiles(anyLong());
-        then(articleFileService).should().updateArticleFile(anyList(), anyList());
+        then(articleService).should().getArticle(eq(1L));
+        then(articleFileService).should().updateArticleFile(any(Article.class), eq(List.of(multipartFile)), eq(List.of()));
+        then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));
+        then(goodOptionService).should().deleteGoodOptions(eq(1L));
+        then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
+        then(dimensionService).should().deleteDimensions(eq(1L));
+        then(dimensionService).should().saveDimension(any(DimensionDto.class));
         then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
     }
 

@@ -64,4 +64,11 @@ public class DimensionService {
     public void deleteDimension(Long dimensionId) {
         dimensionRepository.deleteById(dimensionId);
     }
+
+    public void deleteDimensions(Long articleId) {
+        List<Dimension> dimensions = dimensionRepository.findByArticleId(articleId);
+        for (Dimension dimension : dimensions) {
+            dimensionRepository.deleteById(dimension.getId());
+        }
+    }
 }

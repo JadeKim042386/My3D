@@ -8,15 +8,17 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.DimensionDto;
+import joo.project.my3d.dto.GoodOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.request.DimensionRequest;
+import joo.project.my3d.dto.request.GoodOptionRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.repository.ArticleLikeRepository;
-import joo.project.my3d.service.ArticleFileService;
-import joo.project.my3d.service.ArticleService;
-import joo.project.my3d.service.PaginationService;
+import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +34,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +49,11 @@ public class ModelArticlesController {
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
+    private final GoodOptionService goodOptionService;
+    private final DimensionService dimensionService;
 
-    @Value("${model.path}")
-    private String modelPath;
+    @Value("${model.rel-path}")
+    private String relModelPath;
 
     @GetMapping
     public String articles(
@@ -60,24 +65,29 @@ public class ModelArticlesController {
         List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         if (articles.isEmpty()) {
             model.addAttribute(
-                    "articles",
-                    Page.empty()
+                "articles",
+                Page.empty()
             );
         } else {
             model.addAttribute(
-                    "articles",
-                    new PageImpl<>(
-                            articles
-                            .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
-                            .map(ArticleResponse::from)
-                            .toList(),
-                            pageable,
-                            articles.getTotalElements()
-                    )
+                "articles",
+                new PageImpl<>(
+                    articles
+                    .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
+                    .map(articleDto -> {
+                        ArticleFileDto articleFileDto = articleFileService.getArticleFiles(articleDto.id())
+                                .stream().filter(ArticleFileDto::isModelFile)
+                                .toList().get(0);
+                        return ArticleResponse.from(articleDto, articleFileDto);
+                    })
+                    .toList(),
+                    pageable,
+                    articles.getTotalElements()
+                )
             );
         }
 
-        model.addAttribute("modelPath", modelPath);
+        model.addAttribute("modelPath", relModelPath);
         model.addAttribute("categories", ArticleCategory.values());
         model.addAttribute("paginationBarNumbers", barNumbers);
 
@@ -95,16 +105,17 @@ public class ModelArticlesController {
 
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
-        model.addAttribute("articleFiles", article.files());
+        model.addAttribute("modelFile", article.modelFile());
+        model.addAttribute("imgFiles", article.imgFiles());
         model.addAttribute("addedLike", articleLike.isPresent());
-        model.addAttribute("modelPath", modelPath);
+        model.addAttribute("modelPath", relModelPath);
 
         return "model_articles/detail";
     }
 
     @GetMapping("/form")
     public String articleForm(Model model) {
-        model.addAttribute("article", new ArticleFormResponse(null, null, null, null, null));
+        model.addAttribute("article", ArticleFormResponse.of(null, null, List.of(), null, null, null, null, null, null));
         model.addAttribute("formStatus", FormStatus.CREATE);
         model.addAttribute("categories", ArticleCategory.values());
         return "model_articles/form";
@@ -112,7 +123,7 @@ public class ModelArticlesController {
 
     @PostMapping("/form")
     public String postNewArticle(
-            @Validated @ModelAttribute("article") ArticleFormRequest articleFormRequest,
+            @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
@@ -121,22 +132,34 @@ public class ModelArticlesController {
             log.warn("bindingResult={}", bindingResult);
             model.addAttribute("formStatus", FormStatus.CREATE);
             model.addAttribute("categories", ArticleCategory.values());
-            return "model_articles/form";
+            return "/model_articles/form";
         }
 
-        //TODO: 게시글 저장과 첨부 파일 저장 구현
-//        List<ArticleFileDto> articleFileDtos = new ArrayList<>();
-//        for (MultipartFile file : articleFormRequest.files()) {
-//            articleFileDtos.add(articleFileService.saveArticleFile(file));
-//        }
+        //게시글 저장
+        Article article = articleService.saveArticle(
+                articleFormRequest.toArticleDto(
+                        boardPrincipal.toDto(),
+                        ArticleType.MODEL
+                )
+        );
+        //파일 저장
+        List<MultipartFile> files = articleFormRequest.getFiles();
+        for (MultipartFile file : files) {
+            if (file.getSize() > 0) {
+                articleFileService.saveArticleFile(article, file);
+            }
+        }
+        //상품 옵션 저장
+        List<GoodOptionDto> goodOptionDtos = articleFormRequest.toGoodOptionDtos(article.getId());
+        for (GoodOptionDto goodOptionDto : goodOptionDtos) {
+            goodOptionService.saveGoodOption(goodOptionDto);
+        }
+        //치수 저장
+        List<DimensionDto> dimensionDtos = articleFormRequest.toDimensionDtos(article.getId());
+        for (DimensionDto dimensionDto : dimensionDtos) {
+            dimensionService.saveDimension(dimensionDto);
+        }
 
-
-//        articleService.saveArticle(
-//                articleFormRequest.toArticleDto(
-//                        boardPrincipal.toDto(),
-//                        ArticleType.MODEL
-//                )
-//        );
         return "redirect:/model_articles";
     }
 
@@ -145,7 +168,22 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
-        model.addAttribute("article", ArticleFormResponse.from(articleService.getArticle(articleId)));
+        List<GoodOptionRequest> goodOptionRequests = goodOptionService.getGoodOptions(articleId).stream()
+                .map(GoodOptionRequest::from)
+                .toList();
+        List<DimensionRequest> dimensionRequests = dimensionService.getDimensions(articleId).stream()
+                .map(DimensionRequest::from)
+                .toList();
+
+        model.addAttribute(
+            "article",
+            ArticleFormResponse.from(
+                articleService.getArticle(articleId),
+                articleFileService.getArticleFiles(articleId),
+                goodOptionRequests,
+                dimensionRequests
+            )
+        );
         model.addAttribute("formStatus", FormStatus.UPDATE);
         model.addAttribute("categories", ArticleCategory.values());
         return "model_articles/form";
@@ -154,27 +192,50 @@ public class ModelArticlesController {
     @PostMapping("/form/{articleId}")
     public String postUpdateArticle(
             @PathVariable Long articleId,
-            @Validated @ModelAttribute("article") ArticleFormRequest articleFormRequest,
+            @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            log.warn("bindingResult={}", bindingResult);
+            log.warn("formBindingResult={}", bindingResult);
             model.addAttribute("formStatus", FormStatus.UPDATE);
             model.addAttribute("categories", ArticleCategory.values());
             return "model_articles/form";
         }
 
-        List<ArticleFileDto> articleFileDtos = articleService.getArticleFiles(articleId); //저장되어있는 파일
-        boolean isUpdated = articleFileService.updateArticleFile(articleFormRequest.getFiles(), articleFileDtos);
+        //파일 업데이트
+        List<ArticleFileDto> articleFileDtos = articleService.getArticleFiles(articleId); //저장되어있는 파일들
+        Article article = articleService.getArticle(articleId).toEntity();
+        List<MultipartFile> files = articleFormRequest.getFiles();
+        boolean isUpdated = articleFileService.updateArticleFile(article, files, articleFileDtos);
+        //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
+        if (isUpdated) {
+            for (ArticleFileDto articleFile : articleFileDtos) {
+                articleFileService.deleteArticleFile(articleFile.id());
+            }
+            for (MultipartFile file : files) {
+                articleFileService.saveArticleFile(article, file);
+            }
+        }
+        //상품옵션 업데이트
+        goodOptionService.deleteGoodOptions(articleId);
+        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptionRequests();
+        for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
+            goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
+        }
+        //치수 업데이트
+        dimensionService.deleteDimensions(articleId);
+        List<DimensionRequest> dimensionRequests = articleFormRequest.getDimensionRequests();
+        for (DimensionRequest dimensionRequest : dimensionRequests) {
+            dimensionService.saveDimension(dimensionRequest.toDto(articleId));
+        }
+
         articleService.updateArticle(
-                articleId,
-                articleFormRequest.toDto(
-                    boardPrincipal.toDto(),
-                    articleFileDtos,
-                    isUpdated
-                )
+            articleId,
+            articleFormRequest.toArticleDto(
+                boardPrincipal.toDto()
+            )
         );
         return "redirect:/model_articles";
     }

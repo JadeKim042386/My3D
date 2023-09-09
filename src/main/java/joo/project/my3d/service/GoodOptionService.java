@@ -67,4 +67,12 @@ public class GoodOptionService {
     public void deleteGoodOption(Long goodOptionId) {
         goodOptionRepository.deleteById(goodOptionId);
     }
+
+    @Transactional
+    public void deleteGoodOptions(Long articleId) {
+        List<GoodOption> goodOptions = goodOptionRepository.findByArticleId(articleId);
+        for (GoodOption goodOption : goodOptions) {
+            goodOptionRepository.deleteById(goodOption.getId());
+        }
+    }
 }
