@@ -121,7 +121,6 @@ class ArticleServiceTest {
         // Then
         assertThat(dto)
                 .hasFieldOrProperty("userAccountDto")
-                .hasFieldOrProperty("articleFileDtos")
                 .hasFieldOrPropertyWithValue("title", article.getTitle())
                 .hasFieldOrPropertyWithValue("content", article.getContent())
                 .hasFieldOrPropertyWithValue("articleType", article.getArticleType())

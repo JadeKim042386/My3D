@@ -53,13 +53,13 @@ public class ArticleService {
     }
 
     @Transactional
-    public void saveArticle(ArticleDto articleDto) {
+    public Article saveArticle(ArticleDto articleDto) {
         //모델 게시글일 경우 Category가 있어야함
         Article article = articleDto.toEntity();
         if (article.getArticleType() == ArticleType.MODEL && article.getArticleCategory() == null) {
             throw new ArticleException(ErrorCode.ARTICLE_CATEGORY_NOT_FOUND);
         }
-        articleRepository.save(article);
+        return articleRepository.save(article);
     }
 
     @Transactional
