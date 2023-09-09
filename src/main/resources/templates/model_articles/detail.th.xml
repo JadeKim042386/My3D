@@ -14,7 +14,7 @@
         <attr sel="#nickname" th:text="*{nickname}"/>
         <attr sel="#created_at" th:text="*{createdAt}"/>
         <!--모델 뷰-->
-        <attr sel="#model-view" th:model="${modelPath} + *{file.fileName}"/>
+        <attr sel="#model-view" th:model="${modelPath} + *{modelFile.fileName}"/>
         <!--제목&본문 내용-->
         <attr sel="#title" th:text="*{title}"/>
         <attr sel="#content" th:text="*{content}"/>
@@ -34,7 +34,7 @@
                 <attr sel=".comment-nickname" th:text="${articleComment.nickname}"/>
                 <attr sel=".comment-createdAt" th:text="'- ' + ${articleComment.createdAt}"/>
                 <attr sel=".comment-content" th:text="${articleComment.content}"/>
-                <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${articleComment.userId} == ${#authentication.name}">
+                <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${articleComment.email} == ${#authentication.name}">
                     <attr sel=".delete-article-comment" th:action="'/comments/' + ${articleComment.id} + '/delete?articleId=' + *{id}" th:method="post"/>
                 </attr>
                 <!--자식 댓글-->
@@ -43,7 +43,7 @@
                         <attr sel=".comment-nickname" th:text="${childComment.nickname}"/>
                         <attr sel=".comment-createdAt" th:text="'- ' + ${childComment.createdAt}"/>
                         <attr sel=".comment-content" th:text="${childComment.content}"/>
-                        <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${childComment.userId} == ${#authentication.name}">
+                        <attr sel=".article-comment-buttons" th:if="${#authorization.expression('isAuthenticated()')} and ${childComment.email} == ${#authentication.name}">
                             <attr sel=".delete-article-comment" th:action="'/comments/' + ${childComment.id} + '/delete?articleId=' + *{id}" th:method="post"/>
                         </attr>
                     </attr>
