@@ -2,54 +2,56 @@ package joo.project.my3d.dto.request;
 
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.ArticleDto;
-import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.PriceDto;
-import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public record ArticleFormRequest(
-        @NotBlank
-        String title,
-        @NotBlank
-        String summary,
-        @NotBlank
-        String content,
-        @NotNull
-        Integer priceValue,
-        @NotNull
-        Integer deliveryPrice,
-        @NotNull
-        GoodOptionRequest goodOptionRequest,
-        @NotNull
-        DimensionRequest dimensionRequest,
-        @MultipartFileSizeValid
-        MultipartFile modelFile,
-        List<MultipartFile> imgFiles,
-        @InCategory
-        String articleCategory
-) {
+@Getter
+@Setter
+public class ArticleFormRequest {
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String summary;
+    @NotBlank
+    private String content;
+    @NotNull
+    private Integer priceValue;
+    @NotNull
+    private Integer deliveryPrice;
+    @NotNull
+    @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
+    private final List<GoodOptionRequest> goodOptionRequests = new ArrayList<>();
+    @NotNull
+    private final List<DimensionRequest> dimensionRequests = new ArrayList<>();
+    @MultipartFileSizeValid
+    private MultipartFile modelFile;
+    private MultipartFile[] imgFiles;
+    @InCategory
+    private String articleCategory;
 
     public List<MultipartFile> getFiles() {
         List<MultipartFile> files = new ArrayList<>();
         if (imgFiles != null){
-            files.addAll(imgFiles);
+            files.addAll(Arrays.stream(imgFiles).toList());
         }
         files.add(modelFile);
         return files;
     }
 
-    public ArticleDto toDto(UserAccountDto userAccountDto, ArticleType articleType, List<ArticleFileDto> articleFileDtos) {
+    public ArticleDto toArticleDto(UserAccountDto userAccountDto, ArticleType articleType) {
         return ArticleDto.of(
                 userAccountDto,
-                articleFileDtos,
                 title,
                 summary,
                 content,
@@ -60,20 +62,20 @@ public record ArticleFormRequest(
         );
     }
 
-    /**
-     * 파일이 업데이트되지 않았다면 FileDto는 추가하지 않음
-     */
-    public ArticleDto toDto(UserAccountDto userAccountDto, List<ArticleFileDto> articleFileDtos, boolean isUpdated) {
-        return ArticleDto.of(
-                userAccountDto,
-                isUpdated ? articleFileDtos : null,
-                title,
-                summary,
-                content,
-                null,
-                ArticleCategory.valueOf(articleCategory),
-                null,
-                PriceDto.of(priceValue, deliveryPrice)
-        );
+    public ArticleDto toArticleDto(UserAccountDto userAccountDto) {
+        return toArticleDto(userAccountDto, null);
     }
+
+    public List<GoodOptionDto> toGoodOptionDtos(Long articleId) {
+        return goodOptionRequests.stream()
+                .map(goodOptionRequest -> goodOptionRequest.toDto(articleId))
+                .toList();
+    }
+
+    public List<DimensionDto> toDimensionDtos(Long articleId) {
+        return dimensionRequests.stream()
+                .map(dimensionRequest -> dimensionRequest.toDto(articleId))
+                .toList();
+    }
+
 }

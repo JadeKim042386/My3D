@@ -3,6 +3,7 @@ package joo.project.my3d.dto.response;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleCommentDto;
+import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.utils.LocalDateTimeUtils;
 
@@ -15,7 +16,8 @@ public record ArticleWithCommentsAndLikeCountResponse(
         Long id,
         String userId,
         String nickname,
-        List<ArticleFileResponse> files,
+        ArticleFileResponse modelFile,
+        List<ArticleFileResponse> imgFiles,
         String title,
         String content,
         ArticleType articleType,
@@ -24,8 +26,8 @@ public record ArticleWithCommentsAndLikeCountResponse(
         int likeCount,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, List<ArticleFileResponse> articleFileResponses, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, articleFileResponses, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -33,7 +35,12 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.id(),
                 dto.userAccountDto().email(),
                 dto.userAccountDto().nickname(),
+                ArticleFileResponse.from(
+                        dto.articleFileDtos().stream().filter(ArticleFileDto::isModelFile)
+                                .toList().get(0)
+                ),
                 dto.articleFileDtos().stream()
+                        .filter(ArticleFileDto::isImageFile)
                         .map(ArticleFileResponse::from)
                         .toList(),
                 dto.title(),

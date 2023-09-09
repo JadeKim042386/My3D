@@ -28,12 +28,10 @@ public class FixtureDto {
 
     public static ArticleDto getArticleDto(Long id, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         PriceDto priceDto = FixtureDto.getPriceDto();
         return ArticleDto.of(
                 id,
                 userAccountDto,
-                List.of(articleFileDto),
                 title,
                 summary,
                 content,

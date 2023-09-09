@@ -64,7 +64,7 @@ public class Fixture {
         String fileName = "test.txt";
 
         return new MockMultipartFile(
-                fileName,
+                "modelFile",
                 fileName,
                 "text/plain",
                 content.getBytes(StandardCharsets.UTF_8)
