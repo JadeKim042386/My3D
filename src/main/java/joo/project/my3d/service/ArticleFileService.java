@@ -1,5 +1,7 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
@@ -14,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,53 +29,73 @@ public class ArticleFileService {
 
     private final ArticleFileRepository articleFileRepository;
 
-    @Value("${model.path}")
-    private String modelPath;
+    @Value("${model.abs-path}")
+    private String absModelPath;
 
-    public ArticleFileDto saveArticleFile(MultipartFile file) {
+    /**
+     * article ID로 파일 조회
+     */
+    public List<ArticleFileDto> getArticleFiles(Long articleId) {
+        return articleFileRepository.findByArticleId(articleId)
+                .stream().map(ArticleFileDto::from)
+                .toList();
+    }
+
+    @Transactional
+    public void saveArticleFile(Article article, MultipartFile file) {
         //파일 저장(UUID를 파일명으로 저장)
-        String extension = FileUtils.getExtension(file.getOriginalFilename());
+        String originalFileName = file.getOriginalFilename();
+        String extension = FileUtils.getExtension(originalFileName);
         String fileName = UUID.randomUUID() + "." + extension;
 
         try {
-            file.transferTo(new File(modelPath + fileName));
+            file.transferTo(new File(absModelPath + fileName));
             long byteSize = file.getSize();
-            String originalFileName = file.getOriginalFilename();
-            String fileExtension = FileUtils.getExtension(originalFileName);
-//            return ArticleFileDto.of(
-//                    byteSize,
-//                    originalFileName,
-//                    fileName,
-//                    fileExtension
-//            );
-            return null;
+            articleFileRepository.save(
+                ArticleFile.of(
+                    article,
+                    byteSize,
+                    originalFileName,
+                    fileName,
+                    extension
+                )
+            );
         } catch (IOException e) {
-            log.error("File path: {}, MultipartFile: {}", modelPath + fileName, file);
+            log.error("File path: {}, MultipartFile: {}", absModelPath + fileName, file);
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
         }
     }
 
-    /**
-     * - 파일이 업데이트되지 않았다면 이전에 저장한 파일명만 반환 <br>
-     * - 파일이 업데이트되었다면 이전에 저장한 파일명으로 저장 후 파일명 반환
-     */
-    @Transactional
-    public boolean updateArticleFile(List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
+    public boolean updateArticleFile(Article article, List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
         try {
+            //업데이트 여부 확인
             boolean isUpdated = false;
             for (int i=0; i < files.size(); i++) {
                 if (!new String(files.get(i).getBytes()).equals("NotUpdated")) {
-                    ArticleFileDto articleFileDto = articleFiles.get(i);
-                    String savedFileName = articleFileDto.fileName();
-                    articleFileRepository.deleteById(articleFileDto.id()); //이전에 저장한 파일 정보 삭제
-                    files.get(i).transferTo(new File(modelPath + savedFileName));
                     isUpdated = true;
+                    break;
                 }
             }
             return isUpdated;
         } catch (IOException e) {
             log.error("잘못된 파일: {}", files);
             throw new FileException(ErrorCode.FILE_NOT_VALID);
+        }
+    }
+
+    @Transactional
+    public void deleteArticleFile(Long articleFileId) {
+        ArticleFile articleFile = articleFileRepository.getReferenceById(articleFileId);
+        String fileName = articleFile.getFileName();
+
+        //파일 삭제
+        try {
+            Files.delete(Paths.get(absModelPath + fileName));
+            //데이터 삭제
+            articleFileRepository.deleteById(articleFileId);
+        } catch (IOException e) {
+            log.error("File path: {}", absModelPath + fileName);
+            throw new FileException(ErrorCode.FILE_CANT_SAVE);
         }
     }
 }

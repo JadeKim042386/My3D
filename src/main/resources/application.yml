@@ -68,7 +68,9 @@ spring:
           auth: true # 사용자 인증 시도 여부
           timeout: 5000
           starttls.enable: true # TLS 활성화 여부
-model.path: ${MODEL_PATH}
+model:
+  abs-path: ${ABS_MODEL_PATH}
+  rel-path: ${REL_MODEL_PATH}
 nts.service-key: ${NTS_BUSINESS_KEY}
 admin.email: ${ADMIN_EMAIL}
 jwt:
@@ -128,7 +130,9 @@ spring:
           auth: true
           timeout: 5000
           starttls.enable: true
-model.path: ${MODEL_PATH}
+model:
+  abs-path: ${ABS_MODEL_PATH}
+  rel-path: ${REL_MODEL_PATH}
 nts.service-key: ${NTS_BUSINESS_KEY}
 admin.email: "admin@gmail.com"
 jwt:

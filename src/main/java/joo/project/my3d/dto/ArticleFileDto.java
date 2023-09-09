@@ -3,6 +3,8 @@ package joo.project.my3d.dto;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 
+import java.util.List;
+
 public record ArticleFileDto(
         Long id,
         Long articleId,
@@ -37,5 +39,13 @@ public record ArticleFileDto(
                 fileName,
                 fileExtension
         );
+    }
+
+    public boolean isModelFile() {
+        return List.of("stp", "stl").contains(fileExtension);
+    }
+
+    public boolean isImageFile() {
+        return !List.of("stp", "stl").contains(fileExtension);
     }
 }
