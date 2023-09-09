@@ -15,6 +15,10 @@ public record GoodOptionDto(
         return new GoodOptionDto(id, articleId, optionName, addPrice, printingTech, material);
     }
 
+    public static GoodOptionDto of(Long articleId, String optionName, Integer addPrice, String printingTech, String material) {
+        return GoodOptionDto.of(null, articleId, optionName, addPrice, printingTech, material);
+    }
+
     public GoodOption toEntity(Article article) {
         return GoodOption.of(
                 article,

@@ -16,6 +16,10 @@ public record DimensionDto(
         return new DimensionDto(id, articleId, dimName, dimValue, dimUnit);
     }
 
+    public static DimensionDto of(Long articleId, String dimName, Float dimValue, DimUnit dimUnit) {
+        return DimensionDto.of(null, articleId, dimName, dimValue, dimUnit);
+    }
+
     public Dimension toEntity(Article article) {
         return Dimension.of(
                 article,
