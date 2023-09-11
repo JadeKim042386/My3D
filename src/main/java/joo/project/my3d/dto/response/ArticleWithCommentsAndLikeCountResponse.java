@@ -24,10 +24,12 @@ public record ArticleWithCommentsAndLikeCountResponse(
         ArticleCategory articleCategory,
         Set<ArticleCommentResponse> articleCommentResponses,
         int likeCount,
+        int priceValue,
+        int deliveryPrice,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -49,6 +51,8 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.articleCategory(),
                 organizeChildComments(dto.articleCommentDtos()),
                 dto.likeCount(),
+                dto.priceDto().priceValue(),
+                dto.priceDto().deliveryPrice(),
                 dto.createdAt()
         );
     }
