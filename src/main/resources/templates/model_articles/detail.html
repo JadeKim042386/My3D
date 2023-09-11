@@ -76,11 +76,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
+        <!--가격-->
+        <div class="col-2 align-self-center">
             <div class="d-flex justify-content-center">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary">3D 프린팅 요청</button>
-                </div>
+                <p id="price" class="mb-0 me-1">1,000</p>
+                <button class="btn btn-sm p-0" id="price-info" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="배송비를 포함한 기본 가격으로 치수와 재질 등에 따라 변동될 수 있습니다. 자세한 내용은 상세 정보를 확인해주세요.">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary">상세 정보 확인 후 요청</button>
             </div>
         </div>
     </div>
@@ -181,11 +188,16 @@
 <footer id="footer"></footer>
 <!--스크립트-->
 <script src="/js/hiddenUrlParameter.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <script>
     OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
     OV.Init3DViewerElements();
+    $(function () {
+        $("#price-info").popover();
+    })
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 </body>
 </html>
