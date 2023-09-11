@@ -18,10 +18,12 @@ public record ArticleResponse(
         ArticleType articleType,
         ArticleCategory articleCategory,
         int likeCount,
+        int priceValue,
+        int deliveryPrice,
         String createdAt
 ) {
-    public static ArticleResponse of(Long id, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, LocalDateTime createdAt) {
-        return new ArticleResponse(id, nickname, modelFile, title, content, articleType, articleCategory, likeCount, LocalDateTimeUtils.passedTime(createdAt));
+    public static ArticleResponse of(Long id, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, int likeCount, int priceValue, int deliveryPrice, LocalDateTime createdAt) {
+        return new ArticleResponse(id, nickname, modelFile, title, content, articleType, articleCategory, likeCount, priceValue, deliveryPrice, LocalDateTimeUtils.passedTime(createdAt));
     }
 
     public static ArticleResponse from(ArticleDto dto, ArticleFileDto articleFileDto) {
@@ -34,6 +36,8 @@ public record ArticleResponse(
                 dto.articleType(),
                 dto.articleCategory(),
                 dto.likeCount(),
+                dto.priceDto().priceValue(),
+                dto.priceDto().deliveryPrice(),
                 dto.createdAt()
         );
     }
