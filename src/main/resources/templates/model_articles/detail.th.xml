@@ -17,6 +17,8 @@
         <attr sel="#model-view" th:model="${modelPath} + *{modelFile.fileName}"/>
         <!--제목&본문 내용-->
         <attr sel="#title" th:text="*{title}"/>
+        <attr sel="#summary" th:text="*{summary}"/>
+        <!--요청 모달-->
         <attr sel="#content" th:text="*{content}"/>
         <!--좋아요-->
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
