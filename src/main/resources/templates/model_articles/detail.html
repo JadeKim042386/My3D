@@ -98,24 +98,13 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-lg-5">
-                            <div id="detail-model-view"
-                                 class="online_3d_viewer"
-                                 cameraMode=2
-                                 model="/models/model.stl">
-                            </div>
                             <!--Carousel Wrapper-->
                             <div id="carousel-thumb" class="carousel slide carousel-fade" data-ride="carousel">
                                 <!--Slides-->
                                 <div class="carousel-inner">
-                                    <div class="carousel-item active">
+                                    <div class="carousel-item" id="img-thumb">
                                         <img class="d-block w-100"
-                                             src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg"
-                                             alt="Second slide">
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="d-block w-100"
-                                             src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg"
-                                             alt="Third slide">
+                                             src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg">
                                     </div>
                                 </div>
                                 <!--/.Slides-->
@@ -141,24 +130,21 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
                                 </button>
                             </div>
-                            <ul class="list-group">
-                                <li class="list-group-item">프린팅 방식: LSA</li>
-                                <li class="list-group-item">재질: 레진</li>
-                                <li class="list-group-item">높이: 100mm</li>
-                                <li class="list-group-item">길이: 100mm</li>
+                            <ul class="list-group" id="optionData">
+                                <li class="list-group-item" id="printingTech">프린팅 방식: LSA</li>
+                                <li class="list-group-item" id="material">재질: 레진</li>
+                                <li class="list-group-item dimension">높이: 100mm</li>
                             </ul>
                         </div>
-                        <div class="col-lg-7">
+                        <div class="col-lg-7 mt-3">
                             <p id="content">content</p>
                         </div>
                     </div>
                 </div>
                 <nav class="navbar sticky-bottom p-4">
                     <div class="container-fluid">
-                        <select class="form-select">
-                            <option value="1" selected>One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                        <select class="form-select" id="optionSelect" onchange="changeOption()">
+                            <option id="optionName" selected>One</option>
                         </select>
                     </div>
                 </nav>
@@ -271,14 +257,25 @@
 <script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <script>
-    OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
-    OV.Init3DViewerElements();
+    window.addEventListener('load', () => {
+        OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
+        OV.Init3DViewerElements();
+    })
 </script>
 <script>
     $(function () {
         $("#price-info").popover();
         $("#basicDimInfo").popover();
     })
+</script>
+<script id="inline-js">
+    function changeOption() {
+        var optionSelect = document.getElementById("optionSelect");
+        var selectIdx = optionSelect.selectedIndex;
+        var goodOption = [[${article.goodOptions}]][selectIdx];
+        $("#printingTech").text("프린팅 방식: " + goodOption.printingTech);
+        $("#material").text("재질: " + goodOption.material);
+    }
 </script>
 </body>
 </html>

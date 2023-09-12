@@ -20,6 +20,21 @@
         <attr sel="#summary" th:text="*{summary}"/>
         <!--요청 모달-->
         <attr sel="#content" th:text="*{content}"/>
+        <attr sel="#img-thumb" th:each="imgFile, stat : ${imgFiles}" th:classappend="${stat.index} == 0 ? 'active' : _">
+            <attr sel=".img" th:src="${modelPath} + *{imgFile.fileName}"/>
+        </attr>
+        <attr sel="#optionName" th:each="goodOption, stat : ${article.goodOptions}"
+              th:selected="${stat.index} == 0 ? true : false"
+              th:text="${goodOption.optionName}"
+        />
+        <attr sel="#printingTech" th:text="'프린팅 방식: ' + ${article.goodOptions[0].printingTech}"/>
+        <attr sel="#material" th:text="'재질: ' + ${article.goodOptions[0].material}"/>
+        <attr sel="#optionData">
+            <attr sel=".dimension"
+                  th:each="dim: ${article.dimensions}"
+                  th:text="${dim.dimName} + ': ' + ${dim.dimValue} + ' ' + ${dim.dimUnit}"
+            />
+        </attr>
         <!--좋아요-->
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
             <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
@@ -57,4 +72,5 @@
             </attr>
         </attr>
     </attr>
+    <attr sel="#inline-js" th:inline="javascript"/>
 </thlogic>
