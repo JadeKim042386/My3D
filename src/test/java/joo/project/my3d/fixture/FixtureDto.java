@@ -56,25 +56,31 @@ public class FixtureDto {
         return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
-    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        PriceDto priceDto = FixtureDto.getPriceDto();
+        GoodOptionWithDimensionDto goodOptionWithDimensionDto = FixtureDto.getGoodOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto,
                 Set.of(articleFileDto),
                 title,
+                summary,
                 content,
                 articleType,
                 articleCategory,
                 Set.of(),
                 2,
+                priceDto,
+                List.of(goodOptionWithDimensionDto),
                 LocalDateTime.now(),
                 userAccountDto.email(),
                 LocalDateTime.now(),
                 userAccountDto.email()
         );
     }
+
 
     public static DimensionDto getDimensionDto(Long dimensionId) {
         return DimensionDto.of(
@@ -103,6 +109,18 @@ public class FixtureDto {
 
     public static GoodOptionDto getGoodOptionDto() {
         return FixtureDto.getGoodOptionDto(3L);
+    }
+
+    private static GoodOptionWithDimensionDto getGoodOptionWithDimensionDto() {
+        DimensionDto dimensionDto = FixtureDto.getDimensionDto();
+        return GoodOptionWithDimensionDto.of(
+                1L,
+                "option10",
+                3000,
+                "LSA",
+                "lesin",
+                List.of(dimensionDto)
+        );
     }
 
     public static PriceDto getPriceDto() {

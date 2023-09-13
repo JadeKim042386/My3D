@@ -3,6 +3,7 @@ package joo.project.my3d.controller;
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
+import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
@@ -150,14 +151,15 @@ public class ModelArticlesController {
             }
         }
         //상품 옵션 저장
-        List<GoodOptionDto> goodOptionDtos = articleFormRequest.toGoodOptionDtos(article.getId());
-        for (GoodOptionDto goodOptionDto : goodOptionDtos) {
-            goodOptionService.saveGoodOption(goodOptionDto);
-        }
-        //치수 저장
-        List<DimensionDto> dimensionDtos = articleFormRequest.toDimensionDtos(article.getId());
-        for (DimensionDto dimensionDto : dimensionDtos) {
-            dimensionService.saveDimension(dimensionDto);
+        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptionRequests();
+        for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
+            GoodOptionDto goodOptionDto = goodOptionRequest.toDto(article.getId());
+            GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionDto);
+            //치수 저장
+            List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+            for (DimensionDto dimensionDto : dimensionDtos) {
+                dimensionService.saveDimension(dimensionDto);
+            }
         }
 
         return "redirect:/model_articles";
@@ -222,13 +224,13 @@ public class ModelArticlesController {
         goodOptionService.deleteGoodOptions(articleId);
         List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptionRequests();
         for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
-            goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
-        }
-        //치수 업데이트
-        dimensionService.deleteDimensions(articleId);
-        List<DimensionRequest> dimensionRequests = articleFormRequest.getDimensionRequests();
-        for (DimensionRequest dimensionRequest : dimensionRequests) {
-            dimensionService.saveDimension(dimensionRequest.toDto(articleId));
+            GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
+            //치수 업데이트
+            dimensionService.deleteDimensions(goodOption.getId());
+            List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+            for (DimensionDto dimensionDto : dimensionDtos) {
+                dimensionService.saveDimension(dimensionDto);
+            }
         }
 
         articleService.updateArticle(

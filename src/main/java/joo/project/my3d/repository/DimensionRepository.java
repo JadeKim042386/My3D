@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DimensionRepository extends JpaRepository<Dimension, Long> {
-    void deleteByArticleId(Long articleId);
+    void deleteByGoodOptionId(Long goodOptionId);
 
-    List<Dimension> findByArticleId(Long articleId);
+    List<Dimension> findByGoodOptionId(Long goodOptionId);
 }

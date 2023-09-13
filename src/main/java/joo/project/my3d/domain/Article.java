@@ -73,10 +73,6 @@ public class Article extends AuditingFields {
     private final Set<GoodOption> goodOptions = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
-    private final Set<Dimension> dimensions = new LinkedHashSet<>();
-
-    @ToString.Exclude
     @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "price_id")
     private Price price;

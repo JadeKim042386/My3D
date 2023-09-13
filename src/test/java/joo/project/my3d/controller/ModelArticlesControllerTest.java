@@ -4,23 +4,19 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
+import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.*;
-import joo.project.my3d.dto.request.GoodOptionRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
-import joo.project.my3d.repository.DimensionRepository;
-import joo.project.my3d.repository.GoodOptionRepository;
 import joo.project.my3d.service.*;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -108,9 +104,10 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
+        GoodOption goodOption = Fixture.getGoodOption(article);
         given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
         willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
-        willDoNothing().given(goodOptionService).saveGoodOption(any(GoodOptionDto.class));
+        given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
@@ -128,9 +125,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].di[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequestsmensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().is3xxRedirection())
@@ -164,9 +161,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
@@ -196,9 +193,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
@@ -228,9 +225,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
@@ -260,9 +257,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
@@ -288,9 +285,6 @@ class ModelArticlesControllerTest {
                                 .param("priceValue", String.valueOf(10000))
                                 .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().isOk())
@@ -304,7 +298,7 @@ class ModelArticlesControllerTest {
     void modelArticle() throws Exception {
         // Given
         Long articleId = 1L;
-        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true);
         UserAccount userAccount = userAccountDto.toEntity();
         ArticleLike articleLike = Fixture.getArticleLike(userAccount);
@@ -368,12 +362,14 @@ class ModelArticlesControllerTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
         FieldUtils.writeField(article, "id", 1L, true);
+        GoodOption goodOption = Fixture.getGoodOption(article);
+        FieldUtils.writeField(goodOption, "id", 1L, true);
         given(articleService.getArticleFiles(anyLong())).willReturn(List.of());
         given(articleService.getArticle(eq(1L))).willReturn(ArticleDto.from(article));
         given(articleFileService.updateArticleFile(any(Article.class), eq(List.of(multipartFile)), eq(List.of()))).willReturn(true);
         willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
         willDoNothing().given(goodOptionService).deleteGoodOptions(eq(1L));
-        willDoNothing().given(goodOptionService).saveGoodOption(any(GoodOptionDto.class));
+        given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
         willDoNothing().given(dimensionService).deleteDimensions(eq(1L));
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
@@ -393,9 +389,9 @@ class ModelArticlesControllerTest {
                                 .param("goodOptionRequests[0].addPrice", String.valueOf(123))
                                 .param("goodOptionRequests[0].printingTech", "123")
                                 .param("goodOptionRequests[0].material", "123")
-                                .param("dimensionRequests[0].dimName", "dimName")
-                                .param("dimensionRequests[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionRequests[0].dimUnit", "MM")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimName", "dimName")
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimValue", String.valueOf(100.0))
+                                .param("goodOptionRequests[0].dimensionRequests[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                 )
                 .andExpect(status().is3xxRedirection())

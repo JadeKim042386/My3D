@@ -109,7 +109,7 @@ CREATE TABLE `good_option` (
 
 CREATE TABLE `dimension` (
    `id`	bigint	AUTO_INCREMENT NOT NULL,
-   `article_id`	bigint	NOT NULL,
+   `good_option_id`	bigint	NOT NULL,
    `dim_name`	varchar(50)	NOT NULL,
    `dim_value`	float	default 0 NOT NULL,
    `dim_unit`	varchar(10)	NOT NULL,
@@ -118,5 +118,5 @@ CREATE TABLE `dimension` (
    `created_by`	varchar(100)	NOT NULL,
    `modified_by`	varchar(100)	NOT NULL,
    PRIMARY KEY (`id`),
-   FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
+   FOREIGN KEY (`good_option_id`) REFERENCES `good_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';

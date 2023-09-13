@@ -1,9 +1,14 @@
 package joo.project.my3d.dto.request;
 
+import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.GoodOptionDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +18,8 @@ public class GoodOptionRequest {
         private Integer addPrice;
         private String printingTech;
         private String material;
+        @NotNull
+        private final List<DimensionRequest> dimensionRequests = new ArrayList<>();
 
         private GoodOptionRequest(String optionName, Integer addPrice, String printingTech, String material) {
                 this.optionName = optionName;
@@ -43,4 +50,10 @@ public class GoodOptionRequest {
                         dto.material()
                 );
         }
+        public List<DimensionDto> toDimensionDtos(Long goodOptionId) {
+                return dimensionRequests.stream()
+                        .map(dimensionRequest -> dimensionRequest.toDto(goodOptionId))
+                        .toList();
+        }
+
 }

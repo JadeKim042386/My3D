@@ -17,6 +17,8 @@ public enum ErrorCode {
     DATA_FOR_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글에 필요한 정보를 찾을 수 없습니다."),
     COMMENT_NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 잘못되었습니다."),
+    FAILED_SAVE(HttpStatus.INTERNAL_SERVER_ERROR, "저장에 실패했습니다."),
+    GOOD_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 옵션을 찾을 수 없습니다."),
     ;
 
     private HttpStatus status;
