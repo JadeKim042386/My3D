@@ -5,6 +5,7 @@ import joo.project.my3d.domain.Dimension;
 import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.exception.CommentException;
+import joo.project.my3d.exception.DimensionException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.DimensionRepository;
@@ -40,7 +41,7 @@ public class DimensionService {
             Dimension dimension = dto.toEntity(goodOption);
             dimensionRepository.save(dimension);
         } catch (EntityNotFoundException e) {
-            log.warn("치수 저장 실패! - {}", new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND));
+            log.warn("치수 저장 실패! - {}", new DimensionException(ErrorCode.FAILED_SAVE));
         }
     }
 
@@ -58,7 +59,7 @@ public class DimensionService {
                 dimension.setDimUnit(dto.dimUnit());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("치수 수정 실패! - dto: {} {}", dto, new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+            log.warn("치수 수정 실패! - dto: {} {}", dto, new DimensionException(ErrorCode.DIMENSION_NOT_FOUND));
         }
     }
 
