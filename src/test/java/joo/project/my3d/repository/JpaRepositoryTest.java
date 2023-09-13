@@ -557,7 +557,7 @@ public class JpaRepositoryTest {
     public class DimensionJpaTest {
 
         @Autowired private DimensionRepository dimensionRepository;
-        @Autowired private ArticleRepository articleRepository;
+        @Autowired private GoodOptionRepository goodOptionRepository;
 
         @DisplayName("치수 findAll")
         @Test
@@ -585,8 +585,8 @@ public class JpaRepositoryTest {
         @Test
         void saveDimension() {
             // Given
-            Article article = articleRepository.getReferenceById(1L);
-            Dimension dimension = Fixture.getDimension(article);
+            GoodOption goodOption = goodOptionRepository.getReferenceById(1L);
+            Dimension dimension = Fixture.getDimension(goodOption);
             long previousCount = dimensionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

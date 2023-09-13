@@ -79,7 +79,7 @@ public class Fixture {
         return Price.of(10000, 3000);
     }
 
-    public static Dimension getDimension(Article article) {
-        return Dimension.of(article, "너비", 10.0f, DimUnit.MM);
+    public static Dimension getDimension(GoodOption goodOption) {
+        return Dimension.of(goodOption, "너비", 10.0f, DimUnit.MM);
     }
 }

@@ -71,6 +71,6 @@ insert into good_option (article_id, option_name, add_price, printing_tech, mate
 (1, 'option2', 1000, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 치수
-insert into dimension (article_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
+insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(1, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+(2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');

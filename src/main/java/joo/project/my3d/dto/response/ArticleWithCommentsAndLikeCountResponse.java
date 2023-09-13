@@ -28,11 +28,10 @@ public record ArticleWithCommentsAndLikeCountResponse(
         int priceValue,
         int deliveryPrice,
         List<GoodOptionResponse> goodOptions,
-        List<DimensionResponse> dimensions,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, List<GoodOptionResponse> goodOptionResponses, List<DimensionResponse> dimensionResponses, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, summary, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, goodOptionResponses, dimensionResponses, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, List<GoodOptionResponse> goodOptionResponses, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, summary, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, goodOptionResponses, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -57,8 +56,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.likeCount(),
                 dto.priceDto().priceValue(),
                 dto.priceDto().deliveryPrice(),
-                dto.goodOptionDtos().stream().map(GoodOptionResponse::from).toList(),
-                dto.dimensionDtos().stream().map(DimensionResponse::from).toList(),
+                dto.goodOptions().stream().map(GoodOptionResponse::from).toList(),
                 dto.createdAt()
         );
     }

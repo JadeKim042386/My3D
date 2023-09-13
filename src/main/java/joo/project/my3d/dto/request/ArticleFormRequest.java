@@ -32,8 +32,6 @@ public class ArticleFormRequest {
     @NotNull
     @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
     private final List<GoodOptionRequest> goodOptionRequests = new ArrayList<>();
-    @NotNull
-    private final List<DimensionRequest> dimensionRequests = new ArrayList<>();
     @MultipartFileSizeValid
     private MultipartFile modelFile;
     private MultipartFile[] imgFiles;
@@ -71,11 +69,4 @@ public class ArticleFormRequest {
                 .map(goodOptionRequest -> goodOptionRequest.toDto(articleId))
                 .toList();
     }
-
-    public List<DimensionDto> toDimensionDtos(Long articleId) {
-        return dimensionRequests.stream()
-                .map(dimensionRequest -> dimensionRequest.toDto(articleId))
-                .toList();
-    }
-
 }

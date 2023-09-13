@@ -5,7 +5,11 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @ToString(callSuper = true)
@@ -38,6 +42,10 @@ public class GoodOption extends AuditingFields {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "articleId")
     private Article article;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "goodOption", fetch = LAZY, cascade = CascadeType.ALL)
+    private final Set<Dimension> dimensions = new LinkedHashSet<>();
 
     protected GoodOption() {
     }

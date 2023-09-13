@@ -41,7 +41,9 @@ insert into article_file (article_id, byte_size, original_file_name, file_name, 
 (7, 8659, 'model6.stp', '9bc6cfbf-8740-4981-a331-f8f0fa2565c9.stp', 'stp', '2023-02-06 04:49:18', '2023-08-05 15:54:58', 'joo', 'joo'),
 (8, 1605, 'model7.stp', '575612c8-d349-4951-89c8-3c748dc9b884.stp', 'stp', '2023-01-21 23:34:41', '2022-09-14 00:52:47', 'joo', 'joo'),
 (9, 1973, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
-(10, 5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
+(10, 5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a'),
+(4, 185000, 'test_img1.jpg', 'test_img1.jpg', 'jpg', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'jujoo', 'jujoo'),
+(4, 185000, 'test_img2.jpg', 'test_img2.jpg', 'jpg', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'jujoo', 'jujoo');
 
 -- 댓글 10개
 insert into article_comment (email, article_id, content, parent_comment_id, created_by, modified_at, modified_by, created_at) values
@@ -67,10 +69,10 @@ insert into article_like (article_id, email, created_at, modified_at, created_by
 
 -- 상품옵션
 insert into good_option (article_id, option_name, add_price, printing_tech, material, created_at, modified_at, created_by, modified_by) values
-(1, 'option1', 0, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(1, 'option2', 1000, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+(4, 'option1', 0, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(4, 'option2', 1000, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 치수
-insert into dimension (article_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
+insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(1, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+(2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');

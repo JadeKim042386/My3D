@@ -24,9 +24,9 @@ public class DimensionRequest {
                 return new DimensionRequest(dimName, dimValue, dimUnit);
         }
 
-        public DimensionDto toDto(Long articleId) {
+        public DimensionDto toDto(Long goodOptionId) {
                 return DimensionDto.of(
-                        articleId,
+                        goodOptionId,
                         dimName,
                         dimValue,
                         dimUnit
