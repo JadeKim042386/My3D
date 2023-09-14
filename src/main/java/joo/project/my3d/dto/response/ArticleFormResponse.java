@@ -24,8 +24,7 @@ public class ArticleFormResponse {
     private String content;
     private Integer priceValue;
     private Integer deliveryPrice;
-    private final List<GoodOptionRequest> goodOptionRequests = new ArrayList<>();
-    private final List<DimensionRequest> dimensionRequests = new ArrayList<>();
+    private final List<GoodOptionResponse> goodOptions = new ArrayList<>();
     private String articleCategory;
 
     private ArticleFormResponse(Long id, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String summary, String content, Integer priceValue, Integer deliveryPrice, String articleCategory) {
@@ -44,7 +43,7 @@ public class ArticleFormResponse {
         return new ArticleFormResponse(id, modelFile, imgFiles, title, summary, content, priceValue, deliveryPrice, articleCategory);
     }
 
-    public static ArticleFormResponse from(ArticleDto dto, List<ArticleFileDto> articleFileDtos, List<GoodOptionRequest> goodOptionRequests, List<DimensionRequest> dimensionRequests) {
+    public static ArticleFormResponse from(ArticleDto dto, List<ArticleFileDto> articleFileDtos, List<GoodOptionResponse> goodOptionResponses) {
         ArticleFormResponse articleFormResponse = ArticleFormResponse.of(
                 dto.id(),
                 ArticleFileResponse.from(
@@ -62,8 +61,7 @@ public class ArticleFormResponse {
                 dto.priceDto().deliveryPrice(),
                 dto.articleCategory().name()
         );
-        articleFormResponse.goodOptionRequests.addAll(goodOptionRequests);
-        articleFormResponse.dimensionRequests.addAll(dimensionRequests);
+        articleFormResponse.goodOptions.addAll(goodOptionResponses);
         return articleFormResponse;
     }
 }

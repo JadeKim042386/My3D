@@ -24,6 +24,7 @@ public record ArticleFileDto(
     public static ArticleFileDto from(ArticleFile articleFile) {
         return ArticleFileDto.of(
                 articleFile.getId(),
+                articleFile.getArticle().getId(),
                 articleFile.getByteSize(),
                 articleFile.getOriginalFileName(),
                 articleFile.getFileName(),

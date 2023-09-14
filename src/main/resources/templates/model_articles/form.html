@@ -7,6 +7,60 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <link href="/css/main.css" rel="stylesheet">
   <link href="/css/file-form.less" rel="stylesheet/less" type="text/css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .table-title h2 {
+      margin: 6px 0 0;
+      font-size: 22px;
+    }
+    .table-title .add-new i {
+      margin-right: 4px;
+    }
+    table.table {
+      table-layout: fixed;
+    }
+    table.table tr th, table.table tr td {
+      border-color: #e9e9e9;
+    }
+    table.table th i {
+      font-size: 13px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    table.table th:last-child {
+      width: 100px;
+    }
+    table.table td a {
+      cursor: pointer;
+      display: inline-block;
+      margin: 0 5px;
+      min-width: 24px;
+    }
+    table.table td a.save {
+      color: #27C46B;
+    }
+    table.table td a.edit {
+      color: #FFC107;
+    }
+    table.table td a.delete {
+      color: #E34724;
+    }
+    table.table td i {
+      font-size: 19px;
+    }
+    table.table td a.add i {
+      font-size: 24px;
+      margin-right: -1px;
+      position: relative;
+      top: 3px;
+    }
+    table.table .form-control.error {
+      border-color: #f50000;
+    }
+    table.table td .save {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <!--헤더-->
@@ -53,13 +107,25 @@
           <p id="img-file-error" class="mb-0"></p>
         </div>
       </div>
-      <!--상품옵션 모달-->
+      <!--상품옵션-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
-          <input type="button" value="상품옵션 추가" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#goodOptionModal">
+          <button id="addGoodOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#goodOptionModal">상품옵션 추가</button>
         </div>
       </div>
       <p id="goodOption-error"></p>
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-7">
+          <select class="form-select" id="goodOption-select" onchange="selectGoodOption()">
+
+          </select>
+        </div>
+        <div class="col-sm-1 col-lg-2">
+          <button id="editGoodOption" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#goodOptionModal">수정</button>
+          <button type="button" class="btn btn-danger" onclick="removeGoodOption()">삭제</button>
+        </div>
+      </div>
+      <!--상품옵션 모달-->
       <div class="modal fade" id="goodOptionModal" tabindex="-1" aria-labelledby="goodOptionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -80,10 +146,43 @@
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
                 <input type="text" class="form-control" id="material" placeholder="프린팅 소재">
               </div>
+              <!--치수 테이블-->
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <div class="col-sm-4 p-0">
+                  <button type="button" class="btn btn-info btn-sm add-new">치수 추가</button>
+                </div>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4 table-responsive">
+                <table class="table table-bordered" id="dimensionTable">
+                  <thead>
+                    <tr>
+                      <th>치수명</th>
+                      <th>치수</th>
+                      <th>단위</th>
+                      <th>수정</th>
+                      <th>삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>dim1</td>
+                      <td>dim1</td>
+                      <td>dim1</td>
+                      <td>
+                        <a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
+                        <a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                      </td>
+                      <td>
+                        <a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-primary" onclick="addGoodOptionRow()">추가</button>
+              <button type="button" class="btn btn-primary" onclick="addGoodOption()">저장</button>
             </div>
           </div>
         </div>
@@ -99,86 +198,30 @@
                   <th>추가금액</th>
                   <th>프린팅 방식</th>
                   <th>프린팅 소재</th>
-                  <th></th>
-                </tr>
-                <tr>
-                  <td>option1</td>
-                  <td>option1</td>
-                  <td>option1</td>
-                  <td>option1</td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-                    <input type="hidden" name="goodOptionRequests[0].optionName">
-                    <input type="hidden" name="goodOptionRequests[0].addPrice">
-                    <input type="hidden" name="goodOptionRequests[0].printingTech">
-                    <input type="hidden" name="goodOptionRequests[0].material">
-                  </td>
                 </tr>
               </thead>
+              <tbody>
+
+              </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-      <!--치수 모달-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <input type="button" value="치수 추가" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionModal">
-        </div>
-      </div>
-      <div class="modal fade" id="dimensionModal" tabindex="-1" aria-labelledby="dimensionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="dimensionModalLabel">상품옵션</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="dimName" placeholder="치수명">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="dimValue" placeholder="치수값">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <select id="dimUnit" class="form-control input-xs">
-                  <option>MM</option>
-                  <option>INCH</option>
-                </select>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-primary" onclick="addDimensionRow()">추가</button>
-            </div>
           </div>
         </div>
       </div>
       <!--치수 테이블-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="dimensionTable">
-              <thead>
-                <tr>
-                  <th>치수명</th>
-                  <th>치수</th>
-                  <th>단위</th>
-                  <th></th>
-                </tr>
-                <tr>
-                  <td>dim1</td>
-                  <td>dim1</td>
-                  <td>dim1</td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-                    <input type="hidden" name="goodOptionRequests[0].dimName">
-                    <input type="hidden" name="goodOptionRequests[0].dimValue">
-                    <input type="hidden" name="goodOptionRequests[0].dimUnit">
-                  </td>
-                </tr>
-              </thead>
-            </table>
-          </div>
+          <table class="table table-bordered" id="addedDimensionTable">
+            <thead>
+              <tr>
+                <th>치수명</th>
+                <th>치수</th>
+                <th>단위</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
         </div>
       </div>
       <!--카테고리-->
@@ -218,81 +261,216 @@
   <!--스크립트-->
   <script src="/js/hiddenUrlParameter.js"></script>
   <script src="/js/file_input.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/less" ></script>
+  <script src="https://cdn.jsdelivr.net/npm/less"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
-  <script id="inline-js">
-    function addGoodOptionRow() {
-      const table = document.getElementById('goodOptionTable');
-      const newRow = table.insertRow();
-      const optionName = newRow.insertCell(0);
-      const addPrice = newRow.insertCell(1);
-      const printingTech = newRow.insertCell(2);
-      const material = newRow.insertCell(3);
-      const removeButton = newRow.insertCell(4);
-      var idx = $('#goodOptionTable tr').length - 2;
+  <script>
+    function addGoodOption() {
+      var optionName = $('#optionName').val();
+      var goodOption = {
+        "optionName": optionName,
+        "addPrice": $('#addPrice').val(),
+        "printingTech": $('#printingTech').val(),
+        "material": $('#material').val(),
+        "dimensions": []
+      };
 
-      optionNameText = $('#optionName').val();
-      addPriceText = $('#addPrice').val();
-      printingTechText = $('#printingTech').val();
-      materialText = $('#material').val();
+      $('#dimensionTable tbody').find("tr").each(function () {
+        if ($(this).find('.edit').css('display') !== "none") {
+          var dimension = {};
+          dimension["dimName"] = $(this).children().eq(0).text();
+          dimension["dimValue"] = $(this).children().eq(1).text();
+          dimension["dimUnit"] = $(this).children().eq(2).text();
+          goodOption["dimensions"].push(dimension);
+        }
+      })
+      localStorage.setItem(optionName, JSON.stringify(goodOption));
 
-      optionName.innerText = optionNameText;
-      addPrice.innerText = addPriceText;
-      printingTech.innerText = printingTechText;
-      material.innerText = materialText;
-      removeButton.innerHTML = "<button class='btn btn-danger btn-sm' onclick='removeRow(this)'>X</button>"
-                              + "<input type='hidden' name='goodOptionRequests[" + idx + "].optionName' value='" + optionNameText + "'>"
-                              + "<input type='hidden' name='goodOptionRequests[" + idx + "].addPrice' value='" + addPriceText + "'>"
-                              + "<input type='hidden' name='goodOptionRequests[" + idx + "].printingTech' value='" + printingTechText + "'>"
-                              + "<input type='hidden' name='goodOptionRequests[" + idx + "].material' value='" + materialText + "'>";
+      var options = [];
+      $("#goodOption-select").find("option").each(function () {
+        options.push($(this).text());
+      })
+      if (!options.includes(optionName)) {
+        addSelectOption(optionName);
+      }
 
-      $('#optionName').val("");
-      $('#addPrice').val("");
-      $('#printingTech').val("");
-      $('#material').val("");
       $('#goodOptionModal').modal('hide');
+      selectGoodOption();
     }
 
-    function addDimensionRow() {
-      const table = document.getElementById('dimensionTable');
-      const newRow = table.insertRow();
-      const dimName = newRow.insertCell(0);
-      const dimValue = newRow.insertCell(1);
-      const dimUnit = newRow.insertCell(2);
-      const removeButton = newRow.insertCell(3);
-      var idx = $('#dimensionTable tr').length - 2;
-
-      dimNameText = $('#dimName').val();
-      dimValueText = $('#dimValue').val();
-      dimUnitText = $('#dimUnit').val();
-
-      dimName.innerText = dimNameText;
-      dimValue.innerText = dimValueText;
-      dimUnit.innerText = dimUnitText;
-      removeButton.innerHTML = "<button class='btn btn-danger btn-sm' onclick='removeRow(this)'>X</button>"
-                              + "<input type='hidden' name='dimensionRequests[" + idx + "].dimName' value='" + dimNameText + "'>"
-                              + "<input type='hidden' name='dimensionRequests[" + idx + "].dimValue' value='" + dimValueText + "'>"
-                              + "<input type='hidden' name='dimensionRequests[" + idx + "].dimUnit' value='" + dimUnitText + "'>";
-
-      $('#dimName').val("");
-      $('#dimValue').val("");
-      $('#dimUnit').val("");
-      $('#dimensionModal').modal('hide');
+    function addSelectOption(optionName) {
+      var option = $("<option>" + optionName + "</option>");
+      $("#goodOption-select").append(option);
     }
 
-    function removeRow(row) {
-      var th = $(row).parent().parent();
-      th.remove();
+    function selectGoodOption() {
+      var selectedOptionName = getSelectedOption().text();
+      var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      var row = '<tr>' +
+              '<td>' + goodOption['optionName'] + '</td>' +
+              '<td>' + goodOption['addPrice'] + '</td>' +
+              '<td>' + goodOption['printingTech'] + '</td>' +
+              '<td>' + goodOption['material'] + '</td>' +
+              '</tr>';
+      $("#goodOptionTable tbody").html(row)
+
+      $('#addedDimensionTable tbody').find("tr").remove();
+      for (var i in goodOption['dimensions']) {
+        var dimension = goodOption['dimensions'][i];
+        var row = '<tr>' +
+                '<td>' + dimension['dimName'] + '</td>' +
+                '<td>' + dimension['dimValue'] + '</td>' +
+                '<td>' + dimension['dimUnit'] + '</td>' +
+                '</tr>';
+        $("#addedDimensionTable tbody").append(row);
+      }
+    }
+
+    function removeGoodOption() {
+      var selectedOption = getSelectedOption();
+      var optionName = selectedOption.text();
+      localStorage.removeItem(optionName);
+      selectedOption.remove();
+    }
+
+    $('#editGoodOption').click(function () {
+      $(".add-new").removeAttr("disabled");
+      var selectedOptionName = getSelectedOption().text();
+      var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      $('#optionName').val(goodOption['optionName']);
+      $('#addPrice').val(goodOption['addPrice']);
+      $('#printingTech').val(goodOption['printingTech']);
+      $('#material').val(goodOption['material']);
+      var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
+      var delete_action = $("#dimensionTable td:last-child").html();
+      $('#dimensionTable tbody').find("tr").remove();
+      for (var dimension of goodOption['dimensions']) {
+        var row = '<tr>' +
+                '<td>' + dimension['dimName'] + '</td>' +
+                '<td>' + dimension['dimValue'] + '</td>' +
+                '<td>' + dimension['dimUnit'] + '</td>' +
+                '<td>' + edit_action + '</td>' +
+                '<td>' + delete_action + '</td>' +
+                '</tr>';
+        $("#dimensionTable tbody").append(row);
+      }
+    })
+
+    function getSelectedOption() {
+      return $("#goodOption-select option:selected");
     }
 
     $('#submit-button').click(
       function () {
-        $(this).children('#goodOptionModal').remove();
-        $(this).children('#dimensionModal').remove();
+        for (var i=0; i < localStorage.length; i++) {
+          var goodOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
+          var goodOptionInputs = "<input type='hidden' name='goodOptions[" + i + "].optionName' value='" + goodOption["optionName"] + "'>"
+                                + "<input type='hidden' name='goodOptions[" + i + "].addPrice' value='" + goodOption["addPrice"] + "'>"
+                                + "<input type='hidden' name='goodOptions[" + i + "].printingTech' value='" + goodOption["printingTech"] + "'>"
+                                + "<input type='hidden' name='goodOptions[" + i + "].material' value='" + goodOption["material"] + "'>";
+          $('#article-form').append(goodOptionInputs);
+          for (var dimIdx in goodOption['dimensions']) {
+            var dimension = goodOption['dimensions'][dimIdx];
+            var dimensionInputs = "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
+                                  + "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
+                                  + "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
+            $('#article-form').append(dimensionInputs);
+          }
+        }
       }
     )
+  </script>
+  <script id="inline-js">
+    $(document).ready(function(){
+      // 수정 폼 초기화
+      $("#goodOption-select").find("option").remove();
+      var goodOptions = [[${article.goodOptions}]];
+      for (var goodOption of goodOptions) {
+        var optionName = goodOption['optionName'];
+        addSelectOption(optionName);
+        var goodOptionJson = {
+          "optionName": optionName,
+          "addPrice": goodOption.addPrice,
+          "printingTech": goodOption.printingTech,
+          "material": goodOption.material,
+          "dimensions": []
+        };
+        for (var dimension of goodOption.dimensions) {
+          var dimensionJson = {};
+          dimensionJson["dimName"] = dimension.dimName;
+          dimensionJson["dimValue"] = dimension.dimValue;
+          dimensionJson["dimUnit"] = dimension.dimUnit;
+          goodOptionJson["dimensions"].push(dimensionJson);
+        }
+        localStorage.setItem(optionName, JSON.stringify(goodOptionJson));
+      }
+      selectGoodOption();
+
+      $('[data-toggle="tooltip"]').tooltip();
+      var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
+      var delete_action = $("#dimensionTable td:last-child").html();
+      // 상품 옵션 추가시 입력 폼 초기화
+      $("#addGoodOptionButton").click(function () {
+        $('#optionName').val("");
+        $('#addPrice').val("");
+        $('#printingTech').val("");
+        $('#material').val("");
+        $('#dimensionTable tbody').find("tr").remove();
+      })
+      // 치수 추가
+      $(".add-new").click(function(){
+        $(this).attr("disabled", "disabled");
+        var index = $("#dimensionTable tbody tr:last-child").index();
+        var row = '<tr>' +
+                '<td><input type="text" class="form-control" name="dimName" id="dimName"></td>' +
+                '<td><input type="text" class="form-control" name="dimValue" id="dimValue"></td>' +
+                '<td><select id="dimUnit" class="form-control input-xs"><option>MM</option><option>INCH</option></select></td>' +
+                '<td>' + edit_action + '</td>' +
+                '<td>' + delete_action + '</td>' +
+                '</tr>';
+        $("#dimensionTable").append(row);
+        $("#dimensionTable tbody tr").eq(index + 1).find(".save, .edit").toggle();
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+      // 저장 버튼 클릭
+      $(document).on("click", ".save", function(){
+        var empty = false;
+        var input = $(this).parents("tr").find('input[type="text"], select');
+        input.each(function(){
+          if(!$(this).val()){
+            $(this).addClass("error");
+            empty = true;
+          } else{
+            $(this).removeClass("error");
+          }
+        });
+        $(this).parents("tr").find(".error").first().focus();
+        if(!empty){
+          input.each(function(){
+            $(this).parent("td").html($(this).val());
+          });
+          $(this).parents("tr").find(".save, .edit").toggle();
+          $(".add-new").removeAttr("disabled");
+        }
+      });
+      // 치수 수정
+      $(document).on("click", ".edit", function(){
+        $(this).parents("tr").find("td:nth-child(1), td:nth-child(2)").each(function(){
+          $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+        });
+        $(this).parents("tr").find("td:nth-child(3)").each(function(){
+          $(this).html('<select id="dimUnit" class="form-control input-xs"><option' + ($(this).text() === "MM" ? ' selected' : '') + '>MM</option><option' + ($(this).text() === "INCH" ? ' selected' : '') + '>INCH</option></select>');
+        });
+        $(this).parents("tr").find(".save, .edit").toggle();
+        $(".add-new").attr("disabled", "disabled");
+      });
+      // 치수 삭제
+      $(document).on("click", ".delete", function(){
+        $(this).parents("tr").remove();
+        $(".add-new").removeAttr("disabled");
+      });
+    });
   </script>
 </body>
 </html>

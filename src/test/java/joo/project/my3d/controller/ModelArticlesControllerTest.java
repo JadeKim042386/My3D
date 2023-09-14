@@ -364,7 +364,7 @@ class ModelArticlesControllerTest {
         FieldUtils.writeField(article, "id", 1L, true);
         GoodOption goodOption = Fixture.getGoodOption(article);
         FieldUtils.writeField(goodOption, "id", 1L, true);
-        given(articleService.getArticleFiles(anyLong())).willReturn(List.of());
+        given(articleFileService.getArticleFiles(anyLong())).willReturn(List.of());
         given(articleService.getArticle(eq(1L))).willReturn(ArticleDto.from(article));
         given(articleFileService.updateArticleFile(any(Article.class), eq(List.of(multipartFile)), eq(List.of()))).willReturn(true);
         willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
@@ -399,7 +399,7 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleService).should().getArticleFiles(anyLong());
+        then(articleFileService).should().getArticleFiles(anyLong());
         then(articleService).should().getArticle(eq(1L));
         then(articleFileService).should().updateArticleFile(any(Article.class), eq(List.of(multipartFile)), eq(List.of()));
         then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));

@@ -19,6 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ArticleFormRequest {
+    private Long id;
     @NotBlank
     private String title;
     @NotBlank
@@ -31,7 +32,7 @@ public class ArticleFormRequest {
     private Integer deliveryPrice;
     @NotNull
     @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
-    private final List<GoodOptionRequest> goodOptionRequests = new ArrayList<>();
+    private final List<GoodOptionRequest> goodOptions = new ArrayList<>();
     @MultipartFileSizeValid
     private MultipartFile modelFile;
     private MultipartFile[] imgFiles;
@@ -44,6 +45,7 @@ public class ArticleFormRequest {
             files.addAll(Arrays.stream(imgFiles).toList());
         }
         files.add(modelFile);
+
         return files;
     }
 
@@ -65,7 +67,7 @@ public class ArticleFormRequest {
     }
 
     public List<GoodOptionDto> toGoodOptionDtos(Long articleId) {
-        return goodOptionRequests.stream()
+        return goodOptions.stream()
                 .map(goodOptionRequest -> goodOptionRequest.toDto(articleId))
                 .toList();
     }

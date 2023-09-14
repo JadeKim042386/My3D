@@ -261,31 +261,4 @@ class ArticleServiceTest {
         then(articleLikeRepository).should().deleteByArticleId(articleId);
         then(articleRepository).should().delete(article);
     }
-
-    @DisplayName("게시글 모델 파일 반환")
-    @Test
-    void getArticleFile() {
-        // Given
-        Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
-        // When
-        articleService.getArticleFiles(articleId);
-        // Then
-        then(articleRepository).should().findById(articleId);
-    }
-
-    @DisplayName("[예외-없는 파일] 게시글 모델 파일 반환")
-    @Test
-    void getArticleFileNotExist() {
-        // Given
-        Long articleId = 1L;
-        given(articleRepository.findById(articleId)).willReturn(Optional.empty());
-        // When
-        assertThatThrownBy(() -> articleService.getArticleFiles(articleId))
-                .isInstanceOf(FileException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FILE_NOT_FOUND);
-        // Then
-        then(articleRepository).should().findById(articleId);
-    }
 }

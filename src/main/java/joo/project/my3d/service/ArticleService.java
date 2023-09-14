@@ -103,13 +103,4 @@ public class ArticleService {
             articleRepository.delete(article);
         }
     }
-
-    public List<ArticleFileDto> getArticleFiles(Long articleId) {
-        return articleRepository.findById(articleId)
-                .map(article -> article.getArticleFiles().stream()
-                        .map(ArticleFileDto::from)
-                        .toList()
-                )
-                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
-    }
 }
