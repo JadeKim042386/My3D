@@ -70,6 +70,11 @@ public class UserAccount extends AuditingFields {
     @OneToMany(mappedBy = "userAccount")
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private final Set<Orders> orders = new LinkedHashSet<>();
+
     protected UserAccount() {
     }
 

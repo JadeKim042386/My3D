@@ -4,6 +4,7 @@ import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.DimUnit;
+import joo.project.my3d.domain.constant.OrderStatus;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.fixture.Fixture;
 import lombok.extern.slf4j.Slf4j;
@@ -661,6 +662,101 @@ public class JpaRepositoryTest {
             Optional<Price> price = priceRepository.findById(priceId);
             // Then
             assertThat(price).isNotNull();
+        }
+    }
+
+    @ActiveProfiles("test")
+    @DisplayName("주문 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class OrdersJpaTest {
+
+        @Autowired private OrdersRepository ordersRepository;
+        @Autowired private UserAccountRepository userAccountRepository;
+
+        @DisplayName("주문 findAll")
+        @Test
+        void getOrders() {
+            // Given
+
+            // When
+            List<Orders> orders = ordersRepository.findAll();
+            // Then
+            assertThat(orders).isNotNull().hasSize(4);
+        }
+
+        @DisplayName("유저 이메일로 주문 findAll")
+        @Test
+        void getOrdersByEmail() {
+            // Given
+            String email = "a@gmail.com";
+            // When
+            List<Orders> orders = ordersRepository.findByUserAccount_Email(email);
+            // Then
+            assertThat(orders).isNotNull().hasSize(4);
+        }
+
+        @DisplayName("주문 findById")
+        @Test
+        void getOrder() {
+            // Given
+            Long ordersId = 1L;
+            // When
+            Optional<Orders> order = ordersRepository.findById(ordersId);
+            // Then
+            assertThat(order).isNotNull();
+        }
+
+        @DisplayName("주문 save")
+        @Test
+        void saveOrder() {
+            // Given
+            String email = "a@gmail.com";
+            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            Orders orders = Fixture.getOrders(userAccount);
+            long previousCount = ordersRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            Orders savedOrder = ordersRepository.save(orders);
+            // Then
+            long afterCount = ordersRepository.count();
+            log.info("afterCount: {}", afterCount);
+            assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(savedOrder)
+                    .hasFieldOrPropertyWithValue("id", 5L);
+        }
+
+        @DisplayName("주문 update")
+        @Test
+        void updateOrder() {
+            // Given
+            Long ordersId = 1L;
+            OrderStatus modified_status = OrderStatus.DELIVERY;
+            Orders orders = ordersRepository.getReferenceById(ordersId);
+            orders.setStatus(modified_status);
+            LocalDateTime previousModifiedAt = orders.getModifiedAt();
+            // When
+            ordersRepository.saveAndFlush(orders);
+            // Then
+            assertThat(orders).hasFieldOrPropertyWithValue("status", modified_status);
+            assertThat(orders.getModifiedBy()).isNotEqualTo(orders.getCreatedBy());
+            assertThat(orders.getModifiedAt()).isNotEqualTo(previousModifiedAt);
+
+        }
+
+        @DisplayName("주문 delete")
+        @Test
+        void deleteOrder() {
+            // Given
+            Long ordersId = 1L;
+            long previousCount = ordersRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            ordersRepository.deleteById(ordersId);
+            // Then
+            assertThat(ordersRepository.count()).isEqualTo(previousCount - 1);
         }
     }
 }

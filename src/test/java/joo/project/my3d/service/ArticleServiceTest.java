@@ -236,7 +236,7 @@ class ArticleServiceTest {
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
                 .isInstanceOf(ArticleException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_WRITER);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
         then(articleRepository).should().getReferenceById(articleDto.id());
         then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().email());

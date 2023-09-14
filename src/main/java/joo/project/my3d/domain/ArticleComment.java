@@ -27,7 +27,7 @@ public class ArticleComment extends AuditingFields {
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "email")
-    UserAccount userAccount;
+    private UserAccount userAccount;
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

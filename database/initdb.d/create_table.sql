@@ -120,3 +120,15 @@ CREATE TABLE `dimension` (
    PRIMARY KEY (`id`),
    FOREIGN KEY (`good_option_id`) REFERENCES `good_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';
+
+CREATE TABLE `order` (
+    `id`	bigint	AUTO_INCREMENT NOT NULL,
+    `email`	varchar(50)	NOT NULL,
+    `status` varchar(10) NOT NULL,
+    `product_name` varchar(255) NOT NULL,
+    `detail` varchar(50) NOT NULL,
+    `street` varchar(100) NOT NULL,
+    `zipcode` varchar(10) NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주문';

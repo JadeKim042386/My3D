@@ -1,10 +1,7 @@
 package joo.project.my3d.fixture;
 
 import joo.project.my3d.domain.*;
-import joo.project.my3d.domain.constant.ArticleCategory;
-import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.domain.constant.DimUnit;
-import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.domain.constant.*;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
@@ -81,5 +78,9 @@ public class Fixture {
 
     public static Dimension getDimension(GoodOption goodOption) {
         return Dimension.of(goodOption, "너비", 10.0f, DimUnit.MM);
+    }
+
+    public static Orders getOrders(UserAccount userAccount) {
+        return Orders.of(OrderStatus.EXAMINE, "add example", Address.of("11111", "서울특별시", "111"), userAccount);
     }
 }

@@ -76,3 +76,10 @@ insert into good_option (article_id, option_name, add_price, printing_tech, mate
 insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
 (2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+
+-- 주문
+insert into orders (email, status, product_name, detail, street, zipcode, created_by, modified_at, modified_by, created_at) values
+('a@gmail.com', 'REQUEST', 'example product1', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 'EXAMINE', 'example product2', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 'PRINTING', 'example product3', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 'DELIVERY', 'example product4', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03');
