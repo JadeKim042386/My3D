@@ -1,9 +1,6 @@
 package joo.project.my3d.fixture;
 
-import joo.project.my3d.domain.constant.ArticleCategory;
-import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.domain.constant.DimUnit;
-import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.domain.constant.*;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -135,5 +132,14 @@ public class FixtureDto {
                 null,
                 principal.getAuthorities()
         );
+    }
+
+    public static AddressDto getAddressDto() {
+        return AddressDto.of("11111", "서울특별시", "111");
+    }
+    public static OrdersDto getOrdersDto() {
+        AddressDto addressDto = FixtureDto.getAddressDto();
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        return OrdersDto.of(4L, "example", addressDto, OrderStatus.EXAMINE, userAccountDto);
     }
 }

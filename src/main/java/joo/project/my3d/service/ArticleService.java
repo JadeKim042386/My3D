@@ -85,7 +85,7 @@ public class ArticleService {
                 log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
                         article.getUserAccount().getEmail(),
                         userAccount.getEmail());
-                throw new ArticleException(ErrorCode.ARTICLE_NOT_WRITER);
+                throw new ArticleException(ErrorCode.NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
             throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND);
