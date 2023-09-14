@@ -5,7 +5,7 @@ import joo.project.my3d.dto.ArticleFileDto;
 public record ArticleFileResponse(
         Long id,
         Long byteSize,
-        String originalFileName,
+        String originalFilename,
         String fileName,
         String fileExtension
 ) {

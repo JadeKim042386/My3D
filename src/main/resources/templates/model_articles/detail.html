@@ -275,6 +275,12 @@
         var goodOption = [[${article.goodOptions}]][selectIdx];
         $("#printingTech").text("프린팅 방식: " + goodOption.printingTech);
         $("#material").text("재질: " + goodOption.material);
+        $("#optionData").find('.dimension').remove();
+        for (var dimension of goodOption.dimensions) {
+            var dimText = dimension.dimName + ': ' + dimension.dimValue + ' ' + dimension.dimUnit;
+            var listItem = '<li class="list-group-item dimension">' + dimText + '</li>';
+            $("#optionData").append(listItem);
+        }
     }
 </script>
 </body>

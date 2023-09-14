@@ -3,6 +3,7 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.dto.GoodOptionDto;
+import joo.project.my3d.dto.GoodOptionWithDimensionDto;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.GoodOptionException;
 import joo.project.my3d.repository.ArticleRepository;
@@ -28,6 +29,12 @@ public class GoodOptionService {
     public List<GoodOptionDto> getGoodOptions(Long articleId) {
         return goodOptionRepository.findByArticleId(articleId)
                 .stream().map(GoodOptionDto::from)
+                .toList();
+    }
+
+    public List<GoodOptionWithDimensionDto> getGoodOptionWithDimensions(Long articleId) {
+        return goodOptionRepository.findByArticleId(articleId)
+                .stream().map(GoodOptionWithDimensionDto::from)
                 .toList();
     }
 

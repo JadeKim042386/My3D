@@ -71,7 +71,7 @@ public class ArticleFileService {
             //업데이트 여부 확인
             boolean isUpdated = false;
             for (int i=0; i < files.size(); i++) {
-                if (!new String(files.get(i).getBytes()).equals("NotUpdated")) {
+                if (!new String(files.get(i).getBytes()).equals("NotUpdated") && files.get(i).getSize() > 0) {
                     isUpdated = true;
                     break;
                 }

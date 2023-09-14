@@ -17,6 +17,7 @@ import joo.project.my3d.dto.request.GoodOptionRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
+import joo.project.my3d.dto.response.GoodOptionResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
@@ -151,7 +152,7 @@ public class ModelArticlesController {
             }
         }
         //상품 옵션 저장
-        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptionRequests();
+        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
         for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
             GoodOptionDto goodOptionDto = goodOptionRequest.toDto(article.getId());
             GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionDto);
@@ -170,11 +171,8 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
-        List<GoodOptionRequest> goodOptionRequests = goodOptionService.getGoodOptions(articleId).stream()
-                .map(GoodOptionRequest::from)
-                .toList();
-        List<DimensionRequest> dimensionRequests = dimensionService.getDimensions(articleId).stream()
-                .map(DimensionRequest::from)
+        List<GoodOptionResponse> goodOptionResponses = goodOptionService.getGoodOptionWithDimensions(articleId).stream()
+                .map(GoodOptionResponse::from)
                 .toList();
 
         model.addAttribute(
@@ -182,8 +180,7 @@ public class ModelArticlesController {
             ArticleFormResponse.from(
                 articleService.getArticle(articleId),
                 articleFileService.getArticleFiles(articleId),
-                goodOptionRequests,
-                dimensionRequests
+                goodOptionResponses
             )
         );
         model.addAttribute("formStatus", FormStatus.UPDATE);
@@ -207,7 +204,7 @@ public class ModelArticlesController {
         }
 
         //파일 업데이트
-        List<ArticleFileDto> articleFileDtos = articleService.getArticleFiles(articleId); //저장되어있는 파일들
+        List<ArticleFileDto> articleFileDtos = articleFileService.getArticleFiles(articleId); //저장되어있는 파일들
         Article article = articleService.getArticle(articleId).toEntity();
         List<MultipartFile> files = articleFormRequest.getFiles();
         boolean isUpdated = articleFileService.updateArticleFile(article, files, articleFileDtos);
@@ -222,7 +219,7 @@ public class ModelArticlesController {
         }
         //상품옵션 업데이트
         goodOptionService.deleteGoodOptions(articleId);
-        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptionRequests();
+        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
         for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
             GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
             //치수 업데이트

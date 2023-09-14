@@ -11,75 +11,10 @@
         <!--내용-->
         <attr sel="#content" th:text="*{content} ?: _"/>
         <!--파일-->
-        <attr sel="#modelFileName" th:value="*{modelFile?.originalFileName} ?: _"/>
+        <attr sel="#modelFileName" th:value="*{modelFile?.originalFilename} ?: _"/>
         <attr sel="#model-file-error" th:errors="*{modelFile}" th:classappend="field-error"/>
         <!--상품옵션-->
-        <attr sel="#goodOption-error" th:errors="*{goodOptionRequests}" th:classappend="field-error"/>
-        <attr sel="#goodOptionTable" th:remove="all-but-first">
-            <attr sel="tr[1]" th:each="goodOption, stat : *{goodOptionRequests}">
-                <attr sel="td[0]" th:text="${goodOption.optionName}"/>
-                <attr sel="td[1]" th:text="${goodOption.addPrice}"/>
-                <attr sel="td[2]" th:text="${goodOption.printingTech}"/>
-                <attr sel="td[3]" th:text="${goodOption.material}"/>
-                <attr sel="td[4]">
-                    <attr sel="button"
-                          th:class="|btn btn-danger btn-sm|"
-                          th:onclick="|removeRow(this)|"
-                          th:text="X"
-                    />
-                    <attr sel="input[0]"
-                          th:type="hidden"
-                          th:name="|goodOptionRequests[${stat.index}].optionName|"
-                          th:value="${goodOption.optionName}"
-                    />
-                    <attr sel="input[1]"
-                          th:type="hidden"
-                          th:name="|goodOptionRequests[${stat.index}].addPrice|"
-                          th:value="${goodOption.addPrice}"
-                    />
-                    <attr sel="input[2]"
-                          th:type="hidden"
-                          th:name="|goodOptionRequests[${stat.index}].printingTech|"
-                          th:value="${goodOption.printingTech}"
-                    />
-                    <attr sel="input[3]"
-                          th:type="hidden"
-                          th:name="|goodOptionRequests[${stat.index}].material|"
-                          th:value="${goodOption.material}"
-                    />
-                </attr>
-            </attr>
-        </attr>
-        <!--치수-->
-        <attr sel="#dimensionTable" th:remove="all-but-first">
-            <attr sel="tr[1]" th:each="dimension, stat : *{dimensionRequests}">
-                <attr sel="td[0]" th:text="${dimension.dimName}"/>
-                <attr sel="td[1]" th:text="${dimension.dimValue}"/>
-                <attr sel="td[2]" th:text="${dimension.dimUnit}"/>
-                <attr sel="td[3]">
-                    <attr sel="button"
-                          th:class="|btn btn-danger btn-sm|"
-                          th:onclick="|removeRow(this)|"
-                          th:text="X"
-                    />
-                    <attr sel="input[0]"
-                          th:type="hidden"
-                          th:name="|dimensionRequests[${stat.index}].dimName|"
-                          th:value="${dimension.dimName}"
-                    />
-                    <attr sel="input[1]"
-                          th:type="hidden"
-                          th:name="|dimensionRequests[${stat.index}].dimValue|"
-                          th:value="${dimension.dimValue}"
-                    />
-                    <attr sel="input[2]"
-                          th:type="hidden"
-                          th:name="|dimensionRequests[${stat.index}].dimUnit|"
-                          th:value="${dimension.dimUnit}"
-                    />
-                </attr>
-            </attr>
-        </attr>
+        <attr sel="#goodOption-error" th:errors="*{goodOptions}" th:classappend="field-error"/>
         <!--카테고리-->
         <attr sel="#category">
             <attr sel="option[1]"

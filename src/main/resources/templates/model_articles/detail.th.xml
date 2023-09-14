@@ -27,11 +27,11 @@
               th:selected="${stat.index} == 0 ? true : false"
               th:text="${goodOption.optionName}"
         />
-        <attr sel="#printingTech" th:text="'프린팅 방식: ' + ${article.goodOptions[0].printingTech}"/>
-        <attr sel="#material" th:text="'재질: ' + ${article.goodOptions[0].material}"/>
-        <attr sel="#optionData">
+        <attr sel="#printingTech"  th:if="${#lists.size(article.goodOptions)} > 0" th:text="'프린팅 방식: ' + ${article.goodOptions[0].printingTech}"/>
+        <attr sel="#material" th:if="${#lists.size(article.goodOptions)} > 0" th:text="'재질: ' + ${article.goodOptions[0].material}"/>
+        <attr sel="#optionData" th:if="${#lists.size(article.goodOptions)} > 0">
             <attr sel=".dimension"
-                  th:each="dim: ${article.dimensions}"
+                  th:each="dim: ${article.goodOptions[0].dimensions}"
                   th:text="${dim.dimName} + ': ' + ${dim.dimValue} + ' ' + ${dim.dimUnit}"
             />
         </attr>

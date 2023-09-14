@@ -19,7 +19,7 @@ public class GoodOptionRequest {
         private String printingTech;
         private String material;
         @NotNull
-        private final List<DimensionRequest> dimensionRequests = new ArrayList<>();
+        private final List<DimensionRequest> dimensions = new ArrayList<>();
 
         private GoodOptionRequest(String optionName, Integer addPrice, String printingTech, String material) {
                 this.optionName = optionName;
@@ -50,8 +50,9 @@ public class GoodOptionRequest {
                         dto.material()
                 );
         }
+
         public List<DimensionDto> toDimensionDtos(Long goodOptionId) {
-                return dimensionRequests.stream()
+                return dimensions.stream()
                         .map(dimensionRequest -> dimensionRequest.toDto(goodOptionId))
                         .toList();
         }
