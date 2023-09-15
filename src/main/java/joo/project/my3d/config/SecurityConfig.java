@@ -74,7 +74,8 @@ public class SecurityConfig {
                                 "/account/logout",
                                 "/model_articles/[0-9]+",
                                 "/like/[0-9]+.*",
-                                "/comments.*"
+                                "/comments.*",
+                                "/user.*"
                         ).authenticated()
                         .regexMatchers(
                                 "/model_articles/form.*",

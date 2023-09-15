@@ -2,7 +2,9 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.fixture.Fixture;
+import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.UserAccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,6 +87,19 @@ class UserAccountServiceTest {
         given(userAccountRepository.getReferenceById(email)).willReturn(Fixture.getUserAccount());
         // When
         userAccountService.changePassword(email, changedPassword);
+        // Then
+        then(userAccountRepository).should().getReferenceById(email);
+    }
+
+    @DisplayName("회원 정보 수정")
+    @Test
+    void updateUser() {
+        // Given
+        String email = "jk042386@gmail.com";
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
+        // When
+        userAccountService.updateUser(userAccountDto);
         // Then
         then(userAccountRepository).should().getReferenceById(email);
     }
