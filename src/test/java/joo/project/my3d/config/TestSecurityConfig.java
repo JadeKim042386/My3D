@@ -43,7 +43,7 @@ public class TestSecurityConfig {
                 "joo-test@gmail.com",
                 "pw",
                 "joo-test",
-                true,
+                FixtureDto.getAddressDto(),
                 UserRole.COMPANY
         );
     }

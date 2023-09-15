@@ -1,6 +1,8 @@
 package joo.project.my3d.dto.security;
 
+import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.AddressDto;
 import joo.project.my3d.dto.UserAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,31 +16,37 @@ import java.util.Set;
 public record BoardPrincipal(
         String email,
         String password,
+        String phone,
         Collection<? extends GrantedAuthority> authorities,
         String nickname,
+        Address address,
         boolean signUp, //회원가입 여부
         Map<String, Object> oAuth2Attributes
         ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp) {
+    public static BoardPrincipal of(String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp) {
 
         return new BoardPrincipal(
                 email,
                 password,
+                phone,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
+                address,
                 signUp,
                 Map.of()
         );
     }
 
-    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole, boolean signUp, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
                 email,
                 password,
+                phone,
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
+                address,
                 signUp,
                 oAuth2Attributes
         );
@@ -48,8 +56,10 @@ public record BoardPrincipal(
         return BoardPrincipal.of(
                 dto.email(),
                 dto.userPassword(),
+                dto.phone(),
                 dto.nickname(),
                 dto.userRole(),
+                dto.addressDto().toEntity(),
                 dto.signUp()
         );
     }
@@ -59,7 +69,17 @@ public record BoardPrincipal(
                 email,
                 password,
                 nickname,
-                signUp
+                phone,
+                AddressDto.from(address),
+                signUp,
+                getUserRole()
+        );
+    }
+
+    public UserRole getUserRole() {
+        return UserRole.valueOf(
+                authorities.stream().toList().get(0).getAuthority()
+                        .split("_")[1]
         );
     }
 
