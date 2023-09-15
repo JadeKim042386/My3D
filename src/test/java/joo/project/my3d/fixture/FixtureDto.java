@@ -12,11 +12,13 @@ import java.util.Set;
 public class FixtureDto {
 
     public static UserAccountDto getUserAccountDto() {
-        return UserAccountDto.of("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
+        AddressDto addressDto = FixtureDto.getAddressDto();
+        return UserAccountDto.of("jk042386@gmail.com", "pw", "01011111111", "Joo", addressDto, true, UserRole.USER);
     }
 
-    public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole, boolean signUp) {
-        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, signUp, userRole);
+    public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole, boolean isSignUp) {
+        AddressDto addressDto = FixtureDto.getAddressDto();
+        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, isSignUp, userRole);
     }
 
     public static ArticleFileDto getArticleFileDto() {

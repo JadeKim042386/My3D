@@ -35,37 +35,30 @@ public record UserAccountDto(
     }
 
     /**
-     *  생성일시, 생성자, 수정일시, 수정자 제외
+     * 생성일시, 생성자, 수정일시, 수정자, 회사 정보 제외 (개인 사용자)
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto address, boolean signUp, UserRole userRole, CompanyDto company) {
-        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, company, null, null, null, null);
+    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole) {
+        return UserAccountDto.of(email, userPassword, nickname, phone, addressDto, signUp, userRole, CompanyDto.of(), null, null, null, null);
     }
 
     /**
-     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 회사 정보 제외 (개인 사용저)
+     * 계정 정보 수정에 사용
+     * 생성일시, 생성자, 수정일시, 수정자, 비밀번호, 가입여부, 회사 정보 제외 (개인 사용자)
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, userRole, CompanyDto.of(), null, null, null, null);
+    public static UserAccountDto of(String email, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
+        return UserAccountDto.of(email, null, nickname, phone, addressDto, true, userRole, CompanyDto.of(), null, null, null, null);
     }
 
     /**
-     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
+     * 생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, CompanyDto company) {
-        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, userRole, company, null, null, null, null);
-    }
-
-    /**
-     *  BoardPrincipal 을 DTO 로 변환시 사용 <br>
-     *  생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소, 권한 제외
-     */
-    public static UserAccountDto of(String email, String userPassword, String nickname, boolean signUp) {
-        return new UserAccountDto(email, userPassword, nickname, null, AddressDto.of(), signUp, null, CompanyDto.of(), null, null, null, null);
+    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole, CompanyDto company) {
+        return UserAccountDto.of(email, userPassword, nickname, phone, addressDto, signUp, userRole, company, null, null, null, null);
     }
 
     public static UserAccountDto from(UserAccount userAccount) {
         Address address = userAccount.getAddress();
-        Company compnay = userAccount.getCompnay();
+        Company company = userAccount.getCompnay();
 
         return UserAccountDto.of(
                 userAccount.getEmail(),
@@ -75,7 +68,7 @@ public record UserAccountDto(
                 Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
                 userAccount.isSignUp(),
                 userAccount.getUserRole(),
-                Objects.isNull(compnay) ? CompanyDto.of() : CompanyDto.from(compnay)
+                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company)
         );
     }
 
@@ -84,7 +77,7 @@ public record UserAccountDto(
      */
     public static <T extends PasswordEncoder> UserAccountDto from(UserAccount userAccount, T encoder) {
         Address address = userAccount.getAddress();
-        Company compnay = userAccount.getCompnay();
+        Company company = userAccount.getCompnay();
 
         return UserAccountDto.of(
                 userAccount.getEmail(),
@@ -94,7 +87,7 @@ public record UserAccountDto(
                 Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
                 userAccount.isSignUp(),
                 userAccount.getUserRole(),
-                Objects.isNull(compnay) ? CompanyDto.of() : CompanyDto.from(compnay)
+                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company)
         );
     }
 

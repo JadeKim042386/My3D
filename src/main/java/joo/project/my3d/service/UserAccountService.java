@@ -76,6 +76,26 @@ public class UserAccountService {
     }
 
     /**
+     * 계정 정보 수정
+     */
+    @Transactional
+    public void updateUser(UserAccountDto dto) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.email());
+        if (dto.nickname() != null) {
+            userAccount.setNickname(dto.nickname());
+        }
+        if (dto.phone() != null) {
+            userAccount.setPhone(dto.phone());
+        }
+        if (dto.userPassword() != null) {
+            userAccount.setUserPassword(dto.userPassword());
+        }
+        if (dto.addressDto() != null) {
+            userAccount.setAddress(dto.addressDto().toEntity());
+        }
+    }
+
+    /**
      * 비밀번호 일치 확인 후 토큰 생성
      */
     public String login(String email, String password) {
