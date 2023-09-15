@@ -6,6 +6,7 @@ import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -37,6 +37,7 @@ class UserAdminControllerTest {
     @Autowired private MockMvc mvc;
     @MockBean private UserAccountService userAccountService;
     @MockBean private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    @MockBean private OrdersService ordersService;
 
     @DisplayName("[GET] 계정 관리 페이지")
     @Test
@@ -80,5 +81,25 @@ class UserAdminControllerTest {
         // Then
         then(userAccountService).should().updateUser(any(UserAccountDto.class));
         then(userAccountService).should().changePassword(anyString(), anyString());
+    }
+
+    @DisplayName("[GET] 주문 관리 페이지")
+    @Test
+    void orders() throws Exception {
+        // Given
+        given(ordersService.getOrders(anyString())).willReturn(anyList());
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userUser", UserRole.USER);
+        // When
+        mvc.perform(
+                        get("/user/orders")
+                                .with(authentication(authentication))
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("user/orders"))
+                .andExpect(model().attributeExists("userRole"))
+                .andExpect(model().attributeExists("orders"));
+        // Then
+        then(ordersService).should().getOrders(anyString());
     }
 }

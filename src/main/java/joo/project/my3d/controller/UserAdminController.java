@@ -1,9 +1,12 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.request.UserAdminRequest;
+import joo.project.my3d.dto.response.OrdersResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/user")
@@ -22,9 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserAdminController {
 
     private final UserAccountService userAccountService;
+    private final OrdersService ordersService;
 
     @GetMapping("/account")
-    public String UserData(
+    public String userData(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
@@ -49,5 +55,17 @@ public class UserAdminController {
             userAccountService.changePassword(userAdminRequest.email(), userAdminRequest.password());
         }
         return "redirect:/user/account";
+    }
+
+    @GetMapping("/orders")
+    public String orders(
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
+            Model model
+    ) {
+        List<OrdersResponse> ordersResponses = ordersService.getOrders(boardPrincipal.email()).stream()
+                                                .map(OrdersResponse::from).toList();
+        model.addAttribute("userRole", boardPrincipal.getUserRole());
+        model.addAttribute("orders", ordersResponses);
+        return "user/orders";
     }
 }
