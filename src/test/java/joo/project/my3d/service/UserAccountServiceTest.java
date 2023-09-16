@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -29,6 +30,7 @@ import static org.mockito.BDDMockito.then;
 class UserAccountServiceTest {
     @InjectMocks private UserAccountService userAccountService;
     @Mock private UserAccountRepository userAccountRepository;
+    @Mock private BCryptPasswordEncoder encoder;
 
     @DisplayName("회원 목록 조회")
     @Test

@@ -72,7 +72,7 @@ public class UserAccountService {
     @Transactional
     public void changePassword(String email, String changedPassword) {
         UserAccount userAccount = userAccountRepository.getReferenceById(email);
-        userAccount.setUserPassword(changedPassword);
+        userAccount.setUserPassword(encoder.encode(changedPassword));
     }
 
     /**
