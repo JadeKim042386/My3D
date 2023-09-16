@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#header" th:replace="header :: header"></attr>
+    <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#sidebarName"
+          sec:authorize="isAuthenticated()"
+          sec:authentication="principal.nickname"
+    />
+    <attr sel="#account-form" th:object="${userData}" th:action="@{/user/account}" th:method="post">
+        <attr sel="#email" th:value="*{email}"/>
+        <attr sel="#nickname" th:value="*{nickname}"/>
+        <attr sel="#phone" th:value="*{phone}"/>
+        <attr sel="#zipcode" th:value="*{zipcode}"/>
+        <attr sel="#street" th:value="*{street}"/>
+        <attr sel="#detail" th:value="*{detail}"/>
+    </attr>
+</thlogic>

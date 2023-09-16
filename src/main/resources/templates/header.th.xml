@@ -6,7 +6,8 @@
     <attr sel="#models" th:href="@{/model_articles}" th:method="get"/>
     <attr sel="#request-modeling" th:href="@{#}" th:method="get"/>
     <!--로그인-->
-    <attr sel="#nickname"
+    <attr sel="#userAdminButton" sec:authorize="isAuthenticated()"/>
+    <attr sel="#headerNickname"
           sec:authorize="isAuthenticated()"
           sec:authentication="principal.nickname"
     />
@@ -19,5 +20,9 @@
           sec:authorize="isAuthenticated()"
           th:href="@{/account/logout}"
     />
+    <!--유저 계정 관리 링크-->
+    <attr sel="#adminAccount" th:href="@{/user/account}"/>
+    <attr sel="#adminPassword" th:href="@{/user/password}"/>
+    <attr sel="#adminOrders" th:href="@{/user/orders}"/>
   </attr>
 </thlogic>
