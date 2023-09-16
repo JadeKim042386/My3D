@@ -58,7 +58,7 @@ public record UserAccountDto(
 
     public static UserAccountDto from(UserAccount userAccount) {
         Address address = userAccount.getAddress();
-        Company company = userAccount.getCompnay();
+        Company company = userAccount.getCompany();
 
         return UserAccountDto.of(
                 userAccount.getEmail(),
@@ -77,7 +77,7 @@ public record UserAccountDto(
      */
     public static <T extends PasswordEncoder> UserAccountDto from(UserAccount userAccount, T encoder) {
         Address address = userAccount.getAddress();
-        Company company = userAccount.getCompnay();
+        Company company = userAccount.getCompany();
 
         return UserAccountDto.of(
                 userAccount.getEmail(),

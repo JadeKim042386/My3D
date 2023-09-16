@@ -96,6 +96,17 @@ public class UserAccountService {
     }
 
     /**
+     * 기업 정보 수정
+     */
+    @Transactional
+    public void updateCompany(UserAccountDto dto) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.email());
+        if (dto.companyDto() != null) {
+            userAccount.setCompany(dto.companyDto().toEntity());
+        }
+    }
+
+    /**
      * 비밀번호 일치 확인 후 토큰 생성
      */
     public String login(String email, String password) {

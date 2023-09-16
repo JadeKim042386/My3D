@@ -105,4 +105,17 @@ class UserAccountServiceTest {
         // Then
         then(userAccountRepository).should().getReferenceById(email);
     }
+
+    @DisplayName("기업 정보 수정")
+    @Test
+    void updateCompany() {
+        // Given
+        String email = "jk042386@gmail.com";
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
+        // When
+        userAccountService.updateCompany(userAccountDto);
+        // Then
+        then(userAccountRepository).should().getReferenceById(email);
+    }
 }

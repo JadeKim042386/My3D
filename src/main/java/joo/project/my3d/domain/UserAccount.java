@@ -54,7 +54,7 @@ public class UserAccount extends AuditingFields {
     @Setter
     @Column
     @Embedded
-    private Company compnay;
+    private Company company;
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
@@ -86,7 +86,7 @@ public class UserAccount extends AuditingFields {
         this.address = address;
         this.signUp = signUp;
         this.userRole = userRole;
-        this.compnay = company;
+        this.company = company;
         this.createdBy = createdBy;
         this.modifiedBy = createdBy;
     }
