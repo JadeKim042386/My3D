@@ -26,13 +26,13 @@ public class TestSecurityConfig {
 
     @BeforeTestMethod
     public void securitySetUp() {
-        given(userAccountService.searchUser("jooCompany"))
+        given(userAccountService.searchUser("jooCompany@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY, true)));
-        given(userAccountService.searchUser("jooUser"))
+        given(userAccountService.searchUser("jooUser@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true)));
-        given(userAccountService.searchUser("notSignedJooUser"))
+        given(userAccountService.searchUser("notSignedJooUser@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("notSignedJooUser", UserRole.USER, false)));
-        given(userAccountService.searchUser("jooAdmin"))
+        given(userAccountService.searchUser("jooAdmin@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN, true)));
         given(userAccountService.saveUser(anyString(), anyString(), anyString(), any(UserRole.class), anyBoolean()))
                 .willReturn(createUserAccountDto());
