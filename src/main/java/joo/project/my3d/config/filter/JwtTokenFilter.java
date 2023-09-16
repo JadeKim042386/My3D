@@ -34,7 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         //회원가입관련 URL일 경우 생략
         String url = request.getRequestURL().toString();
-        if (url.contains("account") || url.contains("mail")) {
+        if (url.startsWith("/account") || url.startsWith("/mail")) {
             filterChain.doFilter(request, response);
             return;
         }
