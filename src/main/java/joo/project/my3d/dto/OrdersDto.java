@@ -22,7 +22,14 @@ public record OrdersDto(
     }
 
     public static OrdersDto of(Long id, String productName, AddressDto addressDto, OrderStatus status, UserAccountDto userAccountDto) {
-        return new OrdersDto(id, productName, addressDto, status, userAccountDto, null, null, null, null);
+        return OrdersDto.of(id, productName, addressDto, status, userAccountDto, null, null, null, null);
+    }
+
+    /**
+     * 주문 정보를 업데이트하기위해 사용하며 userAccount는 불필요
+     */
+    public static OrdersDto of(Long id, String productName, AddressDto addressDto, OrderStatus status) {
+        return OrdersDto.of(id, productName, addressDto, status, null, null, null, null, null);
     }
 
     public static OrdersDto from(Orders orders) {
