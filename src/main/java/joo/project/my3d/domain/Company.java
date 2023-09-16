@@ -1,11 +1,13 @@
 package joo.project.my3d.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
 @Getter
+@Setter
 public class Company {
     private String companyName;
     private String homepage;

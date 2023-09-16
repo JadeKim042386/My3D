@@ -2,6 +2,7 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -99,10 +100,13 @@ public class UserAccountService {
      * 기업 정보 수정
      */
     @Transactional
-    public void updateCompany(UserAccountDto dto) {
-        UserAccount userAccount = userAccountRepository.getReferenceById(dto.email());
-        if (dto.companyDto() != null) {
-            userAccount.setCompany(dto.companyDto().toEntity());
+    public void updateCompany(String email, CompanyDto dto) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(email);
+        if (dto.companyName() != null) {
+            userAccount.getCompany().setCompanyName(dto.companyName());
+        }
+        if (dto.homepage() != null) {
+            userAccount.getCompany().setHomepage(dto.homepage());
         }
     }
 

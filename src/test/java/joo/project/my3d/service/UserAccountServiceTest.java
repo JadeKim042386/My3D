@@ -114,7 +114,7 @@ class UserAccountServiceTest {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
         // When
-        userAccountService.updateCompany(userAccountDto);
+        userAccountService.updateCompany(email, userAccountDto.companyDto());
         // Then
         then(userAccountRepository).should().getReferenceById(email);
     }
