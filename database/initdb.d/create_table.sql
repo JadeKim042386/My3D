@@ -121,7 +121,7 @@ CREATE TABLE `dimension` (
    FOREIGN KEY (`good_option_id`) REFERENCES `good_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
     `email`	varchar(50)	NOT NULL,
     `status` varchar(10) NOT NULL,
@@ -129,6 +129,10 @@ CREATE TABLE `order` (
     `detail` varchar(50) NOT NULL,
     `street` varchar(100) NOT NULL,
     `zipcode` varchar(10) NOT NULL,
+    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    `modified_at`	datetime	NOT NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`email`) REFERENCES `user_account` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주문';

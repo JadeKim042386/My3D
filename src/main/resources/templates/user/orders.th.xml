@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#header" th:replace="header :: header"></attr>
+    <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#ordersTable/tbody">
+        <attr sel="/tr[0]" th:if="${orders}" th:each="order : ${orders}">
+            <attr sel="td.orderNo" th:text="${order.id}"/>
+            <attr sel="td.productName" th:text="${order.productName}"/>
+            <attr sel="td.address" th:text="${order.street} + ' ' + ${order.detail}"/>
+            <attr sel="td.status" th:text="${order.status.name}"/>
+        </attr>
+    </attr>
+</thlogic>

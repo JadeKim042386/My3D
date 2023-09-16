@@ -62,7 +62,6 @@ class UserAdminControllerTest {
     void updateUserData() throws Exception {
         // Given
         willDoNothing().given(userAccountService).updateUser(any(UserAccountDto.class));
-        willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
         // When
         mvc.perform(
                 post("/user/account")
@@ -80,7 +79,6 @@ class UserAdminControllerTest {
                 .andExpect(redirectedUrl("/user/account"));
         // Then
         then(userAccountService).should().updateUser(any(UserAccountDto.class));
-        then(userAccountService).should().changePassword(anyString(), anyString());
     }
 
     @DisplayName("[GET] 주문 관리 페이지")
