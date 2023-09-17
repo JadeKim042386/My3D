@@ -45,8 +45,8 @@ public record UserAccountDto(
      * 계정 정보 수정에 사용
      * 생성일시, 생성자, 수정일시, 수정자, 비밀번호, 가입여부, 회사 정보 제외 (개인 사용자)
      */
-    public static UserAccountDto of(String email, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
-        return UserAccountDto.of(email, null, nickname, phone, addressDto, true, userRole, CompanyDto.of(), null, null, null, null);
+    public static UserAccountDto of(String email, String nickname, String phone, AddressDto addressDto) {
+        return UserAccountDto.of(email, null, nickname, phone, addressDto, true, null, CompanyDto.of(), null, null, null, null);
     }
 
     /**
