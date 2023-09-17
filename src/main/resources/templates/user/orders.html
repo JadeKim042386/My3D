@@ -7,6 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        #apply {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <!--헤더-->
@@ -21,11 +26,18 @@
             <div class="sidebar-brand-text mx-3" id="sidebarName">name 님</div>
         </a>
         <div class="d-flex align-items-start justify-content-center">
-            <div class="sidebar-heading">개인 회원</div>
+            <div class="sidebar-heading" id="userType">개인 회원</div>
+            <div class="sidebar-heading" id="companyType">기업 회원</div>
         </div>
         <br>
         <br>
         <br>
+
+        <!-- Nav Item - 기업 정보 -->
+        <li class="nav-item" id="nav-company">
+            <a class="nav-link d-flex align-items-center justify-content-center" href="/user/company">
+                <span>기업 정보</span></a>
+        </li>
 
         <!-- Nav Item - 계정 정보 -->
         <li class="nav-item">
@@ -74,11 +86,22 @@
                                 <td class="orderNo">1</td>
                                 <td class="productName">product name</td>
                                 <td class="address">address</td>
-                                <td class="status">status</td>
+                                <td class="userStatus">status</td>
+                                <td class="companyStatus">
+                                    <select class="form-select" onchange="selectStatus()">
+                                        <option>One</option>
+                                        <option>Two</option>
+                                        <option>Three</option>
+                                        <option>Four</option>
+                                    </select>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <form id="orders-form">
+                    <button type="submit" id="apply" class="btn btn-dark col-sm-2">적용</button>
+                </form>
             </div>
             <!-- /.container-fluid -->
         </div>
@@ -96,5 +119,29 @@
 <script src="/js/sb-admin-2.min.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script>
+    function getCompanyStatus() {
+        return $('.companyStatus option:selected').text();
+    }
+    $(window).on('load', function () {
+        if ($('td').hasClass('companyStatus')) {
+            prevStatus = getCompanyStatus();
+        }
+    })
+    function selectStatus() {
+        if (prevStatus !== getCompanyStatus()) {
+            $('#apply').show();
+        } else {
+            $('#apply').hide();
+        }
+    }
+    $('#apply').click(function () {
+        var ordersId = $('.orderNo').text();
+        var status = getCompanyStatus();
+        var inputForm = "<input type='hidden' name='id' value=" + ordersId + ">"
+                        + "<input type='hidden' name='id' value=" + status + ">";
+        $('#company-form').append(inputForm);
+    })
+</script>
 </body>
 </html>

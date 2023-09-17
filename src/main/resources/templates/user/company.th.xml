@@ -8,6 +8,8 @@
     />
     <attr sel="#userType" sec:authorize="hasRole('ROLE_USER')"/>
     <attr sel="#companyType" sec:authorize="hasRole('ROLE_COMPANY')"/>
-    <attr sel="#nav-company" sec:authorize="hasRole('ROLE_COMPANY')"/>
-    <attr sel="#password-form" th:action="@{/user/password}" th:method="post"/>
+    <attr sel="#company-form" th:object="${companyData}" th:action="@{/user/company}" th:method="post">
+        <attr sel="#companyName" th:value="*{companyName}"/>
+        <attr sel="#homepage" th:value="*{homepage}"/>
+    </attr>
 </thlogic>
