@@ -86,7 +86,7 @@ public class SecurityConfig {
                         .regexMatchers(
                                 HttpMethod.GET,
                                 "/user/orders"
-                        ).hasAnyRole("USER")
+                        ).authenticated()
                         .regexMatchers(
                                 HttpMethod.POST,
                                 "/user/orders"
