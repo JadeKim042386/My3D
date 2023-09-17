@@ -26,10 +26,10 @@ public record OrdersDto(
     }
 
     /**
-     * 주문 정보를 업데이트하기위해 사용하며 userAccount는 불필요
+     * 주문 상태를 업데이트하기위해 사용
      */
-    public static OrdersDto of(Long id, String productName, AddressDto addressDto, OrderStatus status) {
-        return OrdersDto.of(id, productName, addressDto, status, null, null, null, null, null);
+    public static OrdersDto of(Long id, OrderStatus status) {
+        return OrdersDto.of(id, null, AddressDto.of(), status, null, null, null, null, null);
     }
 
     public static OrdersDto from(Orders orders) {

@@ -6,6 +6,9 @@
           sec:authorize="isAuthenticated()"
           sec:authentication="principal.nickname"
     />
+    <attr sel="#userType" sec:authorize="hasRole('ROLE_USER')"/>
+    <attr sel="#companyType" sec:authorize="hasRole('ROLE_COMPANY')"/>
+    <attr sel="#nav-company" sec:authorize="hasRole('ROLE_COMPANY')"/>
     <attr sel="#account-form" th:object="${userData}" th:action="@{/user/account}" th:method="post">
         <attr sel="#email" th:value="*{email}"/>
         <attr sel="#nickname" th:value="*{nickname}"/>

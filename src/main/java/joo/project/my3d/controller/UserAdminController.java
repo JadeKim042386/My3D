@@ -38,7 +38,6 @@ public class UserAdminController {
             Model model
     ) {
         UserAdminResponse userAdminResponse = UserAdminResponse.of(
-                boardPrincipal.getUserRole(),
                 boardPrincipal.nickname(),
                 boardPrincipal.phone(),
                 boardPrincipal.email(),
@@ -81,7 +80,6 @@ public class UserAdminController {
     ) {
         List<OrdersResponse> ordersResponses = ordersService.getOrders(boardPrincipal.email()).stream()
                                                 .map(OrdersResponse::from).toList();
-        model.addAttribute("userRole", boardPrincipal.getUserRole());
         model.addAttribute("orders", ordersResponses);
         return "user/orders";
     }

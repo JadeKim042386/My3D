@@ -100,7 +100,6 @@ class UserAdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("user/orders"))
-                .andExpect(model().attributeExists("userRole"))
                 .andExpect(model().attributeExists("orders"));
         // Then
         then(ordersService).should().getOrders(anyString());
