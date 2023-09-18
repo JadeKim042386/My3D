@@ -675,6 +675,7 @@ public class JpaRepositoryTest {
 
         @Autowired private OrdersRepository ordersRepository;
         @Autowired private UserAccountRepository userAccountRepository;
+        @Autowired private CompanyRepository companyRepository;
 
         @DisplayName("주문 findAll")
         @Test
@@ -698,6 +699,17 @@ public class JpaRepositoryTest {
             assertThat(orders).isNotNull().hasSize(4);
         }
 
+        @DisplayName("기업 id로 주문 findAll")
+        @Test
+        void getOrdersByCompanyId() {
+            // Given
+            Long companyId = 1L;
+            // When
+            List<Orders> orders = ordersRepository.findByCompanyId(companyId);
+            // Then
+            assertThat(orders).isNotNull().hasSize(4);
+        }
+
         @DisplayName("주문 findById")
         @Test
         void getOrder() {
@@ -715,7 +727,8 @@ public class JpaRepositoryTest {
             // Given
             String email = "a@gmail.com";
             UserAccount userAccount = userAccountRepository.getReferenceById(email);
-            Orders orders = Fixture.getOrders(userAccount);
+            Company company = companyRepository.getReferenceById(1L);
+            Orders orders = Fixture.getOrders(userAccount, company);
             long previousCount = ordersRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

@@ -1,10 +1,12 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.Orders;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.OrdersException;
+import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.OrdersRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,17 @@ public class OrdersService {
 
     private final OrdersRepository ordersRepository;
     private final UserAccountRepository userAccountRepository;
+    private final CompanyRepository companyRepository;
 
 
-    public List<OrdersDto> getOrders(String email) {
+    public List<OrdersDto> getOrdersByEmail(String email) {
         return ordersRepository.findByUserAccount_Email(email)
+                .stream().map(OrdersDto::from)
+                .toList();
+    }
+
+    public List<OrdersDto> getOrdersByCompanyId(Long companyId) {
+        return ordersRepository.findByCompanyId(companyId)
                 .stream().map(OrdersDto::from)
                 .toList();
     }
@@ -35,7 +44,8 @@ public class OrdersService {
     public void saveOrders(OrdersDto dto) {
         try{
             UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().email());
-            Orders orders = dto.toEntity(userAccount);
+            Company company = companyRepository.getReferenceById(dto.companyDto().id());
+            Orders orders = dto.toEntity(userAccount, company);
             ordersRepository.save(orders);
         } catch (EntityNotFoundException e) {
             log.warn("주문 저장 실패! - {}", new OrdersException(ErrorCode.FAILED_SAVE));
@@ -55,14 +65,14 @@ public class OrdersService {
     }
 
     @Transactional
-    public void deleteOrders(Long ordersId, String email) {
+    public void deleteOrders(Long ordersId, String emailOrCompanyName) {
         Orders orders = ordersRepository.getReferenceById(ordersId);
-        //작성자와 삭제 요청 유저가 같은지 확인
-        if (orders.getUserAccount().getEmail().equals(email)) {
+        //주문 요청 유저 또는 기업과 삭제 요청 유저가 같은지 확인
+        if (orders.getUserAccount().getEmail().equals(emailOrCompanyName) || orders.getCompany().getCompanyName().equals(emailOrCompanyName)) {
             ordersRepository.deleteById(ordersId);
         } else {
-            log.error("작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", orders.getUserAccount().getEmail(), email);
-            throw new OrdersException(ErrorCode.COMMENT_NOT_WRITER);
+            log.error("작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", orders.getUserAccount().getEmail(), emailOrCompanyName);
+            throw new OrdersException(ErrorCode.NOT_WRITER);
         }
     }
 }

@@ -80,7 +80,10 @@ public class Fixture {
         return Dimension.of(goodOption, "너비", 10.0f, DimUnit.MM);
     }
 
-    public static Orders getOrders(UserAccount userAccount) {
-        return Orders.of(OrderStatus.EXAMINE, "add example", Address.of("11111", "서울특별시", "111"), userAccount);
+    public static Company getCompany() {
+        return Company.of("company", "homepage");
+    }
+    public static Orders getOrders(UserAccount userAccount, Company company) {
+        return Orders.of(OrderStatus.EXAMINE, "add example", Address.of("11111", "서울특별시", "111"), userAccount, company);
     }
 }

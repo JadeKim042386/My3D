@@ -37,6 +37,12 @@ public class UserAccountService {
         return userAccountRepository.findById(email).map(UserAccountDto::from);
     }
 
+    public CompanyDto getCompany(String email) {
+        return searchUser(email)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email))
+                .companyDto();
+    }
+
     public BoardPrincipal getUserPrincipal(String email) {
         return searchUser(email)
                 .map(BoardPrincipal::from)
@@ -93,20 +99,6 @@ public class UserAccountService {
         }
         if (dto.addressDto() != null) {
             userAccount.setAddress(dto.addressDto().toEntity());
-        }
-    }
-
-    /**
-     * 기업 정보 수정
-     */
-    @Transactional
-    public void updateCompany(String email, CompanyDto dto) {
-        UserAccount userAccount = userAccountRepository.getReferenceById(email);
-        if (dto.companyName() != null) {
-            userAccount.getCompany().setCompanyName(dto.companyName());
-        }
-        if (dto.homepage() != null) {
-            userAccount.getCompany().setHomepage(dto.homepage());
         }
     }
 

@@ -2,7 +2,6 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.config.SecurityConfig;
 import joo.project.my3d.config.handler.CustomOAuth2SuccessHandler;
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.OrderStatus;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
@@ -10,6 +9,7 @@ import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
@@ -23,9 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -43,6 +40,7 @@ class UserAdminControllerTest {
     @MockBean private UserAccountService userAccountService;
     @MockBean private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @MockBean private OrdersService ordersService;
+    @MockBean private CompanyService companyService;
 
     @DisplayName("[GET] 계정 관리 페이지")
     @Test
@@ -90,7 +88,7 @@ class UserAdminControllerTest {
     @Test
     void orders() throws Exception {
         // Given
-        given(ordersService.getOrders(anyString())).willReturn(anyList());
+        given(ordersService.getOrdersByEmail(anyString())).willReturn(anyList());
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userUser", UserRole.USER);
         // When
         mvc.perform(
@@ -102,7 +100,7 @@ class UserAdminControllerTest {
                 .andExpect(view().name("user/orders"))
                 .andExpect(model().attributeExists("orders"));
         // Then
-        then(ordersService).should().getOrders(anyString());
+        then(ordersService).should().getOrdersByEmail(anyString());
     }
 
     @DisplayName("[POST] 주문 상태 변경 요청")
@@ -134,7 +132,7 @@ class UserAdminControllerTest {
     void company() throws Exception {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
-        given(userAccountService.searchUser("userCompany@gmail.com")).willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY, true)));
+        given(userAccountService.getCompany("userCompany@gmail.com")).willReturn(FixtureDto.getCompanyDto());
         // When
         mvc.perform(
                 get("/user/company")
@@ -145,14 +143,15 @@ class UserAdminControllerTest {
                 .andExpect(view().name("user/company"))
                 .andExpect(model().attributeExists("companyData"));
         // Then
-        then(userAccountService).should().searchUser("userCompany@gmail.com");
+        then(userAccountService).should().getCompany("userCompany@gmail.com");
     }
 
     @DisplayName("[POST] 기업 정보 수정 요청")
     @Test
     void updateCompany() throws Exception {
         // Given
-        willDoNothing().given(userAccountService).updateCompany(anyString(), any(CompanyDto.class));
+        given(userAccountService.getCompany("userCompany@gmail.com")).willReturn(FixtureDto.getCompanyDto());
+        willDoNothing().given(companyService).updateCompany(any(CompanyDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
         // When
         mvc.perform(
@@ -163,6 +162,7 @@ class UserAdminControllerTest {
                 .andExpect(view().name("redirect:/user/company"))
                 .andExpect(redirectedUrl("/user/company"));
         // Then
-        then(userAccountService).should().updateCompany(anyString(), any(CompanyDto.class));
+        then(userAccountService).should().getCompany("userCompany@gmail.com");
+        then(companyService).should().updateCompany(any(CompanyDto.class));
     }
 }

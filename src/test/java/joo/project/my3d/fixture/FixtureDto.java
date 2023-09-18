@@ -139,9 +139,15 @@ public class FixtureDto {
     public static AddressDto getAddressDto() {
         return AddressDto.of("11111", "서울특별시", "111");
     }
+
+    public static CompanyDto getCompanyDto() {
+        return CompanyDto.of(2L, "company", "homepage");
+    }
+
     public static OrdersDto getOrdersDto() {
         AddressDto addressDto = FixtureDto.getAddressDto();
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return OrdersDto.of(4L, "example", addressDto, OrderStatus.EXAMINE, userAccountDto);
+        CompanyDto companyDto = FixtureDto.getCompanyDto();
+        return OrdersDto.of(4L, "example", addressDto, OrderStatus.EXAMINE, userAccountDto, companyDto);
     }
 }

@@ -39,18 +39,24 @@ public class Orders extends AuditingFields {
     @JoinColumn(name = "email")
     private UserAccount userAccount;
 
+    @ToString.Exclude
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "companyId")
+    private Company company;
+
     protected Orders() {
     }
 
-    private Orders(OrderStatus status, String productName, Address address, UserAccount userAccount) {
+    private Orders(OrderStatus status, String productName, Address address, UserAccount userAccount, Company company) {
         this.status = status;
         this.productName = productName;
         this.address = address;
         this.userAccount = userAccount;
+        this.company = company;
     }
 
-    public static Orders of(OrderStatus status, String productName, Address address, UserAccount userAccount) {
-        return new Orders(status, productName, address, userAccount);
+    public static Orders of(OrderStatus status, String productName, Address address, UserAccount userAccount, Company company) {
+        return new Orders(status, productName, address, userAccount, company);
     }
 
     @Override

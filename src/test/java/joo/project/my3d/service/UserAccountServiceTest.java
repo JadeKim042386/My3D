@@ -55,6 +55,18 @@ class UserAccountServiceTest {
         then(userAccountRepository).should().findById(anyString());
     }
 
+    @DisplayName("기업 조회")
+    @Test
+    void getCompany() {
+        // Given
+        UserAccount userAccount = Fixture.getUserAccount();
+        given(userAccountRepository.findById(anyString())).willReturn(Optional.of(userAccount));
+        // When
+        userAccountService.getCompany(userAccount.getEmail());
+        // Then
+        then(userAccountRepository).should().findById(anyString());
+    }
+
     @DisplayName("회원 추가 - 필드 주입")
     @Test
     void saveUserAccountByFields() {
@@ -102,19 +114,6 @@ class UserAccountServiceTest {
         given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
         // When
         userAccountService.updateUser(userAccountDto);
-        // Then
-        then(userAccountRepository).should().getReferenceById(email);
-    }
-
-    @DisplayName("기업 정보 수정")
-    @Test
-    void updateCompany() {
-        // Given
-        String email = "jk042386@gmail.com";
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
-        // When
-        userAccountService.updateCompany(email, userAccountDto.companyDto());
         // Then
         then(userAccountRepository).should().getReferenceById(email);
     }

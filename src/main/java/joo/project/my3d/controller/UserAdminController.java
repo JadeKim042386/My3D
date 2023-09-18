@@ -1,6 +1,7 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.OrdersRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
@@ -8,12 +9,12 @@ import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.OrdersResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class UserAdminController {
 
     private final UserAccountService userAccountService;
     private final OrdersService ordersService;
+    private final CompanyService companyService;
 
     @GetMapping("/account")
     public String userData(
@@ -78,8 +80,16 @@ public class UserAdminController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
-        List<OrdersResponse> ordersResponses = ordersService.getOrders(boardPrincipal.email()).stream()
-                                                .map(OrdersResponse::from).toList();
+        List<OrdersResponse> ordersResponses;
+        if (boardPrincipal.getUserRole() == UserRole.USER) {
+            ordersResponses = ordersService.getOrdersByEmail(boardPrincipal.email()).stream()
+                    .map(OrdersResponse::from).toList();
+        } else {
+            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+            ordersResponses = ordersService.getOrdersByCompanyId(company.id()).stream()
+                    .map(OrdersResponse::from).toList();
+        }
+
         model.addAttribute("orders", ordersResponses);
         return "user/orders";
     }
@@ -99,9 +109,8 @@ public class UserAdminController {
             Model model
     ) {
         //기업 정보 전달
-        UserAccountDto userAccountDto = userAccountService.searchUser(boardPrincipal.email())
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + boardPrincipal.email()));
-        model.addAttribute("companyData", CompanyAdminResponse.from(userAccountDto.companyDto()));
+        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+        model.addAttribute("companyData", CompanyAdminResponse.from(company));
 
         return "user/company";
     }
@@ -111,7 +120,8 @@ public class UserAdminController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             @ModelAttribute("companyData") CompanyAdminRequest companyAdminRequest
     ) {
-        userAccountService.updateCompany(boardPrincipal.email(), companyAdminRequest.toDto());
+        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+        companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
         return "redirect:/user/company";
     }

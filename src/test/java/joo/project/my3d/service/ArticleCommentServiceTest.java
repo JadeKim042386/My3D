@@ -148,7 +148,7 @@ class ArticleCommentServiceTest {
         // When
         assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, "a"))
                 .isInstanceOf(CommentException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.COMMENT_NOT_WRITER);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
         then(articleCommentRepository).should().getReferenceById(articleCommentId);
     }
