@@ -11,6 +11,12 @@
         #apply {
             display: none;
         }
+        .companyStatus {
+            display: none;
+        }
+        #save-company {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +85,7 @@
                                 <th>상품명</th>
                                 <th>주소</th>
                                 <th>현황</th>
+                                <th id="edit-column">수정</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -88,12 +95,16 @@
                                 <td class="address">address</td>
                                 <td class="userStatus">status</td>
                                 <td class="companyStatus">
-                                    <select class="form-select" onchange="selectStatus()">
+                                    <select class="form-select">
                                         <option>One</option>
                                         <option>Two</option>
                                         <option>Three</option>
                                         <option>Four</option>
                                     </select>
+                                </td>
+                                <td class="edit-button">
+                                    <button type="button" id="edit-company" class="btn btn-info">수정</button>
+                                    <button type="button" id="save-company" class="btn btn-info">저장</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -120,28 +131,53 @@
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <script>
-    function getCompanyStatus() {
-        return $('.companyStatus option:selected').text();
-    }
     $(window).on('load', function () {
         if ($('td').hasClass('companyStatus')) {
-            prevStatus = getCompanyStatus();
+            prevStatuses = [];
+            $('#ordersTable tbody').find('.companyStatus').each(function () {
+                prevStatuses.push($(this).find('option:selected').text());
+            })
         }
+        $('#apply').click(function () {
+            $('#ordersTable tbody').find('tr').each(function () {
+                var ordersId = $(this).find('.orderNo').text();
+                var status = $(this).find('.userStatus').text();
+                var inputForm = "<input type='hidden' name='id' value=" + ordersId + ">"
+                                + "<input type='hidden' name='status' value=" + status + ">";
+                $('#orders-form').append(inputForm);
+            })
+        })
+        //주문 상태 수정/저장
+        $('#edit-company').click(function () {
+            $(this).parents('tr').find('.userStatus, .companyStatus').toggle();
+            $(this).toggle();
+            $('#save-company').toggle();
+        })
+        $('#save-company').click(function () {
+            $(this).parents('tr').find('.userStatus, .companyStatus').toggle();
+            var selectedText = $(this).parents('tr').find('.companyStatus option:selected').text();
+            $(this).parents('tr').find('.userStatus').text(selectedText);
+            $(this).toggle();
+            $('#edit-company').toggle();
+            changeCheck();
+        })
     })
-    function selectStatus() {
-        if (prevStatus !== getCompanyStatus()) {
+
+    function changeCheck() {
+        var rows = $('#ordersTable tbody tr').length;
+        var isChanged = false;
+        for (var i=0;i<rows;i++) {
+            var selectedText = $('#ordersTable tbody tr').eq(i).find('.userStatus').text();
+            if (prevStatuses[i] !== selectedText) {
+                isChanged = true;
+            }
+        }
+        if (isChanged) {
             $('#apply').show();
         } else {
             $('#apply').hide();
         }
     }
-    $('#apply').click(function () {
-        var ordersId = $('.orderNo').text();
-        var status = getCompanyStatus();
-        var inputForm = "<input type='hidden' name='id' value=" + ordersId + ">"
-                        + "<input type='hidden' name='id' value=" + status + ">";
-        $('#company-form').append(inputForm);
-    })
 </script>
 </body>
 </html>
