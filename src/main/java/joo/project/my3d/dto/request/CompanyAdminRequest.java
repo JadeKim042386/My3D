@@ -6,8 +6,9 @@ public record CompanyAdminRequest(
         String companyName,
         String homepage
 ) {
-    public CompanyDto toDto() {
+    public CompanyDto toDto(Long companyId) {
         return CompanyDto.of(
+                companyId,
                 companyName,
                 homepage
         );
