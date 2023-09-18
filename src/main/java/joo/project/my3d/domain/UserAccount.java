@@ -10,12 +10,14 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @ToString(callSuper = true)
 @Table(
         name = "user_account",
         indexes = {
-                @Index(columnList = "email", unique = true),
+                @Index(columnList = "email"),
                 @Index(columnList = "nickname", unique = true)
         }
 )
@@ -51,9 +53,9 @@ public class UserAccount extends AuditingFields {
     @Column(nullable = false)
     private UserRole userRole;
 
-    @Setter
-    @Column
-    @Embedded
+    @ToString.Exclude
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
     private Company company;
 
     @ToString.Exclude
@@ -72,7 +74,7 @@ public class UserAccount extends AuditingFields {
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userAccount")
     private final Set<Orders> orders = new LinkedHashSet<>();
 
     protected UserAccount() {

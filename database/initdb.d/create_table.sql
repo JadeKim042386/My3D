@@ -1,4 +1,15 @@
-﻿CREATE TABLE `user_account` (
+﻿CREATE TABLE `company` (
+    `id` bigint	AUTO_INCREMENT NOT NULL,
+    `company_name` varchar(100) NOT NULL,
+    `homepage` varchar(255) NULL,
+    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    `modified_at`	datetime	NOT NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='기업';
+
+CREATE TABLE `user_account` (
 	`email`	varchar(100)	NOT NULL,
 	`user_password`	varchar(255)	NOT NULL,
 	`nickname`	varchar(100)	NOT NULL,
@@ -8,14 +19,14 @@
     `zipcode` varchar(10) NULL,
     `sign_up` boolean DEFAULT false NOT NULL,
 	`user_role` varchar(10) NOT NULL,
-	`company_name` varchar(100) NULL,
-    `homepage` varchar(255) NULL,
+	`company_id` bigint  NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
 	`created_by`	varchar(100)	NOT NULL,
 	`modified_by`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`email`),
-    UNIQUE (`nickname`)
+    UNIQUE (`nickname`),
+    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
 Create TABLE `price` (
@@ -124,6 +135,7 @@ CREATE TABLE `dimension` (
 CREATE TABLE `orders` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
     `email`	varchar(50)	NOT NULL,
+    `company_id` bigint	NOT NULL,
     `status` varchar(10) NOT NULL,
     `product_name` varchar(255) NOT NULL,
     `detail` varchar(50) NOT NULL,
@@ -134,5 +146,6 @@ CREATE TABLE `orders` (
     `created_by`	varchar(100)	NOT NULL,
     `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`)
+    FOREIGN KEY (`email`) REFERENCES `user_account` (`email`),
+    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주문';

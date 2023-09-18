@@ -1,8 +1,12 @@
+-- 기업
+insert into company (company_name, homepage, created_at, modified_at, created_by, modified_by) values
+('(주)My3D', 'www.my3d.com', now(), now(), 'jujoo', 'jujoo');
+
 -- 테스트 계정 3개
-insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, sign_up, user_role, company_name, homepage, created_at, created_by, modified_at, modified_by) values
-('jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', null, null, null, true, 'ADMIN', null, null, now(), 'joo', now(), 'joo'),
-('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', null, null, now(), 'a', now(), 'a'),
-('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', '주식회사 My3D', null, now(), 'jujoo', now(), 'jujoo');
+insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, sign_up, user_role, company_id, created_at, created_by, modified_at, modified_by) values
+('jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', null, null, null, true, 'ADMIN', null, now(), 'joo', now(), 'joo'),
+('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', null, now(), 'a', now(), 'a'),
+('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', 1, now(), 'jujoo', now(), 'jujoo');
 
 -- 가격
 insert into price (price_value, delivery_price, created_at, modified_at, created_by, modified_by) values
@@ -76,8 +80,8 @@ insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at
 (2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 주문
-insert into orders (email, status, product_name, detail, street, zipcode, created_by, modified_at, modified_by, created_at) values
-('a@gmail.com', 'REQUEST', 'example product1', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-('a@gmail.com', 'EXAMINE', 'example product2', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-('a@gmail.com', 'PRINTING', 'example product3', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-('a@gmail.com', 'DELIVERY', 'example product4', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03');
+insert into orders (email, company_id, status, product_name, detail, street, zipcode, created_by, modified_at, modified_by, created_at) values
+('a@gmail.com', 1, 'REQUEST', 'example product1', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 1, 'EXAMINE', 'example product2', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 1, 'PRINTING', 'example product3', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
+('a@gmail.com', 1, 'DELIVERY', 'example product4', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03');
