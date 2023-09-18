@@ -71,7 +71,7 @@ public class ArticleCommentService {
             articleCommentRepository.deleteById(articleCommentId);
         } else {
             log.error("작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", articleComment.getUserAccount().getEmail(), email);
-            throw new CommentException(ErrorCode.COMMENT_NOT_WRITER);
+            throw new CommentException(ErrorCode.NOT_WRITER);
         }
     }
 }
