@@ -5,10 +5,9 @@ import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.OrdersRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
-import joo.project.my3d.dto.response.CompanyAdminResponse;
-import joo.project.my3d.dto.response.OrdersResponse;
-import joo.project.my3d.dto.response.UserAdminResponse;
+import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
@@ -17,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -33,6 +30,7 @@ public class UserAdminController {
     private final UserAccountService userAccountService;
     private final OrdersService ordersService;
     private final CompanyService companyService;
+    private final AlarmService alarmService;
 
     @GetMapping("/account")
     public String userData(
@@ -124,5 +122,24 @@ public class UserAdminController {
         companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
         return "redirect:/user/company";
+    }
+
+    @ResponseBody
+    @GetMapping("/alarm")
+    public Response<List<AlarmResponse>> getAlarms(
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
+        List<AlarmResponse> alarmResponses = userAccountService.getAlarms(boardPrincipal.email()).stream()
+                .map(AlarmResponse::from).toList();
+
+        return Response.success(alarmResponses);
+    }
+
+    @ResponseBody
+    @GetMapping("/alarm/subscribe")
+    public SseEmitter subscribe(
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
+        return alarmService.connectAlarm(boardPrincipal.email());
     }
 }

@@ -9,6 +9,7 @@ import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
@@ -23,10 +24,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +47,7 @@ class UserAdminControllerTest {
     @MockBean private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @MockBean private OrdersService ordersService;
     @MockBean private CompanyService companyService;
+    @MockBean private AlarmService alarmService;
 
     @DisplayName("[GET] 계정 관리 페이지")
     @Test
@@ -164,5 +171,38 @@ class UserAdminControllerTest {
         // Then
         then(userAccountService).should().getCompany("userCompany@gmail.com");
         then(companyService).should().updateCompany(any(CompanyDto.class));
+    }
+
+    @DisplayName("[GET] 알람 리스트 조회")
+    @Test
+    void getAlarms() throws Exception {
+        // Given
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jujoo042386", UserRole.COMPANY);
+        given(userAccountService.getAlarms(anyString())).willReturn(List.of());
+        // When
+        mvc.perform(
+                get("/user/alarm")
+                        .with(authentication(authentication))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        // Then
+        then(userAccountService).should().getAlarms(anyString());
+    }
+
+    @DisplayName("[GET] SSE 연결")
+    @Test
+    void subscribe() throws Exception {
+        // Given
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jujoo042386", UserRole.COMPANY);
+        given(alarmService.connectAlarm(anyString())).willReturn(any(SseEmitter.class));
+        // When
+        mvc.perform(
+                get("/user/alarm/subscribe")
+                        .with(authentication(authentication))
+        )
+                .andExpect(status().isOk());
+        // Then
+        then(alarmService).should().connectAlarm(anyString());
     }
 }
