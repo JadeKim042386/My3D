@@ -5,6 +5,7 @@ import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import static org.mockito.BDDMockito.then;
 class UserAccountServiceTest {
     @InjectMocks private UserAccountService userAccountService;
     @Mock private UserAccountRepository userAccountRepository;
+    @Mock private AlarmRepository alarmRepository;
     @Mock private BCryptPasswordEncoder encoder;
 
     @DisplayName("회원 목록 조회")
@@ -65,6 +67,18 @@ class UserAccountServiceTest {
         userAccountService.getCompany(userAccount.getEmail());
         // Then
         then(userAccountRepository).should().findById(anyString());
+    }
+
+    @DisplayName("알람 조회")
+    @Test
+    void getAlarms() {
+        // Given
+        UserAccount userAccount = Fixture.getUserAccount();
+        given(alarmRepository.findAllByUserAccount_Email(userAccount.getEmail())).willReturn(List.of());
+        // When
+        userAccountService.getAlarms(userAccount.getEmail());
+        // Then
+        then(alarmRepository).should().findAllByUserAccount_Email(userAccount.getEmail());
     }
 
     @DisplayName("회원 추가 - 필드 주입")

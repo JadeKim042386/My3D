@@ -76,7 +76,8 @@ public class SecurityConfig {
                                 "/like/[0-9]+.*",
                                 "/comments.*",
                                 "/user/account",
-                                "/user/password"
+                                "/user/password",
+                                "/user/alarm.*"
                         ).authenticated()
                         .regexMatchers(
                                 "/model_articles/form.*",
