@@ -77,6 +77,11 @@ public class UserAccount extends AuditingFields {
     @OneToMany(mappedBy = "userAccount")
     private final Set<Orders> orders = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount")
+    private final Set<Alarm> alarms = new LinkedHashSet<>();
+
     protected UserAccount() {
     }
 

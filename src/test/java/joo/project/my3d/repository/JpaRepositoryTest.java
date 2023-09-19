@@ -772,4 +772,70 @@ public class JpaRepositoryTest {
             assertThat(ordersRepository.count()).isEqualTo(previousCount - 1);
         }
     }
+
+    @ActiveProfiles("test")
+    @DisplayName("알람 Jpa 테스트")
+    @Import(TestJpaConfig.class)
+    @DataJpaTest
+    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+    @Nested
+    public class AlarmJpaTest {
+
+        @Autowired private AlarmRepository alarmRepository;
+        @Autowired private UserAccountRepository userAccountRepository;
+
+        @DisplayName("알람 findAll")
+        @Test
+        void getAlarms() {
+            // Given
+
+            // When
+            List<Alarm> alarms = alarmRepository.findAll();
+            // Then
+            assertThat(alarms).isNotNull().hasSize(3);
+        }
+
+        @DisplayName("알람 findById")
+        @Test
+        void getAlarm() {
+            // Given
+            Long alarmId = 1L;
+            // When
+            Optional<Alarm> alarm = alarmRepository.findById(alarmId);
+            // Then
+            assertThat(alarm).isNotNull();
+        }
+
+        @DisplayName("알람 save")
+        @Test
+        void saveAlarm() {
+            // Given
+            String email = "jujoo042386@gmail.com";
+            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            Alarm alarm = Fixture.getAlarm(userAccount);
+            long previousCount = alarmRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            Alarm savedAlarm = alarmRepository.save(alarm);
+            // Then
+            long afterCount = alarmRepository.count();
+            log.info("afterCount: {}", afterCount);
+            assertThat(afterCount).isEqualTo(previousCount + 1);
+            assertThat(savedAlarm)
+                    .hasFieldOrPropertyWithValue("id", 4L);
+        }
+
+        @DisplayName("알람 delete")
+        @Test
+        void deleteAlarm() {
+            // Given
+            Long alarmId = 1L;
+            long previousCount = alarmRepository.count();
+            log.info("previousCount: {}", previousCount);
+            // When
+            alarmRepository.deleteById(alarmId);
+            // Then
+            assertThat(alarmRepository.count()).isEqualTo(previousCount - 1);
+        }
+    }
 }
