@@ -85,3 +85,9 @@ insert into orders (email, company_id, status, product_name, detail, street, zip
 ('a@gmail.com', 1, 'EXAMINE', 'example product2', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
 ('a@gmail.com', 1, 'PRINTING', 'example product3', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
 ('a@gmail.com', 1, 'DELIVERY', 'example product4', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03');
+
+-- 알람
+insert into alarm (email, alarm_type, from_user_email, target_id, created_by, modified_at, modified_by, created_at) values
+('jujoo042386@gmail.com', 'NEW_COMMENT_ON_POST', 'a@gmail.com', 4, 'a', now(), 'a', now()),
+('jujoo042386@gmail.com', 'NEW_LIKE_ON_POST', 'a@gmail.com', 4, 'a', now(), 'a', now()),
+('jujoo042386@gmail.com', 'NEW_ORDER', 'a@gmail.com', 4, 'a', now(), 'a', now());
