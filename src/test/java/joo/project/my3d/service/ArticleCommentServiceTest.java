@@ -1,14 +1,18 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.ArticleComment;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +37,8 @@ class ArticleCommentServiceTest {
     @Mock private ArticleRepository articleRepository;
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleCommentRepository articleCommentRepository;
+    @Mock private AlarmRepository alarmRepository;
+    @Mock private AlarmService alarmService;
 
     @DisplayName("게시글 ID로 댓글 조회")
     @Test
@@ -53,19 +59,26 @@ class ArticleCommentServiceTest {
 
     @DisplayName("댓글 저장")
     @Test
-    void saveComment() {
+    void saveComment() throws IllegalAccessException {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
         ArticleComment articleComment = Fixture.getArticleComment("content");
+        UserAccount userAccount = Fixture.getUserAccount();
+        Alarm alarm = Fixture.getAlarm(userAccount);
+        FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
         given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
+        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
+        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
         then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().email());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
+        then(alarmRepository).should().save(any(Alarm.class));
+        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
     }
 
     @DisplayName("[예외-없는 게시글] 댓글 저장")
@@ -84,19 +97,26 @@ class ArticleCommentServiceTest {
 
     @DisplayName("대댓글 저장")
     @Test
-    void saveChildComment() {
+    void saveChildComment() throws IllegalAccessException {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content", 5L);
         ArticleComment articleComment = Fixture.getArticleComment("content");
+        UserAccount userAccount = Fixture.getUserAccount();
+        Alarm alarm = Fixture.getAlarm(userAccount);
+        FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
         given(userAccountRepository.getReferenceById(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.getReferenceById(articleCommentDto.parentCommentId())).willReturn(articleComment);
+        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
+        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
         then(userAccountRepository).should().getReferenceById(articleCommentDto.userAccountDto().email());
         then(articleCommentRepository).should().getReferenceById(articleCommentDto.parentCommentId());
+        then(alarmRepository).should().save(any(Alarm.class));
+        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
     }
 
     @DisplayName("댓글 수정")

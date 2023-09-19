@@ -28,7 +28,7 @@ public class Alarm extends AuditingFields {
     @Column(nullable = false)
     private String fromUserEmail; //알람을 발생시킨 유저
     @Column(nullable = false)
-    private Long targetId; //게시글과 같은 알람의 대상이되는 엔티티의 id
+    private Long targetId; //게시글, 기업 엔티티의 id
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

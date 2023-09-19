@@ -1,14 +1,17 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.Orders;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.OrdersRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -29,6 +34,8 @@ class OrdersServiceTest {
     @Mock private OrdersRepository ordersRepository;
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private CompanyRepository companyRepository;
+    @Mock private AlarmRepository alarmRepository;
+    @Mock private AlarmService alarmService;
 
     @DisplayName("유저 이메일로 모든 주문 조회")
     @Test
@@ -56,18 +63,29 @@ class OrdersServiceTest {
 
     @DisplayName("주문 추가")
     @Test
-    void saveOrders() {
+    void saveOrders() throws IllegalAccessException {
         // Given
         OrdersDto ordersDto = FixtureDto.getOrdersDto();
+        UserAccount userAccount = ordersDto.userAccountDto().toEntity();
+        Alarm alarm = Fixture.getAlarm(userAccount);
+        FieldUtils.writeField(alarm, "id", 1L, true);
+        Company company = ordersDto.companyDto().toEntity();
+        FieldUtils.writeField(company, "id", 1L, true);
         given(userAccountRepository.getReferenceById(ordersDto.userAccountDto().email())).willReturn(ordersDto.userAccountDto().toEntity());
-        given(companyRepository.getReferenceById(ordersDto.companyDto().id())).willReturn(ordersDto.companyDto().toEntity());
-        given(ordersRepository.save(any(Orders.class))).willReturn(any(Orders.class));
+        given(companyRepository.getReferenceById(ordersDto.companyDto().id())).willReturn(company);
+        given(ordersRepository.save(any(Orders.class))).willReturn(ordersDto.toEntity(userAccount, company));
+        given(userAccountRepository.findByCompanyId(anyLong())).willReturn(Optional.of(userAccount));
+        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
+        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
         // When
         ordersService.saveOrders(ordersDto);
         // Then
         then(userAccountRepository).should().getReferenceById(ordersDto.userAccountDto().email());
         then(companyRepository).should().getReferenceById(ordersDto.companyDto().id());
         then(ordersRepository).should().save(any(Orders.class));
+        then(userAccountRepository).should().findByCompanyId(anyLong());
+        then(alarmRepository).should().save(any(Alarm.class));
+        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
     }
 
     @DisplayName("주문 수정")

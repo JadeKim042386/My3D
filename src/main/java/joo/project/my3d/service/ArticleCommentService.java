@@ -1,11 +1,14 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -26,7 +29,8 @@ public class ArticleCommentService {
     private final ArticleCommentRepository articleCommentRepository;
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
-
+    private final AlarmRepository alarmRepository;
+    private final AlarmService alarmService;
 
     public List<ArticleCommentDto> getComments(Long articleId) {
         return articleCommentRepository.findByArticleId(articleId)
@@ -46,6 +50,15 @@ public class ArticleCommentService {
             } else {
                 articleCommentRepository.save(articleComment);
             }
+            Alarm alarm = alarmRepository.save(
+                    Alarm.of(
+                            AlarmType.NEW_COMMENT_ON_POST,
+                            userAccount.getEmail(),
+                            article.getId(),
+                            article.getUserAccount()
+                    )
+            );
+            alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
         } catch (EntityNotFoundException e) {
             log.warn("댓글 저장 실패! - {}", new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND));
         }
