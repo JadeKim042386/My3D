@@ -1,13 +1,16 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.UserAccountException;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+    private final AlarmRepository alarmRepository;
     private final BCryptPasswordEncoder encoder;
     private final JwtProperties jwtProperties;
 
@@ -47,6 +51,11 @@ public class UserAccountService {
         return searchUser(email)
                 .map(BoardPrincipal::from)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email));
+    }
+
+    public List<AlarmDto> getAlarms(String email) {
+        return alarmRepository.findAllByUserAccount_Email(email).stream()
+                .map(AlarmDto::from).toList();
     }
 
     @Transactional
