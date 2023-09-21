@@ -2,6 +2,7 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
 
     <attr sel="#article-main" th:object="${article}">
         <!--게시글 수정&삭제-->

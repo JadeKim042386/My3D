@@ -2,6 +2,7 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header" />
     <attr sel="#footer" th:replace="footer :: footer" />
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
 
     <attr sel="#article-form" th:object="${article}" th:action="${formStatus?.update} ? '/model_articles/form/' + ${article.id} : '/model_articles/form'" th:method="post">
         <!--제목-->

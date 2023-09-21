@@ -2,6 +2,7 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
     <!--이메일-->
     <attr sel="#email" th:value="${email}" th:disabled="${oauthLogin}"/>
     <attr sel="#email-form" th:class="${oauthLogin} ? 'col-12' : 'col-9'"/>

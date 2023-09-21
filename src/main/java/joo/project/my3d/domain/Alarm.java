@@ -2,6 +2,7 @@ package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.constant.AlarmType;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -26,9 +27,12 @@ public class Alarm extends AuditingFields {
     private AlarmType alarmType;
 
     @Column(nullable = false)
-    private String fromUserEmail; //알람을 발생시킨 유저
+    private String fromUserNickname; //알람을 발생시킨 유저
     @Column(nullable = false)
     private Long targetId; //게시글, 기업 엔티티의 id
+    @Setter
+    @Column(nullable = false)
+    private boolean isChecked;
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -38,15 +42,16 @@ public class Alarm extends AuditingFields {
     protected Alarm() {
     }
 
-    private Alarm(AlarmType alarmType, String fromUserEmail, Long targetId, UserAccount userAccount) {
+    private Alarm(AlarmType alarmType, String fromUserNickname, Long targetId, boolean isChecked, UserAccount userAccount) {
         this.alarmType = alarmType;
-        this.fromUserEmail = fromUserEmail;
+        this.fromUserNickname = fromUserNickname;
         this.targetId = targetId;
+        this.isChecked = isChecked;
         this.userAccount = userAccount;
     }
 
-    public static Alarm of(AlarmType alarmType, String  fromUserEmail, Long targetId, UserAccount userAccount) {
-        return new Alarm(alarmType, fromUserEmail, targetId, userAccount);
+    public static Alarm of(AlarmType alarmType, String fromUserNickname, Long targetId, boolean isChecked, UserAccount userAccount) {
+        return new Alarm(alarmType, fromUserNickname, targetId, isChecked, userAccount);
     }
 
     @Override

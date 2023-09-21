@@ -60,8 +60,9 @@ public class OrdersService {
             Alarm alarm = alarmRepository.save(
                     Alarm.of(
                             AlarmType.NEW_ORDER,
-                            userAccount.getEmail(),
+                            userAccount.getNickname(),
                             company.getId(),
+                            false,
                             companyUserAccount
                     )
             );

@@ -53,6 +53,7 @@ class ModelArticlesControllerTest {
     @MockBean private ArticleLikeRepository articleLikeRepository;
     @MockBean private GoodOptionService goodOptionService;
     @MockBean private DimensionService dimensionService;
+    @MockBean private AlarmService alarmService;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser

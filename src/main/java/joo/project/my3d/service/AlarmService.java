@@ -1,7 +1,9 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.exception.AlarmException;
 import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AlarmService {
     private final EmitterRepository emitterRepository;
+    private final AlarmRepository alarmRepository;
     private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000; //1시간
     private static final String ALARM_NAME = "alarm";
 
@@ -44,5 +47,11 @@ public class AlarmService {
         }
 
         return sseEmitter;
+    }
+
+    @Transactional
+    public void checkAlarm(Long alarmId) {
+        Alarm alarm = alarmRepository.getReferenceById(alarmId);
+        alarm.setChecked(true);
     }
 }

@@ -88,6 +88,6 @@ public class Fixture {
     }
 
     public static Alarm getAlarm(UserAccount userAccount) {
-        return Alarm.of(AlarmType.NEW_ORDER, "a@gmail.com", 1L, userAccount);
+        return Alarm.of(AlarmType.NEW_ORDER, "a@gmail.com", 1L, false, userAccount);
     }
 }
