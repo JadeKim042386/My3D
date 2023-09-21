@@ -53,6 +53,7 @@ public class ModelArticlesController {
     private final ArticleLikeRepository articleLikeRepository;
     private final GoodOptionService goodOptionService;
     private final DimensionService dimensionService;
+    private final AlarmService alarmService;
 
     @Value("${model.rel-path}")
     private String relModelPath;
@@ -99,6 +100,7 @@ public class ModelArticlesController {
     @GetMapping("/{articleId}")
     public String article(
             @PathVariable Long articleId,
+            @RequestParam(required = false) Long alarmId,
             Model model,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -111,6 +113,10 @@ public class ModelArticlesController {
         model.addAttribute("imgFiles", article.imgFiles());
         model.addAttribute("addedLike", articleLike.isPresent());
         model.addAttribute("modelPath", relModelPath);
+
+        if (alarmId != null) {
+            alarmService.checkAlarm(alarmId);
+        }
 
         return "model_articles/detail";
     }

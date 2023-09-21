@@ -75,6 +75,7 @@ public class UserAdminController {
 
     @GetMapping("/orders")
     public String orders(
+            @RequestParam(required = false) Long alarmId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
@@ -89,6 +90,11 @@ public class UserAdminController {
         }
 
         model.addAttribute("orders", ordersResponses);
+
+        if (alarmId != null) {
+            alarmService.checkAlarm(alarmId);
+        }
+
         return "user/orders";
     }
 
