@@ -2,6 +2,7 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+
     <attr sel="#find-pass-form" th:action="@{/mail/find_pass}" th:method="post">
         <attr sel="#email" th:value="${email}"/>
         <attr sel="#email-error"

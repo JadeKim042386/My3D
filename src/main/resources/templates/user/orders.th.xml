@@ -2,6 +2,7 @@
 <thlogic>
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
     <attr sel="#userType" sec:authorize="hasRole('ROLE_USER')"/>
     <attr sel="#companyType" sec:authorize="hasRole('ROLE_COMPANY')"/>
     <attr sel="#nav-company" sec:authorize="hasRole('ROLE_COMPANY')"/>
