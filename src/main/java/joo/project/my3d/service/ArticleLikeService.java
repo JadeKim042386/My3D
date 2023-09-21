@@ -35,8 +35,9 @@ public class ArticleLikeService {
         Alarm alarm = alarmRepository.save(
                 Alarm.of(
                         AlarmType.NEW_LIKE_ON_POST,
-                        userAccount.getEmail(),
+                        userAccount.getNickname(),
                         article.getId(),
+                        false,
                         article.getUserAccount()
                 )
         );

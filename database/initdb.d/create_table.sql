@@ -153,9 +153,10 @@ CREATE TABLE `orders` (
 CREATE TABLE `alarm` (
      `id`	bigint	AUTO_INCREMENT NOT NULL,
      `alarm_type` varchar(50) NOT NULL,
-     `from_user_email` varchar(50) NOT NULL,
+     `from_user_nickname` varchar(50) NOT NULL,
      `target_id` bigint NOT NULL,
      `email` varchar(50)	NOT NULL,
+     `is_checked` boolean DEFAULT false NOT NULL,
      `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
      `modified_at`	datetime	NOT NULL,
      `created_by`	varchar(100)	NOT NULL,
