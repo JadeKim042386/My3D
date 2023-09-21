@@ -19,8 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -55,7 +55,9 @@ public class UserAccountService {
 
     public List<AlarmDto> getAlarms(String email) {
         return alarmRepository.findAllByUserAccount_Email(email).stream()
-                .map(AlarmDto::from).toList();
+                .map(AlarmDto::from)
+                .sorted(Comparator.comparing(AlarmDto::createdAt).reversed())
+                .toList();
     }
 
     @Transactional
