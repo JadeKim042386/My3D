@@ -58,7 +58,9 @@ public class SecurityConfig {
                         .mvcMatchers(
                                 HttpMethod.GET,
                                 "/",
-                                "/model_articles"
+                                "/model_articles",
+                                "/guide/materials",
+                                "/guide/printing_process"
                         ).permitAll()
                         .mvcMatchers(
                                 "/account/login",
