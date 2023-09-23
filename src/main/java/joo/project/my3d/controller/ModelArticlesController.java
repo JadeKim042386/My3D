@@ -55,8 +55,8 @@ public class ModelArticlesController {
     private final DimensionService dimensionService;
     private final AlarmService alarmService;
 
-    @Value("${model.rel-path}")
-    private String relModelPath;
+    @Value("${aws.s3.url}")
+    private String S3Url;
 
     @GetMapping
     public String articles(
@@ -90,7 +90,7 @@ public class ModelArticlesController {
             );
         }
 
-        model.addAttribute("modelPath", relModelPath);
+        model.addAttribute("modelPath", S3Url);
         model.addAttribute("categories", ArticleCategory.values());
         model.addAttribute("paginationBarNumbers", barNumbers);
 
@@ -112,7 +112,7 @@ public class ModelArticlesController {
         model.addAttribute("modelFile", article.modelFile());
         model.addAttribute("imgFiles", article.imgFiles());
         model.addAttribute("addedLike", articleLike.isPresent());
-        model.addAttribute("modelPath", relModelPath);
+        model.addAttribute("modelPath", S3Url);
 
         if (alarmId != null) {
             alarmService.checkAlarm(alarmId);
@@ -213,7 +213,7 @@ public class ModelArticlesController {
         List<ArticleFileDto> articleFileDtos = articleFileService.getArticleFiles(articleId); //저장되어있는 파일들
         Article article = articleService.getArticle(articleId).toEntity();
         List<MultipartFile> files = articleFormRequest.getFiles();
-        boolean isUpdated = articleFileService.updateArticleFile(article, files, articleFileDtos);
+        boolean isUpdated = articleFileService.updateArticleFile(files, articleFileDtos);
         //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
         if (isUpdated) {
             for (ArticleFileDto articleFile : articleFileDtos) {
@@ -250,6 +250,7 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
+        articleFileService.deleteArticleFileByArticleId(articleId);
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
         return "redirect:/model_articles";

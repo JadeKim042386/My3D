@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ArticleFileRepository extends JpaRepository<ArticleFile, Long> {
-
-    Optional<ArticleFile> findByFileName(String fileName);
-
     void deleteByArticleId(Long articleId);
 
     List<ArticleFile> findByArticleId(Long articleId);
+
 }

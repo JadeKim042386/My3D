@@ -3,4 +3,5 @@
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
+    <attr sel=".online_3d_viewer" th:model="${modelPath} + 'model.stl'"/>
 </thlogic>

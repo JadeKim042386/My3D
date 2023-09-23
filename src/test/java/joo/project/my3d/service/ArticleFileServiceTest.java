@@ -1,10 +1,12 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleFileRepository;
+import joo.project.my3d.service.aws.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.util.List;
 
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 
 @ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 모델 파일")
@@ -29,11 +30,7 @@ class ArticleFileServiceTest {
 
     @InjectMocks private ArticleFileService articleFileService;
     @Mock private ArticleFileRepository articleFileRepository;
-
-    @BeforeEach
-    void beforeEach() throws IllegalAccessException {
-        FieldUtils.writeField(articleFileService, "absModelPath", "./", true);
-    }
+    @Mock private S3Service s3Service;
 
     @DisplayName("모델 파일 저장")
     @Test
@@ -41,19 +38,21 @@ class ArticleFileServiceTest {
         // Given
         Article article = Fixture.getArticle();
         MockMultipartFile file = Fixture.getMultipartFile();
+        ArticleFile articleFile = Fixture.getArticleFile(article);
+        given(articleFileRepository.save(any(ArticleFile.class))).willReturn(articleFile);
         // When
         articleFileService.saveArticleFile(article, file);
         // Then
+        then(articleFileRepository).should().save(any(ArticleFile.class));
     }
 
     @DisplayName("모델 파일 수정 - 파일 변경")
     @Test
-    void updateArticleFile() throws IOException {
+    void updateArticleFile() {
         // Given
         ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
-        Article article = Fixture.getArticle();
         // When
-        articleFileService.updateArticleFile(article, List.of(), List.of(articleFile));
+        articleFileService.updateArticleFile(List.of(), List.of(articleFile));
         // Then
     }
 
@@ -63,9 +62,8 @@ class ArticleFileServiceTest {
         // Given
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
-        Article article = Fixture.getArticle();
         // When
-        articleFileService.updateArticleFile(article, List.of(file), List.of(articleFile));
+        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
         // Then
         then(articleFileRepository).shouldHaveNoInteractions();
     }
