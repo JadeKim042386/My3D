@@ -6,6 +6,7 @@ import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleFileRepository;
+import joo.project.my3d.service.aws.S3Service;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +29,7 @@ import java.util.UUID;
 public class ArticleFileService {
 
     private final ArticleFileRepository articleFileRepository;
-
-    @Value("${model.abs-path}")
-    private String absModelPath;
+    private final S3Service s3Service;
 
     /**
      * article ID로 파일 조회
@@ -49,7 +48,7 @@ public class ArticleFileService {
         String fileName = UUID.randomUUID() + "." + extension;
 
         try {
-            file.transferTo(new File(absModelPath + fileName));
+            s3Service.uploadFile(file, fileName);
             long byteSize = file.getSize();
             articleFileRepository.save(
                 ArticleFile.of(
@@ -61,12 +60,12 @@ public class ArticleFileService {
                 )
             );
         } catch (IOException e) {
-            log.error("File path: {}, MultipartFile: {}", absModelPath + fileName, file);
+            log.error("File path: {}, MultipartFile: {}", fileName, file);
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
         }
     }
 
-    public boolean updateArticleFile(Article article, List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
+    public boolean updateArticleFile(List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
         try {
             //업데이트 여부 확인
             boolean isUpdated = false;
@@ -89,13 +88,19 @@ public class ArticleFileService {
         String fileName = articleFile.getFileName();
 
         //파일 삭제
-        try {
-            Files.delete(Paths.get(absModelPath + fileName));
-            //데이터 삭제
-            articleFileRepository.deleteById(articleFileId);
-        } catch (IOException e) {
-            log.error("File path: {}", absModelPath + fileName);
-            throw new FileException(ErrorCode.FILE_CANT_SAVE);
-        }
+        s3Service.deleteFile(fileName);
+        //데이터 삭제
+        articleFileRepository.deleteById(articleFileId);
+    }
+
+    /**
+     * 게시글을 삭제할때 포함된 모든 파일을 S3에서 삭제
+     */
+    @Transactional
+    public void deleteArticleFileByArticleId(Long articleId) {
+        articleFileRepository.findByArticleId(articleId)
+                .forEach(articleFile ->
+                        s3Service.deleteFile(articleFile.getFileName())
+                );
     }
 }
