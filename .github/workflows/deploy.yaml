@@ -8,7 +8,7 @@ on:
 # 워크플로의 모든 작업 단계에서 사용할 수 있는 변수
 env:
   S3_BUCKET_NAME: my3d-s3
-  RESOURCE_PATH: ./src/main/resources/application.yml
+  RESOURCE_PATH: ./src/main/resources/application-prod.yml
   CODE_DEPLOY_APPLICATION_NAME: CODE-DEPLOY-MY3D
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: CODE-DEPLOY-GROUP-MY3D
 
@@ -32,7 +32,6 @@ jobs:
         with:
           files: ${{ env.RESOURCE_PATH }}
         env:
-          spring.profiles.active: prod
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
