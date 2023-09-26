@@ -17,3 +17,6 @@ hooks:
     - location: deploy_scripts/gh_deploy.sh
       timeout: 60
       runas: ubuntu
+    - location: deploy_scripts/switch.sh
+      timeout: 60
+      runas: ubuntu

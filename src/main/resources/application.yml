@@ -6,10 +6,16 @@ spring:
         - common
         - security
         - mail
-      prod:
+      prod1:
         - common
         - security
         - mail
+        - prod
+      prod2:
+        - common
+        - security
+        - mail
+        - prod
       test:
         - security
         - mail
@@ -103,6 +109,18 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+
+---
+
+spring:
+  config.activate.on-profile: prod1
+server.port: 8080
+
+---
+
+spring:
+  config.activate.on-profile: prod2
+server.port: 8081
 
 ---
 
