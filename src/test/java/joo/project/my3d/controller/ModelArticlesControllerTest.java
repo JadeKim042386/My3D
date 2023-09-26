@@ -36,8 +36,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -130,6 +129,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles"))
@@ -166,6 +166,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name("/model_articles/form"));
@@ -198,6 +199,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name("/model_articles/form"));
@@ -230,6 +232,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name("/model_articles/form"));
@@ -262,6 +265,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name("/model_articles/form"));
@@ -287,6 +291,7 @@ class ModelArticlesControllerTest {
                                 .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name("/model_articles/form"));
@@ -392,6 +397,7 @@ class ModelArticlesControllerTest {
                                 .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("goodOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles"))
@@ -441,6 +447,7 @@ class ModelArticlesControllerTest {
                         post("/model_articles/1/delete")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles"))

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -38,6 +39,7 @@ class ArticleCommentsControllerTest {
                 post("/comments/new")
                         .queryParam("articleId", "1")
                         .with(authentication(authentication))
+                        .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles/1"))
@@ -59,6 +61,7 @@ class ArticleCommentsControllerTest {
                         post("/comments/" + articleCommentId + "/delete")
                                 .queryParam("articleId", String.valueOf(articleId))
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/model_articles/" + articleId))

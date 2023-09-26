@@ -52,7 +52,6 @@ public class SecurityConfig {
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
-                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
@@ -97,7 +96,9 @@ public class SecurityConfig {
                         ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling()
+                .csrf()
+                .and()
+                    .exceptionHandling()
                 .and()
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션이 아닌 JWT를 이용하여 인증 진행
