@@ -58,6 +58,9 @@ public class ModelArticlesController {
     @Value("${aws.s3.url}")
     private String S3Url;
 
+    /**
+     * 게시판 페이지
+     */
     @GetMapping
     public String articles(
             @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
@@ -97,6 +100,9 @@ public class ModelArticlesController {
         return "model_articles/index";
     }
 
+    /**
+     * 게시글 페이지
+     */
     @GetMapping("/{articleId}")
     public String article(
             @PathVariable Long articleId,
