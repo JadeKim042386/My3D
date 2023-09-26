@@ -1,0 +1,19 @@
+spring:
+  config.activate.on-profile: common
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+  thymeleaf3.decoupled-logic: true
+jwt:
+  token:
+    cookie-name: ${JWT_COOKIE_NAME}
+    secret-key: ${JWT_SECRET_KEY} # >= 256bits
+    expired-time-ms: 2592000000
+aws:
+  bucketName: ${S3_BUCKET_NAME}
+  s3:
+    url: ${S3_URL}
