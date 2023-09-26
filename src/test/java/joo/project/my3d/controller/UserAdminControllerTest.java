@@ -31,8 +31,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -83,6 +82,7 @@ class UserAdminControllerTest {
                         .param("detail", "123")
                         .param("street", "강원특별자치도")
                         .param("zipcode", "12345")
+                        .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/user/account"))
@@ -126,6 +126,7 @@ class UserAdminControllerTest {
                                 .param("street", "street")
                                 .param("status", OrderStatus.REQUEST.name())
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/user/orders"))
@@ -164,6 +165,7 @@ class UserAdminControllerTest {
         mvc.perform(
                 post("/user/company")
                         .with(authentication(authentication))
+                        .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/user/company"))

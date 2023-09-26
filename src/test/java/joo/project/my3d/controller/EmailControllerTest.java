@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,6 +46,7 @@ class EmailControllerTest {
                         post("/mail/send_code")
                                 .queryParam("email", email)
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/sign_up"))
@@ -66,6 +68,7 @@ class EmailControllerTest {
                         post("/mail/send_code")
                                 .queryParam("email", email)
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/sign_up"))
@@ -88,6 +91,7 @@ class EmailControllerTest {
         mvc.perform(
                 post("/mail/find_pass")
                         .queryParam("email", email)
+                        .with(csrf())
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/find_pass_success"))
@@ -108,6 +112,7 @@ class EmailControllerTest {
         mvc.perform(
                         post("/mail/find_pass")
                                 .queryParam("email", email)
+                                .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/account/find_pass"))
