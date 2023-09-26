@@ -60,7 +60,8 @@ public class SecurityConfig {
                                 "/",
                                 "/model_articles",
                                 "/guide/materials",
-                                "/guide/printing_process"
+                                "/guide/printing_process",
+                                "/profile"
                         ).permitAll()
                         .mvcMatchers(
                                 "/account/login",
