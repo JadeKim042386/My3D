@@ -109,6 +109,7 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+server.tomcat.use-relative-redirects: true
 
 ---
 
