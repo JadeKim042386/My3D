@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Slf4j
@@ -144,8 +145,12 @@ public class UserAdminController {
     @ResponseBody
     @GetMapping("/alarm/subscribe")
     public SseEmitter subscribe(
+            HttpServletResponse response,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
+        response.setContentType("text/event-stream");
+        response.setCharacterEncoding("UTF-8");
+
         return alarmService.connectAlarm(boardPrincipal.email());
     }
 }
