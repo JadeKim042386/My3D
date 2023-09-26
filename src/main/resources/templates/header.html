@@ -61,12 +61,21 @@
           type: "GET",
           success: function (result) {
             console.log(result);
-            setAlarms(result.result);
+            if (isIterable(result.result)){
+              setAlarms(result.result);
+            }
           },
           error: function (result) {
             console.log(result.responseText);
           }
         });
+      }
+
+      function isIterable(obj) {
+        if (obj == null) {
+          return false;
+        }
+        return typeof obj[Symbol.iterator] === 'function';
       }
 
       function setAlarms(result) {
