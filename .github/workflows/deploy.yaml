@@ -8,8 +8,7 @@ on:
 # 워크플로의 모든 작업 단계에서 사용할 수 있는 변수
 env:
   S3_BUCKET_NAME: my3d-s3
-  RESOURCE_PATH: ./src/main/resources
-  YAML_PATH: ${{ env.RESOURCE_PATH }}/application-common.yml, ${{ env.RESOURCE_PATH }}/application-mail.yml, ${{ env.RESOURCE_PATH }}/application-security.yml
+  YAML_PATH: ./src/main/resources/application-common.yml, ./src/main/resources/application-mail.yml, ./src/main/resources/application-security.yml
   CODE_DEPLOY_APPLICATION_NAME: CODE-DEPLOY-MY3D
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: CODE-DEPLOY-GROUP-MY3D
 
