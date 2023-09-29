@@ -7,6 +7,8 @@
     <attr sel="#login" th:action="@{/account/login}" th:method="post"/>
     <attr sel="#login-error" th:if="${param.error}" th:text="|이메일과 비밀번호가 일치하지 않습니다.|"/>
     <!--OAuth 로그인-->
+    <attr sel="#google-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/google}'|" />
+    <attr sel="#naver-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/naver}'|" />
     <attr sel="#kakao-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/kakao}'|" />
     <!--비밀번호 찾기-->
     <attr sel="#find-pass" th:href="@{/account/find_pass}"/>

@@ -8,11 +8,6 @@ spring:
   jpa:
     open-in-view: false
   thymeleaf3.decoupled-logic: true
-jwt:
-  token:
-    cookie-name: ${JWT_COOKIE_NAME}
-    secret-key: ${JWT_SECRET_KEY} # >= 256bits
-    expired-time-ms: 2592000000
 aws:
   bucketName: ${S3_BUCKET_NAME}
   s3:
