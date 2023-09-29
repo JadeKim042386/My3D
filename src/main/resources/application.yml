@@ -31,9 +31,6 @@ spring:
   devtools.livereload:
     enabled: true
     port: 35730
-logging:
-  level:
-    root: debug
 
 ---
 

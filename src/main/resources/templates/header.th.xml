@@ -19,7 +19,8 @@
     />
     <attr sel="#logout"
           sec:authorize="isAuthenticated()"
-          th:href="@{/account/logout}"
+          th:action="@{/account/logout}"
+          th:method="post"
     />
     <attr sel="#alarmButton" sec:authorize="isAuthenticated()"/>
     <!--유저 계정 관리 링크-->
