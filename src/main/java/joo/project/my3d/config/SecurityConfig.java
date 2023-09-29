@@ -6,8 +6,8 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
-import joo.project.my3d.dto.response.KakaoOauth2Response;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.dto.security.OAuthAttributes;
 import joo.project.my3d.service.UserAccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.UUID;
 
@@ -55,12 +56,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
-                                HttpMethod.GET,
                                 "/",
                                 "/model_articles",
                                 "/guide/materials",
                                 "/guide/printing_process",
-                                "/profile"
+                                "/profile",
+                                "/account/logout"
                         ).permitAll()
                         .mvcMatchers(
                                 "/account/login",
@@ -73,7 +74,6 @@ public class SecurityConfig {
                                 "/mail/find_pass"
                         ).hasRole("ANONYMOUS")
                         .regexMatchers(
-                                "/account/logout",
                                 "/model_articles/[0-9]+",
                                 "/like/[0-9]+.*",
                                 "/comments.*",
@@ -96,9 +96,10 @@ public class SecurityConfig {
                         ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
-                .csrf()
-                .and()
-                    .exceptionHandling()
+                .csrf((csrf) -> csrf
+                        .csrfTokenRepository(new CookieCsrfTokenRepository())
+                )
+                .exceptionHandling()
                 .and()
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션이 아닌 JWT를 이용하여 인증 진행
@@ -117,7 +118,7 @@ public class SecurityConfig {
                     //cookie에서 token을 가져와 authentication 등록
                     .addFilterBefore(
                             new JwtTokenFilter(userAccountService, jwtProperties),
-                            BasicAuthenticationFilter.class)
+                            ExceptionTranslationFilter.class)
                 .build();
     }
 
@@ -130,8 +131,10 @@ public class SecurityConfig {
 
         return userRequest -> {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
-            KakaoOauth2Response kakaoResponse = KakaoOauth2Response.from(oAuth2User.getAttributes());
-            String email = kakaoResponse.email();
+            String registrationId = userRequest.getClientRegistration().getRegistrationId();
+            String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+            OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+            String email = attributes.getEmail();
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
             //회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
@@ -143,7 +146,7 @@ public class SecurityConfig {
                                             UserAccount.of(
                                                     email,
                                                     dummyPassword,
-                                                    kakaoResponse.nickname(),
+                                                    attributes.getName(),
                                                     false,
                                                     UserRole.ANONYMOUS,
                                                     email
