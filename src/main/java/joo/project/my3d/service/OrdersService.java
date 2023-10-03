@@ -68,7 +68,7 @@ public class OrdersService {
             );
             alarmService.send(companyUserAccount.getEmail(), alarm.getId());
         } catch (EntityNotFoundException e) {
-            log.warn("주문 저장 실패! - {}", new OrdersException(ErrorCode.FAILED_SAVE));
+            log.warn("주문 저장 실패! - {}", new OrdersException(ErrorCode.FAILED_SAVE, e));
         }
     }
 
@@ -80,7 +80,7 @@ public class OrdersService {
                 orders.setStatus(dto.status());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("주문 수정 실패! - dto: {} {}", dto, new OrdersException(ErrorCode.ORDERS_NOT_FOUND));
+            log.warn("주문 수정 실패! - dto: {} {}", dto, new OrdersException(ErrorCode.ORDERS_NOT_FOUND, e));
         }
     }
 
