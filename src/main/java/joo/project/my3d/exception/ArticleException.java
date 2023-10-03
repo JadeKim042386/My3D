@@ -8,12 +8,16 @@ import lombok.Getter;
 public class ArticleException extends RuntimeException {
 
     private ErrorCode errorCode;
+    private Exception parentException;
     private String message;
-
 
     public ArticleException(ErrorCode errorCode) {
         this.errorCode = errorCode;
-        this.message = null;
+    }
+
+    public ArticleException(ErrorCode errorCode, Exception parentException) {
+        this.errorCode = errorCode;
+        this.parentException = parentException;
     }
 
     @Override
@@ -21,6 +25,10 @@ public class ArticleException extends RuntimeException {
         if (message == null) {
             return errorCode.getMessage();
         }
-        return String.format("%s. %s", errorCode.getMessage(), message);
+        if (parentException == null) {
+            return String.format("%s. %s", errorCode.getMessage(), message);
+        }
+
+        return String.format("%s. %s. %s", errorCode.getMessage(), message, parentException.getMessage());
     }
 }

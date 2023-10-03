@@ -45,8 +45,8 @@ public class GoodOptionService {
             GoodOption goodOption = dto.toEntity(article);
             return goodOptionRepository.save(goodOption);
         } catch (EntityNotFoundException e) {
-            log.warn("상품옵션 저장 실패! - {}", new GoodOptionException(ErrorCode.FAILED_SAVE));
-            throw new GoodOptionException(ErrorCode.FAILED_SAVE);
+            log.warn("상품옵션 저장 실패! - {}", new GoodOptionException(ErrorCode.FAILED_SAVE, e));
+            throw new GoodOptionException(ErrorCode.FAILED_SAVE, e);
         }
     }
 
@@ -67,7 +67,7 @@ public class GoodOptionService {
                 goodOption.setMaterial(dto.material());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("상품옵션 수정 실패! - dto: {} {}", dto, new GoodOptionException(ErrorCode.GOOD_OPTION_NOT_FOUND));
+            log.warn("상품옵션 수정 실패! - dto: {} {}", dto, new GoodOptionException(ErrorCode.GOOD_OPTION_NOT_FOUND, e));
         }
     }
 

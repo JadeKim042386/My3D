@@ -41,7 +41,7 @@ public class DimensionService {
             Dimension dimension = dto.toEntity(goodOption);
             dimensionRepository.save(dimension);
         } catch (EntityNotFoundException e) {
-            log.warn("치수 저장 실패! - {}", new DimensionException(ErrorCode.FAILED_SAVE));
+            log.warn("치수 저장 실패! - {}", new DimensionException(ErrorCode.FAILED_SAVE, e));
         }
     }
 
@@ -59,7 +59,7 @@ public class DimensionService {
                 dimension.setDimUnit(dto.dimUnit());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("치수 수정 실패! - dto: {} {}", dto, new DimensionException(ErrorCode.DIMENSION_NOT_FOUND));
+            log.warn("치수 수정 실패! - dto: {} {}", dto, new DimensionException(ErrorCode.DIMENSION_NOT_FOUND, e));
         }
     }
 

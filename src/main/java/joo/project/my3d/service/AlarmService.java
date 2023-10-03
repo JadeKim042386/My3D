@@ -29,7 +29,7 @@ public class AlarmService {
                 sseEmitter.send(SseEmitter.event().id(alarmId.toString()).name(ALARM_NAME).data("new alarm"));
             } catch (IOException e) {
                 emitterRepository.delete(email);
-                throw new AlarmException(ErrorCode.ALARM_CONNECT_ERROR);
+                throw new AlarmException(ErrorCode.ALARM_CONNECT_ERROR, e);
             }
         }, () -> log.info("Emitter를 찾을 수 없습니다."));
     }
@@ -43,7 +43,7 @@ public class AlarmService {
         try {
             sseEmitter.send(SseEmitter.event().id("").name(ALARM_NAME).data("connect completed"));
         } catch (IOException e) {
-            throw new AlarmException(ErrorCode.ALARM_CONNECT_ERROR);
+            throw new AlarmException(ErrorCode.ALARM_CONNECT_ERROR, e);
         }
 
         return sseEmitter;

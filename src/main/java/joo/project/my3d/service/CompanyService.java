@@ -41,7 +41,7 @@ public class CompanyService {
         try{
             companyRepository.save(dto.toEntity());
         } catch (EntityNotFoundException e) {
-            log.warn("기업 저장 실패! - {}", new CompanyException(ErrorCode.FAILED_SAVE));
+            log.warn("기업 저장 실패! - {}", new CompanyException(ErrorCode.FAILED_SAVE, e));
         }
     }
 
@@ -56,7 +56,7 @@ public class CompanyService {
                 company.setHomepage(dto.homepage());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("기업 수정 실패! - dto: {} {}", dto, new CompanyException(ErrorCode.COMPANY_NOT_FOUND));
+            log.warn("기업 수정 실패! - dto: {} {}", dto, new CompanyException(ErrorCode.COMPANY_NOT_FOUND, e));
         }
     }
 

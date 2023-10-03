@@ -61,7 +61,7 @@ public class ArticleCommentService {
             );
             alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
         } catch (EntityNotFoundException e) {
-            log.warn("댓글 저장 실패! - {}", new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND));
+            log.warn("댓글 저장 실패! - {}", new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e));
         }
     }
 
@@ -73,7 +73,7 @@ public class ArticleCommentService {
                 articleComment.setContent(dto.content());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("댓글 수정 실패! - dto: {} {}", dto, new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+            log.warn("댓글 수정 실패! - dto: {} {}", dto, new CommentException(ErrorCode.COMMENT_NOT_FOUND, e));
         }
     }
 
