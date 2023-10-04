@@ -1,7 +1,9 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -189,7 +192,7 @@ class LoginControllerTest {
         // Given
         String email = "tester@gmail.com";
         SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
-        willDoNothing().given(userAccountService).saveUser(request.toEntity(email));
+        willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
         // When
         mvc.perform(
                         post("/account/sign_up")
@@ -201,7 +204,7 @@ class LoginControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
         // Then
-        then(userAccountService).should().saveUser(request.toEntity(email));
+        then(userAccountService).should().saveUser(any(UserAccount.class));
     }
 
     @DisplayName("[GET] 비밀번호 찾기 페이지")

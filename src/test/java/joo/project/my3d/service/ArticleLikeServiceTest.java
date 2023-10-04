@@ -41,7 +41,7 @@ class ArticleLikeServiceTest {
         Alarm alarm = Fixture.getAlarm(userAccount);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        given(userAccountRepository.getReferenceById(userId)).willReturn(articleLike.getUserAccount());
+        given(userAccountRepository.getReferenceByEmail(userId)).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
         given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
         willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
@@ -49,7 +49,7 @@ class ArticleLikeServiceTest {
         articleLikeService.addArticleLike(articleId, userId);
         // Then
         then(articleRepository).should().getReferenceById(articleId);
-        then(userAccountRepository).should().getReferenceById(userId);
+        then(userAccountRepository).should().getReferenceByEmail(userId);
         then(articleLikeRepository).should().save(any(ArticleLike.class));
         then(alarmRepository).should().save(any(Alarm.class));
         then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));

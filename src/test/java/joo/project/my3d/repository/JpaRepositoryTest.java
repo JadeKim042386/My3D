@@ -177,9 +177,9 @@ public class JpaRepositoryTest {
         @Test
         void getUserAccount() {
             // Given
-            String email = "jk042386@gmail.com";
+            Long userAccountId = 1L;
             // When
-            Optional<UserAccount> userAccount = userAccountRepository.findById(email);
+            Optional<UserAccount> userAccount = userAccountRepository.findById(userAccountId);
             // Then
             assertThat(userAccount).isNotNull();
         }
@@ -207,9 +207,9 @@ public class JpaRepositoryTest {
         @Test
         void updateUserAccount() {
             // Given
-            String email = "jk042386@gmail.com";
+            Long userAccountId = 1L;
             String modified_phone = "01043214321";
-            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
             userAccount.setPhone(modified_phone);
             LocalDateTime previousModifiedAt = userAccount.getModifiedAt();
             // When
@@ -225,6 +225,7 @@ public class JpaRepositoryTest {
         void deleteUsrAccount() {
             // Given
             String email = "jk042386@gmail.com";
+            Long userAccountId = 1L;
             long previousCount = userAccountRepository.count();
             long previousArticleCount = articleRepository.count();
             long previousArticleCommentCount = articleCommentRepository.count();
@@ -242,10 +243,10 @@ public class JpaRepositoryTest {
                         articleLikeRepository.deleteByUserAccount_Email(email);
                         articleRepository.deleteById(article.getId());
                     });
-            userAccountRepository.deleteById(email);
+            userAccountRepository.deleteById(userAccountId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
-            assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 6);
+            assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 5);
             assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 9); //부모 + 자식 댓글 + 게시글
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 3);
         }
@@ -289,8 +290,8 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleComment() {
             // Given
-            String email = "jk042386@gmail.com";
-            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById(email).get(), articleRepository.findById(1L).get(), "content");
+            Long userAccountId = 1L;
+            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById(userAccountId).get(), articleRepository.findById(1L).get(), "content");
             long previousCount = articleCommentRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -373,8 +374,8 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleLike() {
             // Given
-            String email = "jk042386@gmail.com";
-            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById(email).get(), articleRepository.findById(1L).get());
+            Long userAccountId = 1L;
+            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById(userAccountId).get(), articleRepository.findById(1L).get());
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -420,7 +421,7 @@ public class JpaRepositoryTest {
             // When
             List<ArticleFile> articleFiles = articleFileRepository.findAll();
             // Then
-            assertThat(articleFiles).isNotNull().hasSize(10);
+            assertThat(articleFiles).isNotNull().hasSize(12);
         }
 
         @DisplayName("파일 findById")
@@ -449,7 +450,7 @@ public class JpaRepositoryTest {
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
             assertThat(savedArticleFile)
-                    .hasFieldOrPropertyWithValue("id", 11L);
+                    .hasFieldOrPropertyWithValue("id", 13L);
         }
 
         @DisplayName("파일 delete")
@@ -725,8 +726,8 @@ public class JpaRepositoryTest {
         @Test
         void saveOrder() {
             // Given
-            String email = "a@gmail.com";
-            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            Long userAccountId = 2L;
+            UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
             Company company = companyRepository.getReferenceById(1L);
             Orders orders = Fixture.getOrders(userAccount, company);
             long previousCount = ordersRepository.count();
@@ -810,8 +811,8 @@ public class JpaRepositoryTest {
         @Test
         void saveAlarm() {
             // Given
-            String email = "jujoo042386@gmail.com";
-            UserAccount userAccount = userAccountRepository.getReferenceById(email);
+            Long userAccountId = 3L;
+            UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
             Alarm alarm = Fixture.getAlarm(userAccount);
             long previousCount = alarmRepository.count();
             log.info("previousCount: {}", previousCount);

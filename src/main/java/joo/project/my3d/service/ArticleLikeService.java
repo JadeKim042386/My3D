@@ -27,7 +27,7 @@ public class ArticleLikeService {
     @Transactional
     public void addArticleLike(Long articleId, String userId) {
         Article article = articleRepository.getReferenceById(articleId);
-        UserAccount userAccount = userAccountRepository.getReferenceById(userId);
+        UserAccount userAccount = userAccountRepository.getReferenceByEmail(userId);
         ArticleLike articleLike = ArticleLike.of(userAccount, article);
 
         article.addLike();

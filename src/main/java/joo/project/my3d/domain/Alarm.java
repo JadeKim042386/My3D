@@ -36,7 +36,7 @@ public class Alarm extends AuditingFields {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "email")
+    @JoinColumn(name = "userAccountId")
     private UserAccount userAccount; //알람을 받는 유저
 
     protected Alarm() {

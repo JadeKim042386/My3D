@@ -50,7 +50,7 @@ public class OrdersService {
     @Transactional
     public void saveOrders(OrdersDto dto) {
         try{
-            UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().email());
+            UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.userAccountDto().email());
             Company company = companyRepository.getReferenceById(dto.companyDto().id());
             Orders orders = dto.toEntity(userAccount, company);
             ordersRepository.save(orders);

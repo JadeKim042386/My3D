@@ -38,7 +38,7 @@ public class UserAccountService {
     }
 
     public Optional<UserAccountDto> searchUser(String email) {
-        return userAccountRepository.findById(email).map(UserAccountDto::from);
+        return userAccountRepository.findByEmail(email).map(UserAccountDto::from);
     }
 
     public CompanyDto getCompany(String email) {
@@ -89,7 +89,7 @@ public class UserAccountService {
      */
     @Transactional
     public void changePassword(String email, String changedPassword) {
-        UserAccount userAccount = userAccountRepository.getReferenceById(email);
+        UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
         userAccount.setUserPassword(encoder.encode(changedPassword));
     }
 
@@ -98,7 +98,7 @@ public class UserAccountService {
      */
     @Transactional
     public void updateUser(UserAccountDto dto) {
-        UserAccount userAccount = userAccountRepository.getReferenceById(dto.email());
+        UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
         if (dto.nickname() != null) {
             userAccount.setNickname(dto.nickname());
         }
