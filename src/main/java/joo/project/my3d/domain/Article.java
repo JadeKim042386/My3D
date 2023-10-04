@@ -29,7 +29,7 @@ public class Article extends AuditingFields {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "email")
+    @JoinColumn(name = "userAccountId")
     private UserAccount userAccount;
 
     @Setter

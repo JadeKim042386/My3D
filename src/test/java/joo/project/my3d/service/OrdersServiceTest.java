@@ -71,7 +71,7 @@ class OrdersServiceTest {
         FieldUtils.writeField(alarm, "id", 1L, true);
         Company company = ordersDto.companyDto().toEntity();
         FieldUtils.writeField(company, "id", 1L, true);
-        given(userAccountRepository.getReferenceById(ordersDto.userAccountDto().email())).willReturn(ordersDto.userAccountDto().toEntity());
+        given(userAccountRepository.getReferenceByEmail(ordersDto.userAccountDto().email())).willReturn(ordersDto.userAccountDto().toEntity());
         given(companyRepository.getReferenceById(ordersDto.companyDto().id())).willReturn(company);
         given(ordersRepository.save(any(Orders.class))).willReturn(ordersDto.toEntity(userAccount, company));
         given(userAccountRepository.findByCompanyId(anyLong())).willReturn(Optional.of(userAccount));
@@ -80,7 +80,7 @@ class OrdersServiceTest {
         // When
         ordersService.saveOrders(ordersDto);
         // Then
-        then(userAccountRepository).should().getReferenceById(ordersDto.userAccountDto().email());
+        then(userAccountRepository).should().getReferenceByEmail(ordersDto.userAccountDto().email());
         then(companyRepository).should().getReferenceById(ordersDto.companyDto().id());
         then(ordersRepository).should().save(any(Orders.class));
         then(userAccountRepository).should().findByCompanyId(anyLong());

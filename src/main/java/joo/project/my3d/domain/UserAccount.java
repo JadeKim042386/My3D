@@ -17,14 +17,19 @@ import static javax.persistence.FetchType.LAZY;
 @Table(
         name = "user_account",
         indexes = {
-                @Index(columnList = "email"),
+                @Index(columnList = "id"),
+                @Index(columnList = "email", unique = true),
                 @Index(columnList = "nickname", unique = true)
         }
 )
 @Entity
 public class UserAccount extends AuditingFields {
     @Id
-    @Column(length = 100)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Setter
+    @Column(length = 100, nullable = false)
     private String email;
 
     @Setter
@@ -125,11 +130,11 @@ public class UserAccount extends AuditingFields {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserAccount that)) return false;
-        return this.getEmail() != null && Objects.equals(this.getEmail(), that.getEmail());
+        return this.getId() != null && Objects.equals(this.getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getEmail());
+        return Objects.hash(this.getId());
     }
 }

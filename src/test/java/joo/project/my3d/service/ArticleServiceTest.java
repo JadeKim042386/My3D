@@ -199,7 +199,7 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount userAccount = Fixture.getUserAccount();
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().email())).willReturn(userAccount);
+        given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(userAccount);
         // When
         articleService.updateArticle(1L, articleDto);
         // Then
@@ -207,7 +207,7 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("title", articleDto.title())
                 .hasFieldOrPropertyWithValue("content", articleDto.content());
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().email());
+        then(userAccountRepository).should().getReferenceByEmail(articleDto.userAccountDto().email());
     }
 
     @DisplayName("[예외-없는 게시글] 게시글 수정")
@@ -232,14 +232,14 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceById(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);
+        given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceById(articleDto.userAccountDto().email());
+        then(userAccountRepository).should().getReferenceByEmail(articleDto.userAccountDto().email());
     }
 
     @DisplayName("게시글 삭제")

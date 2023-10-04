@@ -67,7 +67,7 @@ public class ArticleService {
     public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
             Article article = articleRepository.getReferenceById(articleId); //작성자
-            UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().email()); //수정자
+            UserAccount userAccount = userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email()); //수정자
             //작성자와 수정자가 같은지 확인
             if (article.getUserAccount().equals(userAccount)) {
                 if (articleDto.title() != null) {

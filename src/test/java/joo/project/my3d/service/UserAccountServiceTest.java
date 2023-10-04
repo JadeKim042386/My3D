@@ -50,11 +50,11 @@ class UserAccountServiceTest {
     void getUserAccount() {
         // Given
         String email = "a@gmail.com";
-        given(userAccountRepository.findById(anyString())).willReturn(Optional.empty());
+        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.empty());
         // When
         userAccountService.searchUser(email);
         // Then
-        then(userAccountRepository).should().findById(anyString());
+        then(userAccountRepository).should().findByEmail(anyString());
     }
 
     @DisplayName("기업 조회")
@@ -62,11 +62,11 @@ class UserAccountServiceTest {
     void getCompany() {
         // Given
         UserAccount userAccount = Fixture.getUserAccount();
-        given(userAccountRepository.findById(anyString())).willReturn(Optional.of(userAccount));
+        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(userAccount));
         // When
         userAccountService.getCompany(userAccount.getEmail());
         // Then
-        then(userAccountRepository).should().findById(anyString());
+        then(userAccountRepository).should().findByEmail(anyString());
     }
 
     @DisplayName("알람 조회")
@@ -112,11 +112,11 @@ class UserAccountServiceTest {
         // Given
         String email = "jk042386@gmail.com";
         String changedPassword = "changedPassword";
-        given(userAccountRepository.getReferenceById(email)).willReturn(Fixture.getUserAccount());
+        given(userAccountRepository.getReferenceByEmail(email)).willReturn(Fixture.getUserAccount());
         // When
         userAccountService.changePassword(email, changedPassword);
         // Then
-        then(userAccountRepository).should().getReferenceById(email);
+        then(userAccountRepository).should().getReferenceByEmail(email);
     }
 
     @DisplayName("회원 정보 수정")
@@ -125,10 +125,10 @@ class UserAccountServiceTest {
         // Given
         String email = "jk042386@gmail.com";
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        given(userAccountRepository.getReferenceById(email)).willReturn(userAccountDto.toEntity());
+        given(userAccountRepository.getReferenceByEmail(email)).willReturn(userAccountDto.toEntity());
         // When
         userAccountService.updateUser(userAccountDto);
         // Then
-        then(userAccountRepository).should().getReferenceById(email);
+        then(userAccountRepository).should().getReferenceByEmail(email);
     }
 }

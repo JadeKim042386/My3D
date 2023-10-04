@@ -13,6 +13,7 @@ import java.util.Objects;
  * 1. BoardPrincipal 로 변환
  */
 public record UserAccountDto(
+        Long id,
         String email,
         String userPassword,
         String nickname,
@@ -30,15 +31,22 @@ public record UserAccountDto(
     /**
      * 모든 필드 주입
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto address, boolean signUp, UserRole userRole, CompanyDto company, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new UserAccountDto(email, userPassword, nickname, phone, address, signUp, userRole, company, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto address, boolean signUp, UserRole userRole, CompanyDto company, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new UserAccountDto(id, email, userPassword, nickname, phone, address, signUp, userRole, company, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     /**
      * 생성일시, 생성자, 수정일시, 수정자, 회사 정보 제외 (개인 사용자)
      */
+    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole) {
+        return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, signUp, userRole, CompanyDto.of(), null, null, null, null);
+    }
+
+    /**
+     * boardPrincipal -> DTO
+     */
     public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole) {
-        return UserAccountDto.of(email, userPassword, nickname, phone, addressDto, signUp, userRole, CompanyDto.of(), null, null, null, null);
+        return UserAccountDto.of(null, email, userPassword, nickname, phone, addressDto, signUp, userRole, CompanyDto.of(), null, null, null, null);
     }
 
     /**
@@ -46,14 +54,14 @@ public record UserAccountDto(
      * 생성일시, 생성자, 수정일시, 수정자, 비밀번호, 가입여부, 회사 정보 제외 (개인 사용자)
      */
     public static UserAccountDto of(String email, String nickname, String phone, AddressDto addressDto) {
-        return UserAccountDto.of(email, null, nickname, phone, addressDto, true, null, CompanyDto.of(), null, null, null, null);
+        return UserAccountDto.of(null, email, null, nickname, phone, addressDto, true, null, CompanyDto.of(), null, null, null, null);
     }
 
     /**
      * 생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole, CompanyDto company) {
-        return UserAccountDto.of(email, userPassword, nickname, phone, addressDto, signUp, userRole, company, null, null, null, null);
+    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, boolean signUp, UserRole userRole, CompanyDto company) {
+        return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, signUp, userRole, company, null, null, null, null);
     }
 
     public static UserAccountDto from(UserAccount userAccount) {
@@ -61,6 +69,7 @@ public record UserAccountDto(
         Company company = userAccount.getCompany();
 
         return UserAccountDto.of(
+                userAccount.getId(),
                 userAccount.getEmail(),
                 userAccount.getUserPassword(),
                 userAccount.getNickname(),
@@ -80,6 +89,7 @@ public record UserAccountDto(
         Company company = userAccount.getCompany();
 
         return UserAccountDto.of(
+                userAccount.getId(),
                 userAccount.getEmail(),
                 encoder.encode(userAccount.getUserPassword()),
                 userAccount.getNickname(),

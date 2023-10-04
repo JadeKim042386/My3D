@@ -2,11 +2,14 @@ package joo.project.my3d.fixture;
 
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class Fixture {
 
     public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
@@ -46,7 +49,14 @@ public class Fixture {
     }
 
     public static UserAccount getUserAccount() {
-        return Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
+        UserAccount userAccount = Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
+        try {
+            FieldUtils.writeField(userAccount, "id", 1L, true);
+        } catch (IllegalAccessException e) {
+            log.error("UserAccount에 id를 추가할 수 없습니다.");
+        }
+
+        return userAccount;
     }
 
     public static ArticleFile getArticleFile(Article article) {
