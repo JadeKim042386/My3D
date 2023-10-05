@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -28,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,16 +48,27 @@ public class LoginController {
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpServletRequest request) {
+        String referer = request.getHeader("Referer"); //이전 URL
+        String refererPath; //엔드포인트
+        try {
+            refererPath = new URL(referer).getPath();
+        } catch (MalformedURLException e) {
+            refererPath = "/";
+            log.warn("로그인 이전 URL이 잘못되었습니다. - {}", referer);
+        }
+        request.getSession().setAttribute("prevPage", refererPath);
+
         return "account/login";
     }
 
     @PostMapping("/login")
     public String requestLogin(
-            UserLoginRequest request,
+            UserLoginRequest loginRequest,
+            HttpServletRequest request,
             HttpServletResponse response
     ) {
-        String token = userAccountService.login(request.email(), request.password());
+        String token = userAccountService.login(loginRequest.email(), loginRequest.password());
         Cookie cookie = CookieUtils.createCookie(
                 jwtProperties.cookieName(),
                 token,
@@ -65,7 +77,7 @@ public class LoginController {
         );
         response.addCookie(cookie);
 
-        return "redirect:/";
+        return "redirect:" + request.getSession().getAttribute("prevPage");
     }
 
     @PostMapping("/logout")
