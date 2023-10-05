@@ -27,6 +27,7 @@ CREATE TABLE `user_account` (
 	`modified_by`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`id`),
     UNIQUE (`nickname`),
+    UNIQUE (`email`),
     FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
@@ -43,7 +44,7 @@ Create TABLE `price` (
 
 CREATE TABLE `article` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
-	`user_account_id`   varchar(50)	NOT NULL,
+	`user_account_id`   bigint	NOT NULL,
     `price_id`   bigint  NOT NULL,
 	`title`	varchar(255)	NOT NULL,
     `summary`	varchar(255)	NOT NULL,
@@ -78,7 +79,7 @@ CREATE TABLE `article_file` (
 
 CREATE TABLE `article_comment` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id`   varchar(50)	NOT NULL,
+    `user_account_id`   bigint	NOT NULL,
 	`article_id`	bigint	NOT NULL,
 	`content`	varchar(255)	NOT NULL,
 	`parent_comment_id`	bigint	NULL,
@@ -94,7 +95,7 @@ CREATE TABLE `article_comment` (
 CREATE TABLE `article_like` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
 	`article_id`	bigint	NOT NULL,
-	`user_account_id`	varchar(50)	NOT NULL,
+	`user_account_id`	bigint	NOT NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
 	`created_by`	varchar(100)	NOT NULL,
@@ -135,7 +136,7 @@ CREATE TABLE `dimension` (
 
 CREATE TABLE `orders` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id`	varchar(50)	NOT NULL,
+    `user_account_id`	bigint	NOT NULL,
     `company_id` bigint	NOT NULL,
     `status` varchar(10) NOT NULL,
     `product_name` varchar(255) NOT NULL,
@@ -156,7 +157,7 @@ CREATE TABLE `alarm` (
      `alarm_type` varchar(50) NOT NULL,
      `from_user_nickname` varchar(50) NOT NULL,
      `target_id` bigint NOT NULL,
-     `user_account_id` varchar(50)	NOT NULL,
+     `user_account_id` bigint	NOT NULL,
      `is_checked` boolean DEFAULT false NOT NULL,
      `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
      `modified_at`	datetime	NOT NULL,
