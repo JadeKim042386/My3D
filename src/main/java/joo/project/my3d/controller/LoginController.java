@@ -8,6 +8,7 @@ import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
 import joo.project.my3d.dto.response.SignUpResponse;
+import joo.project.my3d.exception.UserAccountException;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.utils.CookieUtils;
@@ -23,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -66,18 +68,25 @@ public class LoginController {
     public String requestLogin(
             UserLoginRequest loginRequest,
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            Model model
     ) {
-        String token = userAccountService.login(loginRequest.email(), loginRequest.password());
-        Cookie cookie = CookieUtils.createCookie(
-                jwtProperties.cookieName(),
-                token,
-                (int) (jwtProperties.expiredTimeMs() / 1000),
-                "/"
-        );
-        response.addCookie(cookie);
+        try {
+            String token = userAccountService.login(loginRequest.email(), loginRequest.password());
 
-        return "redirect:" + request.getSession().getAttribute("prevPage");
+            Cookie cookie = CookieUtils.createCookie(
+                    jwtProperties.cookieName(),
+                    token,
+                    (int) (jwtProperties.expiredTimeMs() / 1000),
+                    "/"
+            );
+            response.addCookie(cookie);
+
+            return "redirect:" + request.getSession().getAttribute("prevPage");
+        } catch (UserAccountException e) {
+            model.addAttribute("loginFailedMessage", e.getErrorCodeMessage());
+            return "account/login";
+        }
     }
 
     @PostMapping("/logout")

@@ -14,6 +14,7 @@ import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -117,19 +119,23 @@ public class UserAccountService {
      * 비밀번호 일치 확인 후 토큰 생성
      */
     public String login(String email, String password) {
-        BoardPrincipal principal = getUserPrincipal(email);
+        try {
+            BoardPrincipal principal = getUserPrincipal(email);
 
-        //비밀번호 일치 확인
-        if (!encoder.matches(password, principal.getPassword())) {
-            throw new UserAccountException(ErrorCode.INVALID_PASSWORD);
+            //비밀번호 일치 확인
+            if (!encoder.matches(password, principal.getPassword())) {
+                throw new UserAccountException(ErrorCode.INVALID_PASSWORD);
+            }
+
+            //토큰 생성 후 반환
+            return JwtTokenUtils.generateToken(
+                    email,
+                    principal.nickname(),
+                    jwtProperties.secretKey(),
+                    jwtProperties.expiredTimeMs()
+            );
+        } catch (UsernameNotFoundException e) {
+            throw new UserAccountException(ErrorCode.INVALID_USER);
         }
-
-        //토큰 생성 후 반환
-        return JwtTokenUtils.generateToken(
-                email,
-                principal.nickname(),
-                jwtProperties.secretKey(),
-                jwtProperties.expiredTimeMs()
-        );
     }
 }

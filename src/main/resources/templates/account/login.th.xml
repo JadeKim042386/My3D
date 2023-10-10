@@ -5,7 +5,7 @@
     <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
     <!--이메일로 시작하기-->
     <attr sel="#login" th:action="@{/account/login}" th:method="post"/>
-    <attr sel="#login-error" th:if="${param.error}" th:text="|이메일과 비밀번호가 일치하지 않습니다.|"/>
+    <attr sel="#login-error" th:if="${loginFailedMessage}" th:text="${loginFailedMessage}"/>
     <!--OAuth 로그인-->
     <attr sel="#google-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/google}'|" />
     <attr sel="#naver-login" sec:authorize="!isAuthenticated()" th:onclick="|location.href = '@{/oauth2/authorization/naver}'|" />
