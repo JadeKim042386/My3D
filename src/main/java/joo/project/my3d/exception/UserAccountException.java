@@ -33,4 +33,8 @@ public class UserAccountException extends RuntimeException {
 
         return String.format("%s. %s. %s", errorCode.getMessage(), message, parentException.getMessage());
     }
+
+    public String getErrorCodeMessage() {
+        return errorCode.getMessage();
+    }
 }
