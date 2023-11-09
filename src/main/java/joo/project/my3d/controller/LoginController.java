@@ -24,7 +24,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -49,21 +48,28 @@ public class LoginController {
     private String serviceKey;
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
+    /**
+     * 로그인 페이지 요청
+     * @throws MalformedURLException 로그인 이전 페이지의 URL이 잘못되었을 경우 발생하는 예외
+     */
     @GetMapping("/login")
     public String login(HttpServletRequest request) {
-        String referer = request.getHeader("Referer"); //이전 URL
-        String refererPath; //엔드포인트
         try {
-            refererPath = new URL(referer).getPath();
+            String referer = request.getHeader("Referer"); //이전 URL
+            String refererPath = new URL(referer).getPath();
+            request.getSession().setAttribute("prevPage", refererPath);
+            return "account/login";
         } catch (MalformedURLException e) {
-            refererPath = "/";
-            log.warn("로그인 이전 URL이 잘못되었습니다. - {}", referer);
+            log.error("로그인 이전 페이지의 URL이 잘못되었습니다; {}", e.getMessage());
+            return "/";
         }
-        request.getSession().setAttribute("prevPage", refererPath);
-
-        return "account/login";
     }
 
+    /**
+     * 로그인 요청
+     * @param loginRequest 로그인 폼에 입력된 이메일, 비밀번호를 담은 DTO
+     * @throws UserAccountException 로그인에 실패할 경우 발생하는 예외
+     */
     @PostMapping("/login")
     public String requestLogin(
             UserLoginRequest loginRequest,
@@ -84,6 +90,7 @@ public class LoginController {
 
             return "redirect:" + request.getSession().getAttribute("prevPage");
         } catch (UserAccountException e) {
+            log.error("로그인 실패 - {}", e.getMessage());
             model.addAttribute("loginFailedMessage", e.getErrorCodeMessage());
             return "account/login";
         }

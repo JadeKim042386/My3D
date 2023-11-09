@@ -1,8 +1,11 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.UserAccountException;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.AlarmRepository;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -130,5 +135,18 @@ class UserAccountServiceTest {
         userAccountService.updateUser(userAccountDto);
         // Then
         then(userAccountRepository).should().getReferenceByEmail(email);
+    }
+
+    @DisplayName("로그인 - 주어진 이메일에 해당하는 유저가 존재하지 않을 경우")
+    @Test
+    void login() {
+        // Given
+        String email = "abc@gmail.com";
+        String password = "XX";
+        // When
+        assertThatThrownBy(() -> userAccountService.login(email, password))
+                .isInstanceOf(UserAccountException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_USER);
+        // Then
     }
 }
