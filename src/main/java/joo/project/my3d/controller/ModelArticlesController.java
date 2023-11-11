@@ -265,13 +265,21 @@ public class ModelArticlesController {
         return "redirect:/model_articles";
     }
 
+    /**
+     * 게시글 삭제 요청
+     */
     @PostMapping("{articleId}/delete")
     public String deleteArticle(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleFileService.deleteArticleFileByArticleId(articleId);
-        articleService.deleteArticle(articleId, boardPrincipal.email());
+        try {
+            articleFileService.deleteArticleFileByArticleId(articleId);
+            articleService.deleteArticle(articleId, boardPrincipal.email());
+        } catch (RuntimeException e) {
+            log.error("게시글 삭제 실패 - {}", e);
+            return "redirect:/model_articles/" + articleId;
+        }
 
         return "redirect:/model_articles";
     }
