@@ -12,7 +12,7 @@ public record SignUpResponse(
         String detailAddress
 ) {
 
-    public static SignUpResponse of(UserRole userRole, String companyName, String nickname, String password, String zipcode, String address, String detailAddress) {
-        return new SignUpResponse(userRole, companyName, nickname, password, zipcode, address, detailAddress);
+    public static SignUpResponse of(UserRole userRole, String nickname) {
+        return new SignUpResponse(userRole, null, nickname, null, null, null, null);
     }
 }
