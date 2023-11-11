@@ -53,6 +53,9 @@ public class ArticleService {
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
+    /**
+     * @throws ArticleException 게시글에 카테고리를 지정하지 않았을 경우 발생하는 예외
+     */
     @Transactional
     public Article saveArticle(ArticleDto articleDto) {
         //모델 게시글일 경우 Category가 있어야함

@@ -34,6 +34,9 @@ public class DimensionService {
                 .toList();
     }
 
+    /**
+     * @throws DimensionException 치수 저장 실패 예외
+     */
     @Transactional
     public void saveDimension(DimensionDto dto) {
         try{
@@ -41,7 +44,7 @@ public class DimensionService {
             Dimension dimension = dto.toEntity(goodOption);
             dimensionRepository.save(dimension);
         } catch (EntityNotFoundException e) {
-            log.warn("치수 저장 실패! - {}", new DimensionException(ErrorCode.FAILED_SAVE, e));
+            throw new DimensionException(ErrorCode.FAILED_SAVE, e);
         }
     }
 

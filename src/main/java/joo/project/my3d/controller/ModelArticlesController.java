@@ -12,13 +12,16 @@ import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.GoodOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
-import joo.project.my3d.dto.request.DimensionRequest;
 import joo.project.my3d.dto.request.GoodOptionRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.response.GoodOptionResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.ArticleException;
+import joo.project.my3d.exception.DimensionException;
+import joo.project.my3d.exception.FileException;
+import joo.project.my3d.exception.GoodOptionException;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +62,7 @@ public class ModelArticlesController {
     private String S3Url;
 
     /**
-     * 게시판 페이지
+     * 게시판 페이지 요청
      */
     @GetMapping
     public String articles(
@@ -81,6 +84,7 @@ public class ModelArticlesController {
                     articles
                     .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
                     .map(articleDto -> {
+                        //3D 모델 파일만 필터링
                         ArticleFileDto articleFileDto = articleFileService.getArticleFiles(articleDto.id())
                                 .stream().filter(ArticleFileDto::isModelFile)
                                 .toList().get(0);
@@ -101,7 +105,7 @@ public class ModelArticlesController {
     }
 
     /**
-     * 게시글 페이지
+     * 게시글 페이지 요청
      */
     @GetMapping("/{articleId}")
     public String article(
@@ -129,12 +133,15 @@ public class ModelArticlesController {
 
     @GetMapping("/form")
     public String articleForm(Model model) {
-        model.addAttribute("article", ArticleFormResponse.of(null, null, List.of(), null, null, null, null, null, null));
+        model.addAttribute("article", ArticleFormResponse.of());
         model.addAttribute("formStatus", FormStatus.CREATE);
         model.addAttribute("categories", ArticleCategory.values());
         return "model_articles/form";
     }
 
+    /**
+     * 게시글 저장 요청
+     */
     @PostMapping("/form")
     public String postNewArticle(
             @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
@@ -149,30 +156,37 @@ public class ModelArticlesController {
             return "/model_articles/form";
         }
 
-        //게시글 저장
-        Article article = articleService.saveArticle(
-                articleFormRequest.toArticleDto(
-                        boardPrincipal.toDto(),
-                        ArticleType.MODEL
-                )
-        );
-        //파일 저장
-        List<MultipartFile> files = articleFormRequest.getFiles();
-        for (MultipartFile file : files) {
-            if (file.getSize() > 0) {
-                articleFileService.saveArticleFile(article, file);
+        try {
+            //게시글 저장
+            Article article = articleService.saveArticle(
+                    articleFormRequest.toArticleDto(
+                            boardPrincipal.toDto(),
+                            ArticleType.MODEL
+                    )
+            );
+            //파일 저장
+            List<MultipartFile> files = articleFormRequest.getFiles();
+            for (MultipartFile file : files) {
+                if (file.getSize() > 0) {
+                    articleFileService.saveArticleFile(article, file);
+                }
             }
-        }
-        //상품 옵션 저장
-        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
-        for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
-            GoodOptionDto goodOptionDto = goodOptionRequest.toDto(article.getId());
-            GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionDto);
-            //치수 저장
-            List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
-            for (DimensionDto dimensionDto : dimensionDtos) {
-                dimensionService.saveDimension(dimensionDto);
+            //상품 옵션 저장
+            List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
+            for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
+                GoodOptionDto goodOptionDto = goodOptionRequest.toDto(article.getId());
+                GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionDto);
+                //치수 저장
+                List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+                for (DimensionDto dimensionDto : dimensionDtos) {
+                    dimensionService.saveDimension(dimensionDto);
+                }
             }
+        } catch (RuntimeException e) {
+            log.error("게시글 추가 실패 - {}", e);
+            model.addAttribute("formStatus", FormStatus.CREATE);
+            model.addAttribute("categories", ArticleCategory.values());
+            return "/model_articles/form";
         }
 
         return "redirect:/model_articles";

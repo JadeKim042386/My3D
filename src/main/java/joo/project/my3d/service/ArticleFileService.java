@@ -40,6 +40,9 @@ public class ArticleFileService {
                 .toList();
     }
 
+    /**
+     * @throws FileException 파일 저장 실패 예외
+     */
     @Transactional
     public void saveArticleFile(Article article, MultipartFile file) {
         //파일 저장(UUID를 파일명으로 저장)
