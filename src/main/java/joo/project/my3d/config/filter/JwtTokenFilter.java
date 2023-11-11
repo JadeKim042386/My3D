@@ -2,6 +2,8 @@ package joo.project.my3d.config.filter;
 
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.JwtTokenException;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import java.util.NoSuchElementException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,6 +22,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,8 +42,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         //쿠키에서 JWT 토큰을 가져옴 (이후 프론트엔드에서 토큰을 관리할 경우 이 부분을 수정)
-        header = getJwtTokenFromCookie(request, header);
+        if (header == null) {
+            header = getJwtTokenFromCookie(request);
+        }
 
         try {
             if(header == null || !header.startsWith("Bearer ")) {
@@ -74,20 +81,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtTokenFromCookie(HttpServletRequest request, String header) {
-        if (header == null) {
-            if (request.getCookies() == null) {
-                log.error("Error occurs while getting header, header is null or invalid {}", request.getRequestURL());
-                return null;
-            }
-            Cookie jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
-            if (jwtTokenCookie == null) {
-                log.error("Error occurs while getting header, jwtToken is null or invalid {}", request.getRequestURL());
-                return null;
-            }
-
-            header = "Bearer " + jwtTokenCookie.getValue();
+    /**
+     * header에 Authorization 정보가 존재하지 않을 경우 쿠키로부터 JWT 토큰을 얻는다.
+     * @throws NullPointerException JWT 토큰을 가지는 쿠키가 존재하지 않을 경우 발생하는 예외
+     */
+    private String getJwtTokenFromCookie(HttpServletRequest request) {
+        try {
+            Optional<Cookie> jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
+            return "Bearer " + jwtTokenCookie.get().getValue();
+        } catch (RuntimeException e) {
+            log.error("JWT 토큰을 찾을 수 없습니다. - {}", new JwtTokenException(ErrorCode.JWT_TOKEN_NOT_FOUND, e));
+            return null;
         }
-        return header;
     }
 }
