@@ -176,6 +176,11 @@ public class UserAdminController {
         response.setContentType("text/event-stream");
         response.setCharacterEncoding("UTF-8");
 
-        return alarmService.connectAlarm(boardPrincipal.email());
+        try {
+            return alarmService.connectAlarm(boardPrincipal.email());
+        } catch (RuntimeException e) {
+            log.error("알람 연결 실패 - {}", e);
+            return null;
+        }
     }
 }

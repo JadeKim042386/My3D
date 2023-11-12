@@ -37,6 +37,9 @@ public class AlarmService {
         }, () -> log.info("Emitter를 찾을 수 없습니다."));
     }
 
+    /**
+     * @throws AlarmException 알람 접속 실패 예외
+     */
     public SseEmitter connectAlarm(String email) {
         SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterRepository.save(email, sseEmitter);
