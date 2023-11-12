@@ -5,6 +5,7 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.AlarmType;
+import joo.project.my3d.exception.AlarmException;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
@@ -24,6 +25,10 @@ public class ArticleLikeService {
     private final AlarmRepository alarmRepository;
     private final AlarmService alarmService;
 
+    /**
+     * @throws IllegalArgumentException 좋아요 또는 알람 저장 실패시 발생하는 예외
+     * @throws AlarmException 알람 전송에 실패할 경우 발생하는 예외
+     */
     @Transactional
     public void addArticleLike(Long articleId, String userId) {
         Article article = articleRepository.getReferenceById(articleId);
@@ -51,6 +56,4 @@ public class ArticleLikeService {
         article.deleteLike();
         articleLikeRepository.deleteByArticleId(articleId);
     }
-
-
 }

@@ -3,12 +3,14 @@ package joo.project.my3d.controller;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Slf4j
 @Controller
 @RequestMapping("/like")
 @RequiredArgsConstructor
@@ -21,7 +23,11 @@ public class ArticleLikeController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleLikeService.addArticleLike(articleId, boardPrincipal.email());
+        try{
+            articleLikeService.addArticleLike(articleId, boardPrincipal.email());
+        } catch (RuntimeException e) {
+            log.error("게시글 좋아요 추가 실패 - {}", e);
+        }
 
         return "redirect:/model_articles/" + articleId;
     }

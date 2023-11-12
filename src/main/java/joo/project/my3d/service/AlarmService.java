@@ -23,6 +23,9 @@ public class AlarmService {
     private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000; //1시간
     private static final String ALARM_NAME = "alarm";
 
+    /**
+     * @throws AlarmException 알람 전송 실패 예외
+     */
     public void send(String email, Long alarmId) {
         emitterRepository.get(email).ifPresentOrElse(sseEmitter -> {
             try {
