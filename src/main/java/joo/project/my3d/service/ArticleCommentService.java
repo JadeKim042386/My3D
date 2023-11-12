@@ -38,6 +38,10 @@ public class ArticleCommentService {
                 .toList();
     }
 
+    /**
+     * @throws IllegalArgumentException 댓글 저장 또는 알람 저장 실패시 발생하는 예외
+     * @throws CommentException 댓글이 존재하지 않는 경우 발생하는 예외
+     */
     @Transactional
     public void saveComment(ArticleCommentDto dto) {
         try{
@@ -61,10 +65,13 @@ public class ArticleCommentService {
             );
             alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
         } catch (EntityNotFoundException e) {
-            log.warn("댓글 저장 실패! - {}", new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e));
+            throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);
         }
     }
 
+    /**
+     * @throws CommentException 수정하고자하는 댓글이 존재하지 않을 경우 발생하는 예외
+     */
     @Transactional
     public void updateComment(ArticleCommentDto dto) {
         try {
@@ -73,10 +80,13 @@ public class ArticleCommentService {
                 articleComment.setContent(dto.content());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("댓글 수정 실패! - dto: {} {}", dto, new CommentException(ErrorCode.COMMENT_NOT_FOUND, e));
+            throw new CommentException(ErrorCode.COMMENT_NOT_FOUND, e);
         }
     }
 
+    /**
+     * @throws CommentException 댓글 작성자와 삭제 요청자가 다를 경우 발생하는 예외
+     */
     @Transactional
     public void deleteComment(Long articleCommentId, String email) {
         ArticleComment articleComment = articleCommentRepository.getReferenceById(articleCommentId);

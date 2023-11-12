@@ -38,6 +38,9 @@ public class GoodOptionService {
                 .toList();
     }
 
+    /**
+     * @throws GoodOptionException 상품 옵션 저장 실패 예외
+     */
     @Transactional
     public GoodOption saveGoodOption(GoodOptionDto dto) {
         try{
@@ -45,7 +48,6 @@ public class GoodOptionService {
             GoodOption goodOption = dto.toEntity(article);
             return goodOptionRepository.save(goodOption);
         } catch (EntityNotFoundException e) {
-            log.warn("상품옵션 저장 실패! - {}", new GoodOptionException(ErrorCode.FAILED_SAVE, e));
             throw new GoodOptionException(ErrorCode.FAILED_SAVE, e);
         }
     }
@@ -71,11 +73,17 @@ public class GoodOptionService {
         }
     }
 
+    /**
+     * @throws IllegalArgumentException id가 null일 경우 발생하는 예외
+     */
     @Transactional
     public void deleteGoodOption(Long goodOptionId) {
         goodOptionRepository.deleteById(goodOptionId);
     }
 
+    /**
+     * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
+     */
     @Transactional
     public void deleteGoodOptions(Long articleId) {
         List<GoodOption> goodOptions = goodOptionRepository.findByArticleId(articleId);

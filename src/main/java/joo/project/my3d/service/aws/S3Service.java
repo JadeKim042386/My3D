@@ -10,6 +10,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Slf4j
 @Service
@@ -64,6 +66,10 @@ public class S3Service {
 
     /**
      * https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/javav2/example_code/s3/src/main/java/com/example/s3/S3Scenario.java#L322
+     * Amazon S3에서 파일 삭제 수행
+     * @param key 파일명
+     * @throws SdkClientException IO관련 예외
+     * @throws S3Exception 파일 삭제 과정에서 알 수 없는 예외
      */
     public void deleteFile(String key) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()

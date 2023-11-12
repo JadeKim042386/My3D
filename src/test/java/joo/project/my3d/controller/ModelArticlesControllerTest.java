@@ -370,7 +370,7 @@ class ModelArticlesControllerTest {
         FieldUtils.writeField(goodOption, "id", 1L, true);
         given(articleFileService.getArticleFiles(anyLong())).willReturn(List.of());
         given(articleService.getArticle(eq(1L))).willReturn(ArticleDto.from(article));
-        given(articleFileService.updateArticleFile(eq(List.of(multipartFile)), eq(List.of()))).willReturn(true);
+        given(articleFileService.updateArticleFile(eq(List.of(multipartFile)))).willReturn(true);
         willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
         willDoNothing().given(goodOptionService).deleteGoodOptions(eq(1L));
         given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
@@ -406,7 +406,7 @@ class ModelArticlesControllerTest {
         // Then
         then(articleFileService).should().getArticleFiles(anyLong());
         then(articleService).should().getArticle(eq(1L));
-        then(articleFileService).should().updateArticleFile(eq(List.of(multipartFile)), eq(List.of()));
+        then(articleFileService).should().updateArticleFile(eq(List.of(multipartFile)));
         then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));
         then(goodOptionService).should().deleteGoodOptions(eq(1L));
         then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));

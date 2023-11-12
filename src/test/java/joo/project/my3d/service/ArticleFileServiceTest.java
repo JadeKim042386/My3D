@@ -50,9 +50,8 @@ class ArticleFileServiceTest {
     @Test
     void updateArticleFile() {
         // Given
-        ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
         // When
-        articleFileService.updateArticleFile(List.of(), List.of(articleFile));
+        articleFileService.updateArticleFile(List.of());
         // Then
     }
 
@@ -61,9 +60,8 @@ class ArticleFileServiceTest {
     void updateArticleFileNotChange() throws IOException {
         // Given
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
-        ArticleFileDto articleFile = FixtureDto.getArticleFileDto();
         // When
-        articleFileService.updateArticleFile(List.of(file), List.of(articleFile));
+        articleFileService.updateArticleFile(List.of(file));
         // Then
         then(articleFileRepository).shouldHaveNoInteractions();
     }

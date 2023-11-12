@@ -1,5 +1,7 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.MailException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,18 +19,24 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
+    /**
+     * @param to 수신자
+     * @param subject 제목
+     * @param text 본문
+     * @throws MailException 이메일 전송 실패 예외
+     */
     @Async
     public void sendEmail(String to, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(to); // 메일 수신자
-            mimeMessageHelper.setSubject(subject); // 메일 제목
-            mimeMessageHelper.setText(text); // 메일 본문 내용
+            mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(text);
             javaMailSender.send(mimeMessage);
             log.info("이메일 전송 완료");
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new MailException(ErrorCode.MAIL_SEND_FAIL, e);
         }
     }
 }

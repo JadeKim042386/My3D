@@ -74,6 +74,9 @@ public class UserAdminController {
         return "redirect:/user/password";
     }
 
+    /**
+     * 주문 목록 페이지 요청
+     */
     @GetMapping("/orders")
     public String orders(
             @RequestParam(required = false) Long alarmId,
@@ -99,34 +102,56 @@ public class UserAdminController {
         return "user/orders";
     }
 
+    /**
+     * 주문 상태 변경 요청
+     */
     @PostMapping("/orders")
     public String updateOrdersStatus(
             @ModelAttribute("orders") OrdersRequest ordersRequest
     ) {
-        ordersService.updateOrders(ordersRequest.toDto());
+        try {
+            ordersService.updateOrders(ordersRequest.toDto());
+        } catch (RuntimeException e) {
+            log.error("주문 상태 변경 실패 - {}", e);
+        }
 
         return "redirect:/user/orders";
     }
 
+    /**
+     * 기업 정보 괸리 페이지 요청
+     */
     @GetMapping("/company")
     public String company(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
-        //기업 정보 전달
-        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
-        model.addAttribute("companyData", CompanyAdminResponse.from(company));
+        try {
+            //기업 정보 전달
+            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+            model.addAttribute("companyData", CompanyAdminResponse.from(company));
+        } catch (RuntimeException e) {
+            log.error("기업 정보 조회 실패 - {}", e);
+            return "user/account";
+        }
 
         return "user/company";
     }
 
+    /**
+     * 기업 정보 수정 요청
+     */
     @PostMapping("/company")
     public String updateCompany(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             @ModelAttribute("companyData") CompanyAdminRequest companyAdminRequest
     ) {
-        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
-        companyService.updateCompany(companyAdminRequest.toDto(company.id()));
+        try {
+            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+            companyService.updateCompany(companyAdminRequest.toDto(company.id()));
+        } catch (RuntimeException e) {
+            log.error("기업 정보 수정 실패 - {}", e);
+        }
 
         return "redirect:/user/company";
     }
@@ -151,6 +176,11 @@ public class UserAdminController {
         response.setContentType("text/event-stream");
         response.setCharacterEncoding("UTF-8");
 
-        return alarmService.connectAlarm(boardPrincipal.email());
+        try {
+            return alarmService.connectAlarm(boardPrincipal.email());
+        } catch (RuntimeException e) {
+            log.error("알람 연결 실패 - {}", e);
+            return null;
+        }
     }
 }

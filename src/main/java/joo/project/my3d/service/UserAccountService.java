@@ -43,12 +43,19 @@ public class UserAccountService {
         return userAccountRepository.findByEmail(email).map(UserAccountDto::from);
     }
 
+    /**
+     * @throws UsernameNotFoundException 유저가 존재하지 않는 경우 발생하는 예외
+     */
     public CompanyDto getCompany(String email) {
         return searchUser(email)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email))
                 .companyDto();
     }
 
+    /**
+     * DB로부터 유저 정보를 가져와 BoardPrincipal 객체로 변환한다.
+     * @throws UsernameNotFoundException 주어진 이메일에 해당하는 유저 정보를 DB에서 찾을 수 없을 경우 발생하는 예외
+     */
     public BoardPrincipal getUserPrincipal(String email) {
         return searchUser(email)
                 .map(BoardPrincipal::from)
@@ -116,7 +123,8 @@ public class UserAccountService {
     }
 
     /**
-     * 비밀번호 일치 확인 후 토큰 생성
+     * 비밀번호 일치 확인 후 토큰을 생성하여 반환한다.
+     * @throws UserAccountException 비밀번호가 일치하지 않거나 주어진 이메일에 해당하는 유저가 존재하지 않을 경우 발생하는 예외
      */
     public String login(String email, String password) {
         try {
@@ -135,7 +143,7 @@ public class UserAccountService {
                     jwtProperties.expiredTimeMs()
             );
         } catch (UsernameNotFoundException e) {
-            throw new UserAccountException(ErrorCode.INVALID_USER);
+            throw new UserAccountException(ErrorCode.INVALID_USER, e);
         }
     }
 }

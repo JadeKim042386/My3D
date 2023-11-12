@@ -24,7 +24,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -49,21 +49,28 @@ public class LoginController {
     private String serviceKey;
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
 
+    /**
+     * 로그인 페이지 요청
+     * @throws MalformedURLException 로그인 이전 페이지의 URL이 잘못되었을 경우 발생하는 예외
+     */
     @GetMapping("/login")
     public String login(HttpServletRequest request) {
-        String referer = request.getHeader("Referer"); //이전 URL
-        String refererPath; //엔드포인트
         try {
-            refererPath = new URL(referer).getPath();
+            String referer = request.getHeader("Referer"); //이전 URL
+            String refererPath = new URL(referer).getPath();
+            request.getSession().setAttribute("prevPage", refererPath);
+            return "account/login";
         } catch (MalformedURLException e) {
-            refererPath = "/";
-            log.warn("로그인 이전 URL이 잘못되었습니다. - {}", referer);
+            log.error("로그인 이전 페이지의 URL이 잘못되었습니다; {}", e.getMessage());
+            return "/";
         }
-        request.getSession().setAttribute("prevPage", refererPath);
-
-        return "account/login";
     }
 
+    /**
+     * 로그인 요청
+     * @param loginRequest 로그인 폼에 입력된 이메일, 비밀번호를 담은 DTO
+     * @throws UserAccountException 로그인에 실패할 경우 발생하는 예외
+     */
     @PostMapping("/login")
     public String requestLogin(
             UserLoginRequest loginRequest,
@@ -84,6 +91,7 @@ public class LoginController {
 
             return "redirect:" + request.getSession().getAttribute("prevPage");
         } catch (UserAccountException e) {
+            log.error("로그인 실패 - {}", e.getMessage());
             model.addAttribute("loginFailedMessage", e.getErrorCodeMessage());
             return "account/login";
         }
@@ -107,7 +115,7 @@ public class LoginController {
     }
 
     /**
-     * 회원 유형 선택 후
+     * 회원가입 페이지 요청
      */
     @GetMapping("/sign_up")
     public String signup(
@@ -118,37 +126,27 @@ public class LoginController {
             @RequestParam(required = false) String emailCode,
             Model model
     ) {
-        //OAuth 로그인으로 저장된 cookie에서 유저 정보를 추출
-        Cookie jwtTokenCookie = null;
+        //OAuth 첫 로그인시 플랫폼(구글, 카카오, 네이버)의 이메일, 닉네임을 사용
+        boolean isOAuthLogin = false;
         String nickname = null;
         if (Objects.nonNull(request.getCookies())){
-            jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
-            if (Objects.nonNull(jwtTokenCookie)){
-                if (Objects.isNull(email)){
-                    email = JwtTokenUtils.getUserEmail(jwtTokenCookie.getValue(), jwtProperties.secretKey());
-                }
-                nickname = JwtTokenUtils.getUserNickname(jwtTokenCookie.getValue(), jwtProperties.secretKey());
+            Optional<Cookie> jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
+            isOAuthLogin = jwtTokenCookie.isPresent();
+            if (isOAuthLogin){
+                email = JwtTokenUtils.getUserEmail(jwtTokenCookie.get().getValue(), jwtProperties.secretKey());
+                nickname = JwtTokenUtils.getUserNickname(jwtTokenCookie.get().getValue(), jwtProperties.secretKey());
             }
         }
 
-        //세션에 저장된 정보 전달
-        model.addAttribute("oauthLogin", Objects.nonNull(jwtTokenCookie));
+        //OAuth 로그인으로인한 회원가입일때 이메일을 수정할 수 없도록 OAuth 로그인 여부를 뷰에 전달
+        model.addAttribute("oauthLogin", isOAuthLogin);
         model.addAttribute("email", email);
-        //이메일 인증 코드
+        //이메일 인증 요청 후 생성된 인증 코드
         model.addAttribute("code", emailCode);
-        //이메일 전송 에러
+        //이메일 인증 코드 전송 에러
         model.addAttribute("emailError", emailError);
 
-        SignUpResponse response = SignUpResponse.of(
-                userRole,
-                null,
-                nickname,
-                null,
-                null,
-                null,
-                null
-        );
-        model.addAttribute("signUpData", response);
+        model.addAttribute("signUpData", SignUpResponse.of(userRole, nickname));
 
         //닉네임, 기업명 중복 체크를 위해 추가
         List<UserAccountDto> userAccountDtos = userAccountService.findAllUser();

@@ -72,6 +72,10 @@ public class OrdersService {
         }
     }
 
+    /**
+     * 주문 상태 정보 수정
+     * @throws OrdersException 주문이 존재하지 않는 경우 발생하는 예외
+     */
     @Transactional
     public void updateOrders(OrdersDto dto) {
         try {
@@ -80,7 +84,7 @@ public class OrdersService {
                 orders.setStatus(dto.status());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("주문 수정 실패! - dto: {} {}", dto, new OrdersException(ErrorCode.ORDERS_NOT_FOUND, e));
+            throw new OrdersException(ErrorCode.ORDERS_NOT_FOUND, e);
         }
     }
 

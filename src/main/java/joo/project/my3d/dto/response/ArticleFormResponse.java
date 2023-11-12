@@ -2,15 +2,10 @@ package joo.project.my3d.dto.response;
 
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.request.DimensionRequest;
-import joo.project.my3d.dto.request.GoodOptionRequest;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -37,6 +32,10 @@ public class ArticleFormResponse {
         this.priceValue = priceValue;
         this.deliveryPrice = deliveryPrice;
         this.articleCategory = articleCategory;
+    }
+
+    public static ArticleFormResponse of() {
+        return new ArticleFormResponse(null, null, List.of(), null, null, null, null, null, null);
     }
 
     public static ArticleFormResponse of(Long id, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String summary, String content, Integer priceValue, Integer deliveryPrice, String articleCategory) {

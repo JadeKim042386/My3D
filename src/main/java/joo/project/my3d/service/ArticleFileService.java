@@ -10,15 +10,11 @@ import joo.project.my3d.service.aws.S3Service;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +36,9 @@ public class ArticleFileService {
                 .toList();
     }
 
+    /**
+     * @throws FileException 파일 저장 실패 예외
+     */
     @Transactional
     public void saveArticleFile(Article article, MultipartFile file) {
         //파일 저장(UUID를 파일명으로 저장)
@@ -65,7 +64,11 @@ public class ArticleFileService {
         }
     }
 
-    public boolean updateArticleFile(List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
+    /**
+     * 파일의 업데이트 여부를 확인하여 반환
+     * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
+     */
+    public boolean updateArticleFile(List<MultipartFile> files) {
         try {
             //업데이트 여부 확인
             boolean isUpdated = false;
