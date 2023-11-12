@@ -64,7 +64,11 @@ public class ArticleFileService {
         }
     }
 
-    public boolean updateArticleFile(List<MultipartFile> files, List<ArticleFileDto> articleFiles) {
+    /**
+     * 파일의 업데이트 여부를 확인하여 반환
+     * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
+     */
+    public boolean updateArticleFile(List<MultipartFile> files) {
         try {
             //업데이트 여부 확인
             boolean isUpdated = false;

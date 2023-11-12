@@ -73,11 +73,17 @@ public class GoodOptionService {
         }
     }
 
+    /**
+     * @throws IllegalArgumentException id가 null일 경우 발생하는 예외
+     */
     @Transactional
     public void deleteGoodOption(Long goodOptionId) {
         goodOptionRepository.deleteById(goodOptionId);
     }
 
+    /**
+     * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
+     */
     @Transactional
     public void deleteGoodOptions(Long articleId) {
         List<GoodOption> goodOptions = goodOptionRepository.findByArticleId(articleId);

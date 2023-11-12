@@ -18,10 +18,6 @@ import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.response.GoodOptionResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.ArticleException;
-import joo.project.my3d.exception.DimensionException;
-import joo.project.my3d.exception.FileException;
-import joo.project.my3d.exception.GoodOptionException;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
@@ -214,6 +210,9 @@ public class ModelArticlesController {
         return "model_articles/form";
     }
 
+    /**
+     * 게시글 수정 요청
+     */
     @PostMapping("/form/{articleId}")
     public String postUpdateArticle(
             @PathVariable Long articleId,
@@ -228,40 +227,47 @@ public class ModelArticlesController {
             model.addAttribute("categories", ArticleCategory.values());
             return "model_articles/form";
         }
+        try {
+            //파일 업데이트
+            List<ArticleFileDto> articleFileDtos = articleFileService.getArticleFiles(articleId); //저장되어있는 파일들
+            Article article = articleService.getArticle(articleId).toEntity();
+            List<MultipartFile> files = articleFormRequest.getFiles();
+            boolean isUpdated = articleFileService.updateArticleFile(files);
+            //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
+            if (isUpdated) {
+                for (ArticleFileDto articleFile : articleFileDtos) {
+                    articleFileService.deleteArticleFile(articleFile.id());
+                }
+                for (MultipartFile file : files) {
+                    articleFileService.saveArticleFile(article, file);
+                }
+            }
+            //상품옵션 업데이트
+            goodOptionService.deleteGoodOptions(articleId);
+            List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
+            for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
+                GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
+                //치수 업데이트
+                dimensionService.deleteDimensions(goodOption.getId());
+                List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+                for (DimensionDto dimensionDto : dimensionDtos) {
+                    dimensionService.saveDimension(dimensionDto);
+                }
+            }
 
-        //파일 업데이트
-        List<ArticleFileDto> articleFileDtos = articleFileService.getArticleFiles(articleId); //저장되어있는 파일들
-        Article article = articleService.getArticle(articleId).toEntity();
-        List<MultipartFile> files = articleFormRequest.getFiles();
-        boolean isUpdated = articleFileService.updateArticleFile(files, articleFileDtos);
-        //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
-        if (isUpdated) {
-            for (ArticleFileDto articleFile : articleFileDtos) {
-                articleFileService.deleteArticleFile(articleFile.id());
-            }
-            for (MultipartFile file : files) {
-                articleFileService.saveArticleFile(article, file);
-            }
-        }
-        //상품옵션 업데이트
-        goodOptionService.deleteGoodOptions(articleId);
-        List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
-        for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
-            GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
-            //치수 업데이트
-            dimensionService.deleteDimensions(goodOption.getId());
-            List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
-            for (DimensionDto dimensionDto : dimensionDtos) {
-                dimensionService.saveDimension(dimensionDto);
-            }
+            articleService.updateArticle(
+                    articleId,
+                    articleFormRequest.toArticleDto(
+                            boardPrincipal.toDto()
+                    )
+            );
+        } catch (RuntimeException e) {
+            log.error("게시글 수정 실패 - {}", e);
+            model.addAttribute("formStatus", FormStatus.UPDATE);
+            model.addAttribute("categories", ArticleCategory.values());
+            return "model_articles/form";
         }
 
-        articleService.updateArticle(
-            articleId,
-            articleFormRequest.toArticleDto(
-                boardPrincipal.toDto()
-            )
-        );
         return "redirect:/model_articles";
     }
 

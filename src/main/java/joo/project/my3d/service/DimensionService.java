@@ -66,11 +66,17 @@ public class DimensionService {
         }
     }
 
+    /**
+     * @throws IllegalArgumentException id가 null일 경우 발생하는 예외
+     */
     @Transactional
     public void deleteDimension(Long dimensionId) {
         dimensionRepository.deleteById(dimensionId);
     }
 
+    /**
+     * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
+     */
     public void deleteDimensions(Long goodOptionId) {
         List<Dimension> dimensions = dimensionRepository.findByGoodOptionId(goodOptionId);
         for (Dimension dimension : dimensions) {

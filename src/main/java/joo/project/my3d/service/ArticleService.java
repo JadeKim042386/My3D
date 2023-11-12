@@ -66,6 +66,9 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
+    /**
+     * @throws ArticleException 게시글 작성자와 수정자가 다를 경우 또는 게시글이 DB에 존재하지 않는 경우 발생하는 예외
+     */
     @Transactional
     public void updateArticle(Long articleId, ArticleDto articleDto) {
         try {
