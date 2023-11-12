@@ -74,6 +74,9 @@ public class UserAdminController {
         return "redirect:/user/password";
     }
 
+    /**
+     * 주문 목록 페이지 요청
+     */
     @GetMapping("/orders")
     public String orders(
             @RequestParam(required = false) Long alarmId,
@@ -99,11 +102,18 @@ public class UserAdminController {
         return "user/orders";
     }
 
+    /**
+     * 주문 상태 변경 요청
+     */
     @PostMapping("/orders")
     public String updateOrdersStatus(
             @ModelAttribute("orders") OrdersRequest ordersRequest
     ) {
-        ordersService.updateOrders(ordersRequest.toDto());
+        try {
+            ordersService.updateOrders(ordersRequest.toDto());
+        } catch (RuntimeException e) {
+            log.error("주문 상태 변경 실패 - {}", e);
+        }
 
         return "redirect:/user/orders";
     }
