@@ -45,6 +45,9 @@ public class CompanyService {
         }
     }
 
+    /**
+     * @throws CompanyException 기업이 존재하지 않는 경우 발생하는 예외
+     */
     @Transactional
     public void updateCompany(CompanyDto dto) {
         try {
@@ -56,7 +59,7 @@ public class CompanyService {
                 company.setHomepage(dto.homepage());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("기업 수정 실패! - dto: {} {}", dto, new CompanyException(ErrorCode.COMPANY_NOT_FOUND, e));
+            throw new CompanyException(ErrorCode.COMPANY_NOT_FOUND, e);
         }
     }
 

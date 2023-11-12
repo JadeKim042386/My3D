@@ -43,6 +43,9 @@ public class UserAccountService {
         return userAccountRepository.findByEmail(email).map(UserAccountDto::from);
     }
 
+    /**
+     * @throws UsernameNotFoundException 유저가 존재하지 않는 경우 발생하는 예외
+     */
     public CompanyDto getCompany(String email) {
         return searchUser(email)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email))
