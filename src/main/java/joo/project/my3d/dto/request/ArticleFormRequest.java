@@ -5,6 +5,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
+import joo.project.my3d.utils.FileUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,8 +14,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -35,21 +36,16 @@ public class ArticleFormRequest {
     private final List<GoodOptionRequest> goodOptions = new ArrayList<>();
     @MultipartFileSizeValid
     private MultipartFile modelFile;
-    private MultipartFile[] imgFiles;
     @InCategory
     private String articleCategory;
 
-    public List<MultipartFile> getFiles() {
-        List<MultipartFile> files = new ArrayList<>();
-        if (imgFiles != null){
-            files.addAll(Arrays.stream(imgFiles).toList());
-        }
-        files.add(modelFile);
-
-        return files;
-    }
-
-    public ArticleDto toArticleDto(UserAccountDto userAccountDto, ArticleType articleType) {
+    /**
+     * 게시글 등록시 사용
+     * @param articleFileDto 저장한 파일의 DTO
+     * @param userAccountDto 작성자의 DTO
+     * @param articleType
+     */
+    public ArticleDto toArticleDto(ArticleFileDto articleFileDto, UserAccountDto userAccountDto, ArticleType articleType) {
         return ArticleDto.of(
                 userAccountDto,
                 title,
@@ -57,13 +53,17 @@ public class ArticleFormRequest {
                 content,
                 articleType,
                 ArticleCategory.valueOf(articleCategory),
-                null,
+                0,
+                articleFileDto,
                 PriceDto.of(priceValue, deliveryPrice)
         );
     }
 
+    /**
+     * 게시글 업데이트시 사용
+     */
     public ArticleDto toArticleDto(UserAccountDto userAccountDto) {
-        return toArticleDto(userAccountDto, null);
+        return toArticleDto(null, userAccountDto, null);
     }
 
     public List<GoodOptionDto> toGoodOptionDtos(Long articleId) {

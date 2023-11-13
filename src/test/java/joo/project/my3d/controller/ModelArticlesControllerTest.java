@@ -2,10 +2,7 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.ArticleLike;
-import joo.project.my3d.domain.GoodOption;
-import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
@@ -106,7 +103,7 @@ class ModelArticlesControllerTest {
         Article article = Fixture.getArticle();
         GoodOption goodOption = Fixture.getGoodOption(article);
         given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
-        willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
+        given(articleFileService.saveArticleFile(multipartFile)).willReturn(Fixture.getArticleFile());
         given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
@@ -136,7 +133,7 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));
+        then(articleFileService).should().saveArticleFile(multipartFile);
         then(articleService).should().saveArticle(any(ArticleDto.class));
         then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
         then(dimensionService).should().saveDimension(any(DimensionDto.class));
@@ -322,7 +319,6 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("article"))
                 .andExpect(model().attributeExists("articleComments"))
                 .andExpect(model().attributeExists("modelFile"))
-                .andExpect(model().attributeExists("imgFiles"))
                 .andExpect(model().attributeExists("addedLike"))
                 .andExpect(model().attributeExists("modelPath"));
 
@@ -339,7 +335,7 @@ class ModelArticlesControllerTest {
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         given(goodOptionService.getGoodOptionWithDimensions(anyLong())).willReturn(List.of());
         given(articleService.getArticle(anyLong())).willReturn(articleDto);
-        given(articleFileService.getArticleFiles(anyLong())).willReturn(List.of(articleFileDto));
+        given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
         // When
         mvc.perform(
                         get("/model_articles/form/1")
@@ -356,7 +352,7 @@ class ModelArticlesControllerTest {
         // Then
         then(goodOptionService).should().getGoodOptionWithDimensions(anyLong());
         then(articleService).should().getArticle(anyLong());
-        then(articleFileService).should().getArticleFiles(anyLong());
+        then(articleFileService).should().getArticleFile(anyLong());
     }
 
     @DisplayName("[POST] 게시글 수정 - 정상")
@@ -368,10 +364,10 @@ class ModelArticlesControllerTest {
         FieldUtils.writeField(article, "id", 1L, true);
         GoodOption goodOption = Fixture.getGoodOption(article);
         FieldUtils.writeField(goodOption, "id", 1L, true);
-        given(articleFileService.getArticleFiles(anyLong())).willReturn(List.of());
-        given(articleService.getArticle(eq(1L))).willReturn(ArticleDto.from(article));
-        given(articleFileService.updateArticleFile(eq(List.of(multipartFile)))).willReturn(true);
-        willDoNothing().given(articleFileService).saveArticleFile(any(Article.class), any(MultipartFile.class));
+        given(articleFileService.getArticleFile(anyLong())).willReturn(FixtureDto.getArticleFileDto());
+        given(articleFileService.updateArticleFile(eq(multipartFile))).willReturn(true);
+        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
+        given(articleFileService.saveArticleFile(eq(multipartFile))).willReturn(Fixture.getArticleFile());
         willDoNothing().given(goodOptionService).deleteGoodOptions(eq(1L));
         given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
         willDoNothing().given(dimensionService).deleteDimensions(eq(1L));
@@ -404,10 +400,10 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleFileService).should().getArticleFiles(anyLong());
-        then(articleService).should().getArticle(eq(1L));
-        then(articleFileService).should().updateArticleFile(eq(List.of(multipartFile)));
-        then(articleFileService).should().saveArticleFile(any(Article.class), any(MultipartFile.class));
+        then(articleFileService).should().getArticleFile(anyLong());
+        then(articleFileService).should().updateArticleFile(eq(multipartFile));
+        then(articleFileService).should().deleteArticleFile(anyLong());
+        then(articleFileService).should().saveArticleFile(eq(multipartFile));
         then(goodOptionService).should().deleteGoodOptions(eq(1L));
         then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
         then(dimensionService).should().deleteDimensions(eq(1L));

@@ -2,6 +2,7 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.GoodOption;
 import joo.project.my3d.domain.constant.ArticleCategory;
@@ -78,15 +79,9 @@ public class ModelArticlesController {
                 "articles",
                 new PageImpl<>(
                     articles
-                    .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
-                    .map(articleDto -> {
-                        //3D 모델 파일만 필터링
-                        ArticleFileDto articleFileDto = articleFileService.getArticleFiles(articleDto.id())
-                                .stream().filter(ArticleFileDto::isModelFile)
-                                .toList().get(0);
-                        return ArticleResponse.from(articleDto, articleFileDto);
-                    })
-                    .toList(),
+                        .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
+                        .map(ArticleResponse::from)
+                        .toList(),
                     pageable,
                     articles.getTotalElements()
                 )
@@ -116,7 +111,6 @@ public class ModelArticlesController {
         model.addAttribute("article", article);
         model.addAttribute("articleComments", article.articleCommentResponses());
         model.addAttribute("modelFile", article.modelFile());
-        model.addAttribute("imgFiles", article.imgFiles());
         model.addAttribute("addedLike", articleLike.isPresent());
         model.addAttribute("modelPath", S3Url);
 
@@ -153,20 +147,17 @@ public class ModelArticlesController {
         }
 
         try {
+            //파일 저장
+            ArticleFile articleFile = articleFileService.saveArticleFile(articleFormRequest.getModelFile());
             //게시글 저장
             Article article = articleService.saveArticle(
                     articleFormRequest.toArticleDto(
+                            ArticleFileDto.from(articleFile),
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )
             );
-            //파일 저장
-            List<MultipartFile> files = articleFormRequest.getFiles();
-            for (MultipartFile file : files) {
-                if (file.getSize() > 0) {
-                    articleFileService.saveArticleFile(article, file);
-                }
-            }
+
             //상품 옵션 저장
             List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
             for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
@@ -201,7 +192,7 @@ public class ModelArticlesController {
             "article",
             ArticleFormResponse.from(
                 articleService.getArticle(articleId),
-                articleFileService.getArticleFiles(articleId),
+                articleFileService.getArticleFile(articleId),
                 goodOptionResponses
             )
         );
@@ -229,18 +220,13 @@ public class ModelArticlesController {
         }
         try {
             //파일 업데이트
-            List<ArticleFileDto> articleFileDtos = articleFileService.getArticleFiles(articleId); //저장되어있는 파일들
-            Article article = articleService.getArticle(articleId).toEntity();
-            List<MultipartFile> files = articleFormRequest.getFiles();
-            boolean isUpdated = articleFileService.updateArticleFile(files);
+            ArticleFileDto articleFileDto = articleFileService.getArticleFile(articleId); //저장되어있는 파일들
+            MultipartFile file = articleFormRequest.getModelFile();
+            boolean isUpdated = articleFileService.updateArticleFile(file);
             //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
             if (isUpdated) {
-                for (ArticleFileDto articleFile : articleFileDtos) {
-                    articleFileService.deleteArticleFile(articleFile.id());
-                }
-                for (MultipartFile file : files) {
-                    articleFileService.saveArticleFile(article, file);
-                }
+                articleFileService.deleteArticleFile(articleFileDto.id());
+                articleFileService.saveArticleFile(file);
             }
             //상품옵션 업데이트
             goodOptionService.deleteGoodOptions(articleId);
@@ -280,7 +266,7 @@ public class ModelArticlesController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         try {
-            articleFileService.deleteArticleFileByArticleId(articleId);
+            articleFileService.deleteArticleFile(articleId);
             articleService.deleteArticle(articleId, boardPrincipal.email());
         } catch (RuntimeException e) {
             log.error("게시글 삭제 실패 - {}", e);

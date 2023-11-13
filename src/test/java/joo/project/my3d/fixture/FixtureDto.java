@@ -27,6 +27,7 @@ public class FixtureDto {
 
     public static ArticleDto getArticleDto(Long id, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         PriceDto priceDto = FixtureDto.getPriceDto();
         return ArticleDto.of(
                 id,
@@ -37,6 +38,7 @@ public class FixtureDto {
                 articleType,
                 articleCategory,
                 1,
+                articleFileDto,
                 priceDto,
                 LocalDateTime.now(),
                 userAccountDto.email(),
@@ -63,7 +65,7 @@ public class FixtureDto {
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto,
-                Set.of(articleFileDto),
+                articleFileDto,
                 title,
                 summary,
                 content,

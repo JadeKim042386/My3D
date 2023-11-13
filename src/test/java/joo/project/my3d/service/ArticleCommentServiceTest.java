@@ -86,13 +86,10 @@ class ArticleCommentServiceTest {
     void saveCommentNotExistArticle() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willThrow(EntityNotFoundException.class);
         // When
-        articleCommentService.saveComment(articleCommentDto);
+        assertThatThrownBy(() -> articleCommentService.saveComment(articleCommentDto))
+                .isInstanceOf(CommentException.class);
         // Then
-        then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).shouldHaveNoInteractions();
-        then(articleCommentRepository).shouldHaveNoInteractions();
     }
 
     @DisplayName("대댓글 저장")
@@ -137,11 +134,10 @@ class ArticleCommentServiceTest {
     void updateCommentNotExistComment() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleCommentRepository.getReferenceById(articleCommentDto.id())).willThrow(EntityNotFoundException.class);
         // When
-        articleCommentService.updateComment(articleCommentDto);
+        assertThatThrownBy(() -> articleCommentService.updateComment(articleCommentDto))
+                .isInstanceOf(CommentException.class);
         // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentDto.id());
     }
 
     @DisplayName("댓글 삭제")

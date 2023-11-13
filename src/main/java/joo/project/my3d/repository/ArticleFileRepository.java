@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface ArticleFileRepository extends JpaRepository<ArticleFile, Long> {
     void deleteByArticleId(Long articleId);
 
-    List<ArticleFile> findByArticleId(Long articleId);
+    ArticleFile findByArticleId(Long articleId);
 
 }

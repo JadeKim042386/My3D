@@ -38,20 +38,21 @@ class ArticleFileServiceTest {
         // Given
         Article article = Fixture.getArticle();
         MockMultipartFile file = Fixture.getMultipartFile();
-        ArticleFile articleFile = Fixture.getArticleFile(article);
+        ArticleFile articleFile = Fixture.getArticleFile();
         given(articleFileRepository.save(any(ArticleFile.class))).willReturn(articleFile);
         // When
-        articleFileService.saveArticleFile(article, file);
+        articleFileService.saveArticleFile(file);
         // Then
         then(articleFileRepository).should().save(any(ArticleFile.class));
     }
 
     @DisplayName("모델 파일 수정 - 파일 변경")
     @Test
-    void updateArticleFile() {
+    void updateArticleFile() throws IOException {
         // Given
+        MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         // When
-        articleFileService.updateArticleFile(List.of());
+        articleFileService.updateArticleFile(file);
         // Then
     }
 
@@ -61,7 +62,7 @@ class ArticleFileServiceTest {
         // Given
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         // When
-        articleFileService.updateArticleFile(List.of(file));
+        articleFileService.updateArticleFile(file);
         // Then
         then(articleFileRepository).shouldHaveNoInteractions();
     }

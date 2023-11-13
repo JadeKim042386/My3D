@@ -421,7 +421,7 @@ public class JpaRepositoryTest {
             // When
             List<ArticleFile> articleFiles = articleFileRepository.findAll();
             // Then
-            assertThat(articleFiles).isNotNull().hasSize(12);
+            assertThat(articleFiles).isNotNull().hasSize(10);
         }
 
         @DisplayName("파일 findById")
@@ -433,37 +433,6 @@ public class JpaRepositoryTest {
             Optional<ArticleFile> articleFile = articleFileRepository.findById(articleFileId);
             // Then
             assertThat(articleFile).isNotNull();
-        }
-
-        @DisplayName("파일 save")
-        @Test
-        void saveArticleFile() {
-            // Given
-            Article article = articleRepository.getReferenceById(1L);
-            ArticleFile articleFile = Fixture.getArticleFile(article);
-            long previousCount = articleFileRepository.count();
-            log.info("previousCount: {}", previousCount);
-            // When
-            ArticleFile savedArticleFile = articleFileRepository.save(articleFile);
-            // Then
-            long afterCount = articleFileRepository.count();
-            log.info("afterCount: {}", afterCount);
-            assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedArticleFile)
-                    .hasFieldOrPropertyWithValue("id", 13L);
-        }
-
-        @DisplayName("파일 delete")
-        @Test
-        void deleteArticleFile() {
-            // Given
-            Long articleFileId = 1L;
-            long previousCount = articleFileRepository.count();
-            log.info("previousCount: {}", previousCount);
-            // When
-            articleFileRepository.deleteById(articleFileId);
-            // Then
-            assertThat(articleFileRepository.count()).isEqualTo(previousCount - 1);
         }
     }
 

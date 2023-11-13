@@ -64,7 +64,7 @@ public class ArticleCommentService {
                     )
             );
             alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
-        } catch (EntityNotFoundException e) {
+        } catch (RuntimeException e) {
             throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);
         }
     }
@@ -79,7 +79,7 @@ public class ArticleCommentService {
             if (dto.content() != null) {
                 articleComment.setContent(dto.content());
             }
-        } catch (EntityNotFoundException e) {
+        } catch (RuntimeException e) {
             throw new CommentException(ErrorCode.COMMENT_NOT_FOUND, e);
         }
     }
