@@ -26,11 +26,11 @@ public record ArticleResponse(
         return new ArticleResponse(id, nickname, modelFile, title, content, articleType, articleCategory, likeCount, priceValue, deliveryPrice, LocalDateTimeUtils.passedTime(createdAt));
     }
 
-    public static ArticleResponse from(ArticleDto dto, ArticleFileDto articleFileDto) {
+    public static ArticleResponse from(ArticleDto dto) {
         return ArticleResponse.of(
                 dto.id(),
                 dto.userAccountDto().nickname(),
-                ArticleFileResponse.from(articleFileDto),
+                ArticleFileResponse.from(dto.articleFileDto()),
                 dto.title(),
                 dto.content(),
                 dto.articleType(),

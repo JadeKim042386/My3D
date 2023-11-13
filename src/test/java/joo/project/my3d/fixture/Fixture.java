@@ -14,13 +14,15 @@ public class Fixture {
 
     public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
+        ArticleFile articleFile = Fixture.getArticleFile();
         Price price = Fixture.getPrice();
-        return Article.of(userAccount, title, summary, content, articleType, articleCategory, price);
+        return Article.of(userAccount, title, summary, content, articleType, articleCategory, articleFile, price);
     }
 
     public static Article getArticle(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        ArticleFile articleFile = Fixture.getArticleFile();
         Price price = Fixture.getPrice();
-        return Article.of(userAccount, summary, title, content, articleType, articleCategory, price);
+        return Article.of(userAccount, summary, title, content, articleType, articleCategory, articleFile, price);
     }
 
     public static Article getArticle() {
@@ -59,8 +61,8 @@ public class Fixture {
         return userAccount;
     }
 
-    public static ArticleFile getArticleFile(Article article) {
-        return ArticleFile.of(article, 5555L, "test.stp", "uuid.stp", "stp");
+    public static ArticleFile getArticleFile() {
+        return ArticleFile.of(5555L, "test.stp", "uuid.stp", "stp");
     }
 
     public static MockMultipartFile getMultipartFile() throws IOException {

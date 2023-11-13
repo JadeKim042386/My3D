@@ -42,9 +42,24 @@ Create TABLE `price` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='가격';
 
+CREATE TABLE `article_file` (
+    `id`	bigint	AUTO_INCREMENT NOT NULL,
+    `byte_size`	bigint	NOT NULL,
+    `original_file_name`	varchar(100)	NOT NULL,
+    `file_name`	varchar(100)	NOT NULL,
+    `file_extension`	varchar(100)	NOT NULL,
+    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    `modified_at`	datetime	NOT NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE (`file_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
+
 CREATE TABLE `article` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,
 	`user_account_id`   bigint	NOT NULL,
+    `article_file_id`   bigint  NOT NULL,
     `price_id`   bigint  NOT NULL,
 	`title`	varchar(255)	NOT NULL,
     `summary`	varchar(255)	NOT NULL,
@@ -58,24 +73,9 @@ CREATE TABLE `article` (
 	`modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`),
+    FOREIGN KEY (`article_file_id`) REFERENCES `article_file` (`id`),
     FOREIGN KEY (`price_id`) REFERENCES `price` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='게시글';
-
-CREATE TABLE `article_file` (
-    `id`	bigint	AUTO_INCREMENT NOT NULL,
-    `article_id`	bigint	NOT NULL,
-    `byte_size`	bigint	NOT NULL,
-    `original_file_name`	varchar(100)	NOT NULL,
-    `file_name`	varchar(100)	NOT NULL,
-    `file_extension`	varchar(100)	NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE (`file_name`),
-    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
 
 CREATE TABLE `article_comment` (
 	`id`	bigint	AUTO_INCREMENT NOT NULL,

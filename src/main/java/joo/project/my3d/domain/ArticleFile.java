@@ -31,23 +31,21 @@ public class ArticleFile extends AuditingFields {
     private String fileExtension;
 
     @ToString.Exclude
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "articleId")
+    @OneToOne(mappedBy = "articleFile")
     private Article article;
 
     protected ArticleFile() {
     }
 
-    private ArticleFile(Article article, Long byteSize, String originalFileName, String fileName, String fileExtension) {
-        this.article = article;
+    private ArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension) {
         this.byteSize = byteSize;
         this.originalFileName = originalFileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
     }
 
-    public static ArticleFile of(Article article, Long byteSize, String originalFileName, String fileName, String fileExtension) {
-        return new ArticleFile(article, byteSize, originalFileName, fileName, fileExtension);
+    public static ArticleFile of(Long byteSize, String originalFileName, String fileName, String fileExtension) {
+        return new ArticleFile(byteSize, originalFileName, fileName, fileExtension);
     }
 
     @Override

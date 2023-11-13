@@ -17,7 +17,6 @@ public record ArticleWithCommentsAndLikeCountResponse(
         String userId,
         String nickname,
         ArticleFileResponse modelFile,
-        List<ArticleFileResponse> imgFiles,
         String title,
         String summary,
         String content,
@@ -30,8 +29,8 @@ public record ArticleWithCommentsAndLikeCountResponse(
         List<GoodOptionResponse> goodOptions,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, List<ArticleFileResponse> imgFiles, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, List<GoodOptionResponse> goodOptionResponses, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, imgFiles, title, summary, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, goodOptionResponses, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, List<GoodOptionResponse> goodOptionResponses, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, summary, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, goodOptionResponses, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -39,14 +38,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.id(),
                 dto.userAccountDto().email(),
                 dto.userAccountDto().nickname(),
-                ArticleFileResponse.from(
-                        dto.articleFileDtos().stream().filter(ArticleFileDto::isModelFile)
-                                .toList().get(0)
-                ),
-                dto.articleFileDtos().stream()
-                        .filter(ArticleFileDto::isImageFile)
-                        .map(ArticleFileResponse::from)
-                        .toList(),
+                ArticleFileResponse.from(dto.articleFileDto()),
                 dto.title(),
                 dto.summary(),
                 dto.content(),

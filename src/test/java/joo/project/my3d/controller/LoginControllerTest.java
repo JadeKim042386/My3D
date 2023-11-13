@@ -3,13 +3,13 @@ package joo.project.my3d.controller;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.util.FormDataEncoder;
 import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 로그인과 회원가입")
 @Import({TestSecurityConfig.class, FormDataEncoder.class})
@@ -47,7 +48,7 @@ class LoginControllerTest {
         // Given
 
         // When
-        mvc.perform(get("/account/login"))
+        mvc.perform(get("/account/login").header("referer", "http://localhost:8080/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("account/login"));

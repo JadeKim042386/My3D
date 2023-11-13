@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public record ArticleWithCommentsAndLikeCountDto(
         Long id,
         UserAccountDto userAccountDto,
-        Set<ArticleFileDto> articleFileDtos,
+        ArticleFileDto articleFileDto,
         String title,
         String summary,
         String content,
@@ -27,17 +27,15 @@ public record ArticleWithCommentsAndLikeCountDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, Set<ArticleFileDto> articleFileDtos, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, PriceDto priceDto, List<GoodOptionWithDimensionDto> goodOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDtos, title, summary, content, articleType, articleCategory, articleCommentDtos, likeCount, priceDto, goodOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, PriceDto priceDto, List<GoodOptionWithDimensionDto> goodOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, summary, content, articleType, articleCategory, articleCommentDtos, likeCount, priceDto, goodOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     public static ArticleWithCommentsAndLikeCountDto from(Article article) {
         return ArticleWithCommentsAndLikeCountDto.of(
                 article.getId(),
                 UserAccountDto.from(article.getUserAccount()),
-                article.getArticleFiles().stream()
-                        .map(ArticleFileDto::from)
-                        .collect(Collectors.toUnmodifiableSet()),
+                ArticleFileDto.from(article.getArticleFile()),
                 article.getTitle(),
                 article.getSummary(),
                 article.getContent(),
