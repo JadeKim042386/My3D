@@ -145,11 +145,4 @@ public class FixtureDto {
     public static CompanyDto getCompanyDto() {
         return CompanyDto.of(2L, "company", "homepage");
     }
-
-    public static OrdersDto getOrdersDto() {
-        AddressDto addressDto = FixtureDto.getAddressDto();
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        CompanyDto companyDto = FixtureDto.getCompanyDto();
-        return OrdersDto.of(4L, "example", addressDto, OrderStatus.EXAMINE, userAccountDto, companyDto);
-    }
 }

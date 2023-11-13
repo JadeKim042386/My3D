@@ -1,15 +1,12 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
-import joo.project.my3d.dto.request.OrdersRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
 import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
-import joo.project.my3d.service.OrdersService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +26,6 @@ import java.util.List;
 public class UserAdminController {
 
     private final UserAccountService userAccountService;
-    private final OrdersService ordersService;
     private final CompanyService companyService;
     private final AlarmService alarmService;
 
@@ -72,50 +68,6 @@ public class UserAdminController {
         userAccountService.changePassword(boardPrincipal.email(), userAdminRequest.password());
 
         return "redirect:/user/password";
-    }
-
-    /**
-     * 주문 목록 페이지 요청
-     */
-    @GetMapping("/orders")
-    public String orders(
-            @RequestParam(required = false) Long alarmId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
-    ) {
-        List<OrdersResponse> ordersResponses;
-        if (boardPrincipal.getUserRole() == UserRole.USER) {
-            ordersResponses = ordersService.getOrdersByEmail(boardPrincipal.email()).stream()
-                    .map(OrdersResponse::from).toList();
-        } else {
-            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
-            ordersResponses = ordersService.getOrdersByCompanyId(company.id()).stream()
-                    .map(OrdersResponse::from).toList();
-        }
-
-        model.addAttribute("orders", ordersResponses);
-
-        if (alarmId != null) {
-            alarmService.checkAlarm(alarmId);
-        }
-
-        return "user/orders";
-    }
-
-    /**
-     * 주문 상태 변경 요청
-     */
-    @PostMapping("/orders")
-    public String updateOrdersStatus(
-            @ModelAttribute("orders") OrdersRequest ordersRequest
-    ) {
-        try {
-            ordersService.updateOrders(ordersRequest.toDto());
-        } catch (RuntimeException e) {
-            log.error("주문 상태 변경 실패 - {}", e);
-        }
-
-        return "redirect:/user/orders";
     }
 
     /**

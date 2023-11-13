@@ -1,15 +1,11 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Company;
-import joo.project.my3d.domain.Orders;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
-import joo.project.my3d.dto.OrdersDto;
 import joo.project.my3d.exception.CompanyException;
 import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.exception.OrdersException;
 import joo.project.my3d.repository.CompanyRepository;
-import joo.project.my3d.repository.OrdersRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

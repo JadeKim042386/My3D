@@ -86,14 +86,6 @@ public class SecurityConfig {
                                 "/model_articles/[0-9]+/delete",
                                 "/user/company"
                         ).hasAnyRole("COMPANY", "ADMIN")
-                        .regexMatchers(
-                                HttpMethod.GET,
-                                "/user/orders"
-                        ).authenticated()
-                        .regexMatchers(
-                                HttpMethod.POST,
-                                "/user/orders"
-                        ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf((csrf) -> csrf

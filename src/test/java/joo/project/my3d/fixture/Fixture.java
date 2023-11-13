@@ -95,11 +95,8 @@ public class Fixture {
     public static Company getCompany() {
         return Company.of("company", "homepage");
     }
-    public static Orders getOrders(UserAccount userAccount, Company company) {
-        return Orders.of(OrderStatus.EXAMINE, "add example", Address.of("11111", "서울특별시", "111"), userAccount, company);
-    }
 
     public static Alarm getAlarm(UserAccount userAccount) {
-        return Alarm.of(AlarmType.NEW_ORDER, "a@gmail.com", 1L, false, userAccount);
+        return Alarm.of(AlarmType.NEW_LIKE_ON_POST, "a@gmail.com", 1L, false, userAccount);
     }
 }
