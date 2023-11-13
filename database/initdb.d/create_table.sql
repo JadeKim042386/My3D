@@ -134,24 +134,6 @@ CREATE TABLE `dimension` (
    FOREIGN KEY (`good_option_id`) REFERENCES `good_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';
 
-CREATE TABLE `orders` (
-    `id`	bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id`	bigint	NOT NULL,
-    `company_id` bigint	NOT NULL,
-    `status` varchar(10) NOT NULL,
-    `product_name` varchar(255) NOT NULL,
-    `detail` varchar(50) NOT NULL,
-    `street` varchar(100) NOT NULL,
-    `zipcode` varchar(10) NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`),
-    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주문';
-
 CREATE TABLE `alarm` (
      `id`	bigint	AUTO_INCREMENT NOT NULL,
      `alarm_type` varchar(50) NOT NULL,

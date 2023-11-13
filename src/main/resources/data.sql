@@ -79,15 +79,7 @@ insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
 (2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
--- 주문
-insert into orders (user_account_id, company_id, status, product_name, detail, street, zipcode, created_by, modified_at, modified_by, created_at) values
-(2, 1, 'REQUEST', 'example product1', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-(2, 1, 'EXAMINE', 'example product2', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-(2, 1, 'PRINTING', 'example product3', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03'),
-(2, 1, 'DELIVERY', 'example product4', '111', '서울특별시', '11111', 'a', '2023-05-24 11:18:46', 'a', '2023-02-12 01:11:03');
-
 -- 알람
 insert into alarm (user_account_id, alarm_type, from_user_nickname, target_id, is_checked, created_by, modified_at, modified_by, created_at) values
 (3, 'NEW_COMMENT_ON_POST', 'a', 4, false, 'a', now(), 'a', now()),
-(3, 'NEW_LIKE_ON_POST', 'a', 4, false, 'a', now(), 'a', now()),
-(3, 'NEW_ORDER', 'a', 4, false, 'a', now(), 'a', now());
+(3, 'NEW_LIKE_ON_POST', 'a', 4, false, 'a', now(), 'a', now());
