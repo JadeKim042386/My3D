@@ -14,26 +14,20 @@ import static javax.persistence.FetchType.LAZY;
 @Getter
 @ToString(callSuper = true)
 @Table(
-        name = "good_option",
+        name = "dimension_option",
         indexes = {
                 @Index(columnList = "id")
         }
 )
 @Entity
-public class GoodOption extends AuditingFields {
+public class DimensionOption extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Setter
     @Column(nullable = false)
-    private String optionName; //상품명
-    @Setter
-    @Column(nullable = false)
-    private String printingTech; //프린팅 방식
-    @Setter
-    @Column(nullable = false)
-    private String material; //프린팅 소재
+    private String optionName; //치수명
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -41,27 +35,25 @@ public class GoodOption extends AuditingFields {
     private Article article;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "goodOption", fetch = LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL)
     private final Set<Dimension> dimensions = new LinkedHashSet<>();
 
-    protected GoodOption() {
+    protected DimensionOption() {
     }
 
-    private GoodOption(Article article, String optionName, String printing_tech, String material) {
+    private DimensionOption(Article article, String optionName) {
         this.article = article;
         this.optionName = optionName;
-        this.printingTech = printing_tech;
-        this.material = material;
     }
 
-    public static GoodOption of(Article article, String optionName, String printing_tech, String material) {
-        return new GoodOption(article, optionName, printing_tech, material);
+    public static DimensionOption of(Article article, String optionName) {
+        return new DimensionOption(article, optionName);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GoodOption that)) return false;
+        if (!(o instanceof DimensionOption that)) return false;
         return this.getId() != null && Objects.equals(this.getId(), that.getId());
     }
 

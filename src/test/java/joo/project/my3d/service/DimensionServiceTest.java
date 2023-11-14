@@ -1,13 +1,12 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.Dimension;
-import joo.project.my3d.domain.GoodOption;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.DimensionOptionRepository;
 import joo.project.my3d.repository.DimensionRepository;
-import joo.project.my3d.repository.GoodOptionRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,34 +25,31 @@ import static org.mockito.BDDMockito.*;
 class DimensionServiceTest {
     @InjectMocks private DimensionService dimensionService;
     @Mock private DimensionRepository dimensionRepository;
-    @Mock private GoodOptionRepository goodOptionRepository;
+    @Mock private DimensionOptionRepository dimensionOptionRepository;
 
     @DisplayName("모델 게시글 내의 치수 목록 조회")
     @Test
     void getDimensions() {
         // Given
-        Long goodOptionId = 1L;
-        given(dimensionRepository.findByGoodOptionId(goodOptionId)).willReturn(List.of());
+        Long dimensionOptionId = 1L;
+        given(dimensionRepository.findByDimensionOptionId(dimensionOptionId)).willReturn(List.of());
         // When
-        dimensionService.getDimensions(goodOptionId);
+        dimensionService.getDimensions(dimensionOptionId);
         // Then
-        then(dimensionRepository).should().findByGoodOptionId(goodOptionId);
+        then(dimensionRepository).should().findByDimensionOptionId(dimensionOptionId);
     }
 
     @DisplayName("치수 저장")
     @Test
     void saveDimension() {
         // Given
+        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
         DimensionDto dimensionDto = FixtureDto.getDimensionDto();
-        Article article = Fixture.getArticle();
-        GoodOption goodOption = Fixture.getGoodOption(article);
-        Dimension dimension = dimensionDto.toEntity(goodOption);
-        given(goodOptionRepository.getReferenceById(dimensionDto.goodOptionId())).willReturn(goodOption);
+        Dimension dimension = dimensionDto.toEntity(dimensionOption);
         given(dimensionRepository.save(any(Dimension.class))).willReturn(dimension);
         // When
         dimensionService.saveDimension(dimensionDto);
         // Then
-        then(goodOptionRepository).should().getReferenceById(dimensionDto.goodOptionId());
         then(dimensionRepository).should().save(any(Dimension.class));
     }
 
@@ -62,10 +58,9 @@ class DimensionServiceTest {
     void updateDimension() {
         // Given
         Long dimensionId = 1L;
-        DimensionDto dimensionDto = FixtureDto.getDimensionDto(dimensionId);
-        Article article = Fixture.getArticle();
-        GoodOption goodOption = Fixture.getGoodOption(article);
-        Dimension dimension = dimensionDto.toEntity(goodOption);
+        DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(1L);
+        DimensionDto dimensionDto = FixtureDto.getDimensionDto();
+        Dimension dimension = dimensionDto.toEntity(dimensionOption);
         given(dimensionRepository.getReferenceById(dimensionId)).willReturn(dimension);
         // When
         dimensionService.updateDimension(dimensionDto);

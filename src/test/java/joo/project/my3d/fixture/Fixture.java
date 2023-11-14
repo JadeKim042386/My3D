@@ -78,12 +78,12 @@ public class Fixture {
         );
     }
 
-    public static GoodOption getGoodOption(Article article) {
-        return GoodOption.of(article, "option3", "LSA", "lesin");
+    public static DimensionOption getDimensionOption(Article article) {
+        return DimensionOption.of(article, "option3");
     }
 
-    public static Dimension getDimension(GoodOption goodOption) {
-        return Dimension.of(goodOption, "너비", 10.0f, DimUnit.MM);
+    public static Dimension getDimension(DimensionOption dimensionOption) {
+        return Dimension.of(dimensionOption, "너비", 10.0f, DimUnit.MM);
     }
 
     public static Company getCompany() {

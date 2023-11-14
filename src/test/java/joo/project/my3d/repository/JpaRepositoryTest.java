@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -42,7 +41,7 @@ public class JpaRepositoryTest {
         @Autowired private ArticleLikeRepository articleLikeRepository;
         @Autowired private ArticleFileRepository articleFileRepository;
         @Autowired private DimensionRepository dimensionRepository;
-        @Autowired private GoodOptionRepository goodOptionRepository;
+        @Autowired private DimensionOptionRepository dimensionOptionRepository;
 
         @DisplayName("게시글 findAll")
         @Test
@@ -124,13 +123,13 @@ public class JpaRepositoryTest {
             long previousCommentCount = articleCommentRepository.count();
             long previousLikeCount = articleLikeRepository.count();
             long previousDimension = dimensionRepository.count();
-            long previousGoodOption = goodOptionRepository.count();
+            long previousDimensionOption = dimensionOptionRepository.count();
             log.info("previousCount: {}", previousCount);
             log.info("previousFileCount: {}", previousFileCount);
             log.info("previousCommentCount: {}", previousCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             log.info("previousDimension: {}", previousDimension);
-            log.info("previousGoodOption: {}", previousGoodOption);
+            log.info("previousDimensionOption: {}", previousDimensionOption);
             // When
             articleCommentRepository.deleteByArticleId(articleId);
             articleLikeRepository.deleteByArticleId(articleId);
@@ -140,8 +139,8 @@ public class JpaRepositoryTest {
             assertThat(articleCommentRepository.count()).isEqualTo(previousCommentCount - 1);
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 1);
             assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
-            assertThat(dimensionRepository.count()).isEqualTo(previousDimension - 2);
-            assertThat(goodOptionRepository.count()).isEqualTo(previousGoodOption - 2);
+            assertThat(dimensionRepository.count()).isEqualTo(previousDimension);
+            assertThat(dimensionOptionRepository.count()).isEqualTo(previousDimensionOption);
         }
     }
 
@@ -433,82 +432,82 @@ public class JpaRepositoryTest {
     }
 
     @ActiveProfiles("test")
-    @DisplayName("상품옵션 Jpa 테스트")
+    @DisplayName("치수 옵션 Jpa 테스트")
     @Import(TestJpaConfig.class)
     @DataJpaTest
     @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
     @Nested
-    public class GoodOptionJpaTest {
+    public class DimensionOptionJpaTest {
 
-        @Autowired private GoodOptionRepository goodOptionRepository;
+        @Autowired private DimensionOptionRepository dimensionOptionRepository;
         @Autowired private ArticleRepository articleRepository;
 
-        @DisplayName("상품옵션 findAll")
+        @DisplayName("치수 옵션 findAll")
         @Test
-        void getGoodOptions() {
+        void getDimensionOptions() {
             // Given
 
             // When
-            List<GoodOption> goodOptions = goodOptionRepository.findAll();
+            List<DimensionOption> dimensionOptions = dimensionOptionRepository.findAll();
             // Then
-            assertThat(goodOptions).isNotNull().hasSize(2);
+            assertThat(dimensionOptions).isNotNull().hasSize(2);
         }
 
-        @DisplayName("상품옵션 findById")
+        @DisplayName("치수 옵션 findById")
         @Test
-        void getGoodOption() {
+        void getDimensionOption() {
             // Given
-            Long goodOptionId = 1L;
+            Long dimensionOptionId = 1L;
             // When
-            Optional<GoodOption> goodOption = goodOptionRepository.findById(goodOptionId);
+            Optional<DimensionOption> dimensionOption = dimensionOptionRepository.findById(dimensionOptionId);
             // Then
-            assertThat(goodOption).isNotNull();
+            assertThat(dimensionOption).isNotNull();
         }
 
-        @DisplayName("상품옵션 save")
+        @DisplayName("치수 옵션 save")
         @Test
-        void saveGoodOption() {
+        void saveDimensionOption() {
             // Given
             Article article = articleRepository.getReferenceById(1L);
-            GoodOption goodOption = Fixture.getGoodOption(article);
-            long previousCount = goodOptionRepository.count();
+            DimensionOption dimensionOption = Fixture.getDimensionOption(article);
+            long previousCount = dimensionOptionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
-            GoodOption savedGoodOption = goodOptionRepository.save(goodOption);
+            DimensionOption savedDimensionOption = dimensionOptionRepository.save(dimensionOption);
             // Then
-            long afterCount = goodOptionRepository.count();
+            long afterCount = dimensionOptionRepository.count();
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedGoodOption)
+            assertThat(savedDimensionOption)
                     .hasFieldOrPropertyWithValue("id", 3L);
         }
 
-        @DisplayName("상품옵션 update")
+        @DisplayName("치수 옵션 update")
         @Test
-        void updateGoodOption() {
+        void updateDimensionOption() {
             // Given
-            Long goodOptionId = 1L;
-            GoodOption goodOption = goodOptionRepository.getReferenceById(goodOptionId);
-            LocalDateTime previousModifiedAt = goodOption.getModifiedAt();
-            goodOption.setOptionName("option3");
+            Long dimensionOptionId = 1L;
+            DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(dimensionOptionId);
+            LocalDateTime previousModifiedAt = dimensionOption.getModifiedAt();
+            dimensionOption.setOptionName("option3");
             // When
-            goodOptionRepository.saveAndFlush(goodOption);
+            dimensionOptionRepository.saveAndFlush(dimensionOption);
             // Then
-            assertThat(goodOption.getModifiedBy()).isEqualTo(goodOption.getCreatedBy());
-            assertThat(goodOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
+            assertThat(dimensionOption.getModifiedBy()).isEqualTo(dimensionOption.getCreatedBy());
+            assertThat(dimensionOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
 
-        @DisplayName("상품옵션 delete")
+        @DisplayName("치수 옵션 delete")
         @Test
-        void deleteGoodOption() {
+        void deleteDimensionOption() {
             // Given
-            Long goodOptionId = 1L;
-            long previousCount = goodOptionRepository.count();
+            Long dimensionOptionId = 1L;
+            long previousCount = dimensionOptionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
-            goodOptionRepository.deleteById(goodOptionId);
+            dimensionOptionRepository.deleteById(dimensionOptionId);
             // Then
-            assertThat(goodOptionRepository.count()).isEqualTo(previousCount - 1);
+            assertThat(dimensionOptionRepository.count()).isEqualTo(previousCount - 1);
         }
     }
 
@@ -521,7 +520,7 @@ public class JpaRepositoryTest {
     public class DimensionJpaTest {
 
         @Autowired private DimensionRepository dimensionRepository;
-        @Autowired private GoodOptionRepository goodOptionRepository;
+        @Autowired private DimensionOptionRepository dimensionOptionRepository;
 
         @DisplayName("치수 findAll")
         @Test
@@ -549,8 +548,8 @@ public class JpaRepositoryTest {
         @Test
         void saveDimension() {
             // Given
-            GoodOption goodOption = goodOptionRepository.getReferenceById(1L);
-            Dimension dimension = Fixture.getDimension(goodOption);
+            DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(1L);
+            Dimension dimension = Fixture.getDimension(dimensionOption);
             long previousCount = dimensionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

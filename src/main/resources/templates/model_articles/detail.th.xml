@@ -24,15 +24,13 @@
         <attr sel="#img-thumb" th:each="imgFile, stat : ${imgFiles}" th:classappend="${stat.index} == 0 ? 'active' : _">
             <attr sel=".img" th:src="${modelPath} + *{imgFile.fileName}"/>
         </attr>
-        <attr sel="#optionName" th:each="goodOption, stat : ${article.goodOptions}"
+        <attr sel="#optionName" th:each="dimensionOption, stat : ${article.dimensionOptions}"
               th:selected="${stat.index} == 0 ? true : false"
-              th:text="${goodOption.optionName}"
+              th:text="${dimensionOption.optionName}"
         />
-        <attr sel="#printingTech"  th:if="${#lists.size(article.goodOptions)} > 0" th:text="'프린팅 방식: ' + ${article.goodOptions[0].printingTech}"/>
-        <attr sel="#material" th:if="${#lists.size(article.goodOptions)} > 0" th:text="'재질: ' + ${article.goodOptions[0].material}"/>
-        <attr sel="#optionData" th:if="${#lists.size(article.goodOptions)} > 0">
+        <attr sel="#optionData" th:if="${#lists.size(article.dimensionOptions)} > 0">
             <attr sel=".dimension"
-                  th:each="dim: ${article.goodOptions[0].dimensions}"
+                  th:each="dim: ${article.dimensionOptions[0].dimensions}"
                   th:text="${dim.dimName} + ': ' + ${dim.dimValue} + ' ' + ${dim.dimUnit}"
             />
         </attr>

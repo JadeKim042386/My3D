@@ -92,23 +92,21 @@ CREATE TABLE `article_like` (
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='좋아요';
 
-CREATE TABLE `good_option` (
+CREATE TABLE `dimension_option` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
     `article_id`	bigint	NOT NULL,
     `option_name`	varchar(50)	NOT NULL,
-    `printing_tech`	varchar(50)	NOT NULL,
-    `material`	varchar(50)	NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,
     `created_by`	varchar(100)	NOT NULL,
     `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='상품옵션';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수 옵션';
 
 CREATE TABLE `dimension` (
    `id`	bigint	AUTO_INCREMENT NOT NULL,
-   `good_option_id`	bigint	NOT NULL,
+   `dimension_option_id`	bigint	NOT NULL,
    `dim_name`	varchar(50)	NOT NULL,
    `dim_value`	float	default 0 NOT NULL,
    `dim_unit`	varchar(10)	NOT NULL,
@@ -117,7 +115,7 @@ CREATE TABLE `dimension` (
    `created_by`	varchar(100)	NOT NULL,
    `modified_by`	varchar(100)	NOT NULL,
    PRIMARY KEY (`id`),
-   FOREIGN KEY (`good_option_id`) REFERENCES `good_option` (`id`)
+   FOREIGN KEY (`dimension_option_id`) REFERENCES `dimension_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';
 
 CREATE TABLE `alarm` (

@@ -5,18 +5,18 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GoodOptionException extends RuntimeException {
+public class DimensionOptionException extends RuntimeException {
 
     private ErrorCode errorCode;
     private Exception parentException;
     private String message;
 
 
-    public GoodOptionException(ErrorCode errorCode) {
+    public DimensionOptionException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
-    public GoodOptionException(ErrorCode errorCode, Exception parentException) {
+    public DimensionOptionException(ErrorCode errorCode, Exception parentException) {
         this.errorCode = errorCode;
         this.parentException = parentException;
     }

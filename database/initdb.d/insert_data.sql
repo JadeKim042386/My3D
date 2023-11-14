@@ -56,13 +56,13 @@ insert into article_like (article_id, user_account_id, created_at, modified_at, 
 (7, 3, '2023-03-12 16:43:47', '2023-03-12 16:43:47', 'jujoo', 'jujoo'),
 (6, 3, '2023-06-23 21:19:43', '2023-06-23 21:19:43', 'jujoo', 'jujoo');
 
--- 상품옵션
-insert into good_option (article_id, option_name, printing_tech, material, created_at, modified_at, created_by, modified_by) values
-(4, 'option1', 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(4, 'option2', 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+-- 치수 옵션
+insert into dimension_option (article_id, option_name, created_at, modified_at, created_by, modified_by) values
+(4, 'option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(4, 'option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 치수
-insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
+insert into dimension (dimension_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
 (2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 

@@ -72,7 +72,7 @@ public class Article extends AuditingFields {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
-    private final Set<GoodOption> goodOptions = new LinkedHashSet<>();
+    private final Set<DimensionOption> dimensionOptions = new LinkedHashSet<>();
 
     protected Article() {
     }

@@ -20,14 +20,14 @@ public record ArticleWithCommentsAndLikeCountDto(
         ArticleCategory articleCategory,
         Set<ArticleCommentDto> articleCommentDtos,
         int likeCount,
-        List<GoodOptionWithDimensionDto> goodOptions,
+        List<DimensionOptionWithDimensionDto> dimensionOptions,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, List<GoodOptionWithDimensionDto> goodOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, summary, content, articleType, articleCategory, articleCommentDtos, likeCount, goodOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, List<DimensionOptionWithDimensionDto> dimensionOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, summary, content, articleType, articleCategory, articleCommentDtos, likeCount, dimensionOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     public static ArticleWithCommentsAndLikeCountDto from(Article article) {
@@ -44,7 +44,7 @@ public record ArticleWithCommentsAndLikeCountDto(
                         .map(ArticleCommentDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 article.getLikeCount(),
-                article.getGoodOptions().stream().map(GoodOptionWithDimensionDto::from).toList(),
+                article.getDimensionOptions().stream().map(DimensionOptionWithDimensionDto::from).toList(),
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),
