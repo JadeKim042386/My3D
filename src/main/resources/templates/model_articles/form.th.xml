@@ -7,8 +7,6 @@
     <attr sel="#article-form" th:object="${article}" th:action="${formStatus?.update} ? '/model_articles/form/' + ${article.id} : '/model_articles/form'" th:method="post">
         <!--제목-->
         <attr sel="#title" th:value="*{title} ?: _"/>
-        <!--요약-->
-        <attr sel="#summary" th:text="*{summary} ?: _"/>
         <!--내용-->
         <attr sel="#content" th:text="*{content} ?: _"/>
         <!--파일-->

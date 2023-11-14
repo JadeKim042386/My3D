@@ -18,20 +18,14 @@
         <attr sel="#model-view" th:model="${modelPath} + *{modelFile.fileName}"/>
         <!--제목&본문 내용-->
         <attr sel="#title" th:text="*{title}"/>
-        <attr sel="#summary" th:text="*{summary}"/>
-        <!--요청 모달-->
         <attr sel="#content" th:text="*{content}"/>
-        <attr sel="#img-thumb" th:each="imgFile, stat : ${imgFiles}" th:classappend="${stat.index} == 0 ? 'active' : _">
-            <attr sel=".img" th:src="${modelPath} + *{imgFile.fileName}"/>
-        </attr>
-        <attr sel="#optionName" th:each="dimensionOption, stat : ${article.dimensionOptions}"
-              th:selected="${stat.index} == 0 ? true : false"
-              th:text="${dimensionOption.optionName}"
-        />
-        <attr sel="#optionData" th:if="${#lists.size(article.dimensionOptions)} > 0">
-            <attr sel=".dimension"
-                  th:each="dim: ${article.dimensionOptions[0].dimensions}"
-                  th:text="${dim.dimName} + ': ' + ${dim.dimValue} + ' ' + ${dim.dimUnit}"
+        <!--치수 옵션-->
+        <attr sel="#dimensionOption">
+            <attr sel="option[0]"
+                  th:each="dimensionOption, stat : ${article.dimensionOptions}"
+                  th:value="${dimensionOption.optionName}"
+                  th:text="${dimensionOption.optionName}"
+                  th:selected="${stat.index} == 0 ? true : false"
             />
         </attr>
         <!--좋아요-->

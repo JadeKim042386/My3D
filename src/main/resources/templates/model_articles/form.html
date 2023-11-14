@@ -73,12 +73,6 @@
           <input type="text" class="form-control" id="title" name="title" placeholder="제목" required>
         </div>
       </div>
-      <!--요약-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <textarea class="form-control" id="summary" name="summary" rows="3" placeholder="상품에 대해서 간단하게 설명해주세요." required></textarea>
-        </div>
-      </div>
       <!--본문-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
@@ -96,21 +90,10 @@
           <p id="model-file-error" class="mb-0"></p>
         </div>
       </div>
-      <!--이미지 파일-->
+      <!--치수 옵션-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
-          <div class="input-group custom-file-button">
-            <label class="input-group-text" for="imgFiles">촬영 이미지 선택</label>
-            <input type="file" multiple accept="image/*" class="form-control" id="imgFiles" name="imgFiles">
-            <label id="imgFileName" for="imgFiles" hidden></label>
-          </div>
-          <p id="img-file-error" class="mb-0"></p>
-        </div>
-      </div>
-      <!--상품옵션-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <button id="addDimensionOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">상품옵션 추가</button>
+          <button id="addDimensionOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">치수옵션 추가</button>
         </div>
       </div>
       <p id="dimensionOption-error"></p>
@@ -130,18 +113,12 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="dimensionOptionModalLabel">상품옵션</h1>
+              <h1 class="modal-title fs-5" id="dimensionOptionModalLabel">치수 설정</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="optionName" placeholder="상품명">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="printingTech" placeholder="프린팅 방식">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="material" placeholder="프린팅 소재">
+                <input type="text" class="form-control" id="optionName" placeholder="그룹명">
               </div>
               <!--치수 테이블-->
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
@@ -205,7 +182,7 @@
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
           <select class="form-select" id="category" name="articleCategory">
-            <option> 카테고리를 선택해주세요.</option>
+            <option>카테고리를 선택해주세요.</option>
             <option>All</option>
           </select>
           <p id="category-error" class="mb-0"></p>
@@ -259,6 +236,7 @@
       }
 
       $('#dimensionOptionModal').modal('hide');
+      $('#editDimensionOption').removeAttr("disabled");
       selectDimensionOption();
     }
 
@@ -270,16 +248,16 @@
     function selectDimensionOption() {
       var selectedOptionName = getSelectedOption().text();
       var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
-
       $('#addedDimensionTable tbody').find("tr").remove();
-      for (var i in dimensionOption['dimensions']) {
-        var dimension = dimensionOption['dimensions'][i];
-        var row = '<tr>' +
-                '<td>' + dimension['dimName'] + '</td>' +
-                '<td>' + dimension['dimValue'] + '</td>' +
-                '<td>' + dimension['dimUnit'] + '</td>' +
-                '</tr>';
-        $("#addedDimensionTable tbody").append(row);
+      if (dimensionOption != null) {
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '</tr>';
+          $("#addedDimensionTable tbody").append(row);
+        }
       }
     }
 
@@ -288,25 +266,31 @@
       var optionName = selectedOption.text();
       localStorage.removeItem(optionName);
       selectedOption.remove();
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
+      }
+      selectDimensionOption();
     }
 
     $('#editDimensionOption').click(function () {
       $(".add-new").removeAttr("disabled");
       var selectedOptionName = getSelectedOption().text();
       var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
-      $('#optionName').val(dimensionOption['optionName']);
-      var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
-      var delete_action = $("#dimensionTable td:last-child").html();
-      $('#dimensionTable tbody').find("tr").remove();
-      for (var dimension of dimensionOption['dimensions']) {
-        var row = '<tr>' +
-                '<td>' + dimension['dimName'] + '</td>' +
-                '<td>' + dimension['dimValue'] + '</td>' +
-                '<td>' + dimension['dimUnit'] + '</td>' +
-                '<td>' + edit_action + '</td>' +
-                '<td>' + delete_action + '</td>' +
-                '</tr>';
-        $("#dimensionTable tbody").append(row);
+      if (dimensionOption != null) {
+        $('#optionName').val(dimensionOption['optionName']);
+        var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
+        var delete_action = $("#dimensionTable td:last-child").html();
+        $('#dimensionTable tbody').find("tr").remove();
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '<td>' + edit_action + '</td>' +
+                  '<td>' + delete_action + '</td>' +
+                  '</tr>';
+          $("#dimensionTable tbody").append(row);
+        }
       }
     })
 
@@ -351,6 +335,10 @@
           dimensionOptionJson["dimensions"].push(dimensionJson);
         }
         localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
+      }
+      //아무것도 없으면 수정 버튼 비활성
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
       }
       selectDimensionOption();
 
