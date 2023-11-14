@@ -12,19 +12,14 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class Fixture {
 
-    public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static Article getArticle(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
         ArticleFile articleFile = Fixture.getArticleFile();
-        return Article.of(userAccount, title, summary, content, articleType, articleCategory, articleFile);
-    }
-
-    public static Article getArticle(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        ArticleFile articleFile = Fixture.getArticleFile();
-        return Article.of(userAccount, summary, title, content, articleType, articleCategory, articleFile);
+        return Article.of(userAccount, title, content, articleType, articleCategory, articleFile);
     }
 
     public static Article getArticle() {
-        return Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        return Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
     }
 
     public static ArticleComment getArticleComment(String content) {

@@ -114,7 +114,7 @@ class ArticleServiceTest {
     void getArticle() {
         // Given
         Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
         // When
         ArticleDto dto = articleService.getArticle(articleId);
@@ -134,7 +134,7 @@ class ArticleServiceTest {
     void getArticleWithComments() {
         // Given
         Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
         // When
         ArticleWithCommentsAndLikeCountDto dto = articleService.getArticleWithComments(articleId);
@@ -169,8 +169,8 @@ class ArticleServiceTest {
     @Test
     void saveArticle() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle(articleDto.title(), articleDto.summary(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title",  "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         // When
         articleService.saveArticle(articleDto);
@@ -182,7 +182,7 @@ class ArticleServiceTest {
     @Test
     void saveModelArticleNotExistCategory() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, null);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, null);
         // When
         assertThatThrownBy(() -> articleService.saveArticle(articleDto))
                 .isInstanceOf(ArticleException.class)
@@ -195,8 +195,8 @@ class ArticleServiceTest {
     @Test
     void updateArticle() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new summary","new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount userAccount = Fixture.getUserAccount();
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
         given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(userAccount);
@@ -214,7 +214,7 @@ class ArticleServiceTest {
     @Test
     void updateArticleNotExistArticle() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.getReferenceById(articleDto.id())).willThrow(EntityNotFoundException.class);
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
@@ -228,8 +228,8 @@ class ArticleServiceTest {
     @Test
     void updateArticleNotWriter() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new summary", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title",  "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
         given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);

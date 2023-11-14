@@ -25,14 +25,13 @@ public class FixtureDto {
         return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
-    public static ArticleDto getArticleDto(Long id, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         return ArticleDto.of(
                 id,
                 userAccountDto,
                 title,
-                summary,
                 content,
                 articleType,
                 articleCategory,
@@ -55,7 +54,7 @@ public class FixtureDto {
         return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
-    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
@@ -64,7 +63,6 @@ public class FixtureDto {
                 userAccountDto,
                 articleFileDto,
                 title,
-                summary,
                 content,
                 articleType,
                 articleCategory,

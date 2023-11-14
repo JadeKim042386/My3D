@@ -22,8 +22,6 @@ public class ArticleFormRequest {
     @NotBlank
     private String title;
     @NotBlank
-    private String summary;
-    @NotBlank
     private String content;
     @NotNull
     @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
@@ -43,7 +41,6 @@ public class ArticleFormRequest {
         return ArticleDto.of(
                 userAccountDto,
                 title,
-                summary,
                 content,
                 articleType,
                 ArticleCategory.valueOf(articleCategory),

@@ -37,10 +37,7 @@ public class Article extends AuditingFields {
     private String title;
     @Setter
     @Column(nullable = false)
-    private String summary; //요약 내용
-    @Setter
-    @Column(nullable = false)
-    private String content; //본문
+    private String content;
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -77,22 +74,21 @@ public class Article extends AuditingFields {
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
+    private Article(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
         this.userAccount = userAccount;
         this.title = title;
-        this.summary = summary;
         this.content = content;
         this.articleType = articleType;
         this.articleCategory = articleCategory;
         this.articleFile = articleFile;
     }
 
-    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
-        return new Article(userAccount, title, summary, content, articleType, articleCategory, articleFile);
+    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
+        return new Article(userAccount, title, content, articleType, articleCategory, articleFile);
     }
 
-    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleFile articleFile) {
-        return Article.of(userAccount, title, summary, content, articleType, null, articleFile);
+    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleFile articleFile) {
+        return Article.of(userAccount, title, content, articleType, null, articleFile);
     }
 
     @Override

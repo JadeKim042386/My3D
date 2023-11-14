@@ -112,7 +112,6 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "MUSIC")
                                 .param("dimensionOptions[0].optionName", "option1")
@@ -144,7 +143,6 @@ class ModelArticlesControllerTest {
                                 .file("modelFile", null)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "카테고리를 선택해주세요.")
                                 .param("dimensionOptions[0].optionName", "option1")
@@ -174,7 +172,6 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "카테고리를 선택해주세요.")
                                 .param("dimensionOptions[0].optionName", "option1")
@@ -204,7 +201,6 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "MUSIC")
                                 .param("dimensionOptions[0].optionName", "option1")
@@ -234,7 +230,6 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "")
                                 .param("articleCategory", "MUSIC")
                                 .param("dimensionOptions[0].optionName", "option1")
@@ -264,7 +259,6 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "MUSIC")
                                 .with(authentication(authentication))
@@ -281,7 +275,7 @@ class ModelArticlesControllerTest {
     void modelArticle() throws Exception {
         // Given
         Long articleId = 1L;
-        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true);
         UserAccount userAccount = userAccountDto.toEntity();
         ArticleLike articleLike = Fixture.getArticleLike(userAccount);
@@ -311,7 +305,7 @@ class ModelArticlesControllerTest {
     @Test
     void updateModelArticle() throws Exception {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         given(dimensionOptionService.getDimensionOptionWithDimensions(anyLong())).willReturn(List.of());
         given(articleService.getArticle(anyLong())).willReturn(articleDto);

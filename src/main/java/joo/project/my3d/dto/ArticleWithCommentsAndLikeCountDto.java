@@ -14,7 +14,6 @@ public record ArticleWithCommentsAndLikeCountDto(
         UserAccountDto userAccountDto,
         ArticleFileDto articleFileDto,
         String title,
-        String summary,
         String content,
         ArticleType articleType,
         ArticleCategory articleCategory,
@@ -26,8 +25,8 @@ public record ArticleWithCommentsAndLikeCountDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, List<DimensionOptionWithDimensionDto> dimensionOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, summary, content, articleType, articleCategory, articleCommentDtos, likeCount, dimensionOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, List<DimensionOptionWithDimensionDto> dimensionOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, articleCommentDtos, likeCount, dimensionOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     public static ArticleWithCommentsAndLikeCountDto from(Article article) {
@@ -36,7 +35,6 @@ public record ArticleWithCommentsAndLikeCountDto(
                 UserAccountDto.from(article.getUserAccount()),
                 ArticleFileDto.from(article.getArticleFile()),
                 article.getTitle(),
-                article.getSummary(),
                 article.getContent(),
                 article.getArticleType(),
                 article.getArticleCategory(),
