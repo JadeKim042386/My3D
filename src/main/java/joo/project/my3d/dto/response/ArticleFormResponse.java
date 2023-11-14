@@ -16,28 +16,24 @@ public class ArticleFormResponse {
     private String title;
     private String summary;
     private String content;
-    private Integer priceValue;
-    private Integer deliveryPrice;
     private final List<GoodOptionResponse> goodOptions = new ArrayList<>();
     private String articleCategory;
 
-    private ArticleFormResponse(Long id, ArticleFileResponse modelFile, String title, String summary, String content, Integer priceValue, Integer deliveryPrice, String articleCategory) {
+    private ArticleFormResponse(Long id, ArticleFileResponse modelFile, String title, String summary, String content, String articleCategory) {
         this.id = id;
         this.modelFile = modelFile;
         this.title = title;
         this.summary = summary;
         this.content = content;
-        this.priceValue = priceValue;
-        this.deliveryPrice = deliveryPrice;
         this.articleCategory = articleCategory;
     }
 
     public static ArticleFormResponse of() {
-        return new ArticleFormResponse(null, null, null, null, null, null, null, null);
+        return new ArticleFormResponse(null, null, null, null, null,  null);
     }
 
-    public static ArticleFormResponse of(Long id, ArticleFileResponse modelFile, String title, String summary, String content, Integer priceValue, Integer deliveryPrice, String articleCategory) {
-        return new ArticleFormResponse(id, modelFile, title, summary, content, priceValue, deliveryPrice, articleCategory);
+    public static ArticleFormResponse of(Long id, ArticleFileResponse modelFile, String title, String summary, String content, String articleCategory) {
+        return new ArticleFormResponse(id, modelFile, title, summary, content, articleCategory);
     }
 
     public static ArticleFormResponse from(ArticleDto dto, ArticleFileDto articleFileDto, List<GoodOptionResponse> goodOptionResponses) {
@@ -47,8 +43,6 @@ public class ArticleFormResponse {
                 dto.title(),
                 dto.summary(),
                 dto.content(),
-                dto.priceDto().priceValue(),
-                dto.priceDto().deliveryPrice(),
                 dto.articleCategory().name()
         );
         articleFormResponse.goodOptions.addAll(goodOptionResponses);

@@ -74,15 +74,10 @@ public class Article extends AuditingFields {
     @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
     private final Set<GoodOption> goodOptions = new LinkedHashSet<>();
 
-    @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "price_id")
-    private Price price;
-
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile, Price price) {
+    private Article(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
         this.userAccount = userAccount;
         this.title = title;
         this.summary = summary;
@@ -90,15 +85,14 @@ public class Article extends AuditingFields {
         this.articleType = articleType;
         this.articleCategory = articleCategory;
         this.articleFile = articleFile;
-        this.price = price;
     }
 
-    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile, Price price) {
-        return new Article(userAccount, title, summary, content, articleType, articleCategory, articleFile, price);
+    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
+        return new Article(userAccount, title, summary, content, articleType, articleCategory, articleFile);
     }
 
-    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleFile articleFile, Price price) {
-        return Article.of(userAccount, title, summary, content, articleType, null, articleFile, price);
+    public static Article of(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleFile articleFile) {
+        return Article.of(userAccount, title, summary, content, articleType, null, articleFile);
     }
 
     @Override

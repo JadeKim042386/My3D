@@ -15,14 +15,12 @@ public class Fixture {
     public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
         ArticleFile articleFile = Fixture.getArticleFile();
-        Price price = Fixture.getPrice();
-        return Article.of(userAccount, title, summary, content, articleType, articleCategory, articleFile, price);
+        return Article.of(userAccount, title, summary, content, articleType, articleCategory, articleFile);
     }
 
     public static Article getArticle(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
         ArticleFile articleFile = Fixture.getArticleFile();
-        Price price = Fixture.getPrice();
-        return Article.of(userAccount, summary, title, content, articleType, articleCategory, articleFile, price);
+        return Article.of(userAccount, summary, title, content, articleType, articleCategory, articleFile);
     }
 
     public static Article getArticle() {
@@ -81,11 +79,7 @@ public class Fixture {
     }
 
     public static GoodOption getGoodOption(Article article) {
-        return GoodOption.of(article, "option3", 3000, "LSA", "lesin");
-    }
-
-    public static Price getPrice() {
-        return Price.of(10000, 3000);
+        return GoodOption.of(article, "option3", "LSA", "lesin");
     }
 
     public static Dimension getDimension(GoodOption goodOption) {

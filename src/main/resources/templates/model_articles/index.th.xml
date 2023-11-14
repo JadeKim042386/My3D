@@ -36,7 +36,6 @@
         <attr sel="#title" th:text="${article.title}" th:href="@{'/model_articles/' + ${article.id}}"/>
         <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
         <attr sel="div.like/span" th:text="${article.likeCount}"/>
-        <attr sel="#price" th:text="${article.priceValue} > 0 ? '₩' + ${#numbers.formatInteger(article.priceValue, 3, 'COMMA')} + (${article.deliveryPrice} > 0 ? '+' + ${#numbers.formatInteger(article.deliveryPrice, 3, 'COMMA')} + '(배송료)' : '(배송비 무료)') : '무료'"/>
     </attr>
     <!--페이지네이션-->
     <attr sel="#pagination">

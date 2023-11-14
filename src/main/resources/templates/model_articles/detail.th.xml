@@ -43,8 +43,6 @@
             <attr sel="#like" th:onclick="|location.href=${addedLike} ? '/like/' + *{id} + '/delete' : '/like/' + *{id}|"/>
             <attr sel="#likeCount" th:text="*{likeCount}"/>
         </attr>
-        <!--가격-->
-        <attr sel="#price" th:text="${article.priceValue} > 0 ? '₩' + ${#numbers.formatInteger(article.priceValue + article.deliveryPrice, 3, 'COMMA')} : '무료'"/>
         <!--댓글 작성 폼-->
         <attr sel=".comment-form" th:action="@{/comments/new(articleId=*{id})}" th:method="post"/>
         <!--댓글-->

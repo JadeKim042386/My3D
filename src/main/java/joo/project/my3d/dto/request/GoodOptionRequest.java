@@ -15,28 +15,25 @@ import java.util.List;
 @NoArgsConstructor
 public class GoodOptionRequest {
         private String optionName;
-        private Integer addPrice;
         private String printingTech;
         private String material;
         @NotNull
         private final List<DimensionRequest> dimensions = new ArrayList<>();
 
-        private GoodOptionRequest(String optionName, Integer addPrice, String printingTech, String material) {
+        private GoodOptionRequest(String optionName, String printingTech, String material) {
                 this.optionName = optionName;
-                this.addPrice = addPrice;
                 this.printingTech = printingTech;
                 this.material = material;
         }
 
-        public static GoodOptionRequest of(String optionName, Integer addPrice, String printingTech, String material) {
-                return new GoodOptionRequest(optionName, addPrice, printingTech, material);
+        public static GoodOptionRequest of(String optionName, String printingTech, String material) {
+                return new GoodOptionRequest(optionName, printingTech, material);
         }
 
         public GoodOptionDto toDto(Long articleId) {
                 return GoodOptionDto.of(
                         articleId,
                         optionName,
-                        addPrice,
                         printingTech,
                         material
                 );
@@ -45,7 +42,6 @@ public class GoodOptionRequest {
         public static GoodOptionRequest from(GoodOptionDto dto) {
                 return GoodOptionRequest.of(
                         dto.optionName(),
-                        dto.addPrice(),
                         dto.printingTech(),
                         dto.material()
                 );

@@ -26,9 +26,6 @@
             />
         </attr>
         <attr sel="#category-error" th:errors="*{articleCategory}" th:classappend="field-error"/>
-        <!--가격-->
-        <attr sel="#priceValue" th:value="*{priceValue} ?: _"/>
-        <attr sel="#deliveryPrice" th:value="*{deliveryPrice} ?: _"/>
 
         <attr sel="#submit-button" th:text="${formStatus?.description} ?: _" />
         <attr sel="#cancel-button" th:onclick="|location.href='@{/model_articles}'|" />

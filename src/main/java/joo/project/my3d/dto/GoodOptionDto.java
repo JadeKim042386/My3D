@@ -7,23 +7,21 @@ public record GoodOptionDto(
         Long id,
         Long articleId,
         String optionName,
-        Integer addPrice,
         String printingTech,
         String material
 ) {
-    public static GoodOptionDto of(Long id, Long articleId, String optionName, Integer addPrice, String printingTech, String material) {
-        return new GoodOptionDto(id, articleId, optionName, addPrice, printingTech, material);
+    public static GoodOptionDto of(Long id, Long articleId, String optionName, String printingTech, String material) {
+        return new GoodOptionDto(id, articleId, optionName, printingTech, material);
     }
 
-    public static GoodOptionDto of(Long articleId, String optionName, Integer addPrice, String printingTech, String material) {
-        return GoodOptionDto.of(null, articleId, optionName, addPrice, printingTech, material);
+    public static GoodOptionDto of(Long articleId, String optionName, String printingTech, String material) {
+        return GoodOptionDto.of(null, articleId, optionName, printingTech, material);
     }
 
     public GoodOption toEntity(Article article) {
         return GoodOption.of(
                 article,
                 optionName,
-                addPrice,
                 printingTech,
                 material
         );
@@ -34,7 +32,6 @@ public record GoodOptionDto(
                 goodOption.getId(),
                 goodOption.getArticle().getId(),
                 goodOption.getOptionName(),
-                goodOption.getAddPrice(),
                 goodOption.getPrintingTech(),
                 goodOption.getMaterial()
         );

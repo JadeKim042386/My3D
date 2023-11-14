@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -42,7 +43,6 @@ public class JpaRepositoryTest {
         @Autowired private ArticleFileRepository articleFileRepository;
         @Autowired private DimensionRepository dimensionRepository;
         @Autowired private GoodOptionRepository goodOptionRepository;
-        @Autowired private PriceRepository priceRepository;
 
         @DisplayName("게시글 findAll")
         @Test
@@ -125,14 +125,12 @@ public class JpaRepositoryTest {
             long previousLikeCount = articleLikeRepository.count();
             long previousDimension = dimensionRepository.count();
             long previousGoodOption = goodOptionRepository.count();
-            long previousPrice = priceRepository.count();
             log.info("previousCount: {}", previousCount);
             log.info("previousFileCount: {}", previousFileCount);
             log.info("previousCommentCount: {}", previousCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             log.info("previousDimension: {}", previousDimension);
             log.info("previousGoodOption: {}", previousGoodOption);
-            log.info("previousPrice: {}", previousPrice);
             // When
             articleCommentRepository.deleteByArticleId(articleId);
             articleLikeRepository.deleteByArticleId(articleId);
@@ -144,7 +142,6 @@ public class JpaRepositoryTest {
             assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
             assertThat(dimensionRepository.count()).isEqualTo(previousDimension - 2);
             assertThat(goodOptionRepository.count()).isEqualTo(previousGoodOption - 2);
-            assertThat(priceRepository.count()).isEqualTo(previousPrice - 1);
         }
     }
 
@@ -491,17 +488,14 @@ public class JpaRepositoryTest {
         void updateGoodOption() {
             // Given
             Long goodOptionId = 1L;
-            int modified_price = 5000;
             GoodOption goodOption = goodOptionRepository.getReferenceById(goodOptionId);
-            goodOption.setAddPrice(modified_price);
             LocalDateTime previousModifiedAt = goodOption.getModifiedAt();
+            goodOption.setOptionName("option3");
             // When
             goodOptionRepository.saveAndFlush(goodOption);
             // Then
-            assertThat(goodOption).hasFieldOrPropertyWithValue("addPrice", modified_price);
             assertThat(goodOption.getModifiedBy()).isEqualTo(goodOption.getCreatedBy());
             assertThat(goodOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
-
         }
 
         @DisplayName("상품옵션 delete")
@@ -598,39 +592,6 @@ public class JpaRepositoryTest {
             dimensionRepository.deleteById(dimensionId);
             // Then
             assertThat(dimensionRepository.count()).isEqualTo(previousCount - 1);
-        }
-    }
-
-    @ActiveProfiles("test")
-    @DisplayName("가격 Jpa 테스트")
-    @Import(TestJpaConfig.class)
-    @DataJpaTest
-    @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-    @Nested
-    public class PriceJpaTest {
-
-        @Autowired private PriceRepository priceRepository;
-
-        @DisplayName("가격 findAll")
-        @Test
-        void getPrices() {
-            // Given
-
-            // When
-            List<Price> prices = priceRepository.findAll();
-            // Then
-            assertThat(prices).isNotNull().hasSize(10);
-        }
-
-        @DisplayName("가격 findById")
-        @Test
-        void getPrice() {
-            // Given
-            Long priceId = 1L;
-            // When
-            Optional<Price> price = priceRepository.findById(priceId);
-            // Then
-            assertThat(price).isNotNull();
         }
     }
 

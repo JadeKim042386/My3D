@@ -138,9 +138,6 @@
                 <input type="text" class="form-control" id="optionName" placeholder="상품명">
               </div>
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="addPrice" placeholder="추가금액">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
                 <input type="text" class="form-control" id="printingTech" placeholder="프린팅 방식">
               </div>
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
@@ -234,17 +231,6 @@
           <p id="category-error" class="mb-0"></p>
         </div>
       </div>
-      <!--상품 가격-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-2 text-center">
-          <label for="priceValue" class="mb-2">가격</label>
-          <input type="text" class="form-control" id="priceValue" name="priceValue" value="0" required>
-        </div>
-        <div class="col-sm-8 col-lg-2 text-center">
-          <label for="deliveryPrice" class="mb-2">배송료</label>
-          <input type="text" class="form-control" id="deliveryPrice" name="deliveryPrice" value="0" required>
-        </div>
-      </div>
       <!--저장&취소-->
       <div class="row mb-5 justify-content-md-end">
         <div class="col-sm-8 col-lg-9">
@@ -270,7 +256,6 @@
       var optionName = $('#optionName').val();
       var goodOption = {
         "optionName": optionName,
-        "addPrice": $('#addPrice').val(),
         "printingTech": $('#printingTech').val(),
         "material": $('#material').val(),
         "dimensions": []
@@ -309,7 +294,6 @@
       var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
       var row = '<tr>' +
               '<td>' + goodOption['optionName'] + '</td>' +
-              '<td>' + goodOption['addPrice'] + '</td>' +
               '<td>' + goodOption['printingTech'] + '</td>' +
               '<td>' + goodOption['material'] + '</td>' +
               '</tr>';
@@ -339,7 +323,6 @@
       var selectedOptionName = getSelectedOption().text();
       var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
       $('#optionName').val(goodOption['optionName']);
-      $('#addPrice').val(goodOption['addPrice']);
       $('#printingTech').val(goodOption['printingTech']);
       $('#material').val(goodOption['material']);
       var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
@@ -366,7 +349,6 @@
         for (var i=0; i < localStorage.length; i++) {
           var goodOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
           var goodOptionInputs = "<input type='hidden' name='goodOptions[" + i + "].optionName' value='" + goodOption["optionName"] + "'>"
-                                + "<input type='hidden' name='goodOptions[" + i + "].addPrice' value='" + goodOption["addPrice"] + "'>"
                                 + "<input type='hidden' name='goodOptions[" + i + "].printingTech' value='" + goodOption["printingTech"] + "'>"
                                 + "<input type='hidden' name='goodOptions[" + i + "].material' value='" + goodOption["material"] + "'>";
           $('#article-form').append(goodOptionInputs);
@@ -391,7 +373,6 @@
         addSelectOption(optionName);
         var goodOptionJson = {
           "optionName": optionName,
-          "addPrice": goodOption.addPrice,
           "printingTech": goodOption.printingTech,
           "material": goodOption.material,
           "dimensions": []
@@ -413,7 +394,6 @@
       // 상품 옵션 추가시 입력 폼 초기화
       $("#addGoodOptionButton").click(function () {
         $('#optionName').val("");
-        $('#addPrice').val("");
         $('#printingTech').val("");
         $('#material').val("");
         $('#dimensionTable tbody').find("tr").remove();

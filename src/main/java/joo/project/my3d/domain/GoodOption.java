@@ -30,9 +30,6 @@ public class GoodOption extends AuditingFields {
     private String optionName; //상품명
     @Setter
     @Column(nullable = false)
-    private Integer addPrice = 0; //추가금액
-    @Setter
-    @Column(nullable = false)
     private String printingTech; //프린팅 방식
     @Setter
     @Column(nullable = false)
@@ -50,16 +47,15 @@ public class GoodOption extends AuditingFields {
     protected GoodOption() {
     }
 
-    private GoodOption(Article article, String optionName, Integer addPrice, String printing_tech, String material) {
+    private GoodOption(Article article, String optionName, String printing_tech, String material) {
         this.article = article;
         this.optionName = optionName;
-        this.addPrice = addPrice;
         this.printingTech = printing_tech;
         this.material = material;
     }
 
-    public static GoodOption of(Article article, String optionName, Integer addPrice, String printing_tech, String material) {
-        return new GoodOption(article, optionName, addPrice, printing_tech, material);
+    public static GoodOption of(Article article, String optionName, String printing_tech, String material) {
+        return new GoodOption(article, optionName, printing_tech, material);
     }
 
     @Override

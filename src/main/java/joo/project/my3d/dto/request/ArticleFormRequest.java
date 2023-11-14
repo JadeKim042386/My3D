@@ -28,10 +28,6 @@ public class ArticleFormRequest {
     @NotBlank
     private String content;
     @NotNull
-    private Integer priceValue;
-    @NotNull
-    private Integer deliveryPrice;
-    @NotNull
     @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
     private final List<GoodOptionRequest> goodOptions = new ArrayList<>();
     @MultipartFileSizeValid
@@ -54,8 +50,7 @@ public class ArticleFormRequest {
                 articleType,
                 ArticleCategory.valueOf(articleCategory),
                 0,
-                articleFileDto,
-                PriceDto.of(priceValue, deliveryPrice)
+                articleFileDto
         );
     }
 

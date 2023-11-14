@@ -56,9 +56,6 @@ public class GoodOptionService {
     public void updateGoodOption(GoodOptionDto dto) {
         try {
             GoodOption goodOption = goodOptionRepository.getReferenceById(dto.id());
-            if (dto.addPrice() != null) {
-                goodOption.setAddPrice(dto.addPrice());
-            }
             if (dto.optionName() != null) {
                 goodOption.setOptionName(dto.optionName());
             }
