@@ -13,6 +13,9 @@
         details > summary::-webkit-details-marker {
             display: none;
         }
+        table {
+            margin-top: 16px;
+        }
     </style>
 </head>
 <body>
@@ -52,6 +55,19 @@
                  cameraMode=2
                  model="/models/model.stl">
             </div>
+            <!--현재 선택한 치수 옵션 정보-->
+            <table class="table table-bordered" id="dimensionTable">
+                <thead>
+                <tr>
+                    <th>치수명</th>
+                    <th>치수</th>
+                    <th>단위</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
         </div>
         <!--제목&내용-->
         <div class="col-6">
@@ -75,9 +91,8 @@
             </div>
         </div>
         <div class="col-4">
-            <select class="form-select" id="dimensionOption" name="dimensionOption">
+            <select class="form-select" id="dimensionOption" name="dimensionOption" onchange="selectDimensionOption()">
                 <option>치수를 선택해주세요.</option>
-                <option>All</option>
             </select>
         </div>
         <div class="col-2">
@@ -191,6 +206,7 @@
     window.addEventListener('load', () => {
         OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
         OV.Init3DViewerElements();
+        selectDimensionOption();
     })
 </script>
 <script>
@@ -199,15 +215,19 @@
     })
 </script>
 <script id="inline-js">
-    function changeOption() {
-        var optionSelect = document.getElementById("optionSelect");
-        var selectIdx = optionSelect.selectedIndex;
-        var dimensionOption = [[${article.dimensions}]][selectIdx];
-        $("#optionData").find('.dimension').remove();
-        for (var dimension of dimensionOption.dimensions) {
-            var dimText = dimension.dimName + ': ' + dimension.dimValue + ' ' + dimension.dimUnit;
-            var listItem = '<li class="list-group-item dimension">' + dimText + '</li>';
-            $("#optionData").append(listItem);
+    function selectDimensionOption() {
+        var selectedIndex = $("#dimensionOption option:selected").index();
+        var dimensionOption = [[${article.dimensionOptions}]][selectedIndex]
+        $('#dimensionTable tbody').find("tr").remove();
+        if (dimensionOption != null) {
+            for (var dimension of dimensionOption['dimensions']) {
+                var row = '<tr>' +
+                    '<td>' + dimension['dimName'] + '</td>' +
+                    '<td>' + dimension['dimValue'] + '</td>' +
+                    '<td>' + dimension['dimUnit'] + '</td>' +
+                    '</tr>';
+                $("#dimensionTable tbody").append(row);
+            }
         }
     }
 </script>

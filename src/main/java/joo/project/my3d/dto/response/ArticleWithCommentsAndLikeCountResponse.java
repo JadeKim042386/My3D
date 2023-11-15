@@ -22,7 +22,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
         ArticleCategory articleCategory,
         Set<ArticleCommentResponse> articleCommentResponses,
         int likeCount,
-        List<DimensionOptionResponse> dimensions,
+        List<DimensionOptionResponse> dimensionOptions,
         String createdAt
 ) {
     public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, List<DimensionOptionResponse> dimensionOptionResponses, LocalDateTime createdAt) {
