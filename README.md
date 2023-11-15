@@ -55,7 +55,6 @@
 6. [게시글 수정](#6-게시글-수정)
 7. [좋아요 기능](#7-좋아요-기능-user-a가-b-게시물에-좋아요를-누른-상황) 
 8. [댓글 기능](#8-댓글-기능-user-a가-b-게시물에-댓글을-남긴-상황)
-9. [주문 기능](#9-주문-기능-user-a가-b에게-주문을-요청한-상황)
 
 ### 1. 회원가입
 
@@ -216,21 +215,6 @@ sequenceDiagram
         WAS ->> DB: 댓글 저장 요청
     end
     WAS ->> DB: 댓글 알람 저장 요청
-    deactivate DB
-    actor client B
-    WAS -->>- client B: 알람 전송
-```
-
-### 9. 주문 기능: User A가 B에게 주문을 요청한 상황
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor client A
-    client A ->>+ WAS: 주문 요청
-    WAS ->> DB: 주문 저장 요청
-    activate DB
-    WAS ->> DB: 주문 알람 저장 요청
     deactivate DB
     actor client B
     WAS -->>- client B: 알람 전송
