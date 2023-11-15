@@ -8,19 +8,6 @@ insert into user_account (email, user_password, nickname, phone, detail, street,
 ('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', null, now(), 'a', now(), 'a'),
 ('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', 1, now(), 'jujoo', now(), 'jujoo');
 
--- 가격
-insert into price (price_value, delivery_price, created_at, modified_at, created_by, modified_by) values
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10000, 3000, '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
-
 -- 파일 10개
 insert into article_file (byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
 (4172, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
@@ -35,17 +22,17 @@ insert into article_file (byte_size, original_file_name, file_name, file_extensi
 (5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
 
 -- 게시글 10개
-insert into article (user_account_id, title, summary, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count, article_file_id, price_id) values
-(1, 'Morbi non lectus.', 'Morbi non lectus.', 'Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus.', 'joo', 'joo', '2022-12-15 02:41:19', '2023-02-23 23:27:58', 'MODEL', 'MUSIC', 1, 1, 1),
-(1, 'Phasellus id sapien in sapien iaculis congue.', 'Phasellus id sapien in sapien iaculis congue.', 'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 'joo', 'joo', '2022-07-29 07:00:14', '2023-02-10 04:07:29', 'MODEL', 'MUSIC', 0, 2, 2),
-(1, 'Morbi non quam nec dui luctus rutrum.', 'Morbi non quam nec dui luctus rutrum.', 'Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.', 'joo', 'joo', '2023-05-25 14:26:02', '2023-04-12 06:13:46', 'MODEL', 'MUSIC', 0, 3, 3),
-(3, 'Etiam vel augue.', 'Etiam vel augue.', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'joo', 'joo', '2023-03-27 23:12:02', '2022-07-15 10:32:48', 'MODEL', 'MUSIC', 0, 4, 4),
-(1, 'Curabitur convallis.', 'Curabitur convallis.', 'Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.', 'joo', 'joo', '2023-02-07 19:12:16', '2023-03-29 15:11:34', 'MODEL', 'MUSIC', 0, 5, 5),
-(3, 'Donec vitae nisi.', 'Donec vitae nisi.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Hayward', 'Valentina', '2022-10-26 10:56:28', '2023-02-24 10:22:47', 'MODEL', 'MUSIC', 1, 6, 6),
-(3, 'Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl.', 'Vivamus metus arcu,', 'In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.', 'Remus', 'Natale', '2023-02-11 18:39:15', '2022-08-29 05:07:08', 'MODEL', 'CARS_VEHICLES', 1, 7, 7),
-(1, 'In congue.', 'In congue.', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 'Dicky', 'Dud', '2023-01-15 05:59:09', '2023-03-26 17:46:37', 'MODEL', 'CARS_VEHICLES', 0, 8, 8),
-(3, 'In hac habitasse platea dictumst.', 'In hac habitasse platea dictumst.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Karee', 'Virgie', '2023-01-06 15:54:30', '2022-08-20 04:28:34', 'MODEL', 'FASHION_STYLE', 2, 9, 9),
-(3,  'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est.', 'Vestibulum ante ipsum', 'Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'Florina', 'Maurine', '2022-10-05 14:50:19', '2022-07-31 12:38:29', 'MODEL', 'FASHION_STYLE', 1, 10, 10);
+insert into article (user_account_id, title, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count, article_file_id) values
+(1, 'Morbi non lectus.',  'Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus.', 'joo', 'joo', '2022-12-15 02:41:19', '2023-02-23 23:27:58', 'MODEL', 'MUSIC', 1, 1),
+(1, 'Phasellus id sapien in sapien iaculis congue.',  'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 'joo', 'joo', '2022-07-29 07:00:14', '2023-02-10 04:07:29', 'MODEL', 'MUSIC', 0, 2),
+(1, 'Morbi non quam nec dui luctus rutrum.',  'Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.', 'joo', 'joo', '2023-05-25 14:26:02', '2023-04-12 06:13:46', 'MODEL', 'MUSIC', 0, 3),
+(3, 'Etiam vel augue.', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'joo', 'joo', '2023-03-27 23:12:02', '2022-07-15 10:32:48', 'MODEL', 'MUSIC', 0, 4),
+(1, 'Curabitur convallis.', 'Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.', 'joo', 'joo', '2023-02-07 19:12:16', '2023-03-29 15:11:34', 'MODEL', 'MUSIC', 0, 5),
+(3, 'Donec vitae nisi.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Hayward', 'Valentina', '2022-10-26 10:56:28', '2023-02-24 10:22:47', 'MODEL', 'MUSIC', 1, 6),
+(3, 'Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl.', 'In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.', 'Remus', 'Natale', '2023-02-11 18:39:15', '2022-08-29 05:07:08', 'MODEL', 'CARS_VEHICLES', 1, 7),
+(1, 'In congue.', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 'Dicky', 'Dud', '2023-01-15 05:59:09', '2023-03-26 17:46:37', 'MODEL', 'CARS_VEHICLES', 0, 8),
+(3, 'In hac habitasse platea dictumst.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Karee', 'Virgie', '2023-01-06 15:54:30', '2022-08-20 04:28:34', 'MODEL', 'FASHION_STYLE', 2, 9),
+(3,  'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est.', 'Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'Florina', 'Maurine', '2022-10-05 14:50:19', '2022-07-31 12:38:29', 'MODEL', 'FASHION_STYLE', 1, 10);
 
 -- 댓글 10개
 insert into article_comment (user_account_id, article_id, content, parent_comment_id, created_by, modified_at, modified_by, created_at) values
@@ -69,13 +56,13 @@ insert into article_like (article_id, user_account_id, created_at, modified_at, 
 (7, 3, '2023-03-12 16:43:47', '2023-03-12 16:43:47', 'jujoo', 'jujoo'),
 (6, 3, '2023-06-23 21:19:43', '2023-06-23 21:19:43', 'jujoo', 'jujoo');
 
--- 상품옵션
-insert into good_option (article_id, option_name, add_price, printing_tech, material, created_at, modified_at, created_by, modified_by) values
-(4, 'option1', 0, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(4, 'option2', 1000, 'LSA', 'lesin', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+-- 치수 옵션
+insert into dimension_option (article_id, option_name, created_at, modified_at, created_by, modified_by) values
+(4, 'option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(4, 'option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 치수
-insert into dimension (good_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
+insert into dimension (dimension_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
 (1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
 (2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 

@@ -1,15 +1,12 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.Dimension;
-import joo.project.my3d.domain.GoodOption;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.DimensionException;
 import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.repository.ArticleRepository;
+import joo.project.my3d.repository.DimensionOptionRepository;
 import joo.project.my3d.repository.DimensionRepository;
-import joo.project.my3d.repository.GoodOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,11 +22,11 @@ import java.util.List;
 public class DimensionService {
 
     private final DimensionRepository dimensionRepository;
-    private final GoodOptionRepository goodOptionRepository;
+    private final DimensionOptionRepository dimensionOptionRepository;
 
 
-    public List<DimensionDto> getDimensions(Long goodOptionId) {
-        return dimensionRepository.findByGoodOptionId(goodOptionId)
+    public List<DimensionDto> getDimensions(Long dimensionOptionId) {
+        return dimensionRepository.findByDimensionOptionId(dimensionOptionId)
                 .stream().map(DimensionDto::from)
                 .toList();
     }
@@ -40,8 +37,8 @@ public class DimensionService {
     @Transactional
     public void saveDimension(DimensionDto dto) {
         try{
-            GoodOption goodOption = goodOptionRepository.getReferenceById(dto.goodOptionId());
-            Dimension dimension = dto.toEntity(goodOption);
+            DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(dto.dimensionOptionId());
+            Dimension dimension = dto.toEntity(dimensionOption);
             dimensionRepository.save(dimension);
         } catch (EntityNotFoundException e) {
             throw new DimensionException(ErrorCode.FAILED_SAVE, e);
@@ -77,8 +74,8 @@ public class DimensionService {
     /**
      * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
      */
-    public void deleteDimensions(Long goodOptionId) {
-        List<Dimension> dimensions = dimensionRepository.findByGoodOptionId(goodOptionId);
+    public void deleteDimensions(Long dimensionOptionId) {
+        List<Dimension> dimensions = dimensionRepository.findByDimensionOptionId(dimensionOptionId);
         for (Dimension dimension : dimensions) {
             dimensionRepository.deleteById(dimension.getId());
         }

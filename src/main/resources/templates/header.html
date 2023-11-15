@@ -28,7 +28,6 @@
         <li><a class="dropdown-item" id="adminCompany" href="#">기업정보 관리</a></li>
         <li><a class="dropdown-item" id="adminAccount" href="#">계정정보 관리</a></li>
         <li><a class="dropdown-item" id="adminPassword" href="#">비밀번호 변경</a></li>
-        <li><a class="dropdown-item" id="adminOrders" href="#">주문 조회</a></li>
       </ul>
 
       <span id="headerNickname" class="text-dark me-2 fw-semibold">nickname</span>
@@ -90,9 +89,6 @@
             content = '님이 좋아요를 눌렀습니다';
           } else if (alarm['alarmType'] === 'NEW_COMMENT_ON_POST') {
             content = '님이 댓글을 달았습니다';
-          } else {
-            content = '님의 주문이 추가되었습니다';
-            url = '/user/orders' + '?alarmId=' + alarm["id"];
           }
           var newAlarm = '<li> <a class="dropdown-item alarm-item'
           + (alarm['isChecked'] ? '' : ' fw-semibold')

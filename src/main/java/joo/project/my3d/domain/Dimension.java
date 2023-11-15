@@ -35,21 +35,21 @@ public class Dimension extends AuditingFields {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "goodOptionId")
-    private GoodOption goodOption;
+    @JoinColumn(name = "dimensionOptionId")
+    private DimensionOption dimensionOption;
 
     protected Dimension() {
     }
 
-    private Dimension(GoodOption goodOption, String dimName, Float dimValue, DimUnit dimUnit) {
-        this.goodOption = goodOption;
+    private Dimension(DimensionOption dimensionOption, String dimName, Float dimValue, DimUnit dimUnit) {
+        this.dimensionOption = dimensionOption;
         this.dimName = dimName;
         this.dimValue = dimValue;
         this.dimUnit = dimUnit;
     }
 
-    public static Dimension of(GoodOption goodOption, String dimName, Float dimValue, DimUnit dimUnit) {
-        return new Dimension(goodOption, dimName, dimValue, dimUnit);
+    public static Dimension of(DimensionOption dimensionOption, String dimName, Float dimValue, DimUnit dimUnit) {
+        return new Dimension(dimensionOption, dimName, dimValue, dimUnit);
     }
 
     @Override

@@ -1,23 +1,17 @@
 package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
-import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.ArticleFile;
-import joo.project.my3d.domain.ArticleLike;
-import joo.project.my3d.domain.GoodOption;
+import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.dto.GoodOptionDto;
+import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
-import joo.project.my3d.dto.request.GoodOptionRequest;
-import joo.project.my3d.dto.response.ArticleFormResponse;
-import joo.project.my3d.dto.response.ArticleResponse;
-import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
-import joo.project.my3d.dto.response.GoodOptionResponse;
+import joo.project.my3d.dto.request.DimensionOptionRequest;
+import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
@@ -51,7 +45,7 @@ public class ModelArticlesController {
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
-    private final GoodOptionService goodOptionService;
+    private final DimensionOptionService dimensionOptionService;
     private final DimensionService dimensionService;
     private final AlarmService alarmService;
 
@@ -159,12 +153,12 @@ public class ModelArticlesController {
             );
 
             //상품 옵션 저장
-            List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
-            for (GoodOptionRequest goodOptionRequest : goodOptionRequests){
-                GoodOptionDto goodOptionDto = goodOptionRequest.toDto(article.getId());
-                GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionDto);
+            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
+            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests){
+                DimensionOptionDto dimensionOptionDto = dimensionOptionRequest.toDto(article.getId());
+                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionDto);
                 //치수 저장
-                List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
                 for (DimensionDto dimensionDto : dimensionDtos) {
                     dimensionService.saveDimension(dimensionDto);
                 }
@@ -184,8 +178,8 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
-        List<GoodOptionResponse> goodOptionResponses = goodOptionService.getGoodOptionWithDimensions(articleId).stream()
-                .map(GoodOptionResponse::from)
+        List<DimensionOptionResponse> dimensionOptionResponses = dimensionOptionService.getDimensionOptionWithDimensions(articleId).stream()
+                .map(DimensionOptionResponse::from)
                 .toList();
 
         model.addAttribute(
@@ -193,7 +187,7 @@ public class ModelArticlesController {
             ArticleFormResponse.from(
                 articleService.getArticle(articleId),
                 articleFileService.getArticleFile(articleId),
-                goodOptionResponses
+                    dimensionOptionResponses
             )
         );
         model.addAttribute("formStatus", FormStatus.UPDATE);
@@ -229,13 +223,13 @@ public class ModelArticlesController {
                 articleFileService.saveArticleFile(file);
             }
             //상품옵션 업데이트
-            goodOptionService.deleteGoodOptions(articleId);
-            List<GoodOptionRequest> goodOptionRequests = articleFormRequest.getGoodOptions();
-            for (GoodOptionRequest goodOptionRequest : goodOptionRequests) {
-                GoodOption goodOption = goodOptionService.saveGoodOption(goodOptionRequest.toDto(articleId));
+            dimensionOptionService.deleteDimensionOptions(articleId);
+            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
+            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests) {
+                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionRequest.toDto(articleId));
                 //치수 업데이트
-                dimensionService.deleteDimensions(goodOption.getId());
-                List<DimensionDto> dimensionDtos = goodOptionRequest.toDimensionDtos(goodOption.getId());
+                dimensionService.deleteDimensions(dimensionOption.getId());
+                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
                 for (DimensionDto dimensionDto : dimensionDtos) {
                     dimensionService.saveDimension(dimensionDto);
                 }

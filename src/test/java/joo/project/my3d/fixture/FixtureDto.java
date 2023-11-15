@@ -25,21 +25,18 @@ public class FixtureDto {
         return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
-    public static ArticleDto getArticleDto(Long id, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        PriceDto priceDto = FixtureDto.getPriceDto();
         return ArticleDto.of(
                 id,
                 userAccountDto,
                 title,
-                summary,
                 content,
                 articleType,
                 articleCategory,
                 1,
                 articleFileDto,
-                priceDto,
                 LocalDateTime.now(),
                 userAccountDto.email(),
                 LocalDateTime.now(),
@@ -57,24 +54,21 @@ public class FixtureDto {
         return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
     }
 
-    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        PriceDto priceDto = FixtureDto.getPriceDto();
-        GoodOptionWithDimensionDto goodOptionWithDimensionDto = FixtureDto.getGoodOptionWithDimensionDto();
+        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto,
                 articleFileDto,
                 title,
-                summary,
                 content,
                 articleType,
                 articleCategory,
                 Set.of(),
                 2,
-                priceDto,
-                List.of(goodOptionWithDimensionDto),
+                List.of(dimensionOptionWithDimensionDto),
                 LocalDateTime.now(),
                 userAccountDto.email(),
                 LocalDateTime.now(),
@@ -83,10 +77,10 @@ public class FixtureDto {
     }
 
 
-    public static DimensionDto getDimensionDto(Long dimensionId) {
+    public static DimensionDto getDimensionDto(Long dimensionId, Long dimensionOptionId) {
         return DimensionDto.of(
                 dimensionId,
-                1L,
+                dimensionOptionId,
                 "너비",
                 10.0f,
                 DimUnit.MM
@@ -94,38 +88,27 @@ public class FixtureDto {
     }
 
     public static DimensionDto getDimensionDto() {
-        return FixtureDto.getDimensionDto(3L);
+        return FixtureDto.getDimensionDto(1L, 3L);
     }
 
-    public static GoodOptionDto getGoodOptionDto(Long goodOptionId) {
-        return GoodOptionDto.of(
-                goodOptionId,
-                1L,
-                "option10",
-                3000,
-                "LSA",
-                "lesin"
+    public static DimensionOptionDto getDimensionOptionDto(Long dimensionOptionId, Long articleId) {
+        return DimensionOptionDto.of(
+                dimensionOptionId,
+                articleId,
+                "option10"
         );
     }
 
-    public static GoodOptionDto getGoodOptionDto() {
-        return FixtureDto.getGoodOptionDto(3L);
+    public static DimensionOptionDto getDimensionOptionDto() {
+        return FixtureDto.getDimensionOptionDto(1L, 3L);
     }
 
-    private static GoodOptionWithDimensionDto getGoodOptionWithDimensionDto() {
+    private static DimensionOptionWithDimensionDto getDimensionOptionWithDimensionDto() {
         DimensionDto dimensionDto = FixtureDto.getDimensionDto();
-        return GoodOptionWithDimensionDto.of(
-                1L,
+        return DimensionOptionWithDimensionDto.of(
                 "option10",
-                3000,
-                "LSA",
-                "lesin",
                 List.of(dimensionDto)
         );
-    }
-
-    public static PriceDto getPriceDto() {
-        return PriceDto.of(3000, 3000);
     }
 
     public static UsernamePasswordAuthenticationToken getAuthentication(String nickname, UserRole userRole) {

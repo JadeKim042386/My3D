@@ -7,15 +7,13 @@
     <attr sel="#article-form" th:object="${article}" th:action="${formStatus?.update} ? '/model_articles/form/' + ${article.id} : '/model_articles/form'" th:method="post">
         <!--제목-->
         <attr sel="#title" th:value="*{title} ?: _"/>
-        <!--요약-->
-        <attr sel="#summary" th:text="*{summary} ?: _"/>
         <!--내용-->
         <attr sel="#content" th:text="*{content} ?: _"/>
         <!--파일-->
         <attr sel="#modelFileName" th:value="*{modelFile?.originalFilename} ?: _"/>
         <attr sel="#model-file-error" th:errors="*{modelFile}" th:classappend="field-error"/>
         <!--상품옵션-->
-        <attr sel="#goodOption-error" th:errors="*{goodOptions}" th:classappend="field-error"/>
+        <attr sel="#dimensionOption-error" th:errors="*{dimensionOptions}" th:classappend="field-error"/>
         <!--카테고리-->
         <attr sel="#category">
             <attr sel="option[1]"
@@ -26,9 +24,6 @@
             />
         </attr>
         <attr sel="#category-error" th:errors="*{articleCategory}" th:classappend="field-error"/>
-        <!--가격-->
-        <attr sel="#priceValue" th:value="*{priceValue} ?: _"/>
-        <attr sel="#deliveryPrice" th:value="*{deliveryPrice} ?: _"/>
 
         <attr sel="#submit-button" th:text="${formStatus?.description} ?: _" />
         <attr sel="#cancel-button" th:onclick="|location.href='@{/model_articles}'|" />

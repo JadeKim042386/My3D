@@ -12,21 +12,14 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class Fixture {
 
-    public static Article getArticle(String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static Article getArticle(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
         ArticleFile articleFile = Fixture.getArticleFile();
-        Price price = Fixture.getPrice();
-        return Article.of(userAccount, title, summary, content, articleType, articleCategory, articleFile, price);
-    }
-
-    public static Article getArticle(UserAccount userAccount, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        ArticleFile articleFile = Fixture.getArticleFile();
-        Price price = Fixture.getPrice();
-        return Article.of(userAccount, summary, title, content, articleType, articleCategory, articleFile, price);
+        return Article.of(userAccount, title, content, articleType, articleCategory, articleFile);
     }
 
     public static Article getArticle() {
-        return Fixture.getArticle("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        return Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
     }
 
     public static ArticleComment getArticleComment(String content) {
@@ -80,16 +73,12 @@ public class Fixture {
         );
     }
 
-    public static GoodOption getGoodOption(Article article) {
-        return GoodOption.of(article, "option3", 3000, "LSA", "lesin");
+    public static DimensionOption getDimensionOption(Article article) {
+        return DimensionOption.of(article, "option3");
     }
 
-    public static Price getPrice() {
-        return Price.of(10000, 3000);
-    }
-
-    public static Dimension getDimension(GoodOption goodOption) {
-        return Dimension.of(goodOption, "너비", 10.0f, DimUnit.MM);
+    public static Dimension getDimension(DimensionOption dimensionOption) {
+        return Dimension.of(dimensionOption, "너비", 10.0f, DimUnit.MM);
     }
 
     public static Company getCompany() {

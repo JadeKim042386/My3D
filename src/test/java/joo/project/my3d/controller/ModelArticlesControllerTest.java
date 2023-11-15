@@ -25,7 +25,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +46,7 @@ class ModelArticlesControllerTest {
     @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
     @MockBean private ArticleLikeRepository articleLikeRepository;
-    @MockBean private GoodOptionService goodOptionService;
+    @MockBean private DimensionOptionService dimensionOptionService;
     @MockBean private DimensionService dimensionService;
     @MockBean private AlarmService alarmService;
 
@@ -101,10 +100,10 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        GoodOption goodOption = Fixture.getGoodOption(article);
-        given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
+        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
         given(articleFileService.saveArticleFile(multipartFile)).willReturn(Fixture.getArticleFile());
-        given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
+        given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
+        given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
@@ -113,18 +112,12 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -133,9 +126,9 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleFileService).should().saveArticleFile(multipartFile);
         then(articleService).should().saveArticle(any(ArticleDto.class));
-        then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
+        then(articleFileService).should().saveArticleFile(multipartFile);
+        then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
         then(dimensionService).should().saveDimension(any(DimensionDto.class));
     }
 
@@ -150,18 +143,14 @@ class ModelArticlesControllerTest {
                                 .file("modelFile", null)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "카테고리를 선택해주세요.")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].printingTech", "123")
+                                .param("dimensionOptions[0].material", "123")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -183,18 +172,14 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "카테고리를 선택해주세요.")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].printingTech", "123")
+                                .param("dimensionOptions[0].material", "123")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -216,18 +201,14 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "")
-                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].printingTech", "123")
+                                .param("dimensionOptions[0].material", "123")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -249,18 +230,14 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].printingTech", "123")
+                                .param("dimensionOptions[0].material", "123")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -272,7 +249,7 @@ class ModelArticlesControllerTest {
 
     @DisplayName("[POST] 게시글 추가 - 상품옵션 누락")
     @Test
-    void addNewModelArticleWithoutGoodOption() throws Exception {
+    void addNewModelArticleWithoutDimensionOption() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
@@ -282,10 +259,7 @@ class ModelArticlesControllerTest {
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
-                                .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
                                 .with(authentication(authentication))
                                 .with(csrf())
@@ -301,7 +275,7 @@ class ModelArticlesControllerTest {
     void modelArticle() throws Exception {
         // Given
         Long articleId = 1L;
-        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "summary", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true);
         UserAccount userAccount = userAccountDto.toEntity();
         ArticleLike articleLike = Fixture.getArticleLike(userAccount);
@@ -331,9 +305,9 @@ class ModelArticlesControllerTest {
     @Test
     void updateModelArticle() throws Exception {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "summary", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
+        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        given(goodOptionService.getGoodOptionWithDimensions(anyLong())).willReturn(List.of());
+        given(dimensionOptionService.getDimensionOptionWithDimensions(anyLong())).willReturn(List.of());
         given(articleService.getArticle(anyLong())).willReturn(articleDto);
         given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
         // When
@@ -350,7 +324,7 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("categories"));
 
         // Then
-        then(goodOptionService).should().getGoodOptionWithDimensions(anyLong());
+        then(dimensionOptionService).should().getDimensionOptionWithDimensions(anyLong());
         then(articleService).should().getArticle(anyLong());
         then(articleFileService).should().getArticleFile(anyLong());
     }
@@ -362,14 +336,14 @@ class ModelArticlesControllerTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
         FieldUtils.writeField(article, "id", 1L, true);
-        GoodOption goodOption = Fixture.getGoodOption(article);
-        FieldUtils.writeField(goodOption, "id", 1L, true);
+        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
+        FieldUtils.writeField(dimensionOption, "id", 1L, true);
         given(articleFileService.getArticleFile(anyLong())).willReturn(FixtureDto.getArticleFileDto());
         given(articleFileService.updateArticleFile(eq(multipartFile))).willReturn(true);
         willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
         given(articleFileService.saveArticleFile(eq(multipartFile))).willReturn(Fixture.getArticleFile());
-        willDoNothing().given(goodOptionService).deleteGoodOptions(eq(1L));
-        given(goodOptionService.saveGoodOption(any(GoodOptionDto.class))).willReturn(goodOption);
+        willDoNothing().given(dimensionOptionService).deleteDimensionOptions(eq(1L));
+        given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
         willDoNothing().given(dimensionService).deleteDimensions(eq(1L));
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
@@ -382,16 +356,13 @@ class ModelArticlesControllerTest {
                                 .param("title", "title")
                                 .param("summary", "summary")
                                 .param("content", "content")
-                                .param("priceValue", String.valueOf(10000))
-                                .param("deliveryPrice", String.valueOf(3000))
                                 .param("articleCategory", "MUSIC")
-                                .param("goodOptions[0].optionName", "option1")
-                                .param("goodOptions[0].addPrice", String.valueOf(123))
-                                .param("goodOptions[0].printingTech", "123")
-                                .param("goodOptions[0].material", "123")
-                                .param("goodOptions[0].dimensions[0].dimName", "dimName")
-                                .param("goodOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("goodOptions[0].dimensions[0].dimUnit", "MM")
+                                .param("dimensionOptions[0].optionName", "option1")
+                                .param("dimensionOptions[0].printingTech", "123")
+                                .param("dimensionOptions[0].material", "123")
+                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(authentication(authentication))
                                 .with(csrf())
                 )
@@ -404,8 +375,8 @@ class ModelArticlesControllerTest {
         then(articleFileService).should().updateArticleFile(eq(multipartFile));
         then(articleFileService).should().deleteArticleFile(anyLong());
         then(articleFileService).should().saveArticleFile(eq(multipartFile));
-        then(goodOptionService).should().deleteGoodOptions(eq(1L));
-        then(goodOptionService).should().saveGoodOption(any(GoodOptionDto.class));
+        then(dimensionOptionService).should().deleteDimensionOptions(eq(1L));
+        then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
         then(dimensionService).should().deleteDimensions(eq(1L));
         then(dimensionService).should().saveDimension(any(DimensionDto.class));
         then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));

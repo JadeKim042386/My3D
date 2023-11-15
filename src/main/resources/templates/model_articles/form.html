@@ -73,12 +73,6 @@
           <input type="text" class="form-control" id="title" name="title" placeholder="제목" required>
         </div>
       </div>
-      <!--요약-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <textarea class="form-control" id="summary" name="summary" rows="3" placeholder="상품에 대해서 간단하게 설명해주세요." required></textarea>
-        </div>
-      </div>
       <!--본문-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
@@ -96,55 +90,35 @@
           <p id="model-file-error" class="mb-0"></p>
         </div>
       </div>
-      <!--이미지 파일-->
+      <!--치수 옵션-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
-          <div class="input-group custom-file-button">
-            <label class="input-group-text" for="imgFiles">촬영 이미지 선택</label>
-            <input type="file" multiple accept="image/*" class="form-control" id="imgFiles" name="imgFiles">
-            <label id="imgFileName" for="imgFiles" hidden></label>
-          </div>
-          <p id="img-file-error" class="mb-0"></p>
+          <button id="addDimensionOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">치수옵션 추가</button>
         </div>
       </div>
-      <!--상품옵션-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <button id="addGoodOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#goodOptionModal">상품옵션 추가</button>
-        </div>
-      </div>
-      <p id="goodOption-error"></p>
+      <p id="dimensionOption-error"></p>
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-7">
-          <select class="form-select" id="goodOption-select" onchange="selectGoodOption()">
+          <select class="form-select" id="dimensionOption-select" onchange="selectDimensionOption()">
 
           </select>
         </div>
         <div class="col-sm-1 col-lg-2">
-          <button id="editGoodOption" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#goodOptionModal">수정</button>
-          <button type="button" class="btn btn-danger" onclick="removeGoodOption()">삭제</button>
+          <button id="editDimensionOption" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">수정</button>
+          <button type="button" class="btn btn-danger" onclick="removeDimensionOption()">삭제</button>
         </div>
       </div>
       <!--상품옵션 모달-->
-      <div class="modal fade" id="goodOptionModal" tabindex="-1" aria-labelledby="goodOptionModalLabel" aria-hidden="true">
+      <div class="modal fade" id="dimensionOptionModal" tabindex="-1" aria-labelledby="dimensionOptionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="goodOptionModalLabel">상품옵션</h1>
+              <h1 class="modal-title fs-5" id="dimensionOptionModalLabel">치수 설정</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="optionName" placeholder="상품명">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="addPrice" placeholder="추가금액">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="printingTech" placeholder="프린팅 방식">
-              </div>
-              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
-                <input type="text" class="form-control" id="material" placeholder="프린팅 소재">
+                <input type="text" class="form-control" id="optionName" placeholder="그룹명">
               </div>
               <!--치수 테이블-->
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
@@ -182,28 +156,8 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-primary" onclick="addGoodOption()">저장</button>
+              <button type="button" class="btn btn-primary" onclick="addDimensionOption()">저장</button>
             </div>
-          </div>
-        </div>
-      </div>
-      <!--상품옵션 테이블-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-9">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="goodOptionTable">
-              <thead>
-                <tr>
-                  <th>상품명</th>
-                  <th>추가금액</th>
-                  <th>프린팅 방식</th>
-                  <th>프린팅 소재</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -228,21 +182,10 @@
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
           <select class="form-select" id="category" name="articleCategory">
-            <option> 카테고리를 선택해주세요.</option>
+            <option>카테고리를 선택해주세요.</option>
             <option>All</option>
           </select>
           <p id="category-error" class="mb-0"></p>
-        </div>
-      </div>
-      <!--상품 가격-->
-      <div class="row mb-3 justify-content-md-center">
-        <div class="col-sm-8 col-lg-2 text-center">
-          <label for="priceValue" class="mb-2">가격</label>
-          <input type="text" class="form-control" id="priceValue" name="priceValue" value="0" required>
-        </div>
-        <div class="col-sm-8 col-lg-2 text-center">
-          <label for="deliveryPrice" class="mb-2">배송료</label>
-          <input type="text" class="form-control" id="deliveryPrice" name="deliveryPrice" value="0" required>
         </div>
       </div>
       <!--저장&취소-->
@@ -266,13 +209,10 @@
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
   <script>
-    function addGoodOption() {
+    function addDimensionOption() {
       var optionName = $('#optionName').val();
-      var goodOption = {
+      var dimensionOption = {
         "optionName": optionName,
-        "addPrice": $('#addPrice').val(),
-        "printingTech": $('#printingTech').val(),
-        "material": $('#material').val(),
         "dimensions": []
       };
 
@@ -282,99 +222,93 @@
           dimension["dimName"] = $(this).children().eq(0).text();
           dimension["dimValue"] = $(this).children().eq(1).text();
           dimension["dimUnit"] = $(this).children().eq(2).text();
-          goodOption["dimensions"].push(dimension);
+          dimensionOption["dimensions"].push(dimension);
         }
       })
-      localStorage.setItem(optionName, JSON.stringify(goodOption));
+      localStorage.setItem(optionName, JSON.stringify(dimensionOption));
 
       var options = [];
-      $("#goodOption-select").find("option").each(function () {
+      $("#dimensionOption-select").find("option").each(function () {
         options.push($(this).text());
       })
       if (!options.includes(optionName)) {
         addSelectOption(optionName);
       }
 
-      $('#goodOptionModal').modal('hide');
-      selectGoodOption();
+      $('#dimensionOptionModal').modal('hide');
+      $('#editDimensionOption').removeAttr("disabled");
+      selectDimensionOption();
     }
 
     function addSelectOption(optionName) {
       var option = $("<option>" + optionName + "</option>");
-      $("#goodOption-select").append(option);
+      $("#dimensionOption-select").append(option);
     }
 
-    function selectGoodOption() {
+    function selectDimensionOption() {
       var selectedOptionName = getSelectedOption().text();
-      var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
-      var row = '<tr>' +
-              '<td>' + goodOption['optionName'] + '</td>' +
-              '<td>' + goodOption['addPrice'] + '</td>' +
-              '<td>' + goodOption['printingTech'] + '</td>' +
-              '<td>' + goodOption['material'] + '</td>' +
-              '</tr>';
-      $("#goodOptionTable tbody").html(row)
-
+      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
       $('#addedDimensionTable tbody').find("tr").remove();
-      for (var i in goodOption['dimensions']) {
-        var dimension = goodOption['dimensions'][i];
-        var row = '<tr>' +
-                '<td>' + dimension['dimName'] + '</td>' +
-                '<td>' + dimension['dimValue'] + '</td>' +
-                '<td>' + dimension['dimUnit'] + '</td>' +
-                '</tr>';
-        $("#addedDimensionTable tbody").append(row);
+      if (dimensionOption != null) {
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '</tr>';
+          $("#addedDimensionTable tbody").append(row);
+        }
       }
     }
 
-    function removeGoodOption() {
+    function removeDimensionOption() {
       var selectedOption = getSelectedOption();
       var optionName = selectedOption.text();
       localStorage.removeItem(optionName);
       selectedOption.remove();
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
+      }
+      selectDimensionOption();
     }
 
-    $('#editGoodOption').click(function () {
+    $('#editDimensionOption').click(function () {
       $(".add-new").removeAttr("disabled");
       var selectedOptionName = getSelectedOption().text();
-      var goodOption = JSON.parse(localStorage.getItem(selectedOptionName));
-      $('#optionName').val(goodOption['optionName']);
-      $('#addPrice').val(goodOption['addPrice']);
-      $('#printingTech').val(goodOption['printingTech']);
-      $('#material').val(goodOption['material']);
-      var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
-      var delete_action = $("#dimensionTable td:last-child").html();
-      $('#dimensionTable tbody').find("tr").remove();
-      for (var dimension of goodOption['dimensions']) {
-        var row = '<tr>' +
-                '<td>' + dimension['dimName'] + '</td>' +
-                '<td>' + dimension['dimValue'] + '</td>' +
-                '<td>' + dimension['dimUnit'] + '</td>' +
-                '<td>' + edit_action + '</td>' +
-                '<td>' + delete_action + '</td>' +
-                '</tr>';
-        $("#dimensionTable tbody").append(row);
+      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      if (dimensionOption != null) {
+        $('#optionName').val(dimensionOption['optionName']);
+        var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
+        var delete_action = $("#dimensionTable td:last-child").html();
+        $('#dimensionTable tbody').find("tr").remove();
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '<td>' + edit_action + '</td>' +
+                  '<td>' + delete_action + '</td>' +
+                  '</tr>';
+          $("#dimensionTable tbody").append(row);
+        }
       }
     })
 
     function getSelectedOption() {
-      return $("#goodOption-select option:selected");
+      return $("#dimensionOption-select option:selected");
     }
 
     $('#submit-button').click(
       function () {
         for (var i=0; i < localStorage.length; i++) {
-          var goodOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
-          var goodOptionInputs = "<input type='hidden' name='goodOptions[" + i + "].optionName' value='" + goodOption["optionName"] + "'>"
-                                + "<input type='hidden' name='goodOptions[" + i + "].addPrice' value='" + goodOption["addPrice"] + "'>"
-                                + "<input type='hidden' name='goodOptions[" + i + "].printingTech' value='" + goodOption["printingTech"] + "'>"
-                                + "<input type='hidden' name='goodOptions[" + i + "].material' value='" + goodOption["material"] + "'>";
-          $('#article-form').append(goodOptionInputs);
-          for (var dimIdx in goodOption['dimensions']) {
-            var dimension = goodOption['dimensions'][dimIdx];
-            var dimensionInputs = "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
-                                  + "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
-                                  + "<input type='hidden' name='goodOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
+          var dimensionOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
+          var dimensionOptionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].optionName' value='" + dimensionOption["optionName"] + "'>";
+          $('#article-form').append(dimensionOptionInputs);
+          for (var dimIdx in dimensionOption['dimensions']) {
+            var dimension = dimensionOption['dimensions'][dimIdx];
+            var dimensionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
+                                  + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
+                                  + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
             $('#article-form').append(dimensionInputs);
           }
         }
@@ -384,38 +318,36 @@
   <script id="inline-js">
     $(document).ready(function(){
       // 수정 폼 초기화
-      $("#goodOption-select").find("option").remove();
-      var goodOptions = [[${article.goodOptions}]];
-      for (var goodOption of goodOptions) {
-        var optionName = goodOption['optionName'];
+      $("#dimensionOption-select").find("option").remove();
+      var dimensionOptions = [[${article.dimensionOptions}]];
+      for (var dimensionOption of dimensionOptions) {
+        var optionName = dimensionOption['optionName'];
         addSelectOption(optionName);
-        var goodOptionJson = {
+        var dimensionOptionJson = {
           "optionName": optionName,
-          "addPrice": goodOption.addPrice,
-          "printingTech": goodOption.printingTech,
-          "material": goodOption.material,
           "dimensions": []
         };
-        for (var dimension of goodOption.dimensions) {
+        for (var dimension of dimensionOption.dimensions) {
           var dimensionJson = {};
           dimensionJson["dimName"] = dimension.dimName;
           dimensionJson["dimValue"] = dimension.dimValue;
           dimensionJson["dimUnit"] = dimension.dimUnit;
-          goodOptionJson["dimensions"].push(dimensionJson);
+          dimensionOptionJson["dimensions"].push(dimensionJson);
         }
-        localStorage.setItem(optionName, JSON.stringify(goodOptionJson));
+        localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
       }
-      selectGoodOption();
+      //아무것도 없으면 수정 버튼 비활성
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
+      }
+      selectDimensionOption();
 
       $('[data-toggle="tooltip"]').tooltip();
       var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
       var delete_action = $("#dimensionTable td:last-child").html();
       // 상품 옵션 추가시 입력 폼 초기화
-      $("#addGoodOptionButton").click(function () {
+      $("#addDimensionOptionButton").click(function () {
         $('#optionName').val("");
-        $('#addPrice').val("");
-        $('#printingTech').val("");
-        $('#material').val("");
         $('#dimensionTable tbody').find("tr").remove();
       })
       // 치수 추가

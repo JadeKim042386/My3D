@@ -27,7 +27,6 @@
     <attr sel="#adminCompany" sec:authorize="hasRole('ROLE_COMPANY')" th:href="@{/user/company}"/>
     <attr sel="#adminAccount" th:href="@{/user/account}"/>
     <attr sel="#adminPassword" th:href="@{/user/password}"/>
-    <attr sel="#adminOrders" th:href="@{/user/orders}"/>
   </attr>
   <attr sel="#alarm-script" sec:authorize="isAuthenticated()"/>
 </thlogic>

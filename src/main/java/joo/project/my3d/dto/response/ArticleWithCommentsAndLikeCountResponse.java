@@ -3,7 +3,6 @@ package joo.project.my3d.dto.response;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleCommentDto;
-import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.utils.LocalDateTimeUtils;
 
@@ -18,19 +17,16 @@ public record ArticleWithCommentsAndLikeCountResponse(
         String nickname,
         ArticleFileResponse modelFile,
         String title,
-        String summary,
         String content,
         ArticleType articleType,
         ArticleCategory articleCategory,
         Set<ArticleCommentResponse> articleCommentResponses,
         int likeCount,
-        int priceValue,
-        int deliveryPrice,
-        List<GoodOptionResponse> goodOptions,
+        List<DimensionOptionResponse> dimensionOptions,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String summary, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, int priceValue, int deliveryPrice, List<GoodOptionResponse> goodOptionResponses, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, summary, content, articleType, articleCategory, articleCommentResponses, likeCount, priceValue, deliveryPrice, goodOptionResponses, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, List<DimensionOptionResponse> dimensionOptionResponses, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, content, articleType, articleCategory, articleCommentResponses, likeCount, dimensionOptionResponses, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -40,15 +36,12 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.userAccountDto().nickname(),
                 ArticleFileResponse.from(dto.articleFileDto()),
                 dto.title(),
-                dto.summary(),
                 dto.content(),
                 dto.articleType(),
                 dto.articleCategory(),
                 organizeChildComments(dto.articleCommentDtos()),
                 dto.likeCount(),
-                dto.priceDto().priceValue(),
-                dto.priceDto().deliveryPrice(),
-                dto.goodOptions().stream().map(GoodOptionResponse::from).toList(),
+                dto.dimensionOptions().stream().map(DimensionOptionResponse::from).toList(),
                 dto.createdAt()
         );
     }
