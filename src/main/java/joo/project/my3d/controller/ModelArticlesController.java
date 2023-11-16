@@ -45,8 +45,6 @@ public class ModelArticlesController {
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
-    private final DimensionOptionService dimensionOptionService;
-    private final DimensionService dimensionService;
     private final AlarmService alarmService;
 
     @Value("${aws.s3.url}")
@@ -141,29 +139,17 @@ public class ModelArticlesController {
         }
 
         try {
-            //파일 저장
-            //TODO: DimensionOption 저장
-            ArticleFile articleFile = articleFileService.saveArticleFile(articleFormRequest.getModelFile(), null);
+            //파일과 치수 저장
+            ArticleFile articleFile = articleFileService.saveArticleFileWithForm(articleFormRequest);
+
             //게시글 저장
-            Article article = articleService.saveArticle(
+            articleService.saveArticle(
                     articleFormRequest.toArticleDto(
                             ArticleFileDto.from(articleFile),
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )
             );
-
-            //상품 옵션 저장
-            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
-            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests){
-                DimensionOptionDto dimensionOptionDto = dimensionOptionRequest.toDto(article.getId());
-                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionDto);
-                //치수 저장
-                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
-                for (DimensionDto dimensionDto : dimensionDtos) {
-                    dimensionService.saveDimension(dimensionDto);
-                }
-            }
         } catch (RuntimeException e) {
             log.error("게시글 추가 실패 - {}", e);
             model.addAttribute("formStatus", FormStatus.CREATE);
@@ -209,26 +195,7 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
         try {
-            //파일 업데이트
-            ArticleFileDto articleFileDto = articleFileService.getArticleFile(articleId); //저장되어있는 파일들
-            MultipartFile file = articleFormRequest.getModelFile();
-            boolean isUpdated = articleFileService.updateArticleFile(file);
-            //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
-            if (isUpdated) {
-                articleFileService.deleteArticleFile(articleFileDto.id());
-                //TODO: DimensionOption 저장
-                articleFileService.saveArticleFile(file, null);
-            }
-            //상품옵션 업데이트
-            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
-            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests) {
-                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionRequest.toDto(articleId));
-                //치수 업데이트
-                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
-                for (DimensionDto dimensionDto : dimensionDtos) {
-                    dimensionService.saveDimension(dimensionDto);
-                }
-            }
+            articleFileService.updateArticleFile(articleFormRequest, articleId);
 
             articleService.updateArticle(
                     articleId,

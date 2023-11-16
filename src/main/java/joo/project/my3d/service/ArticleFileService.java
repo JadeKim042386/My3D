@@ -1,12 +1,15 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.DimensionDto;
+import joo.project.my3d.dto.DimensionOptionDto;
+import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleFileRepository;
+import joo.project.my3d.repository.DimensionOptionRepository;
 import joo.project.my3d.service.aws.S3Service;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +40,11 @@ public class ArticleFileService {
     }
 
     /**
+     * @deprecated
      * @throws FileException 파일 저장 실패 예외
      */
     @Transactional
-    public ArticleFile saveArticleFile(MultipartFile file, DimensionOption dimensionOption) {
+    public ArticleFile saveArticleFile(MultipartFile file, DimensionOptionDto dimensionOptionDto) {
         //파일 저장(UUID를 파일명으로 저장)
         String originalFileName = file.getOriginalFilename();
         String extension = FileUtils.getExtension(originalFileName);
@@ -55,9 +59,50 @@ public class ArticleFileService {
                             originalFileName,
                             fileName,
                             extension,
-                            dimensionOption
+                            dimensionOptionDto.toEntity()
                         )
                     );
+        } catch (IOException e) {
+            log.error("File path: {}, MultipartFile: {}", fileName, file);
+            throw new FileException(ErrorCode.FILE_CANT_SAVE);
+        }
+    }
+
+    /**
+     * 게시글 추가시 전송된 입력 폼에 있는 파일과 치수 정보들을 저장
+     * @throws FileException 파일 저장 실패 예외
+     */
+    @Transactional
+    public ArticleFile saveArticleFileWithForm(ArticleFormRequest articleFormRequest) {
+        MultipartFile file = articleFormRequest.getModelFile();
+        DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
+
+        //파일 저장(UUID를 파일명으로 저장)
+        String originalFileName = file.getOriginalFilename();
+        String extension = FileUtils.getExtension(originalFileName);
+        String fileName = UUID.randomUUID() + "." + extension;
+
+        try {
+            s3Service.uploadFile(file, fileName);
+            long byteSize = file.getSize();
+            ArticleFile articleFile = articleFileRepository.save(
+                    ArticleFile.of(
+                            byteSize,
+                            originalFileName,
+                            fileName,
+                            extension,
+                            dimensionOptionDto.toEntity()
+                    )
+            );
+            DimensionOption savedDimensionOption = articleFile.getDimensionOption();
+            List<DimensionDto> dimensions = articleFormRequest.toDimensions(savedDimensionOption.getId());
+            savedDimensionOption.getDimensions().addAll(
+                    dimensions.stream()
+                            .map(DimensionDto -> DimensionDto.toEntity(savedDimensionOption))
+                            .toList()
+            );
+
+            return articleFile;
         } catch (IOException e) {
             log.error("File path: {}, MultipartFile: {}", fileName, file);
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
@@ -68,13 +113,42 @@ public class ArticleFileService {
      * 파일의 업데이트 여부를 확인하여 반환
      * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
      */
-    public boolean updateArticleFile(MultipartFile file) {
+    public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
+        MultipartFile file = articleFormRequest.getModelFile();
         try {
             //업데이트 여부 확인
             if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
-                return true;
+                ArticleFile articleFile = articleFileRepository.findByArticleId(articleId);
+                //S3에 저장한 파일 삭제
+                s3Service.deleteFile(articleFile.getFileName());
+
+                String originalFileName = file.getOriginalFilename();
+                String extension = FileUtils.getExtension(originalFileName);
+                String fileName = UUID.randomUUID() + "." + extension;
+                //업데이트된 파일로 S3에 저장
+                s3Service.uploadFile(file, fileName);
+
+                //파일 업데이트
+                long byteSize = file.getSize();
+                articleFile.update(byteSize, originalFileName, fileName, extension);
+
+                //치수 옵션 업데이트
+                DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
+                articleFile.setDimensionOption(dimensionOptionDto.toEntity());
+
+                //치수 업데이트
+                DimensionOption dimensionOption = articleFile.getDimensionOption();
+                List<DimensionDto> dimensions = articleFormRequest.toDimensions(dimensionOption.getId());
+                dimensionOption.getDimensions().clear();
+                dimensionOption.getDimensions().addAll(
+                        dimensions.stream()
+                                .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
+                                .toList()
+                );
             }
-            return false;
+        } catch (RuntimeException e) {
+            log.error("파일 업데이트 실패: {}", e.getMessage());
+            throw new FileException(ErrorCode.FILE_UPDATE_FAIL);
         } catch (IOException e) {
             log.error("잘못된 파일: {}", file);
             throw new FileException(ErrorCode.FILE_NOT_VALID);

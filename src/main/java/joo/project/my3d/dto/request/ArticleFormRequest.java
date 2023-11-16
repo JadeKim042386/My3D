@@ -1,5 +1,6 @@
 package joo.project.my3d.dto.request;
 
+import joo.project.my3d.domain.Dimension;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
@@ -24,7 +25,7 @@ public class ArticleFormRequest {
     @NotBlank
     private String content;
     @NotNull
-    @Size(min=1, message = "최소 1개 이상의 상품 옵션을 추가해주세요")
+    @Size(max=1, message = "상품 옵션 1개만 추가해주세요")
     private final List<DimensionOptionRequest> dimensionOptions = new ArrayList<>();
     @MultipartFileSizeValid
     private MultipartFile modelFile;
@@ -56,9 +57,22 @@ public class ArticleFormRequest {
         return toArticleDto(null, userAccountDto, null);
     }
 
-    public List<DimensionOptionDto> toDimensionOptionDtos(Long articleId) {
+    /**
+     * 하나의 DimensionOption을 반환하며 이후 기능 개선시 삭제될 예정
+     */
+    public DimensionOptionDto toDimensionOptionDto() {
+
+        return dimensionOptions.get(0).toDto();
+    }
+
+    public List<DimensionOptionDto> toDimensionOptionDtos() {
         return dimensionOptions.stream()
-                .map(dimensionOptionRequest -> dimensionOptionRequest.toDto(articleId))
+                .map(DimensionOptionRequest::toDto)
                 .toList();
+    }
+
+    public List<DimensionDto> toDimensions(Long dimensionOptionId) {
+
+        return dimensionOptions.get(0).toDimensionDtos(dimensionOptionId);
     }
 }

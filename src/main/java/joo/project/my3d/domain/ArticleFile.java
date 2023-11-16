@@ -69,4 +69,11 @@ public class ArticleFile extends AuditingFields {
     public int hashCode() {
         return Objects.hash(this.getId());
     }
+
+    public void update(Long byteSize, String originalFileName, String fileName, String fileExtension) {
+        this.byteSize = byteSize;
+        this.originalFileName = originalFileName;
+        this.fileName = fileName;
+        this.fileExtension = fileExtension;
+    }
 }
