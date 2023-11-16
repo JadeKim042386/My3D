@@ -23,19 +23,6 @@ import java.util.List;
 public class DimensionOptionService {
 
     private final DimensionOptionRepository dimensionOptionRepository;
-    private final ArticleRepository articleRepository;
-
-    public List<DimensionOptionDto> getDimensionOptions(Long articleId) {
-        return dimensionOptionRepository.findByArticleId(articleId)
-                .stream().map(DimensionOptionDto::from)
-                .toList();
-    }
-
-    public List<DimensionOptionWithDimensionDto> getDimensionOptionWithDimensions(Long articleId) {
-        return dimensionOptionRepository.findByArticleId(articleId)
-                .stream().map(DimensionOptionWithDimensionDto::from)
-                .toList();
-    }
 
     /**
      * @throws DimensionOptionException 상품 옵션 저장 실패 예외
@@ -43,8 +30,7 @@ public class DimensionOptionService {
     @Transactional
     public DimensionOption saveDimensionOption(DimensionOptionDto dto) {
         try{
-            Article article = articleRepository.getReferenceById(dto.articleId());
-            DimensionOption dimensionOption = dto.toEntity(article);
+            DimensionOption dimensionOption = dto.toEntity();
             return dimensionOptionRepository.save(dimensionOption);
         } catch (EntityNotFoundException e) {
             throw new DimensionOptionException(ErrorCode.FAILED_SAVE, e);
@@ -60,25 +46,6 @@ public class DimensionOptionService {
             }
         } catch (EntityNotFoundException e) {
             log.warn("상품옵션 수정 실패! - dto: {} {}", dto, new DimensionOptionException(ErrorCode.DIMENSION_OPTION_NOT_FOUND, e));
-        }
-    }
-
-    /**
-     * @throws IllegalArgumentException id가 null일 경우 발생하는 예외
-     */
-    @Transactional
-    public void deleteDimensionOption(Long dimensionOptionId) {
-        dimensionOptionRepository.deleteById(dimensionOptionId);
-    }
-
-    /**
-     * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
-     */
-    @Transactional
-    public void deleteDimensionOptions(Long articleId) {
-        List<DimensionOption> dimensionOptions = dimensionOptionRepository.findByArticleId(articleId);
-        for (DimensionOption dimensionOption : dimensionOptions) {
-            dimensionOptionRepository.deleteById(dimensionOption.getId());
         }
     }
 }

@@ -1,6 +1,5 @@
 package joo.project.my3d.dto;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 
 import java.util.List;
@@ -10,14 +9,15 @@ public record ArticleFileDto(
         Long byteSize,
         String originalFileName,
         String fileName,
-        String fileExtension
+        String fileExtension,
+        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto
 ) {
-    public static ArticleFileDto of(Long id, Long byteSize, String originalFileName, String fineName, String fileExtension) {
-        return new ArticleFileDto(id, byteSize, originalFileName, fineName, fileExtension);
+    public static ArticleFileDto of(Long id, Long byteSize, String originalFileName, String fineName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
+        return new ArticleFileDto(id, byteSize, originalFileName, fineName, fileExtension, dimensionOptionWithDimensionDto);
     }
 
-    public static ArticleFileDto of(Long byteSize, String originalFileName, String fineName, String fileExtension) {
-        return new ArticleFileDto(null, byteSize, originalFileName, fineName, fileExtension);
+    public static ArticleFileDto of(Long byteSize, String originalFileName, String fineName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
+        return new ArticleFileDto(null, byteSize, originalFileName, fineName, fileExtension, dimensionOptionWithDimensionDto);
     }
 
     public static ArticleFileDto from(ArticleFile articleFile) {
@@ -26,7 +26,8 @@ public record ArticleFileDto(
                 articleFile.getByteSize(),
                 articleFile.getOriginalFileName(),
                 articleFile.getFileName(),
-                articleFile.getFileExtension()
+                articleFile.getFileExtension(),
+                DimensionOptionWithDimensionDto.from(articleFile.getDimensionOption())
         );
     }
 
@@ -35,15 +36,12 @@ public record ArticleFileDto(
                 byteSize,
                 originalFileName,
                 fileName,
-                fileExtension
+                fileExtension,
+                dimensionOptionWithDimensionDto.toEntity()
         );
     }
 
     public boolean isModelFile() {
         return List.of("stp", "stl").contains(fileExtension);
-    }
-
-    public boolean isImageFile() {
-        return !List.of("stp", "stl").contains(fileExtension);
     }
 }

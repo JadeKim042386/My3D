@@ -22,7 +22,8 @@ public class FixtureDto {
     }
 
     public static ArticleFileDto getArticleFileDto() {
-        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
+        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
+        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
     }
 
     public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
@@ -57,7 +58,6 @@ public class FixtureDto {
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto,
@@ -68,7 +68,6 @@ public class FixtureDto {
                 articleCategory,
                 Set.of(),
                 2,
-                List.of(dimensionOptionWithDimensionDto),
                 LocalDateTime.now(),
                 userAccountDto.email(),
                 LocalDateTime.now(),
@@ -91,16 +90,15 @@ public class FixtureDto {
         return FixtureDto.getDimensionDto(1L, 3L);
     }
 
-    public static DimensionOptionDto getDimensionOptionDto(Long dimensionOptionId, Long articleId) {
+    public static DimensionOptionDto getDimensionOptionDto(Long dimensionOptionId) {
         return DimensionOptionDto.of(
                 dimensionOptionId,
-                articleId,
                 "option10"
         );
     }
 
     public static DimensionOptionDto getDimensionOptionDto() {
-        return FixtureDto.getDimensionOptionDto(1L, 3L);
+        return FixtureDto.getDimensionOptionDto(1L);
     }
 
     private static DimensionOptionWithDimensionDto getDimensionOptionWithDimensionDto() {

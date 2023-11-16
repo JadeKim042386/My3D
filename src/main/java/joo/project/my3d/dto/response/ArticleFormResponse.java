@@ -34,15 +34,14 @@ public class ArticleFormResponse {
         return new ArticleFormResponse(id, modelFile, title, content, articleCategory);
     }
 
-    public static ArticleFormResponse from(ArticleDto dto, ArticleFileDto articleFileDto, List<DimensionOptionResponse> dimensionOptionResponses) {
-        ArticleFormResponse articleFormResponse = ArticleFormResponse.of(
+    public static ArticleFormResponse from(ArticleDto dto, ArticleFileDto articleFileDto) {
+
+        return ArticleFormResponse.of(
                 dto.id(),
                 ArticleFileResponse.from(articleFileDto),
                 dto.title(),
                 dto.content(),
                 dto.articleCategory().name()
         );
-        articleFormResponse.dimensionOptions.addAll(dimensionOptionResponses);
-        return articleFormResponse;
     }
 }

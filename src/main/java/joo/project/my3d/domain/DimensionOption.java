@@ -30,24 +30,22 @@ public class DimensionOption extends AuditingFields {
     private String optionName; //치수명
 
     @ToString.Exclude
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "articleId")
-    private Article article;
-
-    @ToString.Exclude
     @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL)
     private final Set<Dimension> dimensions = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "dimensionOption")
+    private ArticleFile articleFile;
 
     protected DimensionOption() {
     }
 
-    private DimensionOption(Article article, String optionName) {
-        this.article = article;
+    private DimensionOption(String optionName) {
         this.optionName = optionName;
     }
 
-    public static DimensionOption of(Article article, String optionName) {
-        return new DimensionOption(article, optionName);
+    public static DimensionOption of(String optionName) {
+        return new DimensionOption(optionName);
     }
 
     @Override

@@ -8,18 +8,44 @@ insert into user_account (email, user_password, nickname, phone, detail, street,
 ('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', null, now(), 'a', now(), 'a'),
 ('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', 1, now(), 'jujoo', now(), 'jujoo');
 
+-- 치수 옵션
+insert into dimension_option (option_name, created_at, modified_at, created_by, modified_by) values
+('option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option3', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option4', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option5', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option6', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option7', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option8', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option9', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option10', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+
+-- 치수
+insert into dimension (dimension_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
+(1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(3, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(4, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(5, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(6, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(7, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(8, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(9, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+(10, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+
 -- 파일 10개
-insert into article_file (byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
-(4172, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
-(9598, 'model1.stp', 'da50408b-7655-4a80-9927-2890007e9e30.stp', 'stp', '2023-04-20 13:15:23', '2023-04-12 14:04:14', 'jujoo', 'jujoo'),
-(3861, 'model2.stp','9d495214-d376-4b0e-a03b-67b5c2b5afdb.stp', 'stp', '2023-03-19 17:20:14', '2023-05-08 04:26:34', 'jujoo', 'jujoo'),
-(9412, 'model3.stl', '36bab91a-ab82-49c6-a17c-911761eb892c.stl', 'stl', '2023-05-24 09:10:39', '2022-09-11 06:27:46', 'a', 'a'),
-(3957, 'model4.stp', '18f39d74-294c-49bb-b31d-ec0d64c193a5.stp', 'stp', '2022-08-10 15:43:09', '2022-09-09 19:17:20', 'a', 'a'),
-(4692, 'model5.stl', 'e6cbed0d-f1df-4002-bc25-27998f7ab44f.stl', 'stl', '2022-09-26 17:37:48', '2023-02-08 13:22:56', 'joo', 'joo'),
-(8659, 'model6.stp', '9bc6cfbf-8740-4981-a331-f8f0fa2565c9.stp', 'stp', '2023-02-06 04:49:18', '2023-08-05 15:54:58', 'joo', 'joo'),
-(1605, 'model7.stp', '575612c8-d349-4951-89c8-3c748dc9b884.stp', 'stp', '2023-01-21 23:34:41', '2022-09-14 00:52:47', 'joo', 'joo'),
-(1973, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
-(5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
+insert into article_file (dimension_option_id, byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
+(1, 4172, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
+(2, 9598, 'model1.stp', 'da50408b-7655-4a80-9927-2890007e9e30.stp', 'stp', '2023-04-20 13:15:23', '2023-04-12 14:04:14', 'jujoo', 'jujoo'),
+(3, 3861, 'model2.stp','9d495214-d376-4b0e-a03b-67b5c2b5afdb.stp', 'stp', '2023-03-19 17:20:14', '2023-05-08 04:26:34', 'jujoo', 'jujoo'),
+(4, 9412, 'model3.stl', '36bab91a-ab82-49c6-a17c-911761eb892c.stl', 'stl', '2023-05-24 09:10:39', '2022-09-11 06:27:46', 'a', 'a'),
+(5, 3957, 'model4.stp', '18f39d74-294c-49bb-b31d-ec0d64c193a5.stp', 'stp', '2022-08-10 15:43:09', '2022-09-09 19:17:20', 'a', 'a'),
+(6, 4692, 'model5.stl', 'e6cbed0d-f1df-4002-bc25-27998f7ab44f.stl', 'stl', '2022-09-26 17:37:48', '2023-02-08 13:22:56', 'joo', 'joo'),
+(7, 8659, 'model6.stp', '9bc6cfbf-8740-4981-a331-f8f0fa2565c9.stp', 'stp', '2023-02-06 04:49:18', '2023-08-05 15:54:58', 'joo', 'joo'),
+(8, 1605, 'model7.stp', '575612c8-d349-4951-89c8-3c748dc9b884.stp', 'stp', '2023-01-21 23:34:41', '2022-09-14 00:52:47', 'joo', 'joo'),
+(9, 1973, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
+(10, 5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
 
 -- 게시글 10개
 insert into article (user_account_id, title, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count, article_file_id) values
@@ -55,16 +81,6 @@ insert into article_like (article_id, user_account_id, created_at, modified_at, 
 (10, 1, '2022-11-20 06:46:07', '2022-11-20 06:46:07', 'joo', 'joo'),
 (7, 3, '2023-03-12 16:43:47', '2023-03-12 16:43:47', 'jujoo', 'jujoo'),
 (6, 3, '2023-06-23 21:19:43', '2023-06-23 21:19:43', 'jujoo', 'jujoo');
-
--- 치수 옵션
-insert into dimension_option (article_id, option_name, created_at, modified_at, created_by, modified_by) values
-(4, 'option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(4, 'option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
-
--- 치수
-insert into dimension (dimension_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values
-(1, '높이', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(2, '폭', 100.0, 'MM', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 알람
 insert into alarm (user_account_id, alarm_type, from_user_nickname, target_id, is_checked, created_by, modified_at, modified_by, created_at) values

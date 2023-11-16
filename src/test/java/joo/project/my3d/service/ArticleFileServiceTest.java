@@ -1,14 +1,10 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
-import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.fixture.Fixture;
-import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleFileRepository;
 import joo.project.my3d.service.aws.S3Service;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +15,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.mockito.BDDMockito.*;
 
@@ -36,12 +31,12 @@ class ArticleFileServiceTest {
     @Test
     void saveArticleFile() throws IOException {
         // Given
-        Article article = Fixture.getArticle();
         MockMultipartFile file = Fixture.getMultipartFile();
         ArticleFile articleFile = Fixture.getArticleFile();
+        DimensionOption dimensionOption = Fixture.getDimensionOption();
         given(articleFileRepository.save(any(ArticleFile.class))).willReturn(articleFile);
         // When
-        articleFileService.saveArticleFile(file);
+        articleFileService.saveArticleFile(file, dimensionOption);
         // Then
         then(articleFileRepository).should().save(any(ArticleFile.class));
     }

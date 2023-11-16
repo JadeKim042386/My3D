@@ -19,14 +19,13 @@ public record ArticleWithCommentsAndLikeCountDto(
         ArticleCategory articleCategory,
         Set<ArticleCommentDto> articleCommentDtos,
         int likeCount,
-        List<DimensionOptionWithDimensionDto> dimensionOptions,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, List<DimensionOptionWithDimensionDto> dimensionOptionWithDimensionDtos, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, articleCommentDtos, likeCount, dimensionOptionWithDimensionDtos, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, articleCommentDtos, likeCount, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
     public static ArticleWithCommentsAndLikeCountDto from(Article article) {
@@ -42,7 +41,6 @@ public record ArticleWithCommentsAndLikeCountDto(
                         .map(ArticleCommentDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 article.getLikeCount(),
-                article.getDimensionOptions().stream().map(DimensionOptionWithDimensionDto::from).toList(),
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),
