@@ -139,8 +139,8 @@ public class JpaRepositoryTest {
             assertThat(articleCommentRepository.count()).isEqualTo(previousCommentCount - 1);
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 1);
             assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
-            assertThat(dimensionRepository.count()).isEqualTo(previousDimension);
-            assertThat(dimensionOptionRepository.count()).isEqualTo(previousDimensionOption);
+            assertThat(dimensionRepository.count()).isEqualTo(previousDimension - 1);
+            assertThat(dimensionOptionRepository.count()).isEqualTo(previousDimensionOption - 1);
         }
     }
 
@@ -405,8 +405,10 @@ public class JpaRepositoryTest {
     @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
     @Nested
     public class ArticleFileJpaTest {
-        @Autowired private ArticleFileRepository articleFileRepository;
         @Autowired private ArticleRepository articleRepository;
+        @Autowired private ArticleFileRepository articleFileRepository;
+        @Autowired private DimensionOptionRepository dimensionOptionRepository;
+        @Autowired private DimensionRepository dimensionRepository;
 
         @DisplayName("파일 findAll")
         @Test
@@ -429,6 +431,27 @@ public class JpaRepositoryTest {
             // Then
             assertThat(articleFile).isNotNull();
         }
+
+        @DisplayName("파일 delete")
+        @Test
+        void deleteArticleFile() {
+            //given
+            Long articleFileId = 1L;
+            long previousFileCount = articleFileRepository.count();
+            long previousDimOptionCount = dimensionOptionRepository.count();
+            long previousDimCount = dimensionRepository.count();
+            log.info("previousFileCount: {}", previousFileCount);
+            log.info("previousDimOptionCount: {}", previousDimOptionCount);
+            log.info("previousDimCount: {}", previousDimCount);
+            //when
+            ArticleFile articleFile = articleFileRepository.getReferenceById(articleFileId);
+            Article article = articleRepository.getReferenceById(articleFile.getArticle().getId());
+            article.setArticleFile(null);
+            //then
+            assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
+            assertThat(dimensionOptionRepository.count()).isEqualTo(previousDimOptionCount - 1);
+            assertThat(dimensionRepository.count()).isEqualTo(previousDimCount - 1);
+        }
     }
 
     @ActiveProfiles("test")
@@ -439,8 +462,8 @@ public class JpaRepositoryTest {
     @Nested
     public class DimensionOptionJpaTest {
 
+        @Autowired private ArticleFileRepository articleFileRepository;
         @Autowired private DimensionOptionRepository dimensionOptionRepository;
-        @Autowired private ArticleRepository articleRepository;
 
         @DisplayName("치수 옵션 findAll")
         @Test
@@ -450,7 +473,7 @@ public class JpaRepositoryTest {
             // When
             List<DimensionOption> dimensionOptions = dimensionOptionRepository.findAll();
             // Then
-            assertThat(dimensionOptions).isNotNull().hasSize(2);
+            assertThat(dimensionOptions).isNotNull().hasSize(10);
         }
 
         @DisplayName("치수 옵션 findById")
@@ -468,8 +491,7 @@ public class JpaRepositoryTest {
         @Test
         void saveDimensionOption() {
             // Given
-            Article article = articleRepository.getReferenceById(1L);
-            DimensionOption dimensionOption = Fixture.getDimensionOption(article);
+            DimensionOption dimensionOption = Fixture.getDimensionOption();
             long previousCount = dimensionOptionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -479,7 +501,7 @@ public class JpaRepositoryTest {
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
             assertThat(savedDimensionOption)
-                    .hasFieldOrPropertyWithValue("id", 3L);
+                    .hasFieldOrPropertyWithValue("id", 11L);
         }
 
         @DisplayName("치수 옵션 update")
@@ -505,7 +527,9 @@ public class JpaRepositoryTest {
             long previousCount = dimensionOptionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
-            dimensionOptionRepository.deleteById(dimensionOptionId);
+            DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(dimensionOptionId);
+            ArticleFile articleFile = articleFileRepository.getReferenceById(dimensionOption.getArticleFile().getId());
+            articleFile.setDimensionOption(null);
             // Then
             assertThat(dimensionOptionRepository.count()).isEqualTo(previousCount - 1);
         }
@@ -530,7 +554,7 @@ public class JpaRepositoryTest {
             // When
             List<Dimension> dimensions = dimensionRepository.findAll();
             // Then
-            assertThat(dimensions).isNotNull().hasSize(2);
+            assertThat(dimensions).isNotNull().hasSize(10);
         }
 
         @DisplayName("치수 findById")
@@ -559,7 +583,7 @@ public class JpaRepositoryTest {
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
             assertThat(savedDimension)
-                    .hasFieldOrPropertyWithValue("id", 3L);
+                    .hasFieldOrPropertyWithValue("id", 11L);
         }
 
         @DisplayName("치수 update")

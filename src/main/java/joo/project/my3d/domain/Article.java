@@ -54,7 +54,8 @@ public class Article extends AuditingFields {
     private int likeCount = 0;
 
     @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, optional = false)
+    @Setter
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "article_file_id")
     private ArticleFile articleFile;
 
@@ -66,10 +67,6 @@ public class Article extends AuditingFields {
     @ToString.Exclude
     @OneToMany(mappedBy = "article")
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "article", fetch = LAZY, cascade = CascadeType.ALL)
-    private final Set<DimensionOption> dimensionOptions = new LinkedHashSet<>();
 
     protected Article() {
     }

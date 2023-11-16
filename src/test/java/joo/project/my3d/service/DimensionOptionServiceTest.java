@@ -28,33 +28,17 @@ import static org.mockito.BDDMockito.*;
 class DimensionOptionServiceTest {
     @InjectMocks private DimensionOptionService dimensionOptionService;
     @Mock private DimensionOptionRepository dimensionOptionRepository;
-    @Mock private ArticleRepository articleRepository;
-
-    @DisplayName("모델 게시글 내의 치수 옵션 목록 조회")
-    @Test
-    void getDimensionOptions() {
-        // Given
-        Long articleId = 1L;
-        given(dimensionOptionRepository.findByArticleId(articleId)).willReturn(List.of());
-        // When
-        dimensionOptionService.getDimensionOptions(articleId);
-        // Then
-        then(dimensionOptionRepository).should().findByArticleId(articleId);
-    }
 
     @DisplayName("치수 옵션 저장")
     @Test
     void saveDimensionOption() {
         // Given
         DimensionOptionDto dimensionOptionDto = FixtureDto.getDimensionOptionDto();
-        Article article = Fixture.getArticle();
-        DimensionOption dimensionOption = dimensionOptionDto.toEntity(article);
-        given(articleRepository.getReferenceById(dimensionOptionDto.articleId())).willReturn(article);
+        DimensionOption dimensionOption = dimensionOptionDto.toEntity();
         given(dimensionOptionRepository.save(any(DimensionOption.class))).willReturn(dimensionOption);
         // When
         dimensionOptionService.saveDimensionOption(dimensionOptionDto);
         // Then
-        then(articleRepository).should().getReferenceById(dimensionOptionDto.articleId());
         then(dimensionOptionRepository).should().save(any(DimensionOption.class));
     }
 
@@ -64,24 +48,11 @@ class DimensionOptionServiceTest {
         // Given
         Long dimensionOptionId = 1L;
         DimensionOptionDto dimensionOptionDto = FixtureDto.getDimensionOptionDto();
-        Article article = Fixture.getArticle();
-        DimensionOption dimensionOption = dimensionOptionDto.toEntity(article);
+        DimensionOption dimensionOption = dimensionOptionDto.toEntity();
         given(dimensionOptionRepository.getReferenceById(dimensionOptionId)).willReturn(dimensionOption);
         // When
         dimensionOptionService.updateDimensionOption(dimensionOptionDto);
         // Then
         then(dimensionOptionRepository).should().getReferenceById(dimensionOptionId);
-    }
-
-    @DisplayName("치수 옵션 삭제")
-    @Test
-    void deleteDimensionOption() {
-        // Given
-        Long dimensionOptionId = 1L;
-        willDoNothing().given(dimensionOptionRepository).deleteById(dimensionOptionId);
-        // When
-        dimensionOptionService.deleteDimensionOption(dimensionOptionId);
-        // Then
-        then(dimensionOptionRepository).should().deleteById(dimensionOptionId);
     }
 }

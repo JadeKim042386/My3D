@@ -1,10 +1,13 @@
 package joo.project.my3d.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Objects;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @ToString(callSuper = true)
@@ -34,18 +37,25 @@ public class ArticleFile extends AuditingFields {
     @OneToOne(mappedBy = "articleFile")
     private Article article;
 
+    @ToString.Exclude
+    @Setter
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "dimension_option_id")
+    private DimensionOption dimensionOption;
+
     protected ArticleFile() {
     }
 
-    private ArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension) {
+    private ArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOption dimensionOption) {
         this.byteSize = byteSize;
         this.originalFileName = originalFileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
+        this.dimensionOption = dimensionOption;
     }
 
-    public static ArticleFile of(Long byteSize, String originalFileName, String fileName, String fileExtension) {
-        return new ArticleFile(byteSize, originalFileName, fileName, fileExtension);
+    public static ArticleFile of(Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOption dimensionOption) {
+        return new ArticleFile(byteSize, originalFileName, fileName, fileExtension, dimensionOption);
     }
 
     @Override

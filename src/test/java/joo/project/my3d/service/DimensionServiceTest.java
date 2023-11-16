@@ -43,7 +43,7 @@ class DimensionServiceTest {
     @Test
     void saveDimension() {
         // Given
-        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
+        DimensionOption dimensionOption = Fixture.getDimensionOption();
         DimensionDto dimensionDto = FixtureDto.getDimensionDto();
         Dimension dimension = dimensionDto.toEntity(dimensionOption);
         given(dimensionRepository.save(any(Dimension.class))).willReturn(dimension);

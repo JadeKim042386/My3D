@@ -22,11 +22,10 @@ public record ArticleWithCommentsAndLikeCountResponse(
         ArticleCategory articleCategory,
         Set<ArticleCommentResponse> articleCommentResponses,
         int likeCount,
-        List<DimensionOptionResponse> dimensionOptions,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, List<DimensionOptionResponse> dimensionOptionResponses, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, content, articleType, articleCategory, articleCommentResponses, likeCount, dimensionOptionResponses, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
+        return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsAndLikeCountResponse from(ArticleWithCommentsAndLikeCountDto dto) {
@@ -41,7 +40,6 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.articleCategory(),
                 organizeChildComments(dto.articleCommentDtos()),
                 dto.likeCount(),
-                dto.dimensionOptions().stream().map(DimensionOptionResponse::from).toList(),
                 dto.createdAt()
         );
     }

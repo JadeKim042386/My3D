@@ -55,7 +55,8 @@ public class Fixture {
     }
 
     public static ArticleFile getArticleFile() {
-        return ArticleFile.of(5555L, "test.stp", "uuid.stp", "stp");
+        DimensionOption dimensionOption = Fixture.getDimensionOption();
+        return ArticleFile.of(5555L, "test.stp", "uuid.stp", "stp", dimensionOption);
     }
 
     public static MockMultipartFile getMultipartFile() throws IOException {
@@ -73,8 +74,8 @@ public class Fixture {
         );
     }
 
-    public static DimensionOption getDimensionOption(Article article) {
-        return DimensionOption.of(article, "option3");
+    public static DimensionOption getDimensionOption() {
+        return DimensionOption.of("option3");
     }
 
     public static Dimension getDimension(DimensionOption dimensionOption) {

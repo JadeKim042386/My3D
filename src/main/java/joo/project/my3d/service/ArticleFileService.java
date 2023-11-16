@@ -2,6 +2,7 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
@@ -39,7 +40,7 @@ public class ArticleFileService {
      * @throws FileException 파일 저장 실패 예외
      */
     @Transactional
-    public ArticleFile saveArticleFile(MultipartFile file) {
+    public ArticleFile saveArticleFile(MultipartFile file, DimensionOption dimensionOption) {
         //파일 저장(UUID를 파일명으로 저장)
         String originalFileName = file.getOriginalFilename();
         String extension = FileUtils.getExtension(originalFileName);
@@ -53,7 +54,8 @@ public class ArticleFileService {
                             byteSize,
                             originalFileName,
                             fileName,
-                            extension
+                            extension,
+                            dimensionOption
                         )
                     );
         } catch (IOException e) {

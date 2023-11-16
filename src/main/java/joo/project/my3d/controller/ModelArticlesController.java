@@ -142,7 +142,8 @@ public class ModelArticlesController {
 
         try {
             //파일 저장
-            ArticleFile articleFile = articleFileService.saveArticleFile(articleFormRequest.getModelFile());
+            //TODO: DimensionOption 저장
+            ArticleFile articleFile = articleFileService.saveArticleFile(articleFormRequest.getModelFile(), null);
             //게시글 저장
             Article article = articleService.saveArticle(
                     articleFormRequest.toArticleDto(
@@ -178,16 +179,11 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
-        List<DimensionOptionResponse> dimensionOptionResponses = dimensionOptionService.getDimensionOptionWithDimensions(articleId).stream()
-                .map(DimensionOptionResponse::from)
-                .toList();
-
         model.addAttribute(
             "article",
             ArticleFormResponse.from(
                 articleService.getArticle(articleId),
-                articleFileService.getArticleFile(articleId),
-                    dimensionOptionResponses
+                articleFileService.getArticleFile(articleId)
             )
         );
         model.addAttribute("formStatus", FormStatus.UPDATE);
@@ -220,15 +216,14 @@ public class ModelArticlesController {
             //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
             if (isUpdated) {
                 articleFileService.deleteArticleFile(articleFileDto.id());
-                articleFileService.saveArticleFile(file);
+                //TODO: DimensionOption 저장
+                articleFileService.saveArticleFile(file, null);
             }
             //상품옵션 업데이트
-            dimensionOptionService.deleteDimensionOptions(articleId);
             List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
             for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests) {
                 DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionRequest.toDto(articleId));
                 //치수 업데이트
-                dimensionService.deleteDimensions(dimensionOption.getId());
                 List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
                 for (DimensionDto dimensionDto : dimensionDtos) {
                     dimensionService.saveDimension(dimensionDto);

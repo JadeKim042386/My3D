@@ -100,8 +100,8 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
-        given(articleFileService.saveArticleFile(multipartFile)).willReturn(Fixture.getArticleFile());
+        DimensionOption dimensionOption = Fixture.getDimensionOption();
+        given(articleFileService.saveArticleFile(multipartFile, null)).willReturn(Fixture.getArticleFile());
         given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
         given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
@@ -127,7 +127,7 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().saveArticle(any(ArticleDto.class));
-        then(articleFileService).should().saveArticleFile(multipartFile);
+        then(articleFileService).should().saveArticleFile(multipartFile, null);
         then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
         then(dimensionService).should().saveDimension(any(DimensionDto.class));
     }
@@ -307,7 +307,6 @@ class ModelArticlesControllerTest {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        given(dimensionOptionService.getDimensionOptionWithDimensions(anyLong())).willReturn(List.of());
         given(articleService.getArticle(anyLong())).willReturn(articleDto);
         given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
         // When
@@ -324,7 +323,6 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("categories"));
 
         // Then
-        then(dimensionOptionService).should().getDimensionOptionWithDimensions(anyLong());
         then(articleService).should().getArticle(anyLong());
         then(articleFileService).should().getArticleFile(anyLong());
     }
@@ -336,15 +334,13 @@ class ModelArticlesControllerTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
         FieldUtils.writeField(article, "id", 1L, true);
-        DimensionOption dimensionOption = Fixture.getDimensionOption(Fixture.getArticle());
+        DimensionOption dimensionOption = Fixture.getDimensionOption();
         FieldUtils.writeField(dimensionOption, "id", 1L, true);
         given(articleFileService.getArticleFile(anyLong())).willReturn(FixtureDto.getArticleFileDto());
         given(articleFileService.updateArticleFile(eq(multipartFile))).willReturn(true);
         willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
-        given(articleFileService.saveArticleFile(eq(multipartFile))).willReturn(Fixture.getArticleFile());
-        willDoNothing().given(dimensionOptionService).deleteDimensionOptions(eq(1L));
+        given(articleFileService.saveArticleFile(eq(multipartFile), eq(null))).willReturn(Fixture.getArticleFile());
         given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
-        willDoNothing().given(dimensionService).deleteDimensions(eq(1L));
         willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
@@ -374,10 +370,8 @@ class ModelArticlesControllerTest {
         then(articleFileService).should().getArticleFile(anyLong());
         then(articleFileService).should().updateArticleFile(eq(multipartFile));
         then(articleFileService).should().deleteArticleFile(anyLong());
-        then(articleFileService).should().saveArticleFile(eq(multipartFile));
-        then(dimensionOptionService).should().deleteDimensionOptions(eq(1L));
+        then(articleFileService).should().saveArticleFile(eq(multipartFile), eq(null));
         then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
-        then(dimensionService).should().deleteDimensions(eq(1L));
         then(dimensionService).should().saveDimension(any(DimensionDto.class));
         then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
     }

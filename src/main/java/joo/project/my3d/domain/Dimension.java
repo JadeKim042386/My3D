@@ -34,7 +34,7 @@ public class Dimension extends AuditingFields {
     private DimUnit dimUnit;
 
     @ToString.Exclude
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dimensionOptionId")
     private DimensionOption dimensionOption;
 

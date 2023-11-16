@@ -5,20 +5,18 @@ import joo.project.my3d.domain.DimensionOption;
 
 public record DimensionOptionDto(
         Long id,
-        Long articleId,
         String optionName
 ) {
-    public static DimensionOptionDto of(Long id, Long articleId, String optionName) {
-        return new DimensionOptionDto(id, articleId, optionName);
+    public static DimensionOptionDto of(Long id, String optionName) {
+        return new DimensionOptionDto(id, optionName);
     }
 
-    public static DimensionOptionDto of(Long articleId, String optionName) {
-        return DimensionOptionDto.of(null, articleId, optionName);
+    public static DimensionOptionDto of(String optionName) {
+        return DimensionOptionDto.of(null,  optionName);
     }
 
-    public DimensionOption toEntity(Article article) {
+    public DimensionOption toEntity() {
         return DimensionOption.of(
-                article,
                 optionName
         );
     }
