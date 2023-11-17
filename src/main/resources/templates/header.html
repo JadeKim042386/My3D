@@ -85,9 +85,7 @@
           var createdAt = alarm['createdAt'];
           var url = '/model_articles/'+ alarm["targetId"] + '?alarmId=' + alarm["id"];
           var content;
-          if (alarm['alarmType'] === 'NEW_LIKE_ON_POST') {
-            content = '님이 좋아요를 눌렀습니다';
-          } else if (alarm['alarmType'] === 'NEW_COMMENT_ON_POST') {
+          if (alarm['alarmType'] === 'NEW_COMMENT_ON_POST') {
             content = '님이 댓글을 달았습니다';
           }
           var newAlarm = '<li> <a class="dropdown-item alarm-item'

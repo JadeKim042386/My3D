@@ -43,16 +43,12 @@ class ArticleLikeServiceTest {
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
         given(userAccountRepository.getReferenceByEmail(userId)).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
-        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
-        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
         // When
         articleLikeService.addArticleLike(articleId, userId);
         // Then
         then(articleRepository).should().getReferenceById(articleId);
         then(userAccountRepository).should().getReferenceByEmail(userId);
         then(articleLikeRepository).should().save(any(ArticleLike.class));
-        then(alarmRepository).should().save(any(Alarm.class));
-        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
     }
 
     @DisplayName("좋아요 삭제")
