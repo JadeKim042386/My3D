@@ -28,9 +28,10 @@ public class ArticleLikeService {
     /**
      * @throws IllegalArgumentException 좋아요 또는 알람 저장 실패시 발생하는 예외
      * @throws AlarmException 알람 전송에 실패할 경우 발생하는 예외
+     * @return 좋아요 추가 후 반영된 게시글의 좋아요 총 개수
      */
     @Transactional
-    public void addArticleLike(Long articleId, String userId) {
+    public int addArticleLike(Long articleId, String userId) {
         Article article = articleRepository.getReferenceById(articleId);
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(userId);
         ArticleLike articleLike = ArticleLike.of(userAccount, article);
@@ -47,13 +48,20 @@ public class ArticleLikeService {
                 )
         );
         alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
+
+        return article.getLikeCount();
     }
 
+    /**
+     * @return 좋아요 해제 후 반영된 게시글의 좋아요 총 개수
+     */
     @Transactional
-    public void deleteArticleLike(Long articleId) {
+    public int deleteArticleLike(Long articleId) {
         Article article = articleRepository.getReferenceById(articleId);
 
         article.deleteLike();
         articleLikeRepository.deleteByArticleId(articleId);
+
+        return article.getLikeCount();
     }
 }
