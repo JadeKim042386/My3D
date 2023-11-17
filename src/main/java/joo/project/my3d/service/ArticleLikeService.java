@@ -1,12 +1,9 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.exception.AlarmException;
-import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -22,8 +19,6 @@ public class ArticleLikeService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
     private final ArticleLikeRepository articleLikeRepository;
-    private final AlarmRepository alarmRepository;
-    private final AlarmService alarmService;
 
     /**
      * @throws IllegalArgumentException 좋아요 또는 알람 저장 실패시 발생하는 예외
@@ -38,16 +33,6 @@ public class ArticleLikeService {
 
         article.addLike();
         articleLikeRepository.save(articleLike);
-        Alarm alarm = alarmRepository.save(
-                Alarm.of(
-                        AlarmType.NEW_LIKE_ON_POST,
-                        userAccount.getNickname(),
-                        article.getId(),
-                        false,
-                        article.getUserAccount()
-                )
-        );
-        alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
 
         return article.getLikeCount();
     }

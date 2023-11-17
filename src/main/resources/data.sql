@@ -85,4 +85,4 @@ insert into article_like (article_id, user_account_id, created_at, modified_at, 
 -- 알람
 insert into alarm (user_account_id, alarm_type, from_user_nickname, target_id, is_checked, created_by, modified_at, modified_by, created_at) values
 (3, 'NEW_COMMENT_ON_POST', 'a', 4, false, 'a', now(), 'a', now()),
-(3, 'NEW_LIKE_ON_POST', 'a', 4, false, 'a', now(), 'a', now());
+(3, 'NEW_COMMENT_ON_POST', 'a', 4, false, 'a', now(), 'a', now());

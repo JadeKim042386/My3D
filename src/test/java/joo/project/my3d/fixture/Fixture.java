@@ -90,7 +90,7 @@ public class Fixture {
     }
 
     public static Alarm getAlarm(UserAccount userAccount) {
-        return Alarm.of(AlarmType.NEW_LIKE_ON_POST, "a@gmail.com", 1L, false, userAccount);
+        return Alarm.of(AlarmType.NEW_COMMENT_ON_POST, "a@gmail.com", 1L, false, userAccount);
     }
 
     public static ArticleFormRequest getArticleFormRequest() throws IOException, IllegalAccessException {
