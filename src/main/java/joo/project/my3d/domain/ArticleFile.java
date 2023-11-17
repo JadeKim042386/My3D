@@ -27,9 +27,9 @@ public class ArticleFile extends AuditingFields {
     @Column(nullable = false)
     private Long byteSize;
     @Column(nullable = false)
-    private String originalFileName;
+    private String originalFileName; //사용자가 지정한 파일명
     @Column(nullable = false)
-    private String fileName;
+    private String fileName; //서버에 저장된 파일명
     @Column(nullable = false)
     private String fileExtension;
 

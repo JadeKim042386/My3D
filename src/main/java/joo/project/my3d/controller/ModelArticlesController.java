@@ -15,6 +15,7 @@ import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
+import joo.project.my3d.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +51,7 @@ public class ModelArticlesController {
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
     private final AlarmService alarmService;
+    private final S3Service s3Service;
 
     @Value("${aws.s3.url}")
     private String S3Url;
@@ -230,5 +236,20 @@ public class ModelArticlesController {
         }
 
         return "redirect:/model_articles";
+    }
+
+    @GetMapping("{articleId}/download")
+    public ResponseEntity<byte[]> downloadArticleFile(
+            @PathVariable Long articleId
+    ) {
+        ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
+        byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentLength(downloadFile.length);
+        httpHeaders.setContentDispositionFormData("attachment", articleFile.originalFileName());
+
+        return new ResponseEntity<>(downloadFile, httpHeaders, HttpStatus.OK);
     }
 }

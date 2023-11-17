@@ -12,6 +12,7 @@ import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
+import joo.project.my3d.service.aws.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +52,7 @@ class ModelArticlesControllerTest {
     @MockBean private DimensionOptionService dimensionOptionService;
     @MockBean private DimensionService dimensionService;
     @MockBean private AlarmService alarmService;
+    @MockBean private S3Service s3Service;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser
@@ -419,5 +421,30 @@ class ModelArticlesControllerTest {
                 )
                 .andExpect(status().isForbidden());
         // Then
+    }
+
+    @DisplayName("[GET] 게시글 파일 다운로드 - 정상")
+    @Test
+    void downloadArticleFile() throws Exception {
+        //given
+        Long articleId = 1L;
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        given(articleFileService.getArticleFile(articleId)).willReturn(articleFileDto);
+        String fileName = articleFileDto.fileName();
+        given(s3Service.downloadFile(fileName)).willReturn(new byte[]{1});
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
+        //when
+        mvc.perform(
+                get("/model_articles/1/download")
+                        .with(authentication(authentication))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().string("Content-Length", "1"))
+                .andExpect(header().string("Content-Disposition", String.format("form-data; name=\"attachment\"; filename=\"%s\"", articleFileDto.originalFileName())))
+                ;
+        //then
+        then(articleFileService).should().getArticleFile(articleId);
+        then(s3Service).should().downloadFile(fileName);
     }
 }

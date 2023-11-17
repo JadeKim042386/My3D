@@ -91,7 +91,6 @@ class ArticleFileServiceTest {
         // When
         articleFileService.updateArticleFile(articleFormRequest, articleId);
         // Then
-        // Then
         then(articleFileRepository).shouldHaveNoInteractions();
         then(s3Service).shouldHaveNoInteractions();
     }
