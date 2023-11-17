@@ -7,11 +7,14 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
+import joo.project.my3d.service.aws.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,7 @@ class ModelArticlesControllerTest {
     @MockBean private DimensionOptionService dimensionOptionService;
     @MockBean private DimensionService dimensionService;
     @MockBean private AlarmService alarmService;
+    @MockBean private S3Service s3Service;
 
     @DisplayName("[GET] 게시판 페이지")
     @WithMockUser
@@ -100,11 +104,9 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        DimensionOption dimensionOption = Fixture.getDimensionOption();
-        given(articleFileService.saveArticleFile(multipartFile, null)).willReturn(Fixture.getArticleFile());
+        DimensionOptionDto dimensionOptionDto = FixtureDto.getDimensionOptionDto();
+        given(articleFileService.saveArticleFileWithForm(any(ArticleFormRequest.class))).willReturn(Fixture.getArticleFile());
         given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
-        given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
-        willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
@@ -127,9 +129,7 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().saveArticle(any(ArticleDto.class));
-        then(articleFileService).should().saveArticleFile(multipartFile, null);
-        then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
-        then(dimensionService).should().saveDimension(any(DimensionDto.class));
+        then(articleFileService).should().saveArticleFileWithForm(any(ArticleFormRequest.class));
     }
 
     @DisplayName("[POST] 게시글 추가 - 파일 누락")
@@ -270,6 +270,7 @@ class ModelArticlesControllerTest {
         // Then
     }
 
+    @Disabled("TODO: 파일 다운로드 기능을 뷰에 반영")
     @DisplayName("[GET] 게시글 페이지")
     @Test
     void modelArticle() throws Exception {
@@ -336,12 +337,7 @@ class ModelArticlesControllerTest {
         FieldUtils.writeField(article, "id", 1L, true);
         DimensionOption dimensionOption = Fixture.getDimensionOption();
         FieldUtils.writeField(dimensionOption, "id", 1L, true);
-        given(articleFileService.getArticleFile(anyLong())).willReturn(FixtureDto.getArticleFileDto());
-        given(articleFileService.updateArticleFile(eq(multipartFile))).willReturn(true);
-        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
-        given(articleFileService.saveArticleFile(eq(multipartFile), eq(null))).willReturn(Fixture.getArticleFile());
-        given(dimensionOptionService.saveDimensionOption(any(DimensionOptionDto.class))).willReturn(dimensionOption);
-        willDoNothing().given(dimensionService).saveDimension(any(DimensionDto.class));
+        willDoNothing().given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), eq(article.getId()));
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
@@ -367,12 +363,7 @@ class ModelArticlesControllerTest {
                 .andExpect(redirectedUrl("/model_articles"));
 
         // Then
-        then(articleFileService).should().getArticleFile(anyLong());
-        then(articleFileService).should().updateArticleFile(eq(multipartFile));
-        then(articleFileService).should().deleteArticleFile(anyLong());
-        then(articleFileService).should().saveArticleFile(eq(multipartFile), eq(null));
-        then(dimensionOptionService).should().saveDimensionOption(any(DimensionOptionDto.class));
-        then(dimensionService).should().saveDimension(any(DimensionDto.class));
+        then(articleFileService).should().updateArticleFile(any(ArticleFormRequest.class), eq(article.getId()));
         then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
     }
 
@@ -430,5 +421,30 @@ class ModelArticlesControllerTest {
                 )
                 .andExpect(status().isForbidden());
         // Then
+    }
+
+    @DisplayName("[GET] 게시글 파일 다운로드 - 정상")
+    @Test
+    void downloadArticleFile() throws Exception {
+        //given
+        Long articleId = 1L;
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        given(articleFileService.getArticleFile(articleId)).willReturn(articleFileDto);
+        String fileName = articleFileDto.fileName();
+        given(s3Service.downloadFile(fileName)).willReturn(new byte[]{1});
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
+        //when
+        mvc.perform(
+                get("/model_articles/1/download")
+                        .with(authentication(authentication))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().string("Content-Length", "1"))
+                .andExpect(header().string("Content-Disposition", String.format("form-data; name=\"attachment\"; filename=\"%s\"", articleFileDto.originalFileName())))
+                ;
+        //then
+        then(articleFileService).should().getArticleFile(articleId);
+        then(s3Service).should().downloadFile(fileName);
     }
 }

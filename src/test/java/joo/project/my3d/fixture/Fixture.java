@@ -2,12 +2,15 @@ package joo.project.my3d.fixture;
 
 import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.*;
+import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.request.DimensionOptionRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Slf4j
 public class Fixture {
@@ -63,7 +66,7 @@ public class Fixture {
         return Fixture.getMultipartFile("Hello, World!");
     }
 
-    public static MockMultipartFile getMultipartFile(String content) throws IOException {
+    public static MockMultipartFile getMultipartFile(String content) {
         String fileName = "test.txt";
 
         return new MockMultipartFile(
@@ -88,5 +91,21 @@ public class Fixture {
 
     public static Alarm getAlarm(UserAccount userAccount) {
         return Alarm.of(AlarmType.NEW_LIKE_ON_POST, "a@gmail.com", 1L, false, userAccount);
+    }
+
+    public static ArticleFormRequest getArticleFormRequest() throws IOException, IllegalAccessException {
+
+        return getArticleFormRequest(Fixture.getMultipartFile());
+    }
+
+    public static ArticleFormRequest getArticleFormRequest(MockMultipartFile file) throws IllegalAccessException {
+        ArticleFormRequest articleFormRequest = new ArticleFormRequest();
+        FieldUtils.writeField(articleFormRequest, "dimensionOptions", List.of(Fixture.getDimensionOptionRequest()), true);
+        FieldUtils.writeField(articleFormRequest, "modelFile", file, true);
+        return articleFormRequest;
+    }
+
+    public static DimensionOptionRequest getDimensionOptionRequest() {
+        return DimensionOptionRequest.of("option123");
     }
 }

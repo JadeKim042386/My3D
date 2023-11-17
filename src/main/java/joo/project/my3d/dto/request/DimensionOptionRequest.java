@@ -27,9 +27,8 @@ public class DimensionOptionRequest {
                 return new DimensionOptionRequest(optionName);
         }
 
-        public DimensionOptionDto toDto(Long articleId) {
+        public DimensionOptionDto toDto() {
                 return DimensionOptionDto.of(
-                        articleId,
                         optionName
                 );
         }

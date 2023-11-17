@@ -27,9 +27,9 @@ public class ArticleFile extends AuditingFields {
     @Column(nullable = false)
     private Long byteSize;
     @Column(nullable = false)
-    private String originalFileName;
+    private String originalFileName; //사용자가 지정한 파일명
     @Column(nullable = false)
-    private String fileName;
+    private String fileName; //서버에 저장된 파일명
     @Column(nullable = false)
     private String fileExtension;
 
@@ -68,5 +68,12 @@ public class ArticleFile extends AuditingFields {
     @Override
     public int hashCode() {
         return Objects.hash(this.getId());
+    }
+
+    public void update(Long byteSize, String originalFileName, String fileName, String fileExtension) {
+        this.byteSize = byteSize;
+        this.originalFileName = originalFileName;
+        this.fileName = fileName;
+        this.fileExtension = fileExtension;
     }
 }

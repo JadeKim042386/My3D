@@ -15,6 +15,7 @@ import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
+import joo.project.my3d.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,9 +50,8 @@ public class ModelArticlesController {
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
-    private final DimensionOptionService dimensionOptionService;
-    private final DimensionService dimensionService;
     private final AlarmService alarmService;
+    private final S3Service s3Service;
 
     @Value("${aws.s3.url}")
     private String S3Url;
@@ -141,29 +145,17 @@ public class ModelArticlesController {
         }
 
         try {
-            //파일 저장
-            //TODO: DimensionOption 저장
-            ArticleFile articleFile = articleFileService.saveArticleFile(articleFormRequest.getModelFile(), null);
+            //파일과 치수 저장
+            ArticleFile articleFile = articleFileService.saveArticleFileWithForm(articleFormRequest);
+
             //게시글 저장
-            Article article = articleService.saveArticle(
+            articleService.saveArticle(
                     articleFormRequest.toArticleDto(
                             ArticleFileDto.from(articleFile),
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )
             );
-
-            //상품 옵션 저장
-            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
-            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests){
-                DimensionOptionDto dimensionOptionDto = dimensionOptionRequest.toDto(article.getId());
-                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionDto);
-                //치수 저장
-                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
-                for (DimensionDto dimensionDto : dimensionDtos) {
-                    dimensionService.saveDimension(dimensionDto);
-                }
-            }
         } catch (RuntimeException e) {
             log.error("게시글 추가 실패 - {}", e);
             model.addAttribute("formStatus", FormStatus.CREATE);
@@ -209,26 +201,7 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
         try {
-            //파일 업데이트
-            ArticleFileDto articleFileDto = articleFileService.getArticleFile(articleId); //저장되어있는 파일들
-            MultipartFile file = articleFormRequest.getModelFile();
-            boolean isUpdated = articleFileService.updateArticleFile(file);
-            //업데이트되었다면 이전에 저장한 파일 모두 삭제하고 업데이트된 파일들을 저장
-            if (isUpdated) {
-                articleFileService.deleteArticleFile(articleFileDto.id());
-                //TODO: DimensionOption 저장
-                articleFileService.saveArticleFile(file, null);
-            }
-            //상품옵션 업데이트
-            List<DimensionOptionRequest> dimensionOptionRequests = articleFormRequest.getDimensionOptions();
-            for (DimensionOptionRequest dimensionOptionRequest : dimensionOptionRequests) {
-                DimensionOption dimensionOption = dimensionOptionService.saveDimensionOption(dimensionOptionRequest.toDto(articleId));
-                //치수 업데이트
-                List<DimensionDto> dimensionDtos = dimensionOptionRequest.toDimensionDtos(dimensionOption.getId());
-                for (DimensionDto dimensionDto : dimensionDtos) {
-                    dimensionService.saveDimension(dimensionDto);
-                }
-            }
+            articleFileService.updateArticleFile(articleFormRequest, articleId);
 
             articleService.updateArticle(
                     articleId,
@@ -263,5 +236,20 @@ public class ModelArticlesController {
         }
 
         return "redirect:/model_articles";
+    }
+
+    @GetMapping("{articleId}/download")
+    public ResponseEntity<byte[]> downloadArticleFile(
+            @PathVariable Long articleId
+    ) {
+        ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
+        byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentLength(downloadFile.length);
+        httpHeaders.setContentDispositionFormData("attachment", articleFile.originalFileName());
+
+        return new ResponseEntity<>(downloadFile, httpHeaders, HttpStatus.OK);
     }
 }

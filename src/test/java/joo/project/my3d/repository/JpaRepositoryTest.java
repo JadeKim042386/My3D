@@ -570,20 +570,18 @@ public class JpaRepositoryTest {
 
         @DisplayName("치수 save")
         @Test
-        void saveDimension() {
+        void saveDimensionAddDimensionOption() {
             // Given
             DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(1L);
             Dimension dimension = Fixture.getDimension(dimensionOption);
             long previousCount = dimensionRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
-            Dimension savedDimension = dimensionRepository.save(dimension);
+            dimensionOption.getDimensions().add(dimension);
             // Then
             long afterCount = dimensionRepository.count();
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedDimension)
-                    .hasFieldOrPropertyWithValue("id", 11L);
         }
 
         @DisplayName("치수 update")

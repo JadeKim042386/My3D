@@ -1,6 +1,5 @@
 package joo.project.my3d.dto;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.DimensionOption;
 
 public record DimensionOptionDto(
