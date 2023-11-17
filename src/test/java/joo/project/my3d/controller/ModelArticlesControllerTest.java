@@ -270,7 +270,6 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @Disabled("TODO: 파일 다운로드 기능을 뷰에 반영")
     @DisplayName("[GET] 게시글 페이지")
     @Test
     void modelArticle() throws Exception {

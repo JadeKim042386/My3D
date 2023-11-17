@@ -58,14 +58,18 @@
             <!--현재 선택한 치수 옵션 정보-->
             <table class="table table-bordered" id="dimensionTable">
                 <thead>
-                <tr>
-                    <th>치수명</th>
-                    <th>치수</th>
-                    <th>단위</th>
-                </tr>
+                    <tr>
+                        <th>치수명</th>
+                        <th>치수</th>
+                        <th>단위</th>
+                    </tr>
                 </thead>
                 <tbody>
-
+                    <tr>
+                        <td>높이</td>
+                        <td>100</td>
+                        <td>MM</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -90,14 +94,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <select class="form-select" id="dimensionOption" name="dimensionOption" onchange="selectDimensionOption()">
-                <option>치수를 선택해주세요.</option>
-            </select>
-        </div>
-        <div class="col-2">
+        <div class="col-6">
             <div class="d-flex justify-content-center">
-                <button id="detail-modal" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prodDetailView">다운로드</button>
+                <a id="downloadButton" type="button" class="btn btn-primary">다운로드</a>
             </div>
         </div>
     </div>
@@ -206,30 +205,7 @@
     window.addEventListener('load', () => {
         OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
         OV.Init3DViewerElements();
-        selectDimensionOption();
     })
-</script>
-<script>
-    $(function () {
-        $("#basicDimInfo").popover();
-    })
-</script>
-<script id="inline-js">
-    function selectDimensionOption() {
-        var selectedIndex = $("#dimensionOption option:selected").index();
-        var dimensionOption = [[${article.dimensionOptions}]][selectedIndex]
-        $('#dimensionTable tbody').find("tr").remove();
-        if (dimensionOption != null) {
-            for (var dimension of dimensionOption['dimensions']) {
-                var row = '<tr>' +
-                    '<td>' + dimension['dimName'] + '</td>' +
-                    '<td>' + dimension['dimValue'] + '</td>' +
-                    '<td>' + dimension['dimUnit'] + '</td>' +
-                    '</tr>';
-                $("#dimensionTable tbody").append(row);
-            }
-        }
-    }
 </script>
 <script id="alarmScript"></script>
 </body>

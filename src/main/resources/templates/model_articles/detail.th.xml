@@ -19,15 +19,18 @@
         <!--제목&본문 내용-->
         <attr sel="#title" th:text="*{title}"/>
         <attr sel="#content" th:text="*{content}"/>
-        <!--치수 옵션-->
-        <attr sel="#dimensionOption">
-            <attr sel="option[0]"
-                  th:each="dimensionOption, stat : ${article.dimensionOptions}"
-                  th:value="${dimensionOption.optionName}"
-                  th:text="${dimensionOption.optionName}"
-                  th:selected="${stat.index} == 0 ? true : false"
-            />
+        <!--치수-->
+        <attr sel="#dimensionTable">
+            <attr sel="tbody.tr[0]"
+                  th:each="dimension : ${article.dimensionOptions[0].dimensions}"
+            >
+                <attr sel="td[0]" th:text="${dimension.dimName}"/>
+                <attr sel="td[1]" th:text="${dimension.dimValue}"/>
+                <attr sel="td[2]" th:text="${dimension.dimUnit}"/>
+            </attr>
         </attr>
+        <!--다운로드 버튼-->
+        <attr sel="#downloadButton" th:href="'/model_articles/' + *{id} + '/download'"/>
         <!--좋아요-->
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
             <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
