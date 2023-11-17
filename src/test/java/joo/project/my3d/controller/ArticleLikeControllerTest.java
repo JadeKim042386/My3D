@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,16 +35,15 @@ class ArticleLikeControllerTest {
     void addArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        willDoNothing().given(articleLikeService).addArticleLike(anyLong(), anyString());
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooUser", UserRole.USER);
+        given(articleLikeService.addArticleLike(anyLong(), anyString())).willReturn(0);
         // When
         mvc.perform(
                 get("/like/" + articleId)
                         .with(authentication(authentication))
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/model_articles/" + articleId))
-                .andExpect(redirectedUrl("/model_articles/" + articleId));
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
         // Then
         then(articleLikeService).should().addArticleLike(anyLong(), anyString());
     }
@@ -55,14 +54,13 @@ class ArticleLikeControllerTest {
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        willDoNothing().given(articleLikeService).deleteArticleLike(anyLong());
+        given(articleLikeService.deleteArticleLike(anyLong())).willReturn(anyInt());
         // When
         mvc.perform(
-                        get("/like/" + articleId + "/delete")
-                )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/model_articles/" + articleId))
-                .andExpect(redirectedUrl("/model_articles/" + articleId));
+                get("/like/" + articleId + "/delete")
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
         // Then
         then(articleLikeService).should().deleteArticleLike(anyLong());
     }

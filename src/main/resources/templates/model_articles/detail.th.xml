@@ -33,9 +33,8 @@
         <attr sel="#downloadButton" th:href="'/model_articles/' + *{id} + '/download'"/>
         <!--좋아요-->
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
-            <attr sel="#notAddedLikeIcon" th:hidden="${addedLike}"/>
-            <attr sel="#addedLikeIcon" th:hidden="${!addedLike}"/>
-            <attr sel="#like" th:onclick="|location.href=${addedLike} ? '/like/' + *{id} + '/delete' : '/like/' + *{id}|"/>
+            <attr sel="#notLike" th:hidden="${addedLike}"/>
+            <attr sel="#like" th:hidden="${!addedLike}"/>
             <attr sel="#likeCount" th:text="*{likeCount}"/>
         </attr>
         <!--댓글 작성 폼-->
