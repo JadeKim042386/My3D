@@ -27,7 +27,7 @@ public class ArticleLikeController {
     ) {
         try{
             int likeCount = articleLikeService.addArticleLike(articleId, boardPrincipal.email());
-            return Response.success(ArticleLikeResponse.of(likeCount, true));
+            return Response.success(ArticleLikeResponse.of(likeCount));
         } catch (RuntimeException e) {
             log.error("게시글 좋아요 추가 실패 - {}", e);
             return Response.error(e.getMessage());
@@ -40,6 +40,6 @@ public class ArticleLikeController {
     ) {
         int likeCount = articleLikeService.deleteArticleLike(articleId);
 
-        return Response.success(ArticleLikeResponse.of(likeCount, false));
+        return Response.success(ArticleLikeResponse.of(likeCount));
     }
 }
