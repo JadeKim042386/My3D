@@ -13,8 +13,9 @@ import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.*;
 import joo.project.my3d.service.aws.S3Service;
+import joo.project.my3d.utils.CookieUtils;
+import joo.project.my3d.utils.JwtTokenUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 게시글")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(ModelArticlesController.class)
@@ -49,9 +53,6 @@ class ModelArticlesControllerTest {
     @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
     @MockBean private ArticleLikeRepository articleLikeRepository;
-    @MockBean private DimensionOptionService dimensionOptionService;
-    @MockBean private DimensionService dimensionService;
-    @MockBean private AlarmService alarmService;
     @MockBean private S3Service s3Service;
 
     @DisplayName("[GET] 게시판 페이지")
@@ -61,9 +62,21 @@ class ModelArticlesControllerTest {
         // Given
         given(articleService.getArticles(any(Predicate.class), any(Pageable.class))).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of());
+        Cookie cookie = CookieUtils.createCookie(
+                "token",
+                JwtTokenUtils.generateToken(
+                        "jooUser@gmail.com",
+                        "jooUser",
+                        "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        100000L
+                ),
+                100,
+                "/"
+        );
         // When
         mvc.perform(
                 get("/model_articles")
+                        .cookie(cookie)
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
