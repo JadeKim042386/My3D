@@ -1,6 +1,7 @@
 package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
+import joo.project.my3d.aop.TimeTrace;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.ArticleCategory;
@@ -215,9 +216,8 @@ public class ModelArticlesController {
 
             articleService.updateArticle(
                     articleId,
-                    articleFormRequest.toArticleDto(
-                            boardPrincipal.toDto()
-                    )
+                    articleFormRequest.toArticleDto(),
+                    boardPrincipal.email()
             );
         } catch (RuntimeException e) {
             log.error("게시글 수정 실패 - {}", e);
@@ -226,7 +226,7 @@ public class ModelArticlesController {
             return "model_articles/form";
         }
 
-        return "redirect:/model_articles";
+        return "redirect:/model_articles/" + articleId;
     }
 
     /**

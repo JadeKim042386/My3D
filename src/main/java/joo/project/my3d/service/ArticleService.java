@@ -7,6 +7,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
+import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -64,15 +67,19 @@ public class ArticleService {
     }
 
     /**
+     * @param articleId 수정하려는 게시글 ID
+     * @param articleDto 수정 입력 폼에 입력된 정보
+     * @param requestEmail 수정하려는 사용자의 이메일
      * @throws ArticleException 게시글 작성자와 수정자가 다를 경우 또는 게시글이 DB에 존재하지 않는 경우 발생하는 예외
      */
     @Transactional
-    public void updateArticle(Long articleId, ArticleDto articleDto) {
+    public void updateArticle(Long articleId, ArticleDto articleDto, String requestEmail) {
         try {
-            Article article = articleRepository.getReferenceById(articleId); //작성자
-            UserAccount userAccount = userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email()); //수정자
+            Article article = articleRepository.findByIdAndUserAccount_Email(articleId, requestEmail)
+                    .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); //작성자
+
             //작성자와 수정자가 같은지 확인
-            if (article.getUserAccount().equals(userAccount)) {
+            if (Objects.equals(article.getId(), articleId)) {
                 if (articleDto.title() != null) {
                     article.setTitle(articleDto.title());
                 }
@@ -87,8 +94,7 @@ public class ArticleService {
                 }
             } else {
                 log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
-                        article.getUserAccount().getEmail(),
-                        userAccount.getEmail());
+                        article.getUserAccount().getEmail(), requestEmail);
                 throw new ArticleException(ErrorCode.NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
