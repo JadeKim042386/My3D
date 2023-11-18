@@ -21,6 +21,8 @@ spring:
 
 ---
 
+logging.level:
+  joo.project.my3d: debug
 spring:
   config.activate.on-profile: local
   jpa:
@@ -30,6 +32,7 @@ spring:
   devtools.livereload:
     enabled: true
     port: 35730
+
 
 ---
 
