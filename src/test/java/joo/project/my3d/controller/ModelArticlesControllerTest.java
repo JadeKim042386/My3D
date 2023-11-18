@@ -53,6 +53,7 @@ class ModelArticlesControllerTest {
     @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
     @MockBean private ArticleLikeRepository articleLikeRepository;
+    @MockBean private AlarmService alarmService;
     @MockBean private S3Service s3Service;
 
     @DisplayName("[GET] 게시판 페이지")

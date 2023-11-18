@@ -1,6 +1,5 @@
 package joo.project.my3d.dto.request;
 
-import joo.project.my3d.domain.Dimension;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
@@ -38,7 +37,7 @@ public class ArticleFormRequest {
      * @param userAccountDto 작성자의 DTO
      * @param articleType
      */
-    public ArticleDto toArticleDto(ArticleFileDto articleFileDto, UserAccountDto userAccountDto, ArticleType articleType) {
+    public ArticleDto toArticleDto(ArticleFileWithDimensionOptionWithDimensionDto articleFileDto, UserAccountDto userAccountDto, ArticleType articleType) {
         return ArticleDto.of(
                 userAccountDto,
                 title,

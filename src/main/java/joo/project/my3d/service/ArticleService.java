@@ -5,25 +5,22 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
-import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -36,9 +33,9 @@ public class ArticleService {
     private final ArticleCommentRepository articleCommentRepository;
     private final UserAccountRepository userAccountRepository;
 
-    public Page<ArticleDto> getArticles(Predicate predicate, Pageable pageable) {
+    public Page<ArticlesDto> getArticles(Predicate predicate, Pageable pageable) {
 
-        return articleRepository.findAll(predicate, pageable).map(ArticleDto::from);
+        return articleRepository.findAll(predicate, pageable).map(ArticlesDto::from);
     }
 
     public ArticleDto getArticle(Long articleId) {

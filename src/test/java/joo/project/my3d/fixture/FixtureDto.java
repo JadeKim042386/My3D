@@ -1,5 +1,6 @@
 package joo.project.my3d.fixture;
 
+import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.*;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -22,13 +23,36 @@ public class FixtureDto {
     }
 
     public static ArticleFileDto getArticleFileDto() {
+        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
+    }
+
+    public static ArticlesDto getArticlesDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        return ArticlesDto.of(
+                id,
+                userAccountDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                1,
+                articleFileDto,
+                LocalDateTime.now(),
+                userAccountDto.email(),
+                LocalDateTime.now(),
+                userAccountDto.email()
+        );
+    }
+
+    public static ArticleFileWithDimensionOptionWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
         DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
-        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
+        return ArticleFileWithDimensionOptionWithDimensionDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
     }
 
     public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleDto.of(
                 id,
                 userAccountDto,
@@ -57,7 +81,7 @@ public class FixtureDto {
 
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
+        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto,

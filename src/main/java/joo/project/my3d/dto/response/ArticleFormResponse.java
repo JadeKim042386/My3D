@@ -2,6 +2,7 @@ package joo.project.my3d.dto.response;
 
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
 import lombok.Getter;
 import lombok.Setter;
 
