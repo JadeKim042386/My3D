@@ -200,15 +200,13 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount userAccount = Fixture.getUserAccount();
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(userAccount);
         // When
-        articleService.updateArticle(1L, articleDto);
+        articleService.updateArticle(1L, articleDto, userAccount.getEmail());
         // Then
         assertThat(article)
                 .hasFieldOrPropertyWithValue("title", articleDto.title())
                 .hasFieldOrPropertyWithValue("content", articleDto.content());
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceByEmail(articleDto.userAccountDto().email());
     }
 
     @DisplayName("[예외-없는 게시글] 게시글 수정")
@@ -218,7 +216,7 @@ class ArticleServiceTest {
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.getReferenceById(articleDto.id())).willThrow(EntityNotFoundException.class);
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
+        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, "a@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -233,14 +231,12 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
         given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
-        given(userAccountRepository.getReferenceByEmail(articleDto.userAccountDto().email())).willReturn(wrongUserAccount);
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto))
+        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, wrongUserAccount.getEmail()))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
         then(articleRepository).should().getReferenceById(articleDto.id());
-        then(userAccountRepository).should().getReferenceByEmail(articleDto.userAccountDto().email());
     }
 
     @DisplayName("게시글 삭제")

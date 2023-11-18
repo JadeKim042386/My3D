@@ -341,7 +341,6 @@ class ModelArticlesControllerTest {
         DimensionOption dimensionOption = Fixture.getDimensionOption();
         FieldUtils.writeField(dimensionOption, "id", 1L, true);
         willDoNothing().given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), eq(article.getId()));
-        willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
@@ -367,7 +366,6 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleFileService).should().updateArticleFile(any(ArticleFormRequest.class), eq(article.getId()));
-        then(articleService).should().updateArticle(anyLong(), any(ArticleDto.class));
     }
 
     @DisplayName("[POST] 게시글 수정 - 권한이 없는 User가 요청")

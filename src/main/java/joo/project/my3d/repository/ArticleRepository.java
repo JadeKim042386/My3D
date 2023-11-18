@@ -35,6 +35,8 @@ public interface ArticleRepository extends
 
     List<Article> findAllByUserAccount_Email(String email);
 
+    Optional<Article> findByIdAndUserAccount_Email(Long id, String email);
+
     @Override
     @EntityGraph(value = "Article.fetchIndex", type = EntityGraph.EntityGraphType.LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
