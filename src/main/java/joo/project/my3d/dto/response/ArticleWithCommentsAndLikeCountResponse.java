@@ -15,7 +15,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
         Long id,
         String userId,
         String nickname,
-        ArticleFileResponse modelFile,
+        ArticleFileWithDimensionResponse modelFile,
         String title,
         String content,
         ArticleType articleType,
@@ -24,7 +24,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
         int likeCount,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
+    public static ArticleWithCommentsAndLikeCountResponse of(Long id, String email, String nickname, ArticleFileWithDimensionResponse modelFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentResponse> articleCommentResponses, int likeCount, LocalDateTime createdAt) {
         return new ArticleWithCommentsAndLikeCountResponse(id, email, nickname, modelFile, title, content, articleType, articleCategory, articleCommentResponses, likeCount, LocalDateTimeUtils.format(createdAt));
     }
 
@@ -33,7 +33,7 @@ public record ArticleWithCommentsAndLikeCountResponse(
                 dto.id(),
                 dto.userAccountDto().email(),
                 dto.userAccountDto().nickname(),
-                ArticleFileResponse.from(dto.articleFileDto()),
+                ArticleFileWithDimensionResponse.from(dto.articleFileWithDimensionOptionWithDimensionDto()),
                 dto.title(),
                 dto.content(),
                 dto.articleType(),

@@ -7,8 +7,9 @@ import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
-import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
+import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
@@ -68,7 +69,7 @@ public class ModelArticlesController {
             @QuerydslPredicate(root = Article.class) Predicate predicate,
             Model model
     ) {
-        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         if (articles.isEmpty()) {
             model.addAttribute(
@@ -154,7 +155,7 @@ public class ModelArticlesController {
             //게시글 저장
             articleService.saveArticle(
                     articleFormRequest.toArticleDto(
-                            ArticleFileDto.from(articleFile),
+                            ArticleFileWithDimensionOptionWithDimensionDto.from(articleFile),
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )

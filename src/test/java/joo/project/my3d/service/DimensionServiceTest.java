@@ -32,11 +32,11 @@ class DimensionServiceTest {
     void getDimensions() {
         // Given
         Long dimensionOptionId = 1L;
-        given(dimensionRepository.findByDimensionOptionId(dimensionOptionId)).willReturn(List.of());
+        given(dimensionRepository.findAllByDimensionOptionId(dimensionOptionId)).willReturn(List.of());
         // When
         dimensionService.getDimensions(dimensionOptionId);
         // Then
-        then(dimensionRepository).should().findByDimensionOptionId(dimensionOptionId);
+        then(dimensionRepository).should().findAllByDimensionOptionId(dimensionOptionId);
     }
 
     @DisplayName("치수 저장")

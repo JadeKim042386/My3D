@@ -5,14 +5,13 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public record ArticleWithCommentsAndLikeCountDto(
         Long id,
         UserAccountDto userAccountDto,
-        ArticleFileDto articleFileDto,
+        ArticleFileWithDimensionOptionWithDimensionDto articleFileWithDimensionOptionWithDimensionDto,
         String title,
         String content,
         ArticleType articleType,
@@ -24,7 +23,7 @@ public record ArticleWithCommentsAndLikeCountDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+    public static ArticleWithCommentsAndLikeCountDto of(Long id, UserAccountDto userAccountDto, ArticleFileWithDimensionOptionWithDimensionDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
         return new ArticleWithCommentsAndLikeCountDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, articleCommentDtos, likeCount, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
@@ -32,7 +31,7 @@ public record ArticleWithCommentsAndLikeCountDto(
         return ArticleWithCommentsAndLikeCountDto.of(
                 article.getId(),
                 UserAccountDto.from(article.getUserAccount()),
-                ArticleFileDto.from(article.getArticleFile()),
+                ArticleFileWithDimensionOptionWithDimensionDto.from(article.getArticleFile()),
                 article.getTitle(),
                 article.getContent(),
                 article.getArticleType(),

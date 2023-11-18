@@ -10,6 +10,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
@@ -56,7 +57,7 @@ class ArticleServiceTest {
         Predicate predicate = new BooleanBuilder();
         given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(predicate, pageable);
@@ -71,7 +72,7 @@ class ArticleServiceTest {
         Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
         given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(predicate, pageable);
@@ -86,7 +87,7 @@ class ArticleServiceTest {
         Predicate predicate = QArticle.article.title.eq(title);
         given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(predicate, pageable);
@@ -103,7 +104,7 @@ class ArticleServiceTest {
                 .and(QArticle.article.title.eq(title));
         given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
-        Page<ArticleDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findAll(predicate, pageable);
@@ -141,7 +142,7 @@ class ArticleServiceTest {
         // Then
         assertThat(dto)
                 .hasFieldOrProperty("userAccountDto")
-                .hasFieldOrProperty("articleFileDto")
+                .hasFieldOrProperty("articleFileWithDimensionOptionWithDimensionDto")
                 .hasFieldOrPropertyWithValue("title", article.getTitle())
                 .hasFieldOrPropertyWithValue("content", article.getContent())
                 .hasFieldOrPropertyWithValue("articleType", article.getArticleType())

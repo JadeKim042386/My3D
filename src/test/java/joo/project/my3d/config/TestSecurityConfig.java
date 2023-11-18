@@ -4,6 +4,7 @@ import joo.project.my3d.config.handler.CustomOAuth2SuccessHandler;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.UserAccountService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,6 +31,8 @@ public class TestSecurityConfig {
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY, true)));
         given(userAccountService.searchUser("jooUser@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true)));
+        given(userAccountService.getUserPrincipal("jooUser@gmail.com"))
+                .willReturn(BoardPrincipal.from(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true)));
         given(userAccountService.searchUser("notSignedJooUser@gmail.com"))
                 .willReturn(Optional.of(FixtureDto.getUserAccountDto("notSignedJooUser", UserRole.USER, false)));
         given(userAccountService.searchUser("jooAdmin@gmail.com"))
