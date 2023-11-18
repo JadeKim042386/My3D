@@ -21,12 +21,14 @@
         <attr sel="#content" th:text="*{content}"/>
         <!--치수-->
         <attr sel="#dimensionTable">
-            <attr sel="tbody.tr[0]"
-                  th:each="dimension : ${article.dimensionOptions[0].dimensions}"
+            <attr sel="tbody">
+                <attr sel="tr[0]"
+                  th:each="dimension : *{modelFile.dimensionOptions[0].dimensions}"
             >
-                <attr sel="td[0]" th:text="${dimension.dimName}"/>
-                <attr sel="td[1]" th:text="${dimension.dimValue}"/>
-                <attr sel="td[2]" th:text="${dimension.dimUnit}"/>
+                    <attr sel="td[0]" th:text="${dimension.dimName}"/>
+                    <attr sel="td[1]" th:text="${dimension.dimValue}"/>
+                    <attr sel="td[2]" th:text="${dimension.dimUnit}"/>
+                </attr>
             </attr>
         </attr>
         <!--다운로드 버튼-->

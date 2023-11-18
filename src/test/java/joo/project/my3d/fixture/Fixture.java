@@ -4,10 +4,13 @@ import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.request.DimensionOptionRequest;
+import joo.project.my3d.utils.CookieUtils;
+import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.mock.web.MockMultipartFile;
 
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -107,5 +110,20 @@ public class Fixture {
 
     public static DimensionOptionRequest getDimensionOptionRequest() {
         return DimensionOptionRequest.of("option123");
+    }
+
+    public static Cookie getCookie() {
+
+        return CookieUtils.createCookie(
+                "token",
+                JwtTokenUtils.generateToken(
+                        "jooUser@gmail.com",
+                        "jooUser",
+                        "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                        100000L
+                ),
+                100,
+                "/"
+        );
     }
 }
