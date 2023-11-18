@@ -8,6 +8,5 @@ import java.util.Optional;
 public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
     void deleteByArticleId(Long articleId);
     void deleteByUserAccount_Email(String email);
-
-    Optional<ArticleLike> findByUserAccount_EmailAndArticle_Id(String email, Long articleId);
+    int countByUserAccount_EmailAndArticle_Id(String email, Long articleId);
 }

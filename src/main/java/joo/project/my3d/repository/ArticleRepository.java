@@ -15,6 +15,7 @@ import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ArticleRepository extends
         JpaRepository<Article, Long>,
@@ -35,6 +36,10 @@ public interface ArticleRepository extends
     List<Article> findAllByUserAccount_Email(String email);
 
     @Override
-    @EntityGraph(value = "Article.fetchAll", type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(value = "Article.fetchIndex", type = EntityGraph.EntityGraphType.LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
+
+    @Override
+    @EntityGraph(value = "Article.fetchDetail", type = EntityGraph.EntityGraphType.LOAD)
+    Optional<Article> findById(Long id);
 }

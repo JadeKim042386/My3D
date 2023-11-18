@@ -2,19 +2,24 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.domain.*;
+import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
-import joo.project.my3d.service.*;
+import joo.project.my3d.service.AlarmService;
+import joo.project.my3d.service.ArticleFileService;
+import joo.project.my3d.service.ArticleService;
+import joo.project.my3d.service.PaginationService;
 import joo.project.my3d.service.aws.S3Service;
-import joo.project.my3d.utils.CookieUtils;
-import joo.project.my3d.utils.JwtTokenUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,12 +36,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.servlet.http.Cookie;
 import java.util.List;
-import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -63,21 +65,10 @@ class ModelArticlesControllerTest {
         // Given
         given(articleService.getArticles(any(Predicate.class), any(Pageable.class))).willReturn(Page.empty());
         given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of());
-        Cookie cookie = CookieUtils.createCookie(
-                "token",
-                JwtTokenUtils.generateToken(
-                        "jooUser@gmail.com",
-                        "jooUser",
-                        "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                        100000L
-                ),
-                100,
-                "/"
-        );
         // When
         mvc.perform(
                 get("/model_articles")
-                        .cookie(cookie)
+                        .cookie(Fixture.getCookie())
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -118,7 +109,6 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        DimensionOptionDto dimensionOptionDto = FixtureDto.getDimensionOptionDto();
         given(articleFileService.saveArticleFileWithForm(any(ArticleFormRequest.class))).willReturn(Fixture.getArticleFile());
         given(articleService.saveArticle(any(ArticleDto.class))).willReturn(article);
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
@@ -289,17 +279,17 @@ class ModelArticlesControllerTest {
     void modelArticle() throws Exception {
         // Given
         Long articleId = 1L;
-        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true);
-        UserAccount userAccount = userAccountDto.toEntity();
-        ArticleLike articleLike = Fixture.getArticleLike(userAccount);
-        given(articleLikeRepository.findByUserAccount_EmailAndArticle_Id(articleLike.getUserAccount().getEmail(), articleId)).willReturn(Optional.of(articleLike));
-        given(articleService.getArticleWithComments(articleId)).willReturn(dto);
+        given(articleLikeRepository.countByUserAccount_EmailAndArticle_Id("jooUser@gmail.com", articleId)).willReturn(2);
+        given(articleService.getArticleWithComments(articleId)).willReturn(
+                FixtureDto.getArticleWithCommentsAndLikeCountDto("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE)
+        );
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooUser", UserRole.USER);
         // When
         mvc.perform(
                         get("/model_articles/1")
+                                .cookie(Fixture.getCookie())
                                 .with(authentication(authentication))
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -311,7 +301,7 @@ class ModelArticlesControllerTest {
                 .andExpect(model().attributeExists("modelPath"));
 
         // Then
-        then(articleLikeRepository).should().findByUserAccount_EmailAndArticle_Id(articleLike.getUserAccount().getEmail(), articleId);
+        then(articleLikeRepository).should().countByUserAccount_EmailAndArticle_Id("jooUser@gmail.com", articleId);
         then(articleService).should().getArticleWithComments(articleId);
     }
 

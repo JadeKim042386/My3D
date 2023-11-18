@@ -3,18 +3,19 @@ package joo.project.my3d.controller;
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
-import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
+import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.ArticleFileService;
@@ -42,7 +43,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -107,20 +107,26 @@ public class ModelArticlesController {
             Model model,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        Optional<ArticleLike> articleLike = articleLikeRepository.findByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
-        ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleService.getArticleWithComments(articleId));
+        try {
+            int likeCount = articleLikeRepository.countByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
+            ArticleWithCommentsAndLikeCountDto articleWithComments = articleService.getArticleWithComments(articleId);
+            ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleWithComments);
 
-        model.addAttribute("article", article);
-        model.addAttribute("articleComments", article.articleCommentResponses());
-        model.addAttribute("modelFile", article.modelFile());
-        model.addAttribute("addedLike", articleLike.isPresent());
-        model.addAttribute("modelPath", S3Url);
+            model.addAttribute("article", article);
+            model.addAttribute("articleComments", article.articleCommentResponses());
+            model.addAttribute("modelFile", article.modelFile());
+            model.addAttribute("addedLike", likeCount > 0);
+            model.addAttribute("modelPath", S3Url);
 
-        if (alarmId != null) {
-            alarmService.checkAlarm(alarmId);
+            if (alarmId != null) {
+                alarmService.checkAlarm(alarmId);
+            }
+            return "model_articles/detail";
+        } catch (ArticleException e) {
+            log.error(e.getMessage());
+            return "model_articles/index";
         }
 
-        return "model_articles/detail";
     }
 
     @GetMapping("/form")

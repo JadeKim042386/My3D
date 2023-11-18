@@ -14,14 +14,25 @@ import java.util.Set;
 import static javax.persistence.FetchType.LAZY;
 
 @NamedEntityGraph(
-        name = "Article.fetchAll",
+        name = "Article.fetchDetail",
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),
-                @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption")
+                @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
+                @NamedAttributeNode(value = "articleComments")
         },
         subgraphs = {
                 @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
                 @NamedSubgraph(name = "dimensionOption", attributeNodes = @NamedAttributeNode(value = "dimensionOption"))
+        }
+)
+@NamedEntityGraph(
+        name = "Article.fetchIndex",
+        attributeNodes = {
+                @NamedAttributeNode(value = "userAccount", subgraph = "company"),
+                @NamedAttributeNode(value = "articleFile"),
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
         }
 )
 @Getter
