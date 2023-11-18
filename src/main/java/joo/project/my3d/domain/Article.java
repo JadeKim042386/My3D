@@ -13,6 +13,17 @@ import java.util.Set;
 
 import static javax.persistence.FetchType.LAZY;
 
+@NamedEntityGraph(
+        name = "Article.fetchAll",
+        attributeNodes = {
+                @NamedAttributeNode(value = "userAccount", subgraph = "company"),
+                @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
+                @NamedSubgraph(name = "dimensionOption", attributeNodes = @NamedAttributeNode(value = "dimensionOption"))
+        }
+)
 @Getter
 @ToString(callSuper = true)
 @Table(
