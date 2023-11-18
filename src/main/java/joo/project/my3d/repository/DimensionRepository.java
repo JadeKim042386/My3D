@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DimensionRepository extends JpaRepository<Dimension, Long> {
-
-    List<Dimension> findByDimensionOptionId(Long dimensionOptionId);
+    List<Dimension> findAllByDimensionOptionId(Long dimensionOptionId);
 }

@@ -26,7 +26,7 @@ public class DimensionService {
 
 
     public List<DimensionDto> getDimensions(Long dimensionOptionId) {
-        return dimensionRepository.findByDimensionOptionId(dimensionOptionId)
+        return dimensionRepository.findAllByDimensionOptionId(dimensionOptionId)
                 .stream().map(DimensionDto::from)
                 .toList();
     }
@@ -75,7 +75,7 @@ public class DimensionService {
      * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
      */
     public void deleteDimensions(Long dimensionOptionId) {
-        List<Dimension> dimensions = dimensionRepository.findByDimensionOptionId(dimensionOptionId);
+        List<Dimension> dimensions = dimensionRepository.findAllByDimensionOptionId(dimensionOptionId);
         for (Dimension dimension : dimensions) {
             dimensionRepository.deleteById(dimension.getId());
         }
