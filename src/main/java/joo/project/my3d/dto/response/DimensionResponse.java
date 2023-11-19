@@ -2,6 +2,7 @@ package joo.project.my3d.dto.response;
 
 import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.dto.DimensionDto;
+import joo.project.my3d.dto.request.DimensionRequest;
 
 public record DimensionResponse(
         String dimName,
@@ -17,6 +18,14 @@ public record DimensionResponse(
                 dto.dimName(),
                 dto.dimValue(),
                 dto.dimUnit()
+        );
+    }
+
+    public static DimensionResponse from(DimensionRequest dimensionRequest) {
+        return DimensionResponse.of(
+                dimensionRequest.getDimName(),
+                dimensionRequest.getDimValue(),
+                dimensionRequest.getDimUnit()
         );
     }
 }

@@ -100,7 +100,7 @@
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-7">
           <select class="form-select" id="dimensionOption-select" onchange="selectDimensionOption()">
-
+            <option selected>치수 옵션</option>
           </select>
         </div>
         <div class="col-sm-1 col-lg-2">
@@ -259,6 +259,13 @@
           $("#addedDimensionTable tbody").append(row);
         }
       }
+      //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
+        $('#addDimensionOptionButton').removeAttr("disabled");
+      } else {
+        $('#addDimensionOptionButton').attr("disabled", true);
+      }
     }
 
     function removeDimensionOption() {
@@ -266,9 +273,6 @@
       var optionName = selectedOption.text();
       localStorage.removeItem(optionName);
       selectedOption.remove();
-      if (localStorage.length == 0) {
-        $('#editDimensionOption').attr("disabled", true);
-      }
       selectDimensionOption();
     }
 
@@ -317,9 +321,9 @@
   </script>
   <script id="inline-js">
     $(document).ready(function(){
-      // 수정 폼 초기화
+      // -- 수정 폼 초기화
       $("#dimensionOption-select").find("option").remove();
-      var dimensionOptions = [[${article.dimensionOptions}]];
+      var dimensionOptions = [[${article.modelFile.dimensionOptions}]];
       for (var dimensionOption of dimensionOptions) {
         var optionName = dimensionOption['optionName'];
         addSelectOption(optionName);
@@ -336,9 +340,12 @@
         }
         localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
       }
-      //아무것도 없으면 수정 버튼 비활성
+      //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
       if (localStorage.length == 0) {
         $('#editDimensionOption').attr("disabled", true);
+        $('#addDimensionOptionButton').removeAttr("disabled");
+      } else {
+        $('#addDimensionOptionButton').attr("disabled", true);
       }
       selectDimensionOption();
 
@@ -350,6 +357,7 @@
         $('#optionName').val("");
         $('#dimensionTable tbody').find("tr").remove();
       })
+
       // 치수 추가
       $(".add-new").click(function(){
         $(this).attr("disabled", "disabled");
@@ -365,7 +373,8 @@
         $("#dimensionTable tbody tr").eq(index + 1).find(".save, .edit").toggle();
         $('[data-toggle="tooltip"]').tooltip();
       });
-      // 저장 버튼 클릭
+
+      // -- 저장 버튼 클릭
       $(document).on("click", ".save", function(){
         var empty = false;
         var input = $(this).parents("tr").find('input[type="text"], select');
@@ -386,7 +395,7 @@
           $(".add-new").removeAttr("disabled");
         }
       });
-      // 치수 수정
+      // -- 수정 버튼 클릭
       $(document).on("click", ".edit", function(){
         $(this).parents("tr").find("td:nth-child(1), td:nth-child(2)").each(function(){
           $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
@@ -397,7 +406,7 @@
         $(this).parents("tr").find(".save, .edit").toggle();
         $(".add-new").attr("disabled", "disabled");
       });
-      // 치수 삭제
+      // -- 삭제 버튼 클릭
       $(document).on("click", ".delete", function(){
         $(this).parents("tr").remove();
         $(".add-new").removeAttr("disabled");

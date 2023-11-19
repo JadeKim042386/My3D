@@ -1,6 +1,8 @@
 package joo.project.my3d.dto.response;
 
 import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
+import joo.project.my3d.dto.request.DimensionOptionRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +26,17 @@ public record ArticleFileWithDimensionResponse(
                 dto.fileName(),
                 dto.fileExtension(),
                 List.of(DimensionOptionResponse.from(dto.dimensionOptionWithDimensionDto()))
+        );
+    }
+
+    public static ArticleFileWithDimensionResponse from(MultipartFile file, List<DimensionOptionRequest> dimensionOptions) {
+        return ArticleFileWithDimensionResponse.of(
+                null,
+                file.getSize(),
+                file.getOriginalFilename(),
+                "",
+                "",
+                dimensionOptions.stream().map(DimensionOptionResponse::from).toList()
         );
     }
 }

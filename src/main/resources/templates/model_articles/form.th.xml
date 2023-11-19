@@ -13,7 +13,7 @@
         <attr sel="#modelFileName" th:value="*{modelFile?.originalFilename} ?: _"/>
         <attr sel="#model-file-error" th:errors="*{modelFile}" th:classappend="field-error"/>
         <!--상품옵션-->
-        <attr sel="#dimensionOption-error" th:errors="*{dimensionOptions}" th:classappend="field-error"/>
+        <attr sel="#dimensionOption-error" th:if="${dimensionOptionError}" th:text="${dimensionOptionError}" th:classappend="field-error"/>
         <!--카테고리-->
         <attr sel="#category">
             <attr sel="option[1]"
