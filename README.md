@@ -1,5 +1,9 @@
 # My3D
 
+## Project Structure
+
+![](./imgs/my3d_project_structure.svg)
+
 ## Development Environment
 
 - Intellij IDEA Ultimate 2023.2.4
@@ -26,7 +30,7 @@
 - DB  
 ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
 
-#### Hosting/SaaS  
+#### PaaS 
 
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 - Server  
