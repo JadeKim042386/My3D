@@ -10,7 +10,7 @@
         <!--내용-->
         <attr sel="#content" th:text="*{content} ?: _"/>
         <!--파일-->
-        <attr sel="#modelFileName" th:value="*{modelFile?.originalFilename} ?: _"/>
+        <attr sel="#modelFileName" th:value="*{modelFile?.originalFilename} != '' ? *{modelFile?.originalFilename} : _"/>
         <attr sel="#model-file-error" th:errors="*{modelFile}" th:classappend="field-error"/>
         <!--상품옵션-->
         <attr sel="#dimensionOption-error" th:if="${dimensionOptionError}" th:text="${dimensionOptionError}" th:classappend="field-error"/>
