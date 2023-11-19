@@ -14,7 +14,6 @@ import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -57,12 +56,12 @@ class ArticleServiceTest {
         // Given
         Pageable pageable = Pageable.ofSize(9);
         Predicate predicate = new BooleanBuilder();
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
     }
 
     @DisplayName("카테고리로 게시글 검색")
@@ -72,12 +71,12 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         ArticleCategory articleCategory = ArticleCategory.MUSIC;
         Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
     }
 
     @DisplayName("제목으로 게시글 검색")
@@ -87,12 +86,12 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         String title = "title";
         Predicate predicate = QArticle.article.title.eq(title);
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
     }
 
     @DisplayName("카테고리+제목으로 게시글 검색")
@@ -104,21 +103,21 @@ class ArticleServiceTest {
         String title = "title";
         Predicate predicate = QArticle.article.articleCategory.eq(articleCategory)
                 .and(QArticle.article.title.eq(title));
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
     }
 
-    @DisplayName("단일 게시글 조회")
+    @DisplayName("게시글 추가/수정을 위한 단일 게시글 조회")
     @Test
     void getArticle() {
         // Given
         Long articleId = 1L;
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
+        given(articleRepository.findByIdFetchForm(articleId)).willReturn(Optional.of(article));
         // When
         ArticleFormDto articleFormDto = articleService.getArticle(articleId);
         // Then
@@ -127,9 +126,8 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("title", article.getTitle())
                 .hasFieldOrPropertyWithValue("content", article.getContent())
                 .hasFieldOrPropertyWithValue("articleType", article.getArticleType())
-                .hasFieldOrProperty("articleCategory")
-                .hasFieldOrProperty("likeCount");
-        then(articleRepository).should().findById(articleId);
+                .hasFieldOrProperty("articleCategory");
+        then(articleRepository).should().findByIdFetchForm(articleId);
     }
 
     @DisplayName("단일 게시글 조회 - 댓글포함")
@@ -138,7 +136,7 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
+        given(articleRepository.findByIdFetchDetail(articleId)).willReturn(Optional.of(article));
         // When
         ArticleWithCommentsAndLikeCountDto dto = articleService.getArticleWithComments(articleId);
         // Then
@@ -151,21 +149,21 @@ class ArticleServiceTest {
                 .hasFieldOrProperty("articleCategory")
                 .hasFieldOrProperty("likeCount")
                 .hasFieldOrProperty("articleCommentDtos");
-        then(articleRepository).should().findById(articleId);
+        then(articleRepository).should().findByIdFetchDetail(articleId);
     }
 
-    @DisplayName("[예외-없는 게시글] 단일 게시글 조회")
+    @DisplayName("[예외-없는 게시글] 게시글 추가/수정을 위한 단일 게시글 조회")
     @Test
     void getArticleNotExistArticle() {
         // Given
         Long articleId = 1L;
-        given(articleRepository.findById(articleId)).willReturn(Optional.empty());
+        given(articleRepository.findByIdFetchForm(articleId)).willReturn(Optional.empty());
         // When
         assertThatThrownBy(() -> articleService.getArticle(articleId))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().findById(articleId);
+        then(articleRepository).should().findByIdFetchForm(articleId);
     }
 
     @DisplayName("게시글 저장")
@@ -176,7 +174,7 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         // When
-        articleService.saveArticle(articleDto);
+        articleService.saveArticle(article.getUserAccount().getEmail(), articleDto);
         // Then
         then(articleRepository).should().save(any(Article.class));
     }
@@ -187,7 +185,7 @@ class ArticleServiceTest {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, null);
         // When
-        assertThatThrownBy(() -> articleService.saveArticle(articleDto))
+        assertThatThrownBy(() -> articleService.saveArticle(articleDto.userAccountDto().email(), articleDto))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_CATEGORY_NOT_FOUND);
         // Then

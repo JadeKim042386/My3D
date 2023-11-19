@@ -33,9 +33,9 @@ public record ArticleFileWithDimensionResponse(
         return ArticleFileWithDimensionResponse.of(
                 null,
                 file.getSize(),
-                file.getOriginalFilename(),
-                "",
-                "",
+                null,
+                null,
+                null,
                 dimensionOptions.stream().map(DimensionOptionResponse::from).toList()
         );
     }

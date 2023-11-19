@@ -73,7 +73,7 @@ public class ArticleFileService {
      * @throws FileException 파일 저장 실패 예외
      */
     @Transactional
-    public ArticleFile saveArticleFileWithForm(ArticleFormRequest articleFormRequest) {
+    public ArticleFileWithDimensionOptionWithDimensionDto saveArticleFileWithForm(ArticleFormRequest articleFormRequest) {
         MultipartFile file = articleFormRequest.getModelFile();
         DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
 
@@ -85,24 +85,23 @@ public class ArticleFileService {
         try {
             s3Service.uploadFile(file, fileName);
             long byteSize = file.getSize();
-            ArticleFile articleFile = articleFileRepository.save(
-                    ArticleFile.of(
-                            byteSize,
-                            originalFileName,
-                            fileName,
-                            extension,
-                            dimensionOptionDto.toEntity()
-                    )
+
+            ArticleFile articleFile = ArticleFile.of(
+                    byteSize,
+                    originalFileName,
+                    fileName,
+                    extension,
+                    dimensionOptionDto.toEntity()
             );
-            DimensionOption savedDimensionOption = articleFile.getDimensionOption();
-            List<DimensionDto> dimensions = articleFormRequest.toDimensions(savedDimensionOption.getId());
-            savedDimensionOption.getDimensions().addAll(
+
+            List<DimensionDto> dimensions = articleFormRequest.toDimensions(articleFile.getDimensionOption().getId());
+            articleFile.getDimensionOption().getDimensions().addAll(
                     dimensions.stream()
-                            .map(DimensionDto -> DimensionDto.toEntity(savedDimensionOption))
+                            .map(DimensionDto -> DimensionDto.toEntity(articleFile.getDimensionOption()))
                             .toList()
             );
 
-            return articleFile;
+            return ArticleFileWithDimensionOptionWithDimensionDto.from(articleFile);
         } catch (IOException e) {
             log.error("File path: {}, MultipartFile: {}", fileName, file);
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
@@ -156,14 +155,14 @@ public class ArticleFileService {
     }
 
     @Transactional
-    public void deleteArticleFile(Long articleFileId) {
-        ArticleFile articleFile = articleFileRepository.getReferenceById(articleFileId);
+    public void deleteArticleFile(Long articleId) {
+        ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
         String fileName = articleFile.getFileName();
 
         //파일 삭제
         s3Service.deleteFile(fileName);
         //데이터 삭제
-        articleFileRepository.deleteById(articleFileId);
+        articleFileRepository.deleteById(articleFile.getId());
     }
 
     /**

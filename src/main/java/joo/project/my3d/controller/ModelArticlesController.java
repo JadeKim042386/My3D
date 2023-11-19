@@ -148,6 +148,11 @@ public class ModelArticlesController {
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
+            FieldError dimensionOptionsError = bindingResult.getFieldError("dimensionOptions");
+            if (Objects.nonNull(dimensionOptionsError)) {
+                model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
+            }
+            model.addAttribute("article", ArticleFormResponse.from(articleFormRequest));
             model.addAttribute("formStatus", FormStatus.CREATE);
             model.addAttribute("categories", ArticleCategory.values());
             return "/model_articles/form";
@@ -155,18 +160,20 @@ public class ModelArticlesController {
 
         try {
             //파일과 치수 저장
-            ArticleFile articleFile = articleFileService.saveArticleFileWithForm(articleFormRequest);
+            ArticleFileWithDimensionOptionWithDimensionDto articleFile = articleFileService.saveArticleFileWithForm(articleFormRequest);
 
             //게시글 저장
             articleService.saveArticle(
+                    boardPrincipal.email(),
                     articleFormRequest.toArticleDto(
-                            ArticleFileWithDimensionOptionWithDimensionDto.from(articleFile),
+                            articleFile,
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )
             );
         } catch (RuntimeException e) {
             log.error("게시글 추가 실패 - {}", e);
+            model.addAttribute("article", ArticleFormResponse.from(articleFormRequest));
             model.addAttribute("formStatus", FormStatus.CREATE);
             model.addAttribute("categories", ArticleCategory.values());
             return "/model_articles/form";

@@ -56,11 +56,9 @@ class ArticleFileServiceTest {
         // Given
         ArticleFile articleFile = Fixture.getArticleFile();
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest();
-        given(articleFileRepository.save(any(ArticleFile.class))).willReturn(articleFile);
         // When
         articleFileService.saveArticleFileWithForm(articleFormRequest);
         // Then
-        then(articleFileRepository).should().save(any(ArticleFile.class));
     }
 
     @DisplayName("모델 파일 수정")
