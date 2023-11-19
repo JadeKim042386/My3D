@@ -1,6 +1,7 @@
 package joo.project.my3d.dto;
 
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 
@@ -46,9 +47,9 @@ public record ArticleDto(
         );
     }
 
-    public Article toEntity() {
+    public Article toEntity(UserAccount userAccount) {
         return Article.of(
-            userAccountDto.toEntity(),
+            userAccount,
             title,
             content,
             articleType,

@@ -94,9 +94,9 @@
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
           <button id="addDimensionOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">치수옵션 추가</button>
+          <p id="dimensionOption-error"></p>
         </div>
       </div>
-      <p id="dimensionOption-error"></p>
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-7">
           <select class="form-select" id="dimensionOption-select" onchange="selectDimensionOption()">
@@ -322,41 +322,45 @@
   <script id="inline-js">
     $(document).ready(function(){
       // -- 수정 폼 초기화
+      localStorage.clear();
       $("#dimensionOption-select").find("option").remove();
-      var dimensionOptions = [[${article.modelFile.dimensionOptions}]];
-      for (var dimensionOption of dimensionOptions) {
-        var optionName = dimensionOption['optionName'];
-        addSelectOption(optionName);
-        var dimensionOptionJson = {
-          "optionName": optionName,
-          "dimensions": []
-        };
-        for (var dimension of dimensionOption.dimensions) {
-          var dimensionJson = {};
-          dimensionJson["dimName"] = dimension.dimName;
-          dimensionJson["dimValue"] = dimension.dimValue;
-          dimensionJson["dimUnit"] = dimension.dimUnit;
-          dimensionOptionJson["dimensions"].push(dimensionJson);
+      var modelFile = [[${article.modelFile}]];
+      if (modelFile !== null) {
+        var dimensionOptions = modelFile.dimensionOptions;
+        for (var dimensionOption of dimensionOptions) {
+          var optionName = dimensionOption['optionName'];
+          addSelectOption(optionName);
+          var dimensionOptionJson = {
+            "optionName": optionName,
+            "dimensions": []
+          };
+          for (var dimension of dimensionOption.dimensions) {
+            var dimensionJson = {};
+            dimensionJson["dimName"] = dimension.dimName;
+            dimensionJson["dimValue"] = dimension.dimValue;
+            dimensionJson["dimUnit"] = dimension.dimUnit;
+            dimensionOptionJson["dimensions"].push(dimensionJson);
+          }
+          localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
         }
-        localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
-      }
-      //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
-      if (localStorage.length == 0) {
-        $('#editDimensionOption').attr("disabled", true);
-        $('#addDimensionOptionButton').removeAttr("disabled");
-      } else {
-        $('#addDimensionOptionButton').attr("disabled", true);
-      }
-      selectDimensionOption();
+        //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
+        if (localStorage.length == 0) {
+          $('#editDimensionOption').attr("disabled", true);
+          $('#addDimensionOptionButton').removeAttr("disabled");
+        } else {
+          $('#addDimensionOptionButton').attr("disabled", true);
+        }
+        selectDimensionOption();
 
-      $('[data-toggle="tooltip"]').tooltip();
-      var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
-      var delete_action = $("#dimensionTable td:last-child").html();
-      // 상품 옵션 추가시 입력 폼 초기화
-      $("#addDimensionOptionButton").click(function () {
-        $('#optionName').val("");
-        $('#dimensionTable tbody').find("tr").remove();
-      })
+        $('[data-toggle="tooltip"]').tooltip();
+        var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
+        var delete_action = $("#dimensionTable td:last-child").html();
+        // 상품 옵션 추가시 입력 폼 초기화
+        $("#addDimensionOptionButton").click(function () {
+          $('#optionName').val("");
+          $('#dimensionTable tbody').find("tr").remove();
+        })
+      }
 
       // 치수 추가
       $(".add-new").click(function(){

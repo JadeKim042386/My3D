@@ -69,47 +69,6 @@ public class ArticleFileService {
     }
 
     /**
-     * 게시글 추가시 전송된 입력 폼에 있는 파일과 치수 정보들을 저장
-     * @throws FileException 파일 저장 실패 예외
-     */
-    @Transactional
-    public ArticleFile saveArticleFileWithForm(ArticleFormRequest articleFormRequest) {
-        MultipartFile file = articleFormRequest.getModelFile();
-        DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
-
-        //파일 저장(UUID를 파일명으로 저장)
-        String originalFileName = file.getOriginalFilename();
-        String extension = FileUtils.getExtension(originalFileName);
-        String fileName = UUID.randomUUID() + "." + extension;
-
-        try {
-            s3Service.uploadFile(file, fileName);
-            long byteSize = file.getSize();
-            ArticleFile articleFile = articleFileRepository.save(
-                    ArticleFile.of(
-                            byteSize,
-                            originalFileName,
-                            fileName,
-                            extension,
-                            dimensionOptionDto.toEntity()
-                    )
-            );
-            DimensionOption savedDimensionOption = articleFile.getDimensionOption();
-            List<DimensionDto> dimensions = articleFormRequest.toDimensions(savedDimensionOption.getId());
-            savedDimensionOption.getDimensions().addAll(
-                    dimensions.stream()
-                            .map(DimensionDto -> DimensionDto.toEntity(savedDimensionOption))
-                            .toList()
-            );
-
-            return articleFile;
-        } catch (IOException e) {
-            log.error("File path: {}, MultipartFile: {}", fileName, file);
-            throw new FileException(ErrorCode.FILE_CANT_SAVE);
-        }
-    }
-
-    /**
      * 파일의 업데이트 여부를 확인하여 반환
      * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
      */
@@ -156,27 +115,13 @@ public class ArticleFileService {
     }
 
     @Transactional
-    public void deleteArticleFile(Long articleFileId) {
-        ArticleFile articleFile = articleFileRepository.getReferenceById(articleFileId);
+    public void deleteArticleFile(Long articleId) {
+        ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
         String fileName = articleFile.getFileName();
 
         //파일 삭제
         s3Service.deleteFile(fileName);
         //데이터 삭제
-        articleFileRepository.deleteById(articleFileId);
-    }
-
-    /**
-     * 게시글에 포함된 파일을 S3과 DB에서 삭제
-     */
-    @Transactional
-    public void deleteArticleFileByArticleId(Long articleId) {
-
-        s3Service.deleteFile(
-                articleFileRepository
-                        .findByArticleId(articleId)
-                        .getFileName()
-        );
-        articleFileRepository.deleteByArticleId(articleId);
+        articleFileRepository.deleteById(articleFile.getId());
     }
 }

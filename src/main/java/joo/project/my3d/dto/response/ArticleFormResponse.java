@@ -1,14 +1,9 @@
 package joo.project.my3d.dto.response;
 
-import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
 import joo.project.my3d.dto.ArticleFormDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -46,10 +41,27 @@ public class ArticleFormResponse {
         );
     }
 
+    /**
+     *  게시글 수정시 에러가 발생할 경우 입력된 데이터를 다시 보내야할 때 사용
+     */
     public static ArticleFormResponse from(Long articleId, ArticleFormRequest request) {
 
         return ArticleFormResponse.of(
                 articleId,
+                ArticleFileWithDimensionResponse.from(request.getModelFile(), request.getDimensionOptions()),
+                request.getTitle(),
+                request.getContent(),
+                request.getArticleCategory()
+        );
+    }
+
+    /**
+     * 게시글 추가시 에러가 발생할 경우 입력된 데이터를 다시 보내야할 때 사용
+     */
+    public static ArticleFormResponse from(ArticleFormRequest request) {
+
+        return ArticleFormResponse.of(
+                null,
                 ArticleFileWithDimensionResponse.from(request.getModelFile(), request.getDimensionOptions()),
                 request.getTitle(),
                 request.getContent(),

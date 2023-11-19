@@ -13,6 +13,8 @@ import joo.project.my3d.dto.response.ArticleResponse;
 import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.ArticleException;
+import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.ArticleFileService;
@@ -40,6 +42,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -148,31 +151,47 @@ public class ModelArticlesController {
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
-            model.addAttribute("formStatus", FormStatus.CREATE);
-            model.addAttribute("categories", ArticleCategory.values());
-            return "/model_articles/form";
+            FieldError dimensionOptionsError = bindingResult.getFieldError("dimensionOptions");
+            if (Objects.nonNull(dimensionOptionsError)) {
+                model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
+            }
+            return addFailed(articleFormRequest, model);
         }
 
         try {
-            //파일과 치수 저장
-            ArticleFile articleFile = articleFileService.saveArticleFileWithForm(articleFormRequest);
+            ArticleFileWithDimensionOptionWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
 
             //게시글 저장
             articleService.saveArticle(
+                    boardPrincipal.email(),
                     articleFormRequest.toArticleDto(
-                            ArticleFileWithDimensionOptionWithDimensionDto.from(articleFile),
+                            articleFile,
                             boardPrincipal.toDto(),
                             ArticleType.MODEL
                     )
             );
+
+            //S3 파일 저장
+            s3Service.uploadFile(articleFormRequest.getModelFile(), articleFile.fileName());
+        } catch (IOException e) {
+            log.error("Amazon S3에 파일 저장 실패 - {}", new FileException(ErrorCode.FILE_CANT_SAVE).getMessage(), e);
+            return addFailed(articleFormRequest, model);
         } catch (RuntimeException e) {
             log.error("게시글 추가 실패 - {}", e);
-            model.addAttribute("formStatus", FormStatus.CREATE);
-            model.addAttribute("categories", ArticleCategory.values());
-            return "/model_articles/form";
+            return addFailed(articleFormRequest, model);
         }
 
         return "redirect:/model_articles";
+    }
+
+    /**
+     * 게시글 추가에 실패했을때 입력한 데이터를 다시 보내주기위한 메소드
+     */
+    private static String addFailed(ArticleFormRequest articleFormRequest, Model model) {
+        model.addAttribute("article", ArticleFormResponse.from(articleFormRequest));
+        model.addAttribute("formStatus", FormStatus.CREATE);
+        model.addAttribute("categories", ArticleCategory.values());
+        return "/model_articles/form";
     }
 
     @GetMapping("/form/{articleId}")
