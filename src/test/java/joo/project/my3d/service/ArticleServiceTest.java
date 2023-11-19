@@ -9,6 +9,7 @@ import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.exception.ArticleException;
@@ -20,6 +21,7 @@ import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,9 +120,9 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
         // When
-        ArticleDto dto = articleService.getArticle(articleId);
+        ArticleFormDto articleFormDto = articleService.getArticle(articleId);
         // Then
-        assertThat(dto)
+        assertThat(articleFormDto)
                 .hasFieldOrProperty("userAccountDto")
                 .hasFieldOrPropertyWithValue("title", article.getTitle())
                 .hasFieldOrPropertyWithValue("content", article.getContent())
@@ -194,19 +196,20 @@ class ArticleServiceTest {
 
     @DisplayName("게시글 수정")
     @Test
-    void updateArticle() {
+    void updateArticle() throws IllegalAccessException {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        FieldUtils.writeField(article, "id", 1L, true);
         UserAccount userAccount = Fixture.getUserAccount();
-        given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
+        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), userAccount.getEmail())).willReturn(Optional.of(article));
         // When
         articleService.updateArticle(1L, articleDto, userAccount.getEmail());
         // Then
         assertThat(article)
                 .hasFieldOrPropertyWithValue("title", articleDto.title())
                 .hasFieldOrPropertyWithValue("content", articleDto.content());
-        then(articleRepository).should().getReferenceById(articleDto.id());
+        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), userAccount.getEmail());
     }
 
     @DisplayName("[예외-없는 게시글] 게시글 수정")
@@ -214,13 +217,13 @@ class ArticleServiceTest {
     void updateArticleNotExistArticle() {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.getReferenceById(articleDto.id())).willThrow(EntityNotFoundException.class);
+        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), "a@gmail.com")).willThrow(EntityNotFoundException.class);
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, "a@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().getReferenceById(articleDto.id());
+        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), "a@gmail.com");
     }
 
     @DisplayName("[예외-작성자와 수정자가 상이] 게시글 수정")
@@ -230,13 +233,13 @@ class ArticleServiceTest {
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title",  "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
-        given(articleRepository.getReferenceById(articleDto.id())).willReturn(article);
+        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), wrongUserAccount.getEmail())).willReturn(Optional.of(article));
         // When
         assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, wrongUserAccount.getEmail()))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
-        then(articleRepository).should().getReferenceById(articleDto.id());
+        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), wrongUserAccount.getEmail());
     }
 
     @DisplayName("게시글 삭제")

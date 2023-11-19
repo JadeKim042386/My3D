@@ -3,6 +3,7 @@ package joo.project.my3d.dto.request;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class ArticleFormRequest {
     @NotBlank
     private String content;
     @NotNull
-    @Size(max=1, message = "상품 옵션 1개만 추가해주세요")
+    @Size(min=1, max=1, message = "상품 옵션 1개만 추가해주세요")
     private final List<DimensionOptionRequest> dimensionOptions = new ArrayList<>();
     @MultipartFileSizeValid
     private MultipartFile modelFile;

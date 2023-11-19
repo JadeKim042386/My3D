@@ -99,6 +99,23 @@ public class FixtureDto {
         );
     }
 
+    public static ArticleFormDto getArticleFormDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
+        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
+        return ArticleFormDto.of(
+                1L,
+                userAccountDto,
+                articleFileDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                LocalDateTime.now(),
+                userAccountDto.email(),
+                LocalDateTime.now(),
+                userAccountDto.email()
+        );
+    }
 
     public static DimensionDto getDimensionDto(Long dimensionId, Long dimensionOptionId) {
         return DimensionDto.of(

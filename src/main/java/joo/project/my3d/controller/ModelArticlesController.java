@@ -1,16 +1,12 @@
 package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
-import joo.project.my3d.aop.TimeTrace;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
-import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.ArticlesDto;
+import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.response.ArticleResponse;
@@ -40,10 +36,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -182,12 +180,10 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             Model model
     ) {
+        ArticleFormDto article = articleService.getArticle(articleId);
         model.addAttribute(
             "article",
-            ArticleFormResponse.from(
-                articleService.getArticle(articleId),
-                articleFileService.getArticleFile(articleId)
-            )
+            ArticleFormResponse.from(article)
         );
         model.addAttribute("formStatus", FormStatus.UPDATE);
         model.addAttribute("categories", ArticleCategory.values());
@@ -207,6 +203,11 @@ public class ModelArticlesController {
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("formBindingResult={}", bindingResult);
+            FieldError dimensionOptionsError = bindingResult.getFieldError("dimensionOptions");
+            if (Objects.nonNull(dimensionOptionsError)) {
+                model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
+            }
+            model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
             model.addAttribute("formStatus", FormStatus.UPDATE);
             model.addAttribute("categories", ArticleCategory.values());
             return "model_articles/form";
@@ -221,6 +222,7 @@ public class ModelArticlesController {
             );
         } catch (RuntimeException e) {
             log.error("게시글 수정 실패 - {}", e);
+            model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
             model.addAttribute("formStatus", FormStatus.UPDATE);
             model.addAttribute("categories", ArticleCategory.values());
             return "model_articles/form";

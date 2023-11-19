@@ -10,9 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +39,15 @@ public interface ArticleRepository extends
 
     Optional<Article> findByIdAndUserAccount_Email(Long id, String email);
 
-    @Override
     @EntityGraph(value = "Article.fetchIndex", type = EntityGraph.EntityGraphType.LOAD)
-    Page<Article> findAll(Predicate predicate, Pageable pageable);
+    @Query("select a from Article a")
+    Page<Article> findAllFetchIndex(Predicate predicate, Pageable pageable);
 
-    @Override
+    @EntityGraph(value = "Article.fetchForm", type = EntityGraph.EntityGraphType.LOAD)
+    @Query("select a from Article a where a.id = :id")
+    Optional<Article> findByIdFetchForm(@Param("id") Long id);
+
     @EntityGraph(value = "Article.fetchDetail", type = EntityGraph.EntityGraphType.LOAD)
-    Optional<Article> findById(Long id);
+    @Query("select a from Article a where a.id = :id")
+    Optional<Article> findByIdFetchDetail(@Param("id") Long id);
 }

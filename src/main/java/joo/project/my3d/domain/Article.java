@@ -26,6 +26,17 @@ import static javax.persistence.FetchType.LAZY;
         }
 )
 @NamedEntityGraph(
+        name = "Article.fetchForm",
+        attributeNodes = {
+                @NamedAttributeNode(value = "userAccount", subgraph = "company"),
+                @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
+                @NamedSubgraph(name = "dimensionOption", attributeNodes = @NamedAttributeNode(value = "dimensionOption"))
+        }
+)
+@NamedEntityGraph(
         name = "Article.fetchIndex",
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),

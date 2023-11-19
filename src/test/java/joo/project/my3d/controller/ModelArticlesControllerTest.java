@@ -7,10 +7,7 @@ import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.ArticleDto;
-import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.DimensionOptionDto;
+import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
@@ -309,10 +306,8 @@ class ModelArticlesControllerTest {
     @Test
     void updateModelArticle() throws Exception {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        given(articleService.getArticle(anyLong())).willReturn(articleDto);
-        given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
+        ArticleFormDto dto = FixtureDto.getArticleFormDto("title", "content", ArticleType.MODEL, ArticleCategory.MUSIC);
+        given(articleService.getArticle(anyLong())).willReturn(dto);
         // When
         mvc.perform(
                         get("/model_articles/form/1")
@@ -328,7 +323,6 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().getArticle(anyLong());
-        then(articleFileService).should().getArticleFile(anyLong());
     }
 
     @DisplayName("[POST] 게시글 수정 - 정상")
@@ -361,8 +355,8 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/model_articles"))
-                .andExpect(redirectedUrl("/model_articles"));
+                .andExpect(view().name("redirect:/model_articles/1"))
+                .andExpect(redirectedUrl("/model_articles/1"));
 
         // Then
         then(articleFileService).should().updateArticleFile(any(ArticleFormRequest.class), eq(article.getId()));

@@ -5,6 +5,7 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
@@ -38,17 +39,20 @@ public class ArticleService {
 
     public Page<ArticlesDto> getArticles(Predicate predicate, Pageable pageable) {
 
-        return articleRepository.findAll(predicate, pageable).map(ArticlesDto::from);
+        return articleRepository.findAllFetchIndex(predicate, pageable).map(ArticlesDto::from);
     }
 
-    public ArticleDto getArticle(Long articleId) {
-        return articleRepository.findById(articleId)
-                .map(ArticleDto::from)
+    /**
+     * 게시글 추가/수정을 위한 조회
+     */
+    public ArticleFormDto getArticle(Long articleId) {
+        return articleRepository.findByIdFetchForm(articleId)
+                .map(ArticleFormDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
     public ArticleWithCommentsAndLikeCountDto getArticleWithComments(Long articleId) {
-        return articleRepository.findById(articleId)
+        return articleRepository.findByIdFetchDetail(articleId)
                 .map(ArticleWithCommentsAndLikeCountDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
