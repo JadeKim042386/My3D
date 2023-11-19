@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
@@ -108,6 +109,7 @@ public class UserAdminController {
         return "redirect:/user/company";
     }
 
+    @Operation(summary = "현재 로그인한 사용자에게 온 알람 조회")
     @ResponseBody
     @GetMapping("/alarm")
     public Response<List<AlarmResponse>> getAlarms(
@@ -119,6 +121,7 @@ public class UserAdminController {
         return Response.success(alarmResponses);
     }
 
+    @Operation(summary = "SSE 연결 요청")
     @ResponseBody
     @GetMapping("/alarm/subscribe")
     public SseEmitter subscribe(
