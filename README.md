@@ -55,10 +55,9 @@
 2. [로그인](#2-로그인)
 3. [Authentication (인증)](#3-authentication-인증)
 4. [게시글 작성](#4-게시글-작성)
-5. [게시글 삭제](#5-게시글-삭제)
-6. [게시글 수정](#6-게시글-수정)
-7. [좋아요 기능](#7-좋아요-기능-user-a가-b-게시물에-좋아요를-누른-상황) 
-8. [댓글 기능](#8-댓글-기능-user-a가-b-게시물에-댓글을-남긴-상황)
+5. [게시글 수정](#5-게시글-수정)
+6. [좋아요 기능](#6-좋아요-기능-user-a가-b-게시물에-좋아요를-누른-상황) 
+7. [댓글 기능](#7-댓글-기능-user-a가-b-게시물에-댓글을-남긴-상황)
 
 ### 1. 회원가입
 
@@ -140,31 +139,12 @@ sequenceDiagram
     WAS ->> DB: 게시글 저장 요청
     activate DB
     WAS ->> DB: 파일 저장 요청
-    WAS ->> DB: 상품 옵션&치수 저장 요청
     deactivate DB
     WAS -->>- client: 
     deactivate client
 ```
 
-### 5. 게시글 삭제
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor client
-    client ->>+ WAS: 게시글 삭제 요청
-    activate client
-    WAS ->> DB: 파일 데이터 삭제 요청
-    activate DB
-    WAS ->> DB: 댓글 데이터 삭제 요청
-    WAS ->> DB: 좋아요 데이터 삭제 요청
-    WAS ->> DB: 게시글 데이터 삭제 요청
-    deactivate DB
-    WAS -->>- client: 
-    deactivate client
-```
-
-### 6. 게시글 수정
+### 5. 게시글 수정
 
 ```mermaid
 sequenceDiagram
@@ -174,12 +154,10 @@ sequenceDiagram
     activate WAS
     WAS ->> WAS: validation
     alt 파일이 수정되었을 경우
-        WAS ->> DB: 게시글에 포함된 모든 파일 삭제 요청
+        WAS ->> DB: 이전 파일 삭제 요청
         activate DB
         WAS ->> DB: 수정된 파일 저장 요청
     end
-    WAS ->> DB: 게시글에 포함된 모든 상품 옵션&치수 삭제 요청
-    WAS ->> DB: 수정된 상품 옵션&치수 저장 요청
     WAS ->> DB: 게시글 수정 요청
     deactivate DB
     WAS -->> client: 
@@ -187,23 +165,24 @@ sequenceDiagram
     deactivate client
 ```
 
-### 7. 좋아요 기능: User A가 B 게시물에 좋아요를 누른 상황
+### 6. 좋아요 기능: User A가 B 게시물에 좋아요를 누른 상황
 
 ```mermaid
   sequenceDiagram
     autonumber
     actor client A
-    client A ->>+ WAS: 좋아요 요청 
-    WAS ->> WAS: 게시글 좋아요 수 + 1
-    WAS ->> DB: 게시글 수정 요청
-    activate DB
-    WAS ->> DB: 좋아요 알람 저장 요청
-    deactivate DB
-    actor client B
-    WAS -->>- client B: 알람 전송
+    alt 좋아요를 추가한 경우
+        client A ->>+ WAS: 좋아요 요청
+        WAS ->> WAS: 게시글 좋아요 수 + 1
+        WAS ->> DB: 게시글의 좋아요 개수 수정
+    else 좋아요를 취소한 경우
+        client A ->>+ WAS: 좋아요 취소 요청
+        WAS ->> WAS: 게시글 좋아요 수 - 1
+        WAS ->> DB: 게시글의 좋아요 개수 수정
+    end
 ```
 
-### 8. 댓글 기능: User A가 B 게시물에 댓글을 남긴 상황
+### 7. 댓글 기능: User A가 B 게시물에 댓글을 남긴 상황
 
 ```mermaid
 sequenceDiagram
