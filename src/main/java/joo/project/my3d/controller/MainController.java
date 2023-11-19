@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -26,6 +27,7 @@ public class MainController {
         return "index";
     }
 
+    @Operation(summary = "현재 활성화된 Profile 조회")
     @ResponseBody
     @GetMapping("/profile")
     public String getProfile() {

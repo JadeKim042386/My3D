@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import joo.project.my3d.dto.response.ArticleLikeResponse;
 import joo.project.my3d.dto.response.Response;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -20,6 +21,7 @@ public class ArticleLikeController {
 
     private final ArticleLikeService articleLikeService;
 
+    @Operation(summary = "특정 게시글에 좋아요 추가")
     @GetMapping("/{articleId}")
     public Response<ArticleLikeResponse> addArticleLike(
             @PathVariable Long articleId,
@@ -34,6 +36,7 @@ public class ArticleLikeController {
         }
     }
 
+    @Operation(summary = "특정 게시글의 좋아요 해제")
     @GetMapping("/{articleId}/delete")
     public Response<ArticleLikeResponse> deleteArticleLike(
             @PathVariable Long articleId
