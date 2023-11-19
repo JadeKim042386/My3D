@@ -106,8 +106,8 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        given(articleFileService.saveArticleFileWithForm(any(ArticleFormRequest.class))).willReturn(FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto());
         given(articleService.saveArticle(anyString(), any(ArticleDto.class))).willReturn(article);
+        willDoNothing().given(s3Service).uploadFile(eq(multipartFile), anyString());
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jooCompany", UserRole.COMPANY);
         // When
         mvc.perform(
@@ -130,7 +130,7 @@ class ModelArticlesControllerTest {
 
         // Then
         then(articleService).should().saveArticle(anyString(), any(ArticleDto.class));
-        then(articleFileService).should().saveArticleFileWithForm(any(ArticleFormRequest.class));
+        then(s3Service).should().uploadFile(eq(multipartFile), anyString());
     }
 
     @DisplayName("[POST] 게시글 추가 - 파일 누락")
