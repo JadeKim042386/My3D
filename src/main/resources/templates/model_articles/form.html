@@ -119,6 +119,7 @@
             <div class="modal-body">
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
                 <input type="text" class="form-control" id="optionName" placeholder="그룹명">
+                <p id="optionName-error" class="mb-0"></p>
               </div>
               <!--치수 테이블-->
               <div class="row mb-3 justify-content-md-start ps-4 pe-4">
@@ -211,6 +212,14 @@
   <script>
     function addDimensionOption() {
       var optionName = $('#optionName').val();
+      //옵션명이 입력안되었을 경우
+      if (optionName === "") {
+        $('#optionName').parent().append('<p id="optionName-error" class="mb-0 field-error">옵션명을 입력해주세요.</p>');
+        return;
+      } else {
+        $('#optionName-error').remove();
+      }
+
       var dimensionOption = {
         "optionName": optionName,
         "dimensions": []
@@ -282,8 +291,9 @@
       var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
       if (dimensionOption != null) {
         $('#optionName').val(dimensionOption['optionName']);
-        var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
-        var delete_action = $("#dimensionTable td:last-child").html();
+        var edit_action = '<a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>'
+                          + '<a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>';
+        var delete_action = '<a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>';
         $('#dimensionTable tbody').find("tr").remove();
         for (var dimension of dimensionOption['dimensions']) {
           var row = '<tr>' +
@@ -353,19 +363,19 @@
         selectDimensionOption();
 
         $('[data-toggle="tooltip"]').tooltip();
-        var edit_action = $("#dimensionTable td:nth-last-child(2)").html();
-        var delete_action = $("#dimensionTable td:last-child").html();
-        // 상품 옵션 추가시 입력 폼 초기화
-        $("#addDimensionOptionButton").click(function () {
-          $('#optionName').val("");
-          $('#dimensionTable tbody').find("tr").remove();
-        })
       }
-
+      // 상품 옵션 추가시 입력 폼 초기화
+      $("#addDimensionOptionButton").click(function () {
+        $('#optionName').val("");
+        $('#dimensionTable tbody').find("tr").remove();
+      })
       // 치수 추가
       $(".add-new").click(function(){
-        $(this).attr("disabled", "disabled");
+        // $(this).attr("disabled", "disabled");
         var index = $("#dimensionTable tbody tr:last-child").index();
+        var edit_action = '<a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>'
+                          + '<a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>';
+        var delete_action = '<a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>';
         var row = '<tr>' +
                 '<td><input type="text" class="form-control" name="dimName" id="dimName"></td>' +
                 '<td><input type="text" class="form-control" name="dimValue" id="dimValue"></td>' +
