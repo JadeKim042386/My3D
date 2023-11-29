@@ -1,5 +1,6 @@
 package joo.project.my3d.dto;
 
+import joo.project.my3d.domain.Dimension;
 import joo.project.my3d.domain.DimensionOption;
 
 import java.util.List;
@@ -13,9 +14,10 @@ public record DimensionOptionWithDimensionDto(
     }
 
     public DimensionOption toEntity() {
-        return DimensionOption.of(
-                optionName
-        );
+        DimensionOption dimensionOption = DimensionOption.of(optionName);
+        List<Dimension> dimensions = dimensionDtos.stream().map(dto -> dto.toEntity(dimensionOption)).toList();
+        dimensionOption.getDimensions().addAll(dimensions);
+        return dimensionOption;
     }
 
     public static DimensionOptionWithDimensionDto from(DimensionOption dimensionOption) {
