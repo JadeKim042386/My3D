@@ -39,7 +39,7 @@ public class ArticleService {
 
     public Page<ArticlesDto> getArticles(Predicate predicate, Pageable pageable) {
 
-        return articleRepository.findAllFetchIndex(predicate, pageable).map(ArticlesDto::from);
+        return articleRepository.findAll(predicate, pageable).map(ArticlesDto::from);
     }
 
     /**
