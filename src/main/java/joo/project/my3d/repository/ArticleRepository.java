@@ -40,8 +40,7 @@ public interface ArticleRepository extends
     Optional<Article> findByIdAndUserAccount_Email(Long id, String email);
 
     @EntityGraph(value = "Article.fetchIndex", type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select a from Article a")
-    Page<Article> findAllFetchIndex(Predicate predicate, Pageable pageable);
+    Page<Article> findAll(Predicate predicate, Pageable pageable);
 
     @EntityGraph(value = "Article.fetchForm", type = EntityGraph.EntityGraphType.LOAD)
     @Query("select a from Article a where a.id = :id")

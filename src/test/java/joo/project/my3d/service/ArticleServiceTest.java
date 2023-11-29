@@ -56,12 +56,12 @@ class ArticleServiceTest {
         // Given
         Pageable pageable = Pageable.ofSize(9);
         Predicate predicate = new BooleanBuilder();
-        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("카테고리로 게시글 검색")
@@ -71,12 +71,12 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         ArticleCategory articleCategory = ArticleCategory.MUSIC;
         Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
-        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("제목으로 게시글 검색")
@@ -86,12 +86,12 @@ class ArticleServiceTest {
         Pageable pageable = Pageable.ofSize(9);
         String title = "title";
         Predicate predicate = QArticle.article.title.eq(title);
-        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("카테고리+제목으로 게시글 검색")
@@ -103,12 +103,12 @@ class ArticleServiceTest {
         String title = "title";
         Predicate predicate = QArticle.article.articleCategory.eq(articleCategory)
                 .and(QArticle.article.title.eq(title));
-        given(articleRepository.findAllFetchIndex(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
         assertThat(articles).isEmpty();
-        then(articleRepository).should().findAllFetchIndex(predicate, pageable);
+        then(articleRepository).should().findAll(predicate, pageable);
     }
 
     @DisplayName("게시글 추가/수정을 위한 단일 게시글 조회")
