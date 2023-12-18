@@ -2,7 +2,6 @@ package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;

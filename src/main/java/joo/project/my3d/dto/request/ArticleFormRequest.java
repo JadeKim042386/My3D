@@ -4,7 +4,6 @@ import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
-import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
 import joo.project.my3d.utils.FileUtils;

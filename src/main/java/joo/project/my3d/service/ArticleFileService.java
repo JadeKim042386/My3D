@@ -3,7 +3,6 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;

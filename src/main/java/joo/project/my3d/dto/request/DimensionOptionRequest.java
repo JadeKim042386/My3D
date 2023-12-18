@@ -1,6 +1,5 @@
 package joo.project.my3d.dto.request;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.DimensionOptionDto;
 import lombok.Getter;

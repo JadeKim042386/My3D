@@ -1,7 +1,9 @@
 package joo.project.my3d.fixture;
 
-import joo.project.my3d.domain.ArticleFile;
-import joo.project.my3d.domain.constant.*;
+import joo.project.my3d.domain.constant.ArticleCategory;
+import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.DimUnit;
+import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,13 +1,9 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.DimensionOptionDto;
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.DimensionOptionRepository;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 
 @ActiveProfiles("test")

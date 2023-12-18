@@ -1,6 +1,5 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;

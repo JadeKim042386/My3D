@@ -8,7 +8,6 @@ import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlesDto;
-import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
