@@ -79,13 +79,12 @@ public class SecurityConfig {
                                 "/comments.*",
                                 "/user/account",
                                 "/user/password",
-                                "/user/alarm.*"
-                        ).authenticated()
-                        .regexMatchers(
+                                "/user/alarm.*",
                                 "/model_articles/form.*",
-                                "/model_articles/[0-9]+/delete",
-                                "/user/company"
-                        ).hasAnyRole("COMPANY", "ADMIN")
+                                "/model_articles/[0-9]+/delete"
+                        ).authenticated()
+                        .regexMatchers("/user/company")
+                            .hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf((csrf) -> csrf
