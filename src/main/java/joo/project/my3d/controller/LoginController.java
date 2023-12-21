@@ -92,7 +92,7 @@ public class LoginController {
             return "redirect:" + request.getSession().getAttribute("prevPage");
         } catch (UserAccountException e) {
             log.error("로그인 실패 - {}", e.getMessage());
-            model.addAttribute("loginFailedMessage", e.getErrorCodeMessage());
+            model.addAttribute("loginFailedMessage", e.getMessage());
             return "account/login";
         }
     }

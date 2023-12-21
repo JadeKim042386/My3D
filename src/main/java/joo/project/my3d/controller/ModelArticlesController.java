@@ -238,8 +238,8 @@ public class ModelArticlesController {
                     articleFormRequest.toArticleDto(),
                     boardPrincipal.email()
             );
-        } catch (RuntimeException e) {
-            log.error("게시글 수정 실패 - {}", e);
+        } catch (FileException | ArticleException e) {
+            log.error("게시글 수정 실패 - {}", e.getMessage());
             model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
             model.addAttribute("formStatus", FormStatus.UPDATE);
             model.addAttribute("categories", ArticleCategory.values());

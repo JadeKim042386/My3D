@@ -7,6 +7,7 @@ import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.DimensionOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +29,16 @@ public class DimensionOptionService {
         try{
             DimensionOption dimensionOption = dto.toEntity();
             return dimensionOptionRepository.save(dimensionOption);
-        } catch (EntityNotFoundException e) {
+        } catch (IllegalArgumentException e) {
             throw new DimensionOptionException(ErrorCode.FAILED_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new DimensionOptionException(ErrorCode.CONFLICT_SAVE, e);
         }
     }
 
+    /**
+     * @throws DimensionOptionException 치수 옵션을 찾을 수 없을 경우 발생하는 예외
+     */
     @Transactional
     public void updateDimensionOption(DimensionOptionDto dto) {
         try {
@@ -41,7 +47,7 @@ public class DimensionOptionService {
                 dimensionOption.setOptionName(dto.optionName());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("상품옵션 수정 실패! - dto: {} {}", dto, new DimensionOptionException(ErrorCode.DIMENSION_OPTION_NOT_FOUND, e));
+            throw new DimensionOptionException(ErrorCode.DIMENSION_OPTION_NOT_FOUND, e);
         }
     }
 }

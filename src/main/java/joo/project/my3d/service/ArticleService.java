@@ -16,6 +16,7 @@ import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,19 +103,30 @@ public class ArticleService {
                 throw new ArticleException(ErrorCode.NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
-            throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND);
+            throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);
         }
     }
 
+    /**
+     * @throws ArticleException 게시글을 찾을 수 없거나 삭제에 실패했을 경우 발생하는 예외
+     */
     @Transactional
     public void deleteArticle(Long articleId, String email) {
-        Article article = articleRepository.getReferenceById(articleId); //작성자
-        //작성자와 삭제를 요청한 유저가 같은지 확인
-        if (article.getUserAccount().getEmail().equals(email)) {
-            //게시글에 속한 댓글, 좋아요도 같이 삭제
-            articleCommentRepository.deleteByArticleId(articleId);
-            articleLikeRepository.deleteByArticleId(articleId);
-            articleRepository.delete(article);
+        try {
+            Article article = articleRepository.getReferenceById(articleId); //작성자
+            //작성자와 삭제를 요청한 유저가 같은지 확인
+            if (article.getUserAccount().getEmail().equals(email)) {
+                //게시글에 속한 댓글, 좋아요도 같이 삭제
+                articleCommentRepository.deleteByArticleId(articleId);
+                articleLikeRepository.deleteByArticleId(articleId);
+                articleRepository.delete(article);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);
+        } catch (IllegalArgumentException e) {
+            throw new ArticleException(ErrorCode.FAILED_DELETE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new ArticleException(ErrorCode.CONFLICT_DELETE, e);
         }
     }
 }

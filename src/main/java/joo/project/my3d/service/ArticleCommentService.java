@@ -14,9 +14,11 @@ import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Slf4j
@@ -38,8 +40,7 @@ public class ArticleCommentService {
     }
 
     /**
-     * @throws IllegalArgumentException 댓글 저장 또는 알람 저장 실패시 발생하는 예외
-     * @throws CommentException 댓글이 존재하지 않는 경우 발생하는 예외
+     * @throws CommentException 댓글 저장에 필요한 게시글, 유저 정보를 찾을 수 없거나 저장에 실패했을 경우 발생하는 예외
      */
     @Transactional
     public void saveComment(ArticleCommentDto dto) {
@@ -63,8 +64,12 @@ public class ArticleCommentService {
                     )
             );
             alarmService.send(article.getUserAccount().getEmail(), alarm.getId());
-        } catch (RuntimeException e) {
+        } catch (EntityNotFoundException e) {
             throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);
+        } catch (IllegalArgumentException e) {
+            throw new CommentException(ErrorCode.FAILED_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new CommentException(ErrorCode.CONFLICT_SAVE, e);
         }
     }
 
@@ -78,20 +83,24 @@ public class ArticleCommentService {
             if (dto.content() != null) {
                 articleComment.setContent(dto.content());
             }
-        } catch (RuntimeException e) {
+        } catch (EntityNotFoundException e) {
             throw new CommentException(ErrorCode.COMMENT_NOT_FOUND, e);
         }
     }
 
     /**
-     * @throws CommentException 댓글 작성자와 삭제 요청자가 다를 경우 발생하는 예외
+     * @throws CommentException 댓글 작성자와 삭제 요청자가 다를 경우 또는 삭제에 실패할 경우 발생하는 예외
      */
     @Transactional
     public void deleteComment(Long articleCommentId, String email) {
         ArticleComment articleComment = articleCommentRepository.getReferenceById(articleCommentId);
         //작성자와 삭제 요청 유저가 같은지 확인
         if (articleComment.getUserAccount().getEmail().equals(email)) {
-            articleCommentRepository.deleteById(articleCommentId);
+            try {
+                articleCommentRepository.deleteById(articleCommentId);
+            } catch (IllegalArgumentException e) {
+                throw new CommentException(ErrorCode.FAILED_DELETE, e);
+            }
         } else {
             log.error("작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", articleComment.getUserAccount().getEmail(), email);
             throw new CommentException(ErrorCode.NOT_WRITER);
