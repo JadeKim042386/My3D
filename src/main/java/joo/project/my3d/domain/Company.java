@@ -3,6 +3,7 @@ package joo.project.my3d.domain;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -16,7 +17,7 @@ import java.util.Objects;
         }
 )
 @Entity
-public class Company extends AuditingFields {
+public class Company extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -54,5 +55,10 @@ public class Company extends AuditingFields {
     @Override
     public int hashCode() {
         return Objects.hash(this.getId());
+    }
+
+    @Override
+    public boolean isNew() {
+        return createdAt == null;
     }
 }

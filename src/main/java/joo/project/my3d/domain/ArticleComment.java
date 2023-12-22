@@ -3,6 +3,7 @@ package joo.project.my3d.domain;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -19,7 +20,7 @@ import java.util.Set;
         }
 )
 @Entity
-public class ArticleComment extends AuditingFields {
+public class ArticleComment extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -80,5 +81,10 @@ public class ArticleComment extends AuditingFields {
     public void addChildComment(ArticleComment child) {
         child.setParentCommentId(this.getId());
         this.getChildComments().add(child);
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
     }
 }

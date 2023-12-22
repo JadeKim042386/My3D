@@ -5,6 +5,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -55,7 +56,7 @@ import static javax.persistence.FetchType.LAZY;
         }
 )
 @Entity
-public class Article extends AuditingFields {
+public class Article extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -139,5 +140,10 @@ public class Article extends AuditingFields {
 
     public void deleteLike() {
         this.likeCount -= 1;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.createdAt == null;
     }
 }
