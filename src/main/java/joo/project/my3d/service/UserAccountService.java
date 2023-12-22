@@ -14,11 +14,13 @@ import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -69,28 +71,44 @@ public class UserAccountService {
                 .toList();
     }
 
+    /**
+     * @throws UserAccountException 유저 정보 저장 실패시 발생하는 예외
+     */
     @Transactional
     public UserAccountDto saveUser(String email, String userPassword, String nickname, UserRole userRole, boolean signUp) {
-        return UserAccountDto.from(
-                userAccountRepository.save(
-                    UserAccount.of(
-                            email,
-                            userPassword,
-                            nickname,
-                            signUp,
-                            userRole,
-                            email
+        try {
+            return UserAccountDto.from(
+                    userAccountRepository.save(
+                            UserAccount.of(
+                                    email,
+                                    userPassword,
+                                    nickname,
+                                    signUp,
+                                    userRole,
+                                    email
+                            )
                     )
-                )
             );
+        } catch (IllegalArgumentException e) {
+            throw new UserAccountException(ErrorCode.FAILED_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new UserAccountException(ErrorCode.CONFLICT_SAVE, e);
+        }
     }
 
     /**
      * 회원가입된 유저 저장
+     * @throws UserAccountException 유저 정보 저장 실패시 발생하는 예외
      */
     @Transactional
     public void saveUser(UserAccount userAccount) {
-        userAccountRepository.save(userAccount);
+        try {
+            userAccountRepository.save(userAccount);
+        } catch (IllegalArgumentException e) {
+            throw new UserAccountException(ErrorCode.FAILED_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new UserAccountException(ErrorCode.CONFLICT_SAVE, e);
+        }
     }
 
     /**
@@ -104,21 +122,26 @@ public class UserAccountService {
 
     /**
      * 계정 정보 수정
+     * @throws UserAccountException 유저 정보를 찾을 수 없을 경우 발생하는 예외
      */
     @Transactional
     public void updateUser(UserAccountDto dto) {
-        UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
-        if (dto.nickname() != null) {
-            userAccount.setNickname(dto.nickname());
-        }
-        if (dto.phone() != null) {
-            userAccount.setPhone(dto.phone());
-        }
-        if (dto.userPassword() != null) {
-            userAccount.setUserPassword(dto.userPassword());
-        }
-        if (dto.addressDto() != null) {
-            userAccount.setAddress(dto.addressDto().toEntity());
+        try {
+            UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
+            if (dto.nickname() != null) {
+                userAccount.setNickname(dto.nickname());
+            }
+            if (dto.phone() != null) {
+                userAccount.setPhone(dto.phone());
+            }
+            if (dto.userPassword() != null) {
+                userAccount.setUserPassword(dto.userPassword());
+            }
+            if (dto.addressDto() != null) {
+                userAccount.setAddress(dto.addressDto().toEntity());
+            }
+        } catch (EntityNotFoundException e) {
+            throw new UserAccountException(ErrorCode.INVALID_USER, e);
         }
     }
 

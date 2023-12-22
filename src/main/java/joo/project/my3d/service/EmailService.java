@@ -4,6 +4,8 @@ import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.MailException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -35,7 +37,7 @@ public class EmailService {
             mimeMessageHelper.setText(text);
             javaMailSender.send(mimeMessage);
             log.info("이메일 전송 완료");
-        } catch (MessagingException e) {
+        } catch (MailAuthenticationException | MailSendException | MessagingException e) {
             throw new MailException(ErrorCode.MAIL_SEND_FAIL, e);
         }
     }

@@ -9,12 +9,15 @@ import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.Response;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.AlarmException;
+import joo.project.my3d.exception.CompanyException;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -86,8 +89,8 @@ public class UserAdminController {
             //기업 정보 전달
             CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
             model.addAttribute("companyData", CompanyAdminResponse.from(company));
-        } catch (RuntimeException e) {
-            log.error("기업 정보 조회 실패 - {}", e);
+        } catch (UsernameNotFoundException e) {
+            log.error("기업 정보 조회 실패 - {}", e.getMessage());
             return "user/account";
         }
 
@@ -105,8 +108,10 @@ public class UserAdminController {
         try {
             CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
             companyService.updateCompany(companyAdminRequest.toDto(company.id()));
-        } catch (RuntimeException e) {
-            log.error("기업 정보 수정 실패 - {}", e);
+        } catch (UsernameNotFoundException e) {
+            log.error("기업 정보 조회 실패 - {}", e.getMessage());
+        } catch (CompanyException e) {
+            log.error("기업 정보 수정 실패 - {}", e.getMessage());
         }
 
         return "redirect:/user/company";
@@ -136,9 +141,9 @@ public class UserAdminController {
 
         try {
             return alarmService.connectAlarm(boardPrincipal.email());
-        } catch (RuntimeException e) {
-            log.error("알람 연결 실패 - {}", e);
-            return null;
+        } catch (AlarmException e) {
+            log.error("알람 연결 실패 - {}", e.getMessage());
+            throw e;
         }
     }
 }

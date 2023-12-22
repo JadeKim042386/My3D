@@ -64,7 +64,7 @@ public class EmailController {
             emailService.sendEmail(email, subject, code);
             redirectAttributes.addAttribute("emailCode", code);
         } catch (MailException e) {
-            log.error("이메일 전송 실패 - {}", e);
+            log.error("이메일 전송 실패 - {}", e.getMessage());
         }
 
         return "redirect:/account/sign_up";
@@ -102,7 +102,7 @@ public class EmailController {
 
             return "redirect:/account/find_pass_success";
         } catch (MailException e) {
-            log.error("임시 비밀번호 전송 실패 - {}", e);
+            log.error("임시 비밀번호 전송 실패 - {}", e.getMessage());
             return "account/find-pass";
         }
     }

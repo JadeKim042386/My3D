@@ -2,6 +2,7 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.request.ArticleCommentRequest;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,8 @@ public class ArticleCommentsController {
 
         try {
             articleCommentService.saveComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
-        } catch (RuntimeException e) {
-            log.error("댓글 저장/추가 실패 - {}", e);
+        } catch (CommentException e) {
+            log.error("댓글 저장/추가 실패 - {}", e.getMessage());
         }
 
         return "redirect:/model_articles/" + articleId;
@@ -43,8 +44,8 @@ public class ArticleCommentsController {
 
         try{
             articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
-        } catch (RuntimeException e) {
-            log.error("댓글 삭제 실패 - {}", e);
+        } catch (CommentException e) {
+            log.error("댓글 삭제 실패 - {}", e.getMessage());
         }
 
         return "redirect:/model_articles/" + articleId;

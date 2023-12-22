@@ -13,10 +13,6 @@ public class Response<T> {
         return new Response<>(resultCode, result);
     }
 
-    public static <T> Response<T> error(String errorCode) {
-        return Response.of(errorCode, null);
-    }
-
     public static <Void> Response<Void> success() {
         return Response.of("SUCCESS", null);
     }

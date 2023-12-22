@@ -13,9 +13,12 @@ import joo.project.my3d.service.aws.S3Service;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,8 +65,12 @@ public class ArticleFileService {
                         )
                     );
         } catch (IOException e) {
-            log.error("File path: {}, MultipartFile: {}", fileName, file);
-            throw new FileException(ErrorCode.FILE_CANT_SAVE);
+            log.error("S3 파일 업로드 실패 - File path: {}, MultipartFile: {}", fileName, file);
+            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
+        } catch (IllegalArgumentException e) {
+            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new FileException(ErrorCode.CONFLICT_SAVE, e);
         }
     }
 
@@ -71,18 +78,21 @@ public class ArticleFileService {
      * 파일의 업데이트 여부를 확인하여 반환
      * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
      */
+    @Transactional
     public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
         MultipartFile file = articleFormRequest.getModelFile();
+        String fileName = null;
         try {
             //업데이트 여부 확인
             if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
                 ArticleFile articleFile = articleFileRepository.findByArticleId(articleId);
                 //S3에 저장한 파일 삭제
-                s3Service.deleteFile(articleFile.getFileName());
+                fileName = articleFile.getFileName();
+                s3Service.deleteFile(fileName);
 
                 String originalFileName = file.getOriginalFilename();
                 String extension = FileUtils.getExtension(originalFileName);
-                String fileName = UUID.randomUUID() + "." + extension;
+                fileName = UUID.randomUUID() + "." + extension;
                 //업데이트된 파일로 S3에 저장
                 s3Service.uploadFile(file, fileName);
 
@@ -104,23 +114,32 @@ public class ArticleFileService {
                                 .toList()
                 );
             }
-        } catch (RuntimeException e) {
-            log.error("파일 업데이트 실패: {}", e.getMessage());
-            throw new FileException(ErrorCode.FILE_UPDATE_FAIL);
+        } catch (SdkClientException | S3Exception e) {
+            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
+            throw new FileException(ErrorCode.FAILED_DELETE, e);
         } catch (IOException e) {
-            log.error("잘못된 파일: {}", file);
-            throw new FileException(ErrorCode.FILE_NOT_VALID);
+            log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
+            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
     }
 
+    /**
+     * @throws FileException S3 파일 삭제 또는 DB 파일 삭제시 발생하는 예외
+     */
     @Transactional
     public void deleteArticleFile(Long articleId) {
         ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
         String fileName = articleFile.getFileName();
-
-        //파일 삭제
-        s3Service.deleteFile(fileName);
-        //데이터 삭제
-        articleFileRepository.deleteById(articleFile.getId());
+        try {
+            //파일 삭제
+            s3Service.deleteFile(fileName);
+            //데이터 삭제
+            articleFileRepository.deleteById(articleFile.getId());
+        } catch (SdkClientException | S3Exception e) {
+            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
+            throw new FileException(ErrorCode.FAILED_DELETE, e);
+        } catch (IllegalArgumentException e) {
+            throw new FileException(ErrorCode.FAILED_DELETE, e);
+        }
     }
 }

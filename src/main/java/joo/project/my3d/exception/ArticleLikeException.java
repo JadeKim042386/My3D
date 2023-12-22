@@ -3,16 +3,15 @@ package joo.project.my3d.exception;
 import lombok.Getter;
 
 @Getter
-public class CompanyException extends RuntimeException {
+public class ArticleLikeException extends RuntimeException {
 
     private ErrorCode errorCode;
 
-
-    public CompanyException(ErrorCode errorCode) {
+    public ArticleLikeException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
-    public CompanyException(ErrorCode errorCode, Exception causeException) {
+    public ArticleLikeException(ErrorCode errorCode, Exception causeException) {
         this.errorCode = errorCode;
         super.initCause(causeException);
     }

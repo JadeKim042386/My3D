@@ -9,6 +9,7 @@ import joo.project.my3d.repository.DimensionOptionRepository;
 import joo.project.my3d.repository.DimensionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class DimensionService {
     }
 
     /**
-     * @throws DimensionException 치수 저장 실패 예외
+     * @throws DimensionException 치수를 찾을 수 없거나 치수 저장 실패시 발생하는 예외
      */
     @Transactional
     public void saveDimension(DimensionDto dto) {
@@ -41,10 +42,17 @@ public class DimensionService {
             Dimension dimension = dto.toEntity(dimensionOption);
             dimensionRepository.save(dimension);
         } catch (EntityNotFoundException e) {
+            throw new DimensionException(ErrorCode.DIMENSION_NOT_FOUND, e);
+        } catch (IllegalArgumentException e) {
             throw new DimensionException(ErrorCode.FAILED_SAVE, e);
+        } catch (OptimisticLockingFailureException e) {
+            throw new DimensionException(ErrorCode.CONFLICT_SAVE, e);
         }
     }
 
+    /**
+     * @throws DimensionException 치수를 찾을 수 없을 경우 발생하는 예외
+     */
     @Transactional
     public void updateDimension(DimensionDto dto) {
         try {
@@ -59,25 +67,33 @@ public class DimensionService {
                 dimension.setDimUnit(dto.dimUnit());
             }
         } catch (EntityNotFoundException e) {
-            log.warn("치수 수정 실패! - dto: {} {}", dto, new DimensionException(ErrorCode.DIMENSION_NOT_FOUND, e));
+            throw new DimensionException(ErrorCode.DIMENSION_NOT_FOUND, e);
         }
     }
 
     /**
-     * @throws IllegalArgumentException id가 null일 경우 발생하는 예외
+     * @throws DimensionException 치수 삭제 실패시 발생하는 예외
      */
     @Transactional
     public void deleteDimension(Long dimensionId) {
-        dimensionRepository.deleteById(dimensionId);
+        try {
+            dimensionRepository.deleteById(dimensionId);
+        } catch (IllegalArgumentException e) {
+            throw new DimensionException(ErrorCode.FAILED_DELETE, e);
+        }
     }
 
     /**
-     * @throws IllegalArgumentException 삭제시 대상 id가 null일 경우 발생하는 예외
+     * @throws DimensionException 치수 삭제 실패시 발생하는 예외
      */
     public void deleteDimensions(Long dimensionOptionId) {
-        List<Dimension> dimensions = dimensionRepository.findAllByDimensionOptionId(dimensionOptionId);
-        for (Dimension dimension : dimensions) {
-            dimensionRepository.deleteById(dimension.getId());
+        try {
+            List<Dimension> dimensions = dimensionRepository.findAllByDimensionOptionId(dimensionOptionId);
+            for (Dimension dimension : dimensions) {
+                dimensionRepository.deleteById(dimension.getId());
+            }
+        } catch (IllegalArgumentException e) {
+            throw new DimensionException(ErrorCode.FAILED_DELETE, e);
         }
     }
 }
