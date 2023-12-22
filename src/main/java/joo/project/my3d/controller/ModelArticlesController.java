@@ -124,7 +124,7 @@ public class ModelArticlesController {
             }
             return "model_articles/detail";
         } catch (ArticleException e) {
-            log.error(e.getMessage());
+            log.error("게시글을 찾을 수 없습니다. id: {} - {}", articleId, e.getMessage());
             return "model_articles/index";
         }
 
@@ -173,10 +173,10 @@ public class ModelArticlesController {
             //S3 파일 저장
             s3Service.uploadFile(articleFormRequest.getModelFile(), articleFile.fileName());
         } catch (IOException e) {
-            log.error("Amazon S3에 파일 저장 실패 - {}", new FileException(ErrorCode.FILE_CANT_SAVE).getMessage(), e);
+            log.error("Amazon S3에 파일 저장 실패 - {}", new FileException(ErrorCode.FILE_CANT_SAVE, e).getMessage());
             return addFailed(articleFormRequest, model);
-        } catch (RuntimeException e) {
-            log.error("게시글 추가 실패 - {}", e);
+        } catch (ArticleException e) {
+            log.error("게시글 추가 실패 - {}", e.getMessage());
             return addFailed(articleFormRequest, model);
         }
 
@@ -260,8 +260,11 @@ public class ModelArticlesController {
         try {
             articleFileService.deleteArticleFile(articleId);
             articleService.deleteArticle(articleId, boardPrincipal.email());
-        } catch (RuntimeException e) {
-            log.error("게시글 삭제 실패 - {}", e);
+        } catch (ArticleException e) {
+            log.error("게시글 삭제 실패 - {}", e.getMessage());
+            return "redirect:/model_articles/" + articleId;
+        } catch (FileException e) {
+            log.error("파일 삭제 실패 - {}", e.getMessage());
             return "redirect:/model_articles/" + articleId;
         }
 

@@ -50,6 +50,9 @@ public class ArticleService {
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
+    /**
+     * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
+     */
     public ArticleWithCommentsAndLikeCountDto getArticleWithComments(Long articleId) {
         return articleRepository.findByIdFetchDetail(articleId)
                 .map(ArticleWithCommentsAndLikeCountDto::from)

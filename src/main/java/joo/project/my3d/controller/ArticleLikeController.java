@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import joo.project.my3d.dto.response.ArticleLikeResponse;
 import joo.project.my3d.dto.response.Response;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.exception.ArticleLikeException;
 import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,9 @@ public class ArticleLikeController {
         try{
             int likeCount = articleLikeService.addArticleLike(articleId, boardPrincipal.email());
             return Response.success(ArticleLikeResponse.of(likeCount));
-        } catch (RuntimeException e) {
-            log.error("게시글 좋아요 추가 실패 - {}", e);
-            return Response.error(e.getMessage());
+        } catch (ArticleLikeException e) {
+            log.error("게시글 좋아요 추가 실패 - {}", e.getMessage());
+            throw e;
         }
     }
 
