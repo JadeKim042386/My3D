@@ -14,7 +14,6 @@ public enum ErrorCode {
     CONFLICT_SAVE(HttpStatus.CONFLICT, "저장시 Optimistic Lock 충돌이 일어났습니다."),
     //Article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
-    ARTICLE_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "모델 게시글은 카테고리 정보를 포함해야합니다."),
     NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
     //File
     FILE_CANT_SAVE(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 저장 할 수 없습니다. 파일 경로를 다시 확인해주세요."),

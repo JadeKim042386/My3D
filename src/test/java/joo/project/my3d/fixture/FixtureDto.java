@@ -28,6 +28,15 @@ public class FixtureDto {
         return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
+    public static ArticlesDto getArticlesDto() {
+        return FixtureDto.getArticlesDto(
+                1L,
+                "title",
+                "content",
+                ArticleType.MODEL,
+                ArticleCategory.ARCHITECTURE
+        );
+    }
     public static ArticlesDto getArticlesDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
@@ -92,7 +101,7 @@ public class FixtureDto {
                 content,
                 articleType,
                 articleCategory,
-                Set.of(),
+                Set.of(FixtureDto.getArticleCommentDto("content")),
                 2,
                 LocalDateTime.now(),
                 userAccountDto.email(),

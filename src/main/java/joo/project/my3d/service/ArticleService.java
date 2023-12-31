@@ -36,13 +36,17 @@ public class ArticleService {
     private final ArticleCommentRepository articleCommentRepository;
     private final UserAccountRepository userAccountRepository;
 
+    /**
+     * 게시판에 표시할 전체 게시글 조회
+     */
     public Page<ArticlesDto> getArticles(Predicate predicate, Pageable pageable) {
 
         return articleRepository.findAll(predicate, pageable).map(ArticlesDto::from);
     }
 
     /**
-     * 게시글 추가/수정을 위한 조회
+     * 게시글 추가/수정을 위한 조회 (댓글과 좋아요 개수를 제외)
+     * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
     public ArticleFormDto getArticle(Long articleId) {
         return articleRepository.findByIdFetchForm(articleId)
@@ -51,6 +55,7 @@ public class ArticleService {
     }
 
     /**
+     * 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)
      * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
     public ArticleWithCommentsAndLikeCountDto getArticleWithComments(Long articleId) {
@@ -61,16 +66,13 @@ public class ArticleService {
 
     /**
      * @param email 작성자 이메일
-     * @throws ArticleException 게시글에 카테고리를 지정하지 않았을 경우 발생하는 예외
      */
     @Transactional
     public Article saveArticle(String email, ArticleDto articleDto) {
         //모델 게시글일 경우 Category가 있어야함
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
         Article article = articleDto.toEntity(userAccount);
-        if (article.getArticleType() == ArticleType.MODEL && article.getArticleCategory() == null) {
-            throw new ArticleException(ErrorCode.ARTICLE_CATEGORY_NOT_FOUND);
-        }
+
         return articleRepository.save(article);
     }
 
@@ -82,31 +84,27 @@ public class ArticleService {
      */
     @Transactional
     public void updateArticle(Long articleId, ArticleDto articleDto, String requestEmail) {
-        try {
-            Article article = articleRepository.findByIdAndUserAccount_Email(articleId, requestEmail)
-                    .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); //작성자
+        Article article = articleRepository.findByIdAndUserAccount_Email(articleId, requestEmail)
+                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); //작성자
 
-            //작성자와 수정자가 같은지 확인
-            if (Objects.equals(article.getId(), articleId)) {
-                if (articleDto.title() != null) {
-                    article.setTitle(articleDto.title());
-                }
-                if (articleDto.content() != null) {
-                    article.setContent(articleDto.content());
-                }
-                if (articleDto.articleType() != null) {
-                    article.setArticleType(articleDto.articleType());
-                }
-                if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
-                    article.setArticleCategory(articleDto.articleCategory());
-                }
-            } else {
-                log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
-                        article.getUserAccount().getEmail(), requestEmail);
-                throw new ArticleException(ErrorCode.NOT_WRITER);
+        //작성자와 수정자가 같은지 확인
+        if (Objects.equals(article.getUserAccount().getEmail(), requestEmail)) {
+            if (articleDto.title() != null) {
+                article.setTitle(articleDto.title());
             }
-        } catch (EntityNotFoundException e) {
-            throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);
+            if (articleDto.content() != null) {
+                article.setContent(articleDto.content());
+            }
+            if (articleDto.articleType() != null) {
+                article.setArticleType(articleDto.articleType());
+            }
+            if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
+                article.setArticleCategory(articleDto.articleCategory());
+            }
+        } else {
+            log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
+                    article.getUserAccount().getEmail(), requestEmail);
+            throw new ArticleException(ErrorCode.NOT_WRITER);
         }
     }
 
@@ -123,6 +121,10 @@ public class ArticleService {
                 articleCommentRepository.deleteByArticleId(articleId);
                 articleLikeRepository.deleteByArticleId(articleId);
                 articleRepository.delete(article);
+            }else {
+                log.error("작성자와 수정자가 다릅니다. 작성자: {}, 삭제 요청자: {}",
+                        article.getUserAccount().getEmail(), email);
+                throw new ArticleException(ErrorCode.NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {
             throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);

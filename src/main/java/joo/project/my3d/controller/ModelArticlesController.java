@@ -55,7 +55,6 @@ public class ModelArticlesController {
     private final PaginationService paginationService;
     private final ArticleFileService articleFileService;
     private final ArticleLikeRepository articleLikeRepository;
-    private final AlarmService alarmService;
     private final S3Service s3Service;
 
     @Value("${aws.s3.url}")
@@ -104,7 +103,6 @@ public class ModelArticlesController {
     @GetMapping("/{articleId}")
     public String article(
             @PathVariable Long articleId,
-            @RequestParam(required = false) Long alarmId,
             Model model,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -119,15 +117,11 @@ public class ModelArticlesController {
             model.addAttribute("addedLike", likeCount > 0);
             model.addAttribute("modelPath", S3Url);
 
-            if (alarmId != null) {
-                alarmService.checkAlarm(alarmId);
-            }
             return "model_articles/detail";
         } catch (ArticleException e) {
             log.error("게시글을 찾을 수 없습니다. id: {} - {}", articleId, e.getMessage());
             return "model_articles/index";
         }
-
     }
 
     @GetMapping("/form")
@@ -154,7 +148,7 @@ public class ModelArticlesController {
             if (Objects.nonNull(dimensionOptionsError)) {
                 model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
             }
-            return addFailed(articleFormRequest, model);
+            return articleSaveFailed(articleFormRequest, model);
         }
 
         try {
@@ -174,10 +168,7 @@ public class ModelArticlesController {
             s3Service.uploadFile(articleFormRequest.getModelFile(), articleFile.fileName());
         } catch (IOException e) {
             log.error("Amazon S3에 파일 저장 실패 - {}", new FileException(ErrorCode.FILE_CANT_SAVE, e).getMessage());
-            return addFailed(articleFormRequest, model);
-        } catch (ArticleException e) {
-            log.error("게시글 추가 실패 - {}", e.getMessage());
-            return addFailed(articleFormRequest, model);
+            return articleSaveFailed(articleFormRequest, model);
         }
 
         return "redirect:/model_articles";
@@ -186,7 +177,7 @@ public class ModelArticlesController {
     /**
      * 게시글 추가에 실패했을때 입력한 데이터를 다시 보내주기위한 메소드
      */
-    private static String addFailed(ArticleFormRequest articleFormRequest, Model model) {
+    private static String articleSaveFailed(ArticleFormRequest articleFormRequest, Model model) {
         model.addAttribute("article", ArticleFormResponse.from(articleFormRequest));
         model.addAttribute("formStatus", FormStatus.CREATE);
         model.addAttribute("categories", ArticleCategory.values());
@@ -225,10 +216,7 @@ public class ModelArticlesController {
             if (Objects.nonNull(dimensionOptionsError)) {
                 model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
             }
-            model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
-            model.addAttribute("formStatus", FormStatus.UPDATE);
-            model.addAttribute("categories", ArticleCategory.values());
-            return "model_articles/form";
+            return articleUpdateFailed(articleId, articleFormRequest, model);
         }
         try {
             articleFileService.updateArticleFile(articleFormRequest, articleId);
@@ -240,13 +228,17 @@ public class ModelArticlesController {
             );
         } catch (FileException | ArticleException e) {
             log.error("게시글 수정 실패 - {}", e.getMessage());
-            model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
-            model.addAttribute("formStatus", FormStatus.UPDATE);
-            model.addAttribute("categories", ArticleCategory.values());
-            return "model_articles/form";
+            return articleUpdateFailed(articleId, articleFormRequest, model);
         }
 
         return "redirect:/model_articles/" + articleId;
+    }
+
+    private static String articleUpdateFailed(Long articleId, ArticleFormRequest articleFormRequest, Model model) {
+        model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
+        model.addAttribute("formStatus", FormStatus.UPDATE);
+        model.addAttribute("categories", ArticleCategory.values());
+        return "model_articles/form";
     }
 
     /**

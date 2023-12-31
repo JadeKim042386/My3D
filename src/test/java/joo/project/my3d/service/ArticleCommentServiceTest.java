@@ -85,6 +85,8 @@ class ArticleCommentServiceTest {
     void saveCommentNotExistArticle() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
+        given(articleRepository.getReferenceById(anyLong()))
+                .willThrow(new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND));
         // When
         assertThatThrownBy(() -> articleCommentService.saveComment(articleCommentDto))
                 .isInstanceOf(CommentException.class);
@@ -133,6 +135,8 @@ class ArticleCommentServiceTest {
     void updateCommentNotExistComment() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
+        given(articleCommentRepository.getReferenceById(anyLong()))
+                .willThrow(new CommentException(ErrorCode.COMMENT_NOT_FOUND));
         // When
         assertThatThrownBy(() -> articleCommentService.updateComment(articleCommentDto))
                 .isInstanceOf(CommentException.class);

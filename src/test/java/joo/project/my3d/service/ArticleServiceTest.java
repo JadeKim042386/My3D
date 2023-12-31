@@ -28,10 +28,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,197 +52,156 @@ class ArticleServiceTest {
     @Mock private ArticleLikeRepository articleLikeRepository;
     @Mock private UserAccountRepository userAccountRepository;
 
-    @DisplayName("게시글 페이지 반환")
+    @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
-    void getArticles() {
-        // Given
-        Pageable pageable = Pageable.ofSize(9);
-        Predicate predicate = new BooleanBuilder();
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
-        // When
-        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
-        // Then
-        assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
-    }
-
-    @DisplayName("카테고리로 게시글 검색")
-    @Test
-    void getArticleByArticleCategory() {
-        // Given
-        Pageable pageable = Pageable.ofSize(9);
-        ArticleCategory articleCategory = ArticleCategory.MUSIC;
-        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory);
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
-        // When
-        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
-        // Then
-        assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
-    }
-
-    @DisplayName("제목으로 게시글 검색")
-    @Test
-    void getArticleByTitle() {
+    void getArticles_ForBoard() {
         // Given
         Pageable pageable = Pageable.ofSize(9);
         String title = "title";
         Predicate predicate = QArticle.article.title.eq(title);
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        given(articleRepository.findAll(any(Predicate.class), any(Pageable.class)))
+                .willReturn(new PageImpl<>(List.of(Fixture.getArticle())));
         // When
         Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
         // Then
-        assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        assertThat(articles.getTotalElements()).isEqualTo(1);
+        assertThat(articles.getTotalPages()).isEqualTo(1);
+        assertThat(articles.getContent().get(0).title()).isEqualTo(title);
+        then(articleRepository).should().findAll(any(Predicate.class), any(Pageable.class));
     }
 
-    @DisplayName("카테고리+제목으로 게시글 검색")
+    @DisplayName("2. 추가/수정을 위한 게시글 조회")
     @Test
-    void getArticleByArticleCategoryAndTitle() {
+    void getArticles_ForUpdate() {
         // Given
-        Pageable pageable = Pageable.ofSize(9);
-        ArticleCategory articleCategory = ArticleCategory.MUSIC;
-        String title = "title";
-        Predicate predicate = QArticle.article.articleCategory.eq(articleCategory)
-                .and(QArticle.article.title.eq(title));
-        given(articleRepository.findAll(predicate, pageable)).willReturn(Page.empty());
+        Article article = Fixture.getArticle();
+        given(articleRepository.findByIdFetchForm(anyLong())).willReturn(Optional.of(article));
         // When
-        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
+        ArticleFormDto articleFormDto = articleService.getArticle(1L);
         // Then
-        assertThat(articles).isEmpty();
-        then(articleRepository).should().findAll(predicate, pageable);
+        assertThat(articleFormDto.title()).isEqualTo("title");
+        assertThat(articleFormDto.content()).isEqualTo("content");
+        assertThat(articleFormDto.articleType()).isEqualTo(ArticleType.MODEL);
+        assertThat(articleFormDto.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
+        assertThat(articleFormDto.articleFileWithDimensionOptionWithDimensionDto().originalFileName()).isEqualTo("test.stp");
+        then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 
-    @DisplayName("게시글 추가/수정을 위한 단일 게시글 조회")
+    @DisplayName("3. [예외 - 게시글 없음] 추가/수정을 위한 게시글 조회")
     @Test
-    void getArticle() {
+    void getArticles_ForUpdate_Failed() {
         // Given
-        Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findByIdFetchForm(articleId)).willReturn(Optional.of(article));
+        given(articleRepository.findByIdFetchForm(anyLong()))
+                .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        ArticleFormDto articleFormDto = articleService.getArticle(articleId);
-        // Then
-        assertThat(articleFormDto)
-                .hasFieldOrProperty("userAccountDto")
-                .hasFieldOrPropertyWithValue("title", article.getTitle())
-                .hasFieldOrPropertyWithValue("content", article.getContent())
-                .hasFieldOrPropertyWithValue("articleType", article.getArticleType())
-                .hasFieldOrProperty("articleCategory");
-        then(articleRepository).should().findByIdFetchForm(articleId);
-    }
-
-    @DisplayName("단일 게시글 조회 - 댓글포함")
-    @Test
-    void getArticleWithComments() {
-        // Given
-        Long articleId = 1L;
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findByIdFetchDetail(articleId)).willReturn(Optional.of(article));
-        // When
-        ArticleWithCommentsAndLikeCountDto dto = articleService.getArticleWithComments(articleId);
-        // Then
-        assertThat(dto)
-                .hasFieldOrProperty("userAccountDto")
-                .hasFieldOrProperty("articleFileWithDimensionOptionWithDimensionDto")
-                .hasFieldOrPropertyWithValue("title", article.getTitle())
-                .hasFieldOrPropertyWithValue("content", article.getContent())
-                .hasFieldOrPropertyWithValue("articleType", article.getArticleType())
-                .hasFieldOrProperty("articleCategory")
-                .hasFieldOrProperty("likeCount")
-                .hasFieldOrProperty("articleCommentDtos");
-        then(articleRepository).should().findByIdFetchDetail(articleId);
-    }
-
-    @DisplayName("[예외-없는 게시글] 게시글 추가/수정을 위한 단일 게시글 조회")
-    @Test
-    void getArticleNotExistArticle() {
-        // Given
-        Long articleId = 1L;
-        given(articleRepository.findByIdFetchForm(articleId)).willReturn(Optional.empty());
-        // When
-        assertThatThrownBy(() -> articleService.getArticle(articleId))
+        assertThatThrownBy(() -> articleService.getArticle(1L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().findByIdFetchForm(articleId);
+        then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 
-    @DisplayName("게시글 저장")
+    @DisplayName("4. 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
+    @Test
+    void getArticles_ForDetail() {
+        // Given
+        Article article = Fixture.getArticle();
+        article.setLikeCount(2);
+        article.getArticleComments().add(Fixture.getArticleComment("comment"));
+        given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
+        // When
+        ArticleWithCommentsAndLikeCountDto articleWithComments = articleService.getArticleWithComments(1L);
+        // Then
+        assertThat(articleWithComments.title()).isEqualTo("title");
+        assertThat(articleWithComments.content()).isEqualTo("content");
+        assertThat(articleWithComments.articleType()).isEqualTo(ArticleType.MODEL);
+        assertThat(articleWithComments.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
+        assertThat(articleWithComments.articleFileWithDimensionOptionWithDimensionDto().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleWithComments.likeCount()).isEqualTo(2);
+        assertThat(articleWithComments.articleCommentDtos().size()).isEqualTo(1);
+        then(articleRepository).should().findByIdFetchDetail(anyLong());
+    }
+
+    @DisplayName("5. [예외 - 게시글 없음] 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
+    @Test
+    void getArticles_ForDetail_Failed() {
+        // Given
+        given(articleRepository.findByIdFetchDetail(anyLong()))
+                .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
+        // When
+        assertThatThrownBy(() -> articleService.getArticleWithComments(1L))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
+        // Then
+        then(articleRepository).should().findByIdFetchDetail(anyLong());
+    }
+
+    @DisplayName("6. 게시글 저장")
     @Test
     void saveArticle() {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title",  "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
+        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         // When
         articleService.saveArticle(article.getUserAccount().getEmail(), articleDto);
         // Then
+        then(userAccountRepository).should().getReferenceByEmail(anyString());
         then(articleRepository).should().save(any(Article.class));
     }
 
-    @DisplayName("[예외-모델 게시글에 카테고리가 없음] 게시글 저장")
-    @Test
-    void saveModelArticleNotExistCategory() {
-        // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, null);
-        // When
-        assertThatThrownBy(() -> articleService.saveArticle(articleDto.userAccountDto().email(), articleDto))
-                .isInstanceOf(ArticleException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_CATEGORY_NOT_FOUND);
-        // Then
-        then(articleRepository).shouldHaveNoInteractions();
-    }
-
-    @DisplayName("게시글 수정")
+    @DisplayName("7. 게시글 수정")
     @Test
     void updateArticle() throws IllegalAccessException {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        FieldUtils.writeField(article, "id", 1L, true);
-        UserAccount userAccount = Fixture.getUserAccount();
-        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), userAccount.getEmail())).willReturn(Optional.of(article));
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article savedArticle = Fixture.getArticle();
+        FieldUtils.writeField(savedArticle, "id", 1L, true);
+        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(Optional.of(savedArticle));
         // When
-        articleService.updateArticle(1L, articleDto, userAccount.getEmail());
+        articleService.updateArticle(1L, updatedArticle, updatedArticle.userAccountDto().email());
         // Then
-        assertThat(article)
-                .hasFieldOrPropertyWithValue("title", articleDto.title())
-                .hasFieldOrPropertyWithValue("content", articleDto.content());
-        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), userAccount.getEmail());
+        assertThat(savedArticle)
+                .hasFieldOrPropertyWithValue("title", "new title")
+                .hasFieldOrPropertyWithValue("content", "new content");
+        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
-    @DisplayName("[예외-없는 게시글] 게시글 수정")
+    @DisplayName("8. [예외 - 없는 게시글] 게시글 수정")
     @Test
-    void updateArticleNotExistArticle() {
+    void updateArticle_NotExistArticle() {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), "a@gmail.com")).willThrow(EntityNotFoundException.class);
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, "a@gmail.com"))
+        assertThatThrownBy(() -> articleService.updateArticle(1L, updatedArticle, updatedArticle.userAccountDto().email()))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), "a@gmail.com");
+        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
-    @DisplayName("[예외-작성자와 수정자가 상이] 게시글 수정")
+    @DisplayName("9. [예외 - 작성자와 수정자가 상이] 게시글 수정")
     @Test
-    void updateArticleNotWriter() {
+    void updateArticle_NotEqualWriter() throws IllegalAccessException {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "new title",  "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle("title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        UserAccount wrongUserAccount = Fixture.getUserAccount("a@gmail.com", "pw", "A", true, UserRole.COMPANY);
-        given(articleRepository.findByIdAndUserAccount_Email(articleDto.id(), wrongUserAccount.getEmail())).willReturn(Optional.of(article));
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article savedArticle = Fixture.getArticle();
+        FieldUtils.writeField(savedArticle, "id", 1L, true);
+        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(Optional.of(savedArticle));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, articleDto, wrongUserAccount.getEmail()))
+        assertThatThrownBy(() -> articleService.updateArticle(1L, updatedArticle, "notwriter@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
-        then(articleRepository).should().findByIdAndUserAccount_Email(articleDto.id(), wrongUserAccount.getEmail());
+        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
-    @DisplayName("게시글 삭제")
+    @DisplayName("10. 게시글 삭제")
     @Test
     void deleteArticle() {
         // Given
@@ -258,5 +219,56 @@ class ArticleServiceTest {
         then(articleCommentRepository).should().deleteByArticleId(articleId);
         then(articleLikeRepository).should().deleteByArticleId(articleId);
         then(articleRepository).should().delete(article);
+    }
+
+    @DisplayName("11. [예외 - 게시글 없음]게시글 삭제")
+    @Test
+    void deleteArticle_NotExist() {
+        // Given
+        Long articleId = 1L;
+        String email = "jk042386@gmail.com";
+        given(articleRepository.getReferenceById(anyLong()))
+                .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
+        // When
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
+        // Then
+        then(articleRepository).should().getReferenceById(anyLong());
+    }
+
+    @DisplayName("12. [예외 - 작성자와 요청자 상이]게시글 삭제")
+    @Test
+    void deleteArticle_NotEqualWriter() {
+        // Given
+        Article article = Fixture.getArticle();
+        Long articleId = 1L;
+        String email = "notwriter@gmail.com";
+        given(articleRepository.getReferenceById(anyLong())).willReturn(article);
+        // When
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
+        // Then
+        then(articleRepository).should().getReferenceById(anyLong());
+    }
+
+    @DisplayName("13. [예외 - 삭제 실패]게시글 삭제")
+    @Test
+    void deleteArticle_FailedDelete() {
+        // Given
+        Article article = Fixture.getArticle();
+        Long articleId = 1L;
+        String email = "jk042386@gmail.com";
+        given(articleRepository.getReferenceById(anyLong())).willReturn(article);
+        willThrow(new ArticleException(ErrorCode.FAILED_DELETE))
+                .given(articleCommentRepository).deleteByArticleId(articleId);
+        // When
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+                .isInstanceOf(ArticleException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FAILED_DELETE);
+        // Then
+        then(articleRepository).should().getReferenceById(anyLong());
+        then(articleCommentRepository).should().deleteByArticleId(articleId);
     }
 }
