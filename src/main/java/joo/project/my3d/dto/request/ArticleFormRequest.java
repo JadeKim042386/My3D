@@ -58,7 +58,7 @@ public class ArticleFormRequest {
      * 게시글 업데이트시 사용
      */
     public ArticleDto toArticleDto() {
-        return toArticleDto(null, null, null);
+        return toArticleDto(null, null, ArticleType.MODEL);
     }
 
     /**
