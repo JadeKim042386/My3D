@@ -45,39 +45,6 @@ public class ArticleFileService {
     }
 
     /**
-     * @deprecated
-     * @throws FileException 파일 저장 실패 예외
-     */
-    @Transactional
-    public ArticleFile saveArticleFile(MultipartFile file, DimensionOptionDto dimensionOptionDto) {
-        //파일 저장(UUID를 파일명으로 저장)
-        String originalFileName = file.getOriginalFilename();
-        String extension = FileUtils.getExtension(originalFileName);
-        String fileName = UUID.randomUUID() + "." + extension;
-
-        try {
-            s3Service.uploadFile(file, fileName);
-            long byteSize = file.getSize();
-            return articleFileRepository.save(
-                        ArticleFile.of(
-                            byteSize,
-                            originalFileName,
-                            fileName,
-                            extension,
-                            dimensionOptionDto.toEntity()
-                        )
-                    );
-        } catch (IOException e) {
-            log.error("S3 파일 업로드 실패 - File path: {}, MultipartFile: {}", fileName, file);
-            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
-        } catch (IllegalArgumentException e) {
-            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
-        } catch (OptimisticLockingFailureException e) {
-            throw new FileException(ErrorCode.CONFLICT_SAVE, e);
-        }
-    }
-
-    /**
      * 파일의 업데이트 여부를 확인하여 반환
      * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
      */
@@ -125,7 +92,7 @@ public class ArticleFileService {
             log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         } catch (FileException e) {
-            log.error("게시글 id: {}에 해당하는 파일을 찾을 수 없습니다.", articleId);
+            log.error("게시글 id: {} 에 해당하는 파일을 찾을 수 없습니다.", articleId);
             throw e;
         }
     }

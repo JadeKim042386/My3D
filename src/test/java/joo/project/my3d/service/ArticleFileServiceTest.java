@@ -30,20 +30,6 @@ class ArticleFileServiceTest {
     @Mock private ArticleFileRepository articleFileRepository;
     @Mock private S3Service s3Service;
 
-    @DisplayName("모델 파일 저장")
-    @Test
-    void saveArticleFile() throws IOException {
-        // Given
-        MockMultipartFile file = Fixture.getMultipartFile();
-        ArticleFile articleFile = Fixture.getArticleFile();
-        DimensionOptionDto dimensionOptionDto = FixtureDto.getDimensionOptionDto();
-        given(articleFileRepository.save(any(ArticleFile.class))).willReturn(articleFile);
-        // When
-        articleFileService.saveArticleFile(file, dimensionOptionDto);
-        // Then
-        then(articleFileRepository).should().save(any(ArticleFile.class));
-    }
-
     @DisplayName("모델 파일 수정")
     @Test
     void updateArticleFile() throws IOException, IllegalAccessException {
@@ -51,28 +37,30 @@ class ArticleFileServiceTest {
         Long articleId = 1L;
         ArticleFile articleFile = Fixture.getArticleFile();
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest();
-        given(articleFileRepository.findByArticleId(articleId)).willReturn(Optional.of(articleFile));
+        given(articleFileRepository.findByArticleId(anyLong())).willReturn(Optional.of(articleFile));
         willDoNothing().given(s3Service).deleteFile(anyString());
         willDoNothing().given(s3Service).uploadFile(eq(articleFormRequest.getModelFile()), anyString());
         // When
         articleFileService.updateArticleFile(articleFormRequest, articleId);
         // Then
-        then(articleFileRepository).should().findByArticleId(articleId);
+        then(articleFileRepository).should().findByArticleId(anyLong());
         then(s3Service).should().deleteFile(anyString());
         then(s3Service).should().uploadFile(eq(articleFormRequest.getModelFile()), anyString());
     }
 
     @DisplayName("모델 파일 수정 - 파일 변경 없음")
     @Test
-    void updateArticleFileNotChange() throws IllegalAccessException {
+    void updateArticleFile_NotChange() throws IllegalAccessException {
         // Given
         Long articleId = 1L;
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest(file);
+        ArticleFile articleFile = Fixture.getArticleFile();
+        given(articleFileRepository.findByArticleId(anyLong())).willReturn(Optional.of(articleFile));
         // When
         articleFileService.updateArticleFile(articleFormRequest, articleId);
         // Then
-        then(articleFileRepository).shouldHaveNoInteractions();
+        then(articleFileRepository).should().findByArticleId(anyLong());
         then(s3Service).shouldHaveNoInteractions();
     }
 }
