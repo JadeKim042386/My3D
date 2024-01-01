@@ -38,7 +38,10 @@ public class ArticleFileService {
      */
     public ArticleFileDto getArticleFile(Long articleId) {
 
-        return ArticleFileDto.from(articleFileRepository.findByArticleId(articleId));
+        return ArticleFileDto.from(
+                articleFileRepository.findByArticleId(articleId)
+                        .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
+        );
     }
 
     /**
@@ -83,9 +86,11 @@ public class ArticleFileService {
         MultipartFile file = articleFormRequest.getModelFile();
         String fileName = null;
         try {
+            ArticleFile articleFile = articleFileRepository.findByArticleId(articleId)
+                    .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
             //업데이트 여부 확인
             if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
-                ArticleFile articleFile = articleFileRepository.findByArticleId(articleId);
+
                 //S3에 저장한 파일 삭제
                 fileName = articleFile.getFileName();
                 s3Service.deleteFile(fileName);
@@ -99,27 +104,29 @@ public class ArticleFileService {
                 //파일 업데이트
                 long byteSize = file.getSize();
                 articleFile.update(byteSize, originalFileName, fileName, extension);
-
-                //치수 옵션 업데이트
-                DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
-                articleFile.setDimensionOption(dimensionOptionDto.toEntity());
-
-                //치수 업데이트
-                DimensionOption dimensionOption = articleFile.getDimensionOption();
-                List<DimensionDto> dimensions = articleFormRequest.toDimensions(dimensionOption.getId());
-                dimensionOption.getDimensions().clear();
-                dimensionOption.getDimensions().addAll(
-                        dimensions.stream()
-                                .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
-                                .toList()
-                );
             }
+            //치수 옵션 업데이트
+            DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
+            articleFile.setDimensionOption(dimensionOptionDto.toEntity());
+
+            //치수 업데이트
+            DimensionOption dimensionOption = articleFile.getDimensionOption();
+            List<DimensionDto> dimensions = articleFormRequest.toDimensions(dimensionOption.getId());
+            dimensionOption.getDimensions().clear();
+            dimensionOption.getDimensions().addAll(
+                    dimensions.stream()
+                            .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
+                            .toList()
+            );
         } catch (SdkClientException | S3Exception e) {
             log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
         } catch (IOException e) {
             log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
+        } catch (FileException e) {
+            log.error("게시글 id: {}에 해당하는 파일을 찾을 수 없습니다.", articleId);
+            throw e;
         }
     }
 

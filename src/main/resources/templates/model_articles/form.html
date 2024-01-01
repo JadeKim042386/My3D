@@ -134,7 +134,7 @@
                       <th>치수명</th>
                       <th>치수</th>
                       <th>단위</th>
-                      <th>수정</th>
+                      <th>추가/수정</th>
                       <th>삭제</th>
                     </tr>
                   </thead>
@@ -144,11 +144,11 @@
                       <td>dim1</td>
                       <td>dim1</td>
                       <td>
-                        <a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                        <a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                        <a class="save"><i class="material-icons">&#xE03B;</i></a>
+                        <a class="edit"><i class="material-icons">&#xE254;</i></a>
                       </td>
                       <td>
-                        <a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                        <a class="delete"><i class="material-icons">&#xE872;</i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -209,10 +209,11 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
-  <script>
+  <script id="inline-js">
+    //모달을 통해 입력된 치수 옵션 추가
     function addDimensionOption() {
       var optionName = $('#optionName').val();
-      //옵션명이 입력안되었을 경우
+      // -- 옵션명이 입력안되었을 경우 에러 메세지 표시
       if (optionName === "") {
         $('#optionName').parent().append('<p id="optionName-error" class="mb-0 field-error">옵션명을 입력해주세요.</p>');
         return;
@@ -220,11 +221,11 @@
         $('#optionName-error').remove();
       }
 
+      // -- 입력된 치수 정보를 localStorage에 저장
       var dimensionOption = {
         "optionName": optionName,
         "dimensions": []
       };
-
       $('#dimensionTable tbody').find("tr").each(function () {
         if ($(this).find('.edit').css('display') !== "none") {
           var dimension = {};
@@ -236,6 +237,7 @@
       })
       localStorage.setItem(optionName, JSON.stringify(dimensionOption));
 
+      //-- 현재 치수 옵션 드롭다운 아이템에 존재하는 옵션명인지 확인
       var options = [];
       $("#dimensionOption-select").find("option").each(function () {
         options.push($(this).text());
@@ -249,11 +251,76 @@
       selectDimensionOption();
     }
 
+    //현재 선택된 치수옵션 삭제
+    function removeDimensionOption() {
+      var selectedOption = getSelectedOption();
+      var optionName = selectedOption.text();
+      localStorage.removeItem(optionName);
+      selectedOption.remove();
+      selectDimensionOption();
+    }
+
+    //현재 선택된 치수옵션 수정
+    $('#editDimensionOption').click(function () {
+      $(".add-new").removeAttr("disabled");
+      // -- 현재 선택된 치수옵션의 치수 정보들을 업데이트
+      var selectedOptionName = getSelectedOption().text();
+      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      if (dimensionOption != null) {
+        $('#optionName').val(dimensionOption['optionName']);
+        $('#dimensionTable tbody').find("tr").remove();
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '<td>' + getSaveEditIconButton() + '</td>' +
+                  '<td>' + getDeleteIconButton() + '</td>' +
+                  '</tr>';
+          $("#dimensionTable tbody").append(row);
+        }
+      }
+    })
+
+    // 현재 선택된 치수옵션
+    function getSelectedOption() {
+      return $("#dimensionOption-select option:selected");
+    }
+
+    //게시글 추가/수정 버튼 클릭
+    $('#submit-button').click(function () {
+      // -- 추가된 치수옵션을 input[type=hidden]으로 추가하여 submit되도록 적용
+      for (var i=0; i < localStorage.length; i++) {
+        var dimensionOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
+        var dimensionOptionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].optionName' value='" + dimensionOption["optionName"] + "'>";
+        $('#article-form').append(dimensionOptionInputs);
+        for (var dimIdx in dimensionOption['dimensions']) {
+          var dimension = dimensionOption['dimensions'][dimIdx];
+          var dimensionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
+                                + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
+                                + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
+          $('#article-form').append(dimensionInputs);
+        }
+      }
+    })
+
+    // 치수옵션 드롭다운 아이템 추가
     function addSelectOption(optionName) {
       var option = $("<option>" + optionName + "</option>");
       $("#dimensionOption-select").append(option);
     }
 
+    //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
+    function buttonDisabled() {
+      if (localStorage.length == 0) {
+        $('#editDimensionOption').attr("disabled", true);
+        $('#addDimensionOptionButton').removeAttr("disabled");
+      } else {
+        $('#addDimensionOptionButton').attr("disabled", true);
+      }
+    }
+
+    //현재 선택된 치수옵션 정보를 테이블로 표시
     function selectDimensionOption() {
       var selectedOptionName = getSelectedOption().text();
       var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
@@ -268,73 +335,15 @@
           $("#addedDimensionTable tbody").append(row);
         }
       }
-      //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
-      if (localStorage.length == 0) {
-        $('#editDimensionOption').attr("disabled", true);
-        $('#addDimensionOptionButton').removeAttr("disabled");
-      } else {
-        $('#addDimensionOptionButton').attr("disabled", true);
-      }
+      buttonDisabled();
     }
 
-    function removeDimensionOption() {
-      var selectedOption = getSelectedOption();
-      var optionName = selectedOption.text();
-      localStorage.removeItem(optionName);
-      selectedOption.remove();
-      selectDimensionOption();
-    }
-
-    $('#editDimensionOption').click(function () {
-      $(".add-new").removeAttr("disabled");
-      var selectedOptionName = getSelectedOption().text();
-      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
-      if (dimensionOption != null) {
-        $('#optionName').val(dimensionOption['optionName']);
-        var edit_action = '<a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>'
-                          + '<a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>';
-        var delete_action = '<a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>';
-        $('#dimensionTable tbody').find("tr").remove();
-        for (var dimension of dimensionOption['dimensions']) {
-          var row = '<tr>' +
-                  '<td>' + dimension['dimName'] + '</td>' +
-                  '<td>' + dimension['dimValue'] + '</td>' +
-                  '<td>' + dimension['dimUnit'] + '</td>' +
-                  '<td>' + edit_action + '</td>' +
-                  '<td>' + delete_action + '</td>' +
-                  '</tr>';
-          $("#dimensionTable tbody").append(row);
-        }
-      }
-    })
-
-    function getSelectedOption() {
-      return $("#dimensionOption-select option:selected");
-    }
-
-    $('#submit-button').click(
-      function () {
-        for (var i=0; i < localStorage.length; i++) {
-          var dimensionOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
-          var dimensionOptionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].optionName' value='" + dimensionOption["optionName"] + "'>";
-          $('#article-form').append(dimensionOptionInputs);
-          for (var dimIdx in dimensionOption['dimensions']) {
-            var dimension = dimensionOption['dimensions'][dimIdx];
-            var dimensionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
-                                  + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
-                                  + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
-            $('#article-form').append(dimensionInputs);
-          }
-        }
-      }
-    )
-  </script>
-  <script id="inline-js">
-    $(document).ready(function(){
-      // -- 수정 폼 초기화
+    //초기화
+    function initialize() {
       localStorage.clear();
       $("#dimensionOption-select").find("option").remove();
       var modelFile = [[${article.modelFile}]];
+      // -- 게시글을 수정할 경우 해당 게시글의 치수옵션들을 load
       if (modelFile !== null) {
         var dimensionOptions = modelFile.dimensionOptions;
         for (var dimensionOption of dimensionOptions) {
@@ -353,43 +362,49 @@
           }
           localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
         }
-        //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
-        if (localStorage.length == 0) {
-          $('#editDimensionOption').attr("disabled", true);
-          $('#addDimensionOptionButton').removeAttr("disabled");
-        } else {
-          $('#addDimensionOptionButton').attr("disabled", true);
-        }
+        buttonDisabled();
         selectDimensionOption();
-
-        $('[data-toggle="tooltip"]').tooltip();
       }
-      // 상품 옵션 추가시 입력 폼 초기화
+    }
+
+    // 상품옵션 추가 버튼 클릭시 입력 폼 초기화
+    function initializeDimensionOptionModal() {
       $("#addDimensionOptionButton").click(function () {
         $('#optionName').val("");
         $('#dimensionTable tbody').find("tr").remove();
       })
-      // 치수 추가
+    }
+
+    function getSaveEditIconButton() {
+      return '<a class="save"><i class="material-icons">&#xE03B;</i></a>'
+              + '<a class="edit"><i class="material-icons">&#xE254;</i></a>';
+    }
+
+    function getDeleteIconButton() {
+      return '<a class="delete"><i class="material-icons">&#xE872;</i></a>';
+    }
+
+    $(document).ready(function(){
+      initialize();
+      initializeDimensionOptionModal();
+
+      // -- 치수 추가 버튼 클릭
       $(".add-new").click(function(){
-        // $(this).attr("disabled", "disabled");
         var index = $("#dimensionTable tbody tr:last-child").index();
-        var edit_action = '<a class="save" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>'
-                          + '<a class="edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>';
-        var delete_action = '<a class="delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>';
         var row = '<tr>' +
                 '<td><input type="text" class="form-control" name="dimName" id="dimName"></td>' +
                 '<td><input type="text" class="form-control" name="dimValue" id="dimValue"></td>' +
                 '<td><select id="dimUnit" class="form-control input-xs"><option>MM</option><option>INCH</option></select></td>' +
-                '<td>' + edit_action + '</td>' +
-                '<td>' + delete_action + '</td>' +
+                '<td>' + getSaveEditIconButton() + '</td>' +
+                '<td>' + getDeleteIconButton() + '</td>' +
                 '</tr>';
         $("#dimensionTable").append(row);
         $("#dimensionTable tbody tr").eq(index + 1).find(".save, .edit").toggle();
-        $('[data-toggle="tooltip"]').tooltip();
       });
 
-      // -- 저장 버튼 클릭
+      // -- 하나의 행에 해당하는 치수 정보 저장 버튼 클릭
       $(document).on("click", ".save", function(){
+        // -- 입력되지 않은 칸이 있는지 확인
         var empty = false;
         var input = $(this).parents("tr").find('input[type="text"], select');
         input.each(function(){
@@ -400,8 +415,11 @@
             $(this).removeClass("error");
           }
         });
-        $(this).parents("tr").find(".error").first().focus();
-        if(!empty){
+
+        // -- 입력되지 않은 칸이 있다면 해당 칸으로 focus하고 모두 입력되었다면 입력 폼에서 일반 텍스트로 변환
+        if(empty){
+          $(this).parents("tr").find(".error").first().focus();
+        } else {
           input.each(function(){
             $(this).parent("td").html($(this).val());
           });
@@ -409,7 +427,8 @@
           $(".add-new").removeAttr("disabled");
         }
       });
-      // -- 수정 버튼 클릭
+
+      // -- 하나의 행에 해당하는 치수 정보의 수정 버튼 클릭
       $(document).on("click", ".edit", function(){
         $(this).parents("tr").find("td:nth-child(1), td:nth-child(2)").each(function(){
           $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
@@ -418,9 +437,11 @@
           $(this).html('<select id="dimUnit" class="form-control input-xs"><option' + ($(this).text() === "MM" ? ' selected' : '') + '>MM</option><option' + ($(this).text() === "INCH" ? ' selected' : '') + '>INCH</option></select>');
         });
         $(this).parents("tr").find(".save, .edit").toggle();
+        // -- 수정 중에는 치수 추가를 할 수 없도록 설정
         $(".add-new").attr("disabled", "disabled");
       });
-      // -- 삭제 버튼 클릭
+
+      // -- 하나의 행에 해당하는 치수 정보 삭제 버튼 클릭
       $(document).on("click", ".delete", function(){
         $(this).parents("tr").remove();
         $(".add-new").removeAttr("disabled");

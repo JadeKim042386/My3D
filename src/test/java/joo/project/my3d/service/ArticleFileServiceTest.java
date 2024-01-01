@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;
 
@@ -50,7 +51,7 @@ class ArticleFileServiceTest {
         Long articleId = 1L;
         ArticleFile articleFile = Fixture.getArticleFile();
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest();
-        given(articleFileRepository.findByArticleId(articleId)).willReturn(articleFile);
+        given(articleFileRepository.findByArticleId(articleId)).willReturn(Optional.of(articleFile));
         willDoNothing().given(s3Service).deleteFile(anyString());
         willDoNothing().given(s3Service).uploadFile(eq(articleFormRequest.getModelFile()), anyString());
         // When
