@@ -56,13 +56,14 @@ public class LoginController {
     @GetMapping("/login")
     public String login(HttpServletRequest request) {
         try {
-            String referer = request.getHeader("Referer"); //이전 URL
+            //이전 URL(e.g. http://localhost:8080/model_articles)
+            String referer = request.getHeader("Referer");
             String refererPath = new URL(referer).getPath();
             request.getSession().setAttribute("prevPage", refererPath);
             return "account/login";
         } catch (MalformedURLException e) {
-            log.error("로그인 이전 페이지의 URL이 잘못되었습니다; {}", e.getMessage());
-            return "/";
+            log.error("로그인 이전 페이지의 URL이 잘못되었습니다; {}", request.getHeader("Referer"));
+            return "index";
         }
     }
 

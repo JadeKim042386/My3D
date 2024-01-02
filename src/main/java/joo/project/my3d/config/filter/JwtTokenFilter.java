@@ -2,8 +2,6 @@ package joo.project.my3d.config.filter;
 
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.ErrorCode;
-import joo.project.my3d.exception.JwtTokenException;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.utils.CookieUtils;
 import joo.project.my3d.utils.JwtTokenUtils;
@@ -21,6 +19,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URL;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -36,7 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final String token;
 
         //회원가입관련 URL일 경우 생략
-        String url = request.getRequestURL().toString();
+        String url = new URL(request.getRequestURL().toString()).getPath();
         if (url.startsWith("/account") || url.startsWith("/mail")) {
             filterChain.doFilter(request, response);
             return;
@@ -49,7 +49,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         try {
             if(header == null || !header.startsWith("Bearer ")) {
-                log.error("Error occurs while getting  fil header, header is null or invalid {}", request.getRequestURL());
+                log.error("Error occurs while getting  fil header, header is null or invalid {}", url);
                 filterChain.doFilter(request, response);
                 return;
             } else {
@@ -88,8 +88,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             Optional<Cookie> jwtTokenCookie = CookieUtils.getCookieFromRequest(request, jwtProperties.cookieName());
             return "Bearer " + jwtTokenCookie.get().getValue();
-        } catch (RuntimeException e) {
-            log.error("JWT 토큰을 찾을 수 없습니다. - {}", new JwtTokenException(ErrorCode.JWT_TOKEN_NOT_FOUND, e));
+        } catch (NullPointerException | NoSuchElementException e) {
+            log.error("JWT 토큰을 찾을 수 없습니다.");
             return null;
         }
     }

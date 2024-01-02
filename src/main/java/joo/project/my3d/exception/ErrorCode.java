@@ -26,7 +26,6 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     INVALID_USER(HttpStatus.UNAUTHORIZED, "이메일과 일치하는 유저가 존재하지 않습니다."),
     COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "기업을 찾을 수 없습니다."),
-    JWT_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "JWT 토큰을 찾을 수 없습니다."),
     //Dimension
     DIMENSION_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "치수 옵션을 찾을 수 없습니다."),
     DIMENSION_NOT_FOUND(HttpStatus.NOT_FOUND, "치수를 찾을 수 없습니다."),
