@@ -51,20 +51,11 @@ public class LoginController {
 
     /**
      * 로그인 페이지 요청
-     * @throws MalformedURLException 로그인 이전 페이지의 URL이 잘못되었을 경우 발생하는 예외
      */
     @GetMapping("/login")
     public String login(HttpServletRequest request) {
-        try {
-            //이전 URL(e.g. http://localhost:8080/model_articles)
-            String referer = request.getHeader("Referer");
-            String refererPath = new URL(referer).getPath();
-            request.getSession().setAttribute("prevPage", refererPath);
-            return "account/login";
-        } catch (MalformedURLException e) {
-            log.error("로그인 이전 페이지의 URL이 잘못되었습니다; {}", request.getHeader("Referer"));
-            return "index";
-        }
+
+        return "account/login";
     }
 
     /**
@@ -75,7 +66,6 @@ public class LoginController {
     @PostMapping("/login")
     public String requestLogin(
             UserLoginRequest loginRequest,
-            HttpServletRequest request,
             HttpServletResponse response,
             Model model
     ) {
@@ -90,7 +80,7 @@ public class LoginController {
             );
             response.addCookie(cookie);
 
-            return "redirect:" + request.getSession().getAttribute("prevPage");
+            return "redirect:/";
         } catch (UserAccountException e) {
             log.error("로그인 실패 - {}", e.getMessage());
             model.addAttribute("loginFailedMessage", e.getMessage());
