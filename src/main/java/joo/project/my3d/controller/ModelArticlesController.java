@@ -4,14 +4,13 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.response.ApiResponse;
+import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.dto.response.ArticleFormResponse;
-import joo.project.my3d.dto.response.ArticleResponse;
-import joo.project.my3d.dto.response.ArticleWithCommentsAndLikeCountResponse;
+import joo.project.my3d.dto.response.ArticlePreviewResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleLikeRepository;
@@ -28,24 +27,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
+
+import static joo.project.my3d.domain.constant.FormStatus.CREATE;
+import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/model_articles")
 @RequiredArgsConstructor
 public class ModelArticlesController {
@@ -63,91 +58,64 @@ public class ModelArticlesController {
      * 게시판 페이지 요청
      */
     @GetMapping
-    public String articles(
+    public ApiResponse<ArticlePreviewResponse> articles(
             @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-            @QuerydslPredicate(root = Article.class) Predicate predicate,
-            Model model
+            @QuerydslPredicate(root = Article.class) Predicate predicate
     ) {
-        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlePreviewDto> articles = articleService.getArticlesForPreview(predicate, pageable);
         List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
-        if (articles.isEmpty()) {
-            model.addAttribute(
-                "articles",
-                Page.empty()
-            );
-        } else {
-            model.addAttribute(
-                "articles",
-                new PageImpl<>(
-                    articles
-                        .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
-                        .map(ArticleResponse::from)
-                        .toList(),
+        if (!articles.isEmpty()) {
+            articles = new PageImpl<>(articles
+                    .filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
+                    .toList(),
                     pageable,
                     articles.getTotalElements()
-                )
             );
         }
 
-        model.addAttribute("modelPath", S3Url);
-        model.addAttribute("categories", ArticleCategory.values());
-        model.addAttribute("paginationBarNumbers", barNumbers);
-
-        return "model_articles/index";
+        return ApiResponse.success(ArticlePreviewResponse.of(
+                articles,
+                S3Url,
+                ArticleCategory.values(),
+                barNumbers
+        ));
     }
 
     /**
      * 게시글 페이지 요청
      */
     @GetMapping("/{articleId}")
-    public String article(
+    public ApiResponse<ArticleDetailResponse> article(
             @PathVariable Long articleId,
-            Model model,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        try {
-            int likeCount = articleLikeRepository.countByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
-            ArticleWithCommentsAndLikeCountDto articleWithComments = articleService.getArticleWithComments(articleId);
-            ArticleWithCommentsAndLikeCountResponse article = ArticleWithCommentsAndLikeCountResponse.from(articleWithComments);
+        int likeCount = articleLikeRepository.countByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
+        ArticleWithCommentsAndLikeCountDto article = articleService.getArticleWithComments(articleId);
 
-            model.addAttribute("article", article);
-            model.addAttribute("articleComments", article.articleCommentResponses());
-            model.addAttribute("modelFile", article.modelFile());
-            model.addAttribute("addedLike", likeCount > 0);
-            model.addAttribute("modelPath", S3Url);
-
-            return "model_articles/detail";
-        } catch (ArticleException e) {
-            log.error("게시글을 찾을 수 없습니다. id: {} - {}", articleId, e.getMessage());
-            return "model_articles/index";
-        }
+        return ApiResponse.success(ArticleDetailResponse.of(article, likeCount > 0, S3Url));
     }
 
     @GetMapping("/form")
-    public String articleForm(Model model) {
-        model.addAttribute("article", ArticleFormResponse.of());
-        model.addAttribute("formStatus", FormStatus.CREATE);
-        model.addAttribute("categories", ArticleCategory.values());
-        return "model_articles/form";
+    public ApiResponse<ArticleFormResponse> articleAddForm() {
+        return ApiResponse.success(ArticleFormResponse.of(CREATE));
     }
 
     /**
      * 게시글 저장 요청
      */
     @PostMapping("/form")
-    public String postNewArticle(
+    public ApiResponse<?> postNewArticle(
             @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
-            FieldError dimensionOptionsError = bindingResult.getFieldError("dimensionOptions");
-            if (Objects.nonNull(dimensionOptionsError)) {
-                model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
-            }
-            return articleSaveFailed(articleFormRequest, model);
+            return ApiResponse.invalid(ArticleFormResponse.validError(
+                    articleFormRequest,
+                    CREATE,
+                    bindingResult.getAllErrors().stream().map(ObjectError::getDefaultMessage).toList()
+            ));
         }
 
         try {
@@ -166,114 +134,69 @@ public class ModelArticlesController {
             //S3 파일 저장
             s3Service.uploadFile(articleFormRequest.getModelFile(), articleFile.fileName());
         } catch (IOException e) {
-            log.error("Amazon S3에 파일 저장 실패 - {}", new FileException(ErrorCode.FILE_CANT_SAVE, e).getMessage());
-            return articleSaveFailed(articleFormRequest, model);
+            log.error("Amazon S3에 파일 저장 실패");
+            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
 
-        return "redirect:/model_articles";
-    }
-
-    /**
-     * 게시글 추가에 실패했을때 입력한 데이터를 다시 보내주기위한 메소드
-     */
-    private static String articleSaveFailed(ArticleFormRequest articleFormRequest, Model model) {
-        model.addAttribute("article", ArticleFormResponse.from(articleFormRequest));
-        model.addAttribute("formStatus", FormStatus.CREATE);
-        model.addAttribute("categories", ArticleCategory.values());
-        return "/model_articles/form";
+        return ApiResponse.success();
     }
 
     @GetMapping("/form/{articleId}")
-    public String updateArticle(
-            @PathVariable Long articleId,
-            Model model
-    ) {
-        ArticleFormDto article = articleService.getArticle(articleId);
-        model.addAttribute(
-            "article",
-            ArticleFormResponse.from(article)
-        );
-        model.addAttribute("formStatus", FormStatus.UPDATE);
-        model.addAttribute("categories", ArticleCategory.values());
-        return "model_articles/form";
+    public ApiResponse<?> articleUpdateForm(@PathVariable Long articleId) {
+        ArticleFormDto article = articleService.getArticleForm(articleId);
+
+        return ApiResponse.success(ArticleFormResponse.from(article, UPDATE));
     }
 
     /**
      * 게시글 수정 요청
      */
     @PostMapping("/form/{articleId}")
-    public String postUpdateArticle(
+    public ApiResponse<?> postUpdateArticle(
             @PathVariable Long articleId,
             @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("formBindingResult={}", bindingResult);
-            FieldError dimensionOptionsError = bindingResult.getFieldError("dimensionOptions");
-            if (Objects.nonNull(dimensionOptionsError)) {
-                model.addAttribute("dimensionOptionError", dimensionOptionsError.getDefaultMessage());
-            }
-            return articleUpdateFailed(articleId, articleFormRequest, model);
-        }
-        try {
-            articleFileService.updateArticleFile(articleFormRequest, articleId);
-
-            articleService.updateArticle(
+            return ApiResponse.invalid(ArticleFormResponse.validError(
                     articleId,
-                    articleFormRequest.toArticleDto(),
-                    boardPrincipal.email()
-            );
-        } catch (FileException | ArticleException e) {
-            log.error("게시글 수정 실패 - {}", e.getMessage());
-            return articleUpdateFailed(articleId, articleFormRequest, model);
+                    articleFormRequest,
+                    UPDATE,
+                    bindingResult.getAllErrors().stream().map(ObjectError::getDefaultMessage).toList()
+            ));
         }
 
-        return "redirect:/model_articles/" + articleId;
-    }
+        articleFileService.updateArticleFile(articleFormRequest, articleId);
+        articleService.updateArticle(
+                articleId,
+                articleFormRequest.toArticleDto(),
+                boardPrincipal.email()
+        );
 
-    private static String articleUpdateFailed(Long articleId, ArticleFormRequest articleFormRequest, Model model) {
-        model.addAttribute("article", ArticleFormResponse.from(articleId, articleFormRequest));
-        model.addAttribute("formStatus", FormStatus.UPDATE);
-        model.addAttribute("categories", ArticleCategory.values());
-        return "model_articles/form";
+        return ApiResponse.success();
     }
 
     /**
      * 게시글 삭제 요청
      */
     @PostMapping("{articleId}/delete")
-    public String deleteArticle(
+    public ApiResponse<Void> deleteArticle(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        try {
-            articleFileService.deleteArticleFile(articleId);
-            articleService.deleteArticle(articleId, boardPrincipal.email());
-        } catch (ArticleException e) {
-            log.error("게시글 삭제 실패 - {}", e.getMessage());
-            return "redirect:/model_articles/" + articleId;
-        } catch (FileException e) {
-            log.error("파일 삭제 실패 - {}", e.getMessage());
-            return "redirect:/model_articles/" + articleId;
-        }
+        articleFileService.deleteArticleFile(articleId);
+        articleService.deleteArticle(articleId, boardPrincipal.email());
 
-        return "redirect:/model_articles";
+        return ApiResponse.success();
     }
 
     @GetMapping("{articleId}/download")
-    public ResponseEntity<byte[]> downloadArticleFile(
-            @PathVariable Long articleId
-    ) {
+    public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
         ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
         byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        httpHeaders.setContentLength(downloadFile.length);
-        httpHeaders.setContentDispositionFormData("attachment", articleFile.originalFileName());
-
-        return new ResponseEntity<>(downloadFile, httpHeaders, HttpStatus.OK);
+        return ApiResponse.success(downloadFile);
     }
 }
