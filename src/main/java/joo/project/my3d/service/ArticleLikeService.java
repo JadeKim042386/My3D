@@ -3,7 +3,6 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.exception.AlarmException;
 import joo.project.my3d.exception.ArticleLikeException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleLikeRepository;

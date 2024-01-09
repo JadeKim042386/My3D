@@ -15,7 +15,6 @@ import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.repository.ArticleLikeRepository;
-import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
