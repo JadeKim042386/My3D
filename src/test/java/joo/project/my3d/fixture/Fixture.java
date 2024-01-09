@@ -40,11 +40,6 @@ public class Fixture {
         return ArticleLike.of(userAccount, article);
     }
 
-    public static ArticleLike getArticleLike(UserAccount userAccount) {
-        Article article = Fixture.getArticle();
-        return ArticleLike.of(userAccount, article);
-    }
-
     public static UserAccount getUserAccount(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
         return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Company.of(null, null));
     }

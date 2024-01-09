@@ -33,6 +33,10 @@ public class DimensionRequest {
                 );
         }
 
+        public DimensionDto toDto() {
+                return toDto(null);
+        }
+
         public static DimensionRequest from(DimensionDto dto) {
                 return DimensionRequest.of(
                         dto.dimName(),

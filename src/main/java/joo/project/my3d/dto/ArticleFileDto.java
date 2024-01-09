@@ -39,8 +39,4 @@ public record ArticleFileDto(
                 dimensionOption
         );
     }
-
-    public boolean isModelFile() {
-        return List.of("stp", "stl").contains(fileExtension);
-    }
 }

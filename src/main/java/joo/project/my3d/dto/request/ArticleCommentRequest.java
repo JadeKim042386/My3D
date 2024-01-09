@@ -19,9 +19,10 @@ public record ArticleCommentRequest(
     public ArticleCommentDto toDto(UserAccountDto userAccountDto) {
         return ArticleCommentDto.of(
                 articleId,
-                parentCommentId,
-                userAccountDto,
-                content
+                content,
+                userAccountDto.nickname(),
+                userAccountDto.email(),
+                parentCommentId
         );
     }
 }
