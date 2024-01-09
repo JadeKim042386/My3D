@@ -3,6 +3,7 @@ package joo.project.my3d.utils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public class LocalDateTimeUtils {
 
@@ -25,6 +26,9 @@ public class LocalDateTimeUtils {
      * - ~년 전<br>
      */
     public static String passedTime(LocalDateTime createdAt){
+        if (Objects.isNull(createdAt)) {
+            return "방금 전";
+        }
         LocalDateTime now = LocalDateTime.now();
         //방금 전
         long seconds = ChronoUnit.SECONDS.between(createdAt, now);
