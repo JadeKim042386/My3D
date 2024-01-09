@@ -3,8 +3,6 @@ package joo.project.my3d.dto;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 
-import java.util.List;
-
 public record ArticleFileDto(
         Long id,
         Long byteSize,
