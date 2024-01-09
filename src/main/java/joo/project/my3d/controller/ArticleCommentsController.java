@@ -17,6 +17,9 @@ public class ArticleCommentsController {
 
     private final ArticleCommentService articleCommentService;
 
+    /**
+     *  댓글 추가
+     */
     @PostMapping
     public ApiResponse<Void> postNewComment(
             ArticleCommentRequest articleCommentRequest,
@@ -27,6 +30,9 @@ public class ArticleCommentsController {
         return ApiResponse.success();
     }
 
+    /**
+     * 댓글 삭제
+     */
     @DeleteMapping("/{commentId}")
     public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
