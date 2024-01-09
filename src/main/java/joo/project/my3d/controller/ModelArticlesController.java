@@ -82,7 +82,7 @@ public class ModelArticlesController {
     }
 
     /**
-     * 게시글 페이지 요청
+     * 특정 게시글 페이지 요청
      */
     @GetMapping("/{articleId}")
     public ApiResponse<ArticleDetailResponse> article(
@@ -95,6 +95,9 @@ public class ModelArticlesController {
         return ApiResponse.success(ArticleDetailResponse.of(article, likeCount > 0, S3Url));
     }
 
+    /**
+     * 게시글 추가를 위한 기본 폼 요청 (프론트엔드 작업시 불필요하면 삭제)
+     */
     @GetMapping("/form")
     public ApiResponse<ArticleFormResponse> articleAddForm() {
         return ApiResponse.success(ArticleFormResponse.of(CREATE));
@@ -141,6 +144,9 @@ public class ModelArticlesController {
         return ApiResponse.success();
     }
 
+    /**
+     * 특정 게시글 수정을 위해 요청 게시글의 기존 데이터 요청
+     */
     @GetMapping("/form/{articleId}")
     public ApiResponse<?> articleUpdateForm(@PathVariable Long articleId) {
         ArticleFormDto article = articleService.getArticleForm(articleId);
@@ -149,7 +155,7 @@ public class ModelArticlesController {
     }
 
     /**
-     * 게시글 수정 요청
+     * 특정 게시글 수정 요청
      */
     @PostMapping("/form/{articleId}")
     public ApiResponse<?> postUpdateArticle(
@@ -179,7 +185,7 @@ public class ModelArticlesController {
     }
 
     /**
-     * 게시글 삭제 요청
+     * 특정 게시글 삭제 요청
      */
     @PostMapping("{articleId}/delete")
     public ApiResponse<Void> deleteArticle(
@@ -192,6 +198,9 @@ public class ModelArticlesController {
         return ApiResponse.success();
     }
 
+    /**
+     * 특정 게시글의 모델 파일 다운로드 요청
+     */
     @GetMapping("{articleId}/download")
     public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
         ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
