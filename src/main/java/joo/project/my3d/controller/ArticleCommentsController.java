@@ -1,53 +1,39 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.request.ArticleCommentRequest;
+import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 public class ArticleCommentsController {
 
     private final ArticleCommentService articleCommentService;
 
-    @PostMapping("/new")
-    public String postNewComment(
+    @PostMapping
+    public ApiResponse<Void> postNewComment(
             ArticleCommentRequest articleCommentRequest,
-            @RequestParam Long articleId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
+        articleCommentService.saveComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
 
-        try {
-            articleCommentService.saveComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
-        } catch (CommentException e) {
-            log.error("댓글 저장/추가 실패 - {}", e.getMessage());
-        }
-
-        return "redirect:/model_articles/" + articleId;
+        return ApiResponse.success();
     }
 
-    @PostMapping("{commentId}/delete")
-    public String deleteComment(
+    @DeleteMapping("/{commentId}")
+    public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
-            @RequestParam Long articleId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
+        articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
 
-        try{
-            articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
-        } catch (CommentException e) {
-            log.error("댓글 삭제 실패 - {}", e.getMessage());
-        }
-
-        return "redirect:/model_articles/" + articleId;
+        return ApiResponse.success();
     }
 }
