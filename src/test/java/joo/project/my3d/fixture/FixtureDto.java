@@ -28,7 +28,7 @@ public class FixtureDto {
         return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
     }
 
-    public static ArticlesDto getArticlesDto() {
+    public static ArticlePreviewDto getArticlesDto() {
         return FixtureDto.getArticlesDto(
                 1L,
                 "title",
@@ -37,22 +37,19 @@ public class FixtureDto {
                 ArticleCategory.ARCHITECTURE
         );
     }
-    public static ArticlesDto getArticlesDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticlePreviewDto getArticlesDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        return ArticlesDto.of(
+        return ArticlePreviewDto.of(
                 id,
-                userAccountDto,
+                userAccountDto.nickname(),
                 title,
                 content,
                 articleType,
                 articleCategory,
                 1,
                 articleFileDto,
-                LocalDateTime.now(),
-                userAccountDto.email(),
-                LocalDateTime.now(),
-                userAccountDto.email()
+                LocalDateTime.now()
         );
     }
 
@@ -81,13 +78,19 @@ public class FixtureDto {
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return ArticleCommentDto.of(1L, content, 1L, null, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
+        return getArticleCommentDto(content, null);
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content, Long parentCommentId) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        return ArticleCommentDto.of(1L, content, 1L, parentCommentId, userAccountDto, LocalDateTime.now(), userAccountDto.email(), LocalDateTime.now(), userAccountDto.email());
+        return ArticleCommentDto.of(
+                1L,
+                1L, content,
+                LocalDateTime.now(),
+                userAccountDto.nickname(),
+                userAccountDto.email(),
+                parentCommentId
+        );
     }
 
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
@@ -95,7 +98,8 @@ public class FixtureDto {
         ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
-                userAccountDto,
+                userAccountDto.email(),
+                userAccountDto.nickname(),
                 articleFileDto,
                 title,
                 content,
@@ -103,10 +107,7 @@ public class FixtureDto {
                 articleCategory,
                 Set.of(FixtureDto.getArticleCommentDto("content")),
                 2,
-                LocalDateTime.now(),
-                userAccountDto.email(),
-                LocalDateTime.now(),
-                userAccountDto.email()
+                LocalDateTime.now()
         );
     }
 

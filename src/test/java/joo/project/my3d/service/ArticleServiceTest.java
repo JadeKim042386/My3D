@@ -1,17 +1,14 @@
 package joo.project.my3d.service;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.QArticle;
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.ArticlesDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
@@ -32,7 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +58,7 @@ class ArticleServiceTest {
         given(articleRepository.findAll(any(Predicate.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(Fixture.getArticle())));
         // When
-        Page<ArticlesDto> articles = articleService.getArticles(predicate, pageable);
+        Page<ArticlePreviewDto> articles = articleService.getArticlesForPreview(predicate, pageable);
         // Then
         assertThat(articles.getTotalElements()).isEqualTo(1);
         assertThat(articles.getTotalPages()).isEqualTo(1);
@@ -77,7 +73,7 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle();
         given(articleRepository.findByIdFetchForm(anyLong())).willReturn(Optional.of(article));
         // When
-        ArticleFormDto articleFormDto = articleService.getArticle(1L);
+        ArticleFormDto articleFormDto = articleService.getArticleForm(1L);
         // Then
         assertThat(articleFormDto.title()).isEqualTo("title");
         assertThat(articleFormDto.content()).isEqualTo("content");
@@ -94,7 +90,7 @@ class ArticleServiceTest {
         given(articleRepository.findByIdFetchForm(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.getArticle(1L))
+        assertThatThrownBy(() -> articleService.getArticleForm(1L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -103,7 +99,7 @@ class ArticleServiceTest {
 
     @DisplayName("4. 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
     @Test
-    void getArticles_ForDetail() {
+    void getArticleDetail() {
         // Given
         Article article = Fixture.getArticle();
         article.setLikeCount(2);
@@ -116,9 +112,9 @@ class ArticleServiceTest {
         assertThat(articleWithComments.content()).isEqualTo("content");
         assertThat(articleWithComments.articleType()).isEqualTo(ArticleType.MODEL);
         assertThat(articleWithComments.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
-        assertThat(articleWithComments.articleFileWithDimensionOptionWithDimensionDto().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleWithComments.articleFile().originalFileName()).isEqualTo("test.stp");
         assertThat(articleWithComments.likeCount()).isEqualTo(2);
-        assertThat(articleWithComments.articleCommentDtos().size()).isEqualTo(1);
+        assertThat(articleWithComments.articleComments().size()).isEqualTo(1);
         then(articleRepository).should().findByIdFetchDetail(anyLong());
     }
 

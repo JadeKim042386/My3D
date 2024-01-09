@@ -6,8 +6,8 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
-import joo.project.my3d.dto.ArticlesDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -39,16 +39,16 @@ public class ArticleService {
     /**
      * 게시판에 표시할 전체 게시글 조회
      */
-    public Page<ArticlesDto> getArticles(Predicate predicate, Pageable pageable) {
+    public Page<ArticlePreviewDto> getArticlesForPreview(Predicate predicate, Pageable pageable) {
 
-        return articleRepository.findAll(predicate, pageable).map(ArticlesDto::from);
+        return articleRepository.findAll(predicate, pageable).map(ArticlePreviewDto::from);
     }
 
     /**
      * 게시글 추가/수정을 위한 조회 (댓글과 좋아요 개수를 제외)
      * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
-    public ArticleFormDto getArticle(Long articleId) {
+    public ArticleFormDto getArticleForm(Long articleId) {
         return articleRepository.findByIdFetchForm(articleId)
                 .map(ArticleFormDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));

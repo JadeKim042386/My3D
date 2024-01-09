@@ -5,8 +5,8 @@ import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
 import joo.project.my3d.dto.response.AlarmResponse;
+import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
-import joo.project.my3d.dto.response.Response;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AlarmException;
@@ -120,13 +120,13 @@ public class UserAdminController {
     @Operation(summary = "현재 로그인한 사용자에게 온 알람 조회")
     @ResponseBody
     @GetMapping("/alarm")
-    public Response<List<AlarmResponse>> getAlarms(
+    public ApiResponse<List<AlarmResponse>> getAlarms(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         List<AlarmResponse> alarmResponses = userAccountService.getAlarms(boardPrincipal.email()).stream()
                 .map(AlarmResponse::from).toList();
 
-        return Response.success(alarmResponses);
+        return ApiResponse.success(alarmResponses);
     }
 
     @Operation(summary = "SSE 연결 요청")

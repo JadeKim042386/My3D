@@ -2,6 +2,7 @@ package joo.project.my3d.dto.request;
 
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.DimensionOptionDto;
+import joo.project.my3d.dto.DimensionOptionWithDimensionDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,13 @@ public class DimensionOptionRequest {
         public DimensionOptionDto toDto() {
                 return DimensionOptionDto.of(
                         optionName
+                );
+        }
+
+        public DimensionOptionWithDimensionDto toWithDimensionDto() {
+                return DimensionOptionWithDimensionDto.of(
+                        optionName,
+                        dimensions.stream().map(DimensionRequest::toDto).toList()
                 );
         }
 

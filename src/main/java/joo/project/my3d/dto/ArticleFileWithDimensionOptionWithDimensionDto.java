@@ -1,6 +1,8 @@
 package joo.project.my3d.dto;
 
 import joo.project.my3d.domain.ArticleFile;
+import joo.project.my3d.dto.request.DimensionOptionRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -10,7 +12,7 @@ public record ArticleFileWithDimensionOptionWithDimensionDto(
         String originalFileName,
         String fileName,
         String fileExtension,
-        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto
+        DimensionOptionWithDimensionDto dimensionOption
 ) {
     public static ArticleFileWithDimensionOptionWithDimensionDto of(Long id, Long byteSize, String originalFileName, String fineName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
         return new ArticleFileWithDimensionOptionWithDimensionDto(id, byteSize, originalFileName, fineName, fileExtension, dimensionOptionWithDimensionDto);
@@ -31,17 +33,24 @@ public record ArticleFileWithDimensionOptionWithDimensionDto(
         );
     }
 
+    public static ArticleFileWithDimensionOptionWithDimensionDto from(MultipartFile file, List<DimensionOptionRequest> dimensionOptions) {
+        return ArticleFileWithDimensionOptionWithDimensionDto.of(
+                null,
+                file.getSize(),
+                null,
+                null,
+                null,
+                dimensionOptions.isEmpty() ? null : dimensionOptions.get(0).toWithDimensionDto()
+        );
+    }
+
     public ArticleFile toEntity() {
         return ArticleFile.of(
                 byteSize,
                 originalFileName,
                 fileName,
                 fileExtension,
-                dimensionOptionWithDimensionDto.toEntity()
+                dimensionOption.toEntity()
         );
-    }
-
-    public boolean isModelFile() {
-        return List.of("stp", "stl").contains(fileExtension);
     }
 }

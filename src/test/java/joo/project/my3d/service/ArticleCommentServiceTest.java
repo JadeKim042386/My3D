@@ -66,7 +66,7 @@ class ArticleCommentServiceTest {
         Alarm alarm = Fixture.getAlarm(userAccount);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
+        given(userAccountRepository.getReferenceByEmail(articleCommentDto.email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
         given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
         willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
@@ -74,7 +74,7 @@ class ArticleCommentServiceTest {
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.userAccountDto().email());
+        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.email());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
         then(alarmRepository).should().save(any(Alarm.class));
         then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
@@ -103,7 +103,7 @@ class ArticleCommentServiceTest {
         Alarm alarm = Fixture.getAlarm(userAccount);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(articleCommentDto.userAccountDto().email())).willReturn(articleComment.getUserAccount());
+        given(userAccountRepository.getReferenceByEmail(articleCommentDto.email())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.getReferenceById(articleCommentDto.parentCommentId())).willReturn(articleComment);
         given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
         willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
@@ -111,7 +111,7 @@ class ArticleCommentServiceTest {
         articleCommentService.saveComment(articleCommentDto);
         // Then
         then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.userAccountDto().email());
+        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.email());
         then(articleCommentRepository).should().getReferenceById(articleCommentDto.parentCommentId());
         then(alarmRepository).should().save(any(Alarm.class));
         then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
@@ -152,7 +152,7 @@ class ArticleCommentServiceTest {
         given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
         willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
         // When
-        articleCommentService.deleteComment(articleCommentId, articleCommentDto.userAccountDto().email());
+        articleCommentService.deleteComment(articleCommentId, articleCommentDto.email());
         // Then
         then(articleCommentRepository).should().getReferenceById(articleCommentId);
         then(articleCommentRepository).should().deleteById(articleCommentId);
