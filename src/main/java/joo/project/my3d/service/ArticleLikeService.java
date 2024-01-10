@@ -32,12 +32,9 @@ public class ArticleLikeService {
     public int addArticleLike(Long articleId, String userId) {
         try {
             Article article = articleRepository.getReferenceById(articleId);
-            UserAccount userAccount = userAccountRepository.getReferenceByEmail(userId);
-            ArticleLike articleLike = ArticleLike.of(userAccount, article);
-
             article.addLike();
-            articleLikeRepository.save(articleLike);
-
+            UserAccount userAccount = userAccountRepository.getReferenceByEmail(userId);
+            articleLikeRepository.save(ArticleLike.of(userAccount, article));
             return article.getLikeCount();
         } catch (EntityNotFoundException e) {
             throw new ArticleLikeException(ErrorCode.ARTICLE_NOT_FOUND, e);
