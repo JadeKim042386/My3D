@@ -8,7 +8,6 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
 import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
-import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
@@ -26,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +37,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -56,11 +55,9 @@ class ModelArticlesControllerTest {
     @MockBean private S3Service s3Service;
 
     @DisplayName("1. [GET] 게시판 페이지(게시글이 존재할 경우) - 정상")
-    @WithMockUser
     @Test
     void modelArticles() throws Exception {
         // Given
-        Pageable pageable = PageRequest.of(0, 9, Sort.by(Sort.Direction.DESC, "createdAt"));
         ArticlePreviewDto articlesDto = FixtureDto.getArticlesDto();
         given(articleService.getArticlesForPreview(any(Predicate.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(articlesDto)));
@@ -68,7 +65,6 @@ class ModelArticlesControllerTest {
         // When
         mvc.perform(
                 get("/model_articles")
-                        .cookie(Fixture.getCookie())
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

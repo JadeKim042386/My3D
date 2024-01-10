@@ -1,10 +1,8 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.ArticleFile;
-import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
-import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleFileRepository;
 import joo.project.my3d.service.aws.S3Service;
 import org.junit.jupiter.api.DisplayName;

@@ -1,6 +1,5 @@
 package joo.project.my3d.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
@@ -9,25 +8,22 @@ import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.AlarmException;
-import joo.project.my3d.exception.CompanyException;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserAdminController {
@@ -36,114 +32,98 @@ public class UserAdminController {
     private final CompanyService companyService;
     private final AlarmService alarmService;
 
+    /**
+     * 사용자 정보 요청
+     */
     @GetMapping("/account")
-    public String userData(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
-    ) {
-        UserAdminResponse userAdminResponse = UserAdminResponse.of(
+    public ApiResponse<UserAdminResponse> userData(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+
+        return ApiResponse.success(UserAdminResponse.of(
                 boardPrincipal.nickname(),
                 boardPrincipal.phone(),
                 boardPrincipal.email(),
                 boardPrincipal.address()
-        );
-        model.addAttribute("userData", userAdminResponse);
-
-        return "user/account";
+        ));
     }
 
+    /**
+     * 사용자 정보 수정 요청
+     */
     @PostMapping("/account")
-    public String updateUserData(
-            @ModelAttribute("userData") UserAdminRequest userAdminRequest
-    ) {
+    public ApiResponse<Void> updateUserData(UserAdminRequest userAdminRequest) {
         userAccountService.updateUser(userAdminRequest.toDto());
 
-        return "redirect:/user/account";
+        return ApiResponse.success();
     }
 
+    /**
+     * 비밀번호 변경 페이지 요청(프론트엔드 작업시 불필요하면 삭제)
+     */
     @GetMapping("/password")
-    public String password() {
+    public ApiResponse<Void> password() {
 
-        return "user/password";
+        return ApiResponse.success();
     }
 
+    /**
+     * 비밀번호 변경 요청
+     */
     @PostMapping("/password")
-    public String changePassword(
+    public ApiResponse<Void> changePassword(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            @ModelAttribute("userData") UserAdminRequest userAdminRequest
+            UserAdminRequest userAdminRequest
     ) {
         userAccountService.changePassword(boardPrincipal.email(), userAdminRequest.password());
 
-        return "redirect:/user/password";
+        return ApiResponse.success();
     }
 
     /**
      * 기업 정보 괸리 페이지 요청
      */
     @GetMapping("/company")
-    public String company(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
-    ) {
-        try {
-            //기업 정보 전달
-            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
-            model.addAttribute("companyData", CompanyAdminResponse.from(company));
-        } catch (UsernameNotFoundException e) {
-            log.error("기업 정보 조회 실패 - {}", e.getMessage());
-            return "user/account";
-        }
+    public ApiResponse<CompanyAdminResponse> company(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
 
-        return "user/company";
+        return ApiResponse.success(CompanyAdminResponse.from(company));
     }
 
     /**
      * 기업 정보 수정 요청
      */
     @PostMapping("/company")
-    public String updateCompany(
+    public ApiResponse<Void> updateCompany(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            @ModelAttribute("companyData") CompanyAdminRequest companyAdminRequest
+            CompanyAdminRequest companyAdminRequest
     ) {
-        try {
-            CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
-            companyService.updateCompany(companyAdminRequest.toDto(company.id()));
-        } catch (UsernameNotFoundException e) {
-            log.error("기업 정보 조회 실패 - {}", e.getMessage());
-        } catch (CompanyException e) {
-            log.error("기업 정보 수정 실패 - {}", e.getMessage());
-        }
+        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+        companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
-        return "redirect:/user/company";
+        return ApiResponse.success();
     }
 
-    @Operation(summary = "현재 로그인한 사용자에게 온 알람 조회")
-    @ResponseBody
+    /**
+     * 현재 로그인한 사용자에게 온 알람 조회
+     */
     @GetMapping("/alarm")
     public ApiResponse<List<AlarmResponse>> getAlarms(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        List<AlarmResponse> alarmResponses = userAccountService.getAlarms(boardPrincipal.email()).stream()
-                .map(AlarmResponse::from).toList();
-
-        return ApiResponse.success(alarmResponses);
+        return ApiResponse.success(
+                userAccountService.getAlarms(boardPrincipal.email()).stream()
+                .map(AlarmResponse::from)
+                .toList()
+        );
     }
 
-    @Operation(summary = "SSE 연결 요청")
-    @ResponseBody
+    /**
+     * SSE 연결 요청
+     */
     @GetMapping("/alarm/subscribe")
-    public SseEmitter subscribe(
-            HttpServletResponse response,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
-        response.setContentType("text/event-stream");
-        response.setCharacterEncoding("UTF-8");
+    public ApiResponse<SseEmitter> subscribe(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        try {
-            return alarmService.connectAlarm(boardPrincipal.email());
-        } catch (AlarmException e) {
-            log.error("알람 연결 실패 - {}", e.getMessage());
-            throw e;
-        }
+        return ApiResponse.success(
+                alarmService.connectAlarm(boardPrincipal.email())
+        );
     }
 }
