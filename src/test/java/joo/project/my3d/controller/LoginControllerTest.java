@@ -4,6 +4,7 @@ import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.request.SignUpRequest;
+import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.util.FormDataEncoder;
@@ -12,19 +13,23 @@ import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,21 +46,55 @@ class LoginControllerTest {
     @Autowired private FormDataEncoder formDataEncoder;
     @Autowired private UserAccountService userAccountService;
     @MockBean private SignUpService signUpService;
+    @MockBean private SecurityContextLogoutHandler logoutHandler;
 
     @DisplayName("[GET] 로그인 페이지")
     @Test
-    void login() throws Exception {
+    void getLogin() throws Exception {
         // Given
 
         // When
-        mvc.perform(get("/account/login").header("referer", "http://localhost:8080/"))
+        mvc.perform(
+                get("/account/login")
+        )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/login"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
 
-    @DisplayName("[GET] 회원 유형 선택 페이지 - 회원가입되지 않은 유저")
+    @DisplayName("[POST] 로그인 요청")
+    @Test
+    void requestLogin() throws Exception {
+        //given
+        given(userAccountService.login(anyString(), anyString())).willReturn("aa");
+        //when
+        mvc.perform(
+                post("/account/login")
+                        .with(csrf())
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
+        //then
+    }
+
+    @DisplayName("[GET] 로그아웃 요청")
+    @Test
+    void requestLogout() throws Exception {
+        //given
+        willDoNothing().given(logoutHandler).logout(any(), any(), any());
+        //when
+        mvc.perform(
+                        get("/account/logout")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
+        //then
+    }
+
+    @DisplayName("[GET] 회원 유형 선택 페이지")
     @Test
     void selectTypeByNotSignedUser() throws Exception {
         // Given
@@ -65,44 +104,33 @@ class LoginControllerTest {
                     get("/account/type")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/type"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
-
-    @DisplayName("[GET] 회원 유형 선택 페이지 - 회원가입된 유저")
-    @Test
-    void selectTypeBySignedUser() throws Exception {
-        // Given
-
-        // When
-        mvc.perform(
-                        get("/account/type")
-                )
-                .andExpect(status().isOk());
-        // Then
-    }
-
     @DisplayName("[GET] 회원가입 페이지 - OAuth 로그인 없이 회원 유형 선택 후")
+    @WithAnonymousUser
     @Test
     void signupNotOauthAfterSelectedType() throws Exception {
         // Given
-
+        given(userAccountService.findAllUser()).willReturn(List.of(FixtureDto.getUserAccountDto()));
         // When
         mvc.perform(
-                    get("/account/sign_up")
+                    get("/account/signup")
                             .queryParam("userRole", String.valueOf(UserRole.USER))
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/signup"))
-                .andExpect(model().attributeExists("oauthLogin"))
-                .andExpect(model().attributeDoesNotExist("email"))
-                .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeDoesNotExist("emailError"))
-                .andExpect(model().attributeExists("signUpData"))
-                .andExpect(model().attributeExists("nicknames"))
-                .andExpect(model().attributeExists("companyNames"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.oAuthLogin").value(false))
+                .andExpect(jsonPath("$.data.email").isEmpty())
+                .andExpect(jsonPath("$.data.emailCode").isEmpty())
+                .andExpect(jsonPath("$.data.emailError").isEmpty())
+                .andExpect(jsonPath("$.data.userRole").value(UserRole.USER.toString()))
+                .andExpect(jsonPath("$.data.nickname").isEmpty())
+                .andExpect(jsonPath("$.data.nicknames.size()").value(1))
+                .andExpect(jsonPath("$.data.companyNames.size()").value(0))
+                .andExpect(jsonPath("$.data.validError").isEmpty())
+                ;
         // Then
     }
     @DisplayName("[GET] 회원가입 페이지 - OAuth 로그인하고 회원 유형 선택 후")
@@ -120,22 +148,25 @@ class LoginControllerTest {
                 100,
                 "/"
         );
+        given(userAccountService.findAllUser()).willReturn(List.of(FixtureDto.getUserAccountDto()));
         // When
         mvc.perform(
-                        get("/account/sign_up")
+                        get("/account/signup")
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .cookie(cookie)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/signup"))
-                .andExpect(model().attributeExists("oauthLogin"))
-                .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeDoesNotExist("emailError"))
-                .andExpect(model().attributeExists("signUpData"))
-                .andExpect(model().attributeExists("nicknames"))
-                .andExpect(model().attributeExists("companyNames"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.oAuthLogin").value(true))
+                .andExpect(jsonPath("$.data.email").value("b@gmail.com"))
+                .andExpect(jsonPath("$.data.emailCode").isEmpty())
+                .andExpect(jsonPath("$.data.emailError").isEmpty())
+                .andExpect(jsonPath("$.data.userRole").value(UserRole.USER.toString()))
+                .andExpect(jsonPath("$.data.nickname").value("B"))
+                .andExpect(jsonPath("$.data.nicknames.size()").value(1))
+                .andExpect(jsonPath("$.data.companyNames.size()").value(0))
+                .andExpect(jsonPath("$.data.validError").isEmpty())
+        ;
         // Then
     }
 
@@ -143,23 +174,26 @@ class LoginControllerTest {
     @Test
     void signupAfterRedirect() throws Exception {
         // Given
-
+        given(userAccountService.findAllUser()).willReturn(List.of(FixtureDto.getUserAccountDto()));
         // When
         mvc.perform(
-                        get("/account/sign_up")
+                        get("/account/signup")
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .queryParam("email", "b@gmail.com")
                                 .queryParam("emailCode", "01")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/signup"))
-                .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeExists("code"))
-                .andExpect(model().attributeDoesNotExist("emailError"))
-                .andExpect(model().attributeExists("signUpData"))
-                .andExpect(model().attributeExists("nicknames"))
-                .andExpect(model().attributeExists("companyNames"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.oAuthLogin").value(false))
+                .andExpect(jsonPath("$.data.email").value("b@gmail.com"))
+                .andExpect(jsonPath("$.data.emailCode").value("01"))
+                .andExpect(jsonPath("$.data.emailError").isEmpty())
+                .andExpect(jsonPath("$.data.userRole").value(UserRole.USER.toString()))
+                .andExpect(jsonPath("$.data.nickname").isEmpty())
+                .andExpect(jsonPath("$.data.nicknames.size()").value(1))
+                .andExpect(jsonPath("$.data.companyNames.size()").value(0))
+                .andExpect(jsonPath("$.data.validError").isEmpty())
+        ;
         // Then
     }
 
@@ -167,23 +201,26 @@ class LoginControllerTest {
     @Test
     void signupAfterRedirectDuplicatedEmail() throws Exception {
         // Given
-
+        given(userAccountService.findAllUser()).willReturn(List.of(FixtureDto.getUserAccountDto()));
         // When
         mvc.perform(
-                        get("/account/sign_up")
+                        get("/account/signup")
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .queryParam("email", "b@gmail.com")
                                 .queryParam("emailError", "duplicated")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/signup"))
-                .andExpect(model().attributeExists("email"))
-                .andExpect(model().attributeDoesNotExist("code"))
-                .andExpect(model().attributeExists("emailError"))
-                .andExpect(model().attributeExists("signUpData"))
-                .andExpect(model().attributeExists("nicknames"))
-                .andExpect(model().attributeExists("companyNames"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.oAuthLogin").value(false))
+                .andExpect(jsonPath("$.data.email").value("b@gmail.com"))
+                .andExpect(jsonPath("$.data.emailCode").isEmpty())
+                .andExpect(jsonPath("$.data.emailError").value("duplicated"))
+                .andExpect(jsonPath("$.data.userRole").value(UserRole.USER.toString()))
+                .andExpect(jsonPath("$.data.nickname").isEmpty())
+                .andExpect(jsonPath("$.data.nicknames.size()").value(1))
+                .andExpect(jsonPath("$.data.companyNames.size()").value(0))
+                .andExpect(jsonPath("$.data.validError").isEmpty())
+        ;
         // Then
     }
 
@@ -193,19 +230,19 @@ class LoginControllerTest {
         // Given
         String email = "tester@gmail.com";
         SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
+        willDoNothing().given(signUpService).setPrincipal(any());
         willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
         // When
         mvc.perform(
-                        post("/account/sign_up")
+                        post("/account/signup")
                                 .queryParam("email", email)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .content(formDataEncoder.encode(request))
                                 .with(csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
-        then(userAccountService).should().saveUser(any(UserAccount.class));
     }
 
     @DisplayName("[GET] 비밀번호 찾기 페이지")
@@ -214,10 +251,13 @@ class LoginControllerTest {
         // Given
 
         // When
-        mvc.perform(get("/account/find_pass"))
+        mvc.perform(
+                get("/account/find_pass")
+        )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/find-pass"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.email").isEmpty())
+                .andExpect(jsonPath("$.data.emailError").isEmpty());
         // Then
     }
 
@@ -229,8 +269,8 @@ class LoginControllerTest {
         // When
         mvc.perform(get("/account/find_pass_success"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/find-pass-success"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
 
@@ -244,8 +284,10 @@ class LoginControllerTest {
                     get("/account/company")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/company"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.b_no").isEmpty())
+                .andExpect(jsonPath("$.data.b_stt_cd").isEmpty())
+                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
         // Then
     }
 
@@ -260,9 +302,10 @@ class LoginControllerTest {
                             .queryParam("b_no", "2208162517")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/company"))
-                .andExpect(model().attributeExists("certification"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.b_no").value("2208162517"))
+                .andExpect(jsonPath("$.data.b_stt_cd").isEmpty())
+                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
         // Then
     }
 
@@ -278,9 +321,10 @@ class LoginControllerTest {
                             .queryParam("b_stt_cd", "01")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("account/company"))
-                .andExpect(model().attributeExists("certification"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.b_no").value("2208162517"))
+                .andExpect(jsonPath("$.data.b_stt_cd").value("01"))
+                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
         // Then
     }
 }
