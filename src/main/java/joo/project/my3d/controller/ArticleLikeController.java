@@ -1,10 +1,7 @@
 package joo.project.my3d.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import joo.project.my3d.dto.response.ApiResponse;
-import joo.project.my3d.dto.response.ArticleLikeResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.ArticleLikeException;
 import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
