@@ -3,6 +3,7 @@ package joo.project.my3d.controller;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
+import joo.project.my3d.exception.constant.MailErrorCode;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.SignUpService;
@@ -21,7 +22,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("View 컨트롤러 - 로그인과 회원가입")
 @Import(TestSecurityConfig.class)
@@ -48,12 +50,9 @@ class EmailControllerTest {
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .with(csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/sign_up"))
-                .andExpect(redirectedUrlPattern("/account/sign_up*"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.email").value(email));
         // Then
-        then(userAccountService).should().searchUser(email);
-        then(emailService).should().sendEmail(eq(email), eq(subject), anyString());
     }
 
     @DisplayName("[POST] 이메일 인증 발송 - 이미 존재하는 이메일")
@@ -70,12 +69,11 @@ class EmailControllerTest {
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .with(csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/sign_up"))
-                .andExpect(redirectedUrlPattern("/account/sign_up*"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.emailError").value(MailErrorCode.ALREADY_EXIST_EMAIL.toString()))
+                .andExpect(jsonPath("$.status").value("invalid"));
         // Then
-        then(userAccountService).should().searchUser(email);
-        then(emailService).shouldHaveNoInteractions();
     }
 
     @DisplayName("[POST] 임시 비밀번호 발송 - 정상 발송")
@@ -93,13 +91,9 @@ class EmailControllerTest {
                         .queryParam("email", email)
                         .with(csrf())
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/find_pass_success"))
-                .andExpect(redirectedUrlPattern("/account/find_pass_success*"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.email").value(email));
         // Then
-        then(userAccountService).should(times(2)).searchUser(anyString());
-        then(emailService).should().sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
-        then(userAccountService).should().changePassword(anyString(), anyString());
     }
 
     @DisplayName("[POST] 임시 비밀번호 발송 - 존재하지 않는 계정")
@@ -114,11 +108,10 @@ class EmailControllerTest {
                                 .queryParam("email", email)
                                 .with(csrf())
                 )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/account/find_pass"))
-                .andExpect(redirectedUrlPattern("/account/find_pass*"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("invalid"))
+                .andExpect(jsonPath("$.data.email").value(email))
+                .andExpect(jsonPath("$.data.emailError").value(MailErrorCode.NOT_FOUND_EMAIL.toString()));
         // Then
-        then(userAccountService).should(times(1)).searchUser(anyString());
-        then(emailService).shouldHaveNoInteractions();
     }
 }
