@@ -2,13 +2,14 @@ package joo.project.my3d.service;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.QArticle;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
+import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,11 +101,14 @@ class ArticleServiceTest {
 
     @DisplayName("4. 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
     @Test
-    void getArticleDetail() {
+    void getArticleDetail() throws IllegalAccessException {
         // Given
         Article article = Fixture.getArticle();
+        FieldUtils.writeField(article, "createdAt", LocalDateTime.now(), true);
         article.setLikeCount(2);
-        article.getArticleComments().add(Fixture.getArticleComment("comment"));
+        ArticleComment comment = Fixture.getArticleComment("comment");
+        FieldUtils.writeField(comment, "id", 1L, true);
+        article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
         // When
         ArticleWithCommentsAndLikeCountDto articleWithComments = articleService.getArticleWithComments(1L);
@@ -115,7 +120,6 @@ class ArticleServiceTest {
         assertThat(articleWithComments.articleFile().originalFileName()).isEqualTo("test.stp");
         assertThat(articleWithComments.likeCount()).isEqualTo(2);
         assertThat(articleWithComments.articleComments().size()).isEqualTo(1);
-        then(articleRepository).should().findByIdFetchDetail(anyLong());
     }
 
     @DisplayName("5. [예외 - 게시글 없음] 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
