@@ -74,7 +74,7 @@ public class SecurityConfig {
                         ).hasRole("ANONYMOUS")
                         .regexMatchers(
                                 "/model_articles/[0-9]+",
-                                "/like/[0-9]+.*",
+                                "/like/.*/[0-9]+",
                                 "/comments.*",
                                 "/user/account",
                                 "/user/password",

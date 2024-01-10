@@ -9,10 +9,7 @@ import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -22,28 +19,28 @@ public class ArticleLikeController {
 
     private final ArticleLikeService articleLikeService;
 
-    @Operation(summary = "특정 게시글에 좋아요 추가")
-    @GetMapping("/{articleId}")
-    public ApiResponse<ArticleLikeResponse> addArticleLike(
+    /**
+     * 특정 게시글에 좋아요 추가
+     */
+    @PostMapping("/add/{articleId}")
+    public ApiResponse<Integer> addArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        try{
-            int likeCount = articleLikeService.addArticleLike(articleId, boardPrincipal.email());
-            return ApiResponse.success(ArticleLikeResponse.of(likeCount));
-        } catch (ArticleLikeException e) {
-            log.error("게시글 좋아요 추가 실패 - {}", e.getMessage());
-            throw e;
-        }
+        int likeCount = articleLikeService.addArticleLike(articleId, boardPrincipal.email());
+
+        return ApiResponse.success(likeCount);
     }
 
-    @Operation(summary = "특정 게시글의 좋아요 해제")
-    @GetMapping("/{articleId}/delete")
-    public ApiResponse<ArticleLikeResponse> deleteArticleLike(
+    /**
+     * 특정 게시글의 좋아요 해제
+     */
+    @DeleteMapping("/delete/{articleId}")
+    public ApiResponse<Integer> deleteArticleLike(
             @PathVariable Long articleId
     ) {
         int likeCount = articleLikeService.deleteArticleLike(articleId);
 
-        return ApiResponse.success(ArticleLikeResponse.of(likeCount));
+        return ApiResponse.success(likeCount);
     }
 }
