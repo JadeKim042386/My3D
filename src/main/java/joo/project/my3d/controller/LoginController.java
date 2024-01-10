@@ -7,7 +7,6 @@ import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.BusinessCertificationResponse;
-import joo.project.my3d.dto.response.EmailResponse;
 import joo.project.my3d.dto.response.SignUpResponse;
 import joo.project.my3d.exception.UserAccountException;
 import joo.project.my3d.service.SignUpService;
@@ -176,15 +175,12 @@ public class LoginController {
     }
 
     /**
-     * 비밀번호 찾기 페이지 요청
+     * 비밀번호 찾기 페이지 요청(프론트엔드 작업시 불필요하면 삭제)
      */
     @GetMapping("/find_pass")
-    public ApiResponse<EmailResponse> findPassword(
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String emailError
-    ) {
+    public ApiResponse<Void> findPassword() {
 
-        return ApiResponse.success(EmailResponse.of(email, emailError));
+        return ApiResponse.success();
     }
 
     /**
