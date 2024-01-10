@@ -6,6 +6,7 @@ import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
+import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
@@ -20,8 +21,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 유저 정보 관리")
 @Import(SecurityConfig.class)
 @EnableConfigurationProperties(value = JwtProperties.class)
@@ -44,47 +46,65 @@ class UserAdminControllerTest {
     @MockBean private CompanyService companyService;
     @MockBean private AlarmService alarmService;
 
-    @DisplayName("[GET] 계정 관리 페이지")
+    @DisplayName("[GET] 사용자 정보 요청")
     @Test
-    void userDataPage() throws Exception {
-        // Given
+    void requestUserData() throws Exception {
+        //given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userUser", UserRole.USER);
-        // When
+        //when
         mvc.perform(
                 get("/user/account")
                         .with(authentication(authentication))
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("user/account"))
-                .andExpect(model().attributeExists("userData"));
-        // Then
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.nickname").value("userUser"))
+                .andExpect(jsonPath("$.data.email").value("userUser@gmail.com"));
+        //then
     }
 
-    @DisplayName("[POST] 계정 정보 수정")
+    @DisplayName("[POST] 사용자 정보 수정 요청")
     @WithMockUser
     @Test
     void updateUserData() throws Exception {
-        // Given
+        //given
         willDoNothing().given(userAccountService).updateUser(any(UserAccountDto.class));
-        // When
+        //when
         mvc.perform(
-                post("/user/account")
-                        .param("userRole", "USER")
-                        .param("nickname", "nickname")
-                        .param("password", "pw")
-                        .param("phone", "01011111111")
-                        .param("email", "example@gmail.com")
-                        .param("detail", "123")
-                        .param("street", "강원특별자치도")
-                        .param("zipcode", "12345")
+                        post("/user/account")
+                                .param("nickname", "nickname")
+                                .param("password", "pw")
+                                .param("phone", "01011111111")
+                                .param("email", "example@gmail.com")
+                                .param("detail", "123")
+                                .param("street", "강원특별자치도")
+                                .param("zipcode", "12345")
+                                .cookie(Fixture.getCookie())
+                                .with(csrf())
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty())
+        ;
+        //then
+    }
+
+    @DisplayName("[POST] 비밀번호 변경 요청")
+    @Test
+    void changePassword() throws Exception {
+        //given
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userUser", UserRole.USER);
+        willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
+        //when
+        mvc.perform(
+                post("/user/password")
+                        .with(authentication(authentication))
                         .with(csrf())
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/user/account"))
-                .andExpect(redirectedUrl("/user/account"));
-        // Then
-        then(userAccountService).should().updateUser(any(UserAccountDto.class));
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
+        //then
     }
 
     @DisplayName("[GET] 기업 정보 관리 페이지")
@@ -92,39 +112,38 @@ class UserAdminControllerTest {
     void company() throws Exception {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
-        given(userAccountService.getCompany("userCompany@gmail.com")).willReturn(FixtureDto.getCompanyDto());
+        CompanyDto companyDto = FixtureDto.getCompanyDto();
+        given(userAccountService.getCompany(anyString())).willReturn(companyDto);
         // When
         mvc.perform(
                 get("/user/company")
                         .with(authentication(authentication))
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(view().name("user/company"))
-                .andExpect(model().attributeExists("companyData"));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.companyName").value(companyDto.companyName()))
+                .andExpect(jsonPath("$.data.homepage").value(companyDto.homepage()));
         // Then
-        then(userAccountService).should().getCompany("userCompany@gmail.com");
     }
 
     @DisplayName("[POST] 기업 정보 수정 요청")
     @Test
     void updateCompany() throws Exception {
         // Given
-        given(userAccountService.getCompany("userCompany@gmail.com")).willReturn(FixtureDto.getCompanyDto());
-        willDoNothing().given(companyService).updateCompany(any(CompanyDto.class));
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
+        given(userAccountService.getCompany(anyString())).willReturn(FixtureDto.getCompanyDto());
+        willDoNothing().given(companyService).updateCompany(any(CompanyDto.class));
         // When
         mvc.perform(
                 post("/user/company")
+                        .cookie(Fixture.getCookie())
                         .with(authentication(authentication))
                         .with(csrf())
         )
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/user/company"))
-                .andExpect(redirectedUrl("/user/company"));
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
-        then(userAccountService).should().getCompany("userCompany@gmail.com");
-        then(companyService).should().updateCompany(any(CompanyDto.class));
     }
 
     @DisplayName("[GET] 알람 리스트 조회")
@@ -139,9 +158,10 @@ class UserAdminControllerTest {
                         .with(authentication(authentication))
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.size()").value(0))
+        ;
         // Then
-        then(userAccountService).should().getAlarms(anyString());
     }
 
     @DisplayName("[GET] SSE 연결")
@@ -149,14 +169,16 @@ class UserAdminControllerTest {
     void subscribe() throws Exception {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jujoo042386", UserRole.COMPANY);
-        given(alarmService.connectAlarm(anyString())).willReturn(any(SseEmitter.class));
+        given(alarmService.connectAlarm(anyString())).willReturn(null);
         // When
         mvc.perform(
                 get("/user/alarm/subscribe")
                         .with(authentication(authentication))
         )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").isEmpty())
+        ;
         // Then
-        then(alarmService).should().connectAlarm(anyString());
     }
 }

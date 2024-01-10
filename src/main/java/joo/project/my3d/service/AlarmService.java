@@ -20,7 +20,7 @@ import java.io.IOException;
 public class AlarmService {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
-    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000; //1시간
+    private static final Long SSE_TIMEOUT = 60L * 60 * 1000; //1시간
     private static final String ALARM_NAME = "alarm";
 
     /**
@@ -41,7 +41,7 @@ public class AlarmService {
      * @throws AlarmException 알람 접속 실패 예외
      */
     public SseEmitter connectAlarm(String email) {
-        SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
+        SseEmitter sseEmitter = new SseEmitter(SSE_TIMEOUT);
         emitterRepository.save(email, sseEmitter);
         sseEmitter.onCompletion(() -> emitterRepository.delete(email));
         sseEmitter.onTimeout(() -> emitterRepository.delete(email));
