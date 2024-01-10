@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.UUID;
@@ -52,6 +53,7 @@ public class SecurityConfig {
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
+                .httpBasic().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
@@ -64,7 +66,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .mvcMatchers(
                                 "/account/login",
-                                "/account/sign_up",
+                                "/account/signup",
                                 "/account/find_pass",
                                 "/account/find_pass_success",
                                 "/account/type",
@@ -155,5 +157,10 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder encoderPassword() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityContextLogoutHandler securityContextLogoutHandler() {
+        return new SecurityContextLogoutHandler();
     }
 }
