@@ -3,7 +3,7 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.exception.DimensionOptionException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.DimensionOptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

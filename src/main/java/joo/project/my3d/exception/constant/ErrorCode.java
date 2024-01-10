@@ -1,4 +1,4 @@
-package joo.project.my3d.exception;
+package joo.project.my3d.exception.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
