@@ -1,7 +1,7 @@
 package joo.project.my3d.service.aws;
 
-import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.FileException;
+import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

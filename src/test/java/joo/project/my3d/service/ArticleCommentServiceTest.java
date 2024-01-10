@@ -5,7 +5,7 @@ import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.exception.CommentException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.AlarmRepository;

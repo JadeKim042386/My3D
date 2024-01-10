@@ -2,7 +2,7 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.exception.AlarmException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
