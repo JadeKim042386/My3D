@@ -1,7 +1,7 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.exception.ErrorCode;
 import joo.project.my3d.exception.MailException;
+import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailAuthenticationException;

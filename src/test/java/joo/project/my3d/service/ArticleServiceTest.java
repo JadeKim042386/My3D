@@ -11,7 +11,7 @@ import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.exception.ArticleException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleCommentRepository;

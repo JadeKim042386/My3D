@@ -4,7 +4,7 @@ import joo.project.my3d.domain.Dimension;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.exception.DimensionException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.DimensionOptionRepository;
 import joo.project.my3d.repository.DimensionRepository;
 import lombok.RequiredArgsConstructor;

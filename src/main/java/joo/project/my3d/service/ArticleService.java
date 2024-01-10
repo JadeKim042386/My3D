@@ -9,7 +9,7 @@ import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
 import joo.project.my3d.exception.ArticleException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;

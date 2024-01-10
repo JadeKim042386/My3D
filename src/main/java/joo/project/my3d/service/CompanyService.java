@@ -4,7 +4,7 @@ import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.exception.CompanyException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;

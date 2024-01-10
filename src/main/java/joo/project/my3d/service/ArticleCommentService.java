@@ -7,7 +7,7 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.exception.CommentException;
-import joo.project.my3d.exception.ErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
