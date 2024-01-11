@@ -35,7 +35,8 @@ public class DimensionOption extends AuditingFields implements Persistable<Long>
     private final Set<Dimension> dimensions = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "dimensionOption")
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "article_file_id")
     private ArticleFile articleFile;
 
     protected DimensionOption() {

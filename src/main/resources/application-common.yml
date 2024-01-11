@@ -11,7 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        default_batch_fetch_size: 100
+        default_batch_fetch_size: 10
   thymeleaf3.decoupled-logic: true
 aws:
   bucketName: ${S3_BUCKET_NAME}

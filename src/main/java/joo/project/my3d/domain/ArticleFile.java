@@ -35,13 +35,13 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
     private String fileExtension;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "articleFile")
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "article_id")
     private Article article;
 
     @ToString.Exclude
     @Setter
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "dimension_option_id")
+    @OneToOne(mappedBy = "articleFile", cascade = CascadeType.ALL)
     private DimensionOption dimensionOption;
 
     protected ArticleFile() {

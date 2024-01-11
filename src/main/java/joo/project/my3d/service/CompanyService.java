@@ -35,7 +35,7 @@ public class CompanyService {
      * @throws CompanyException 기업 정보 저장 실패했을 경우 발생하는 예외
      */
     @Transactional
-    public void saveCompany(CompanyDto dto) {
+    public void saveCompany(UserAccount userAccount, CompanyDto dto) {
         try{
             companyRepository.save(dto.toEntity());
         } catch (IllegalArgumentException e) {

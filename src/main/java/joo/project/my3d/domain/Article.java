@@ -12,8 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static javax.persistence.FetchType.LAZY;
-
 @NamedEntityGraph(
         name = "Article.fetchDetail",
         attributeNodes = {
@@ -89,8 +87,7 @@ public class Article extends AuditingFields implements Persistable<Long> {
 
     @ToString.Exclude
     @Setter
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "article_file_id")
+    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
     private ArticleFile articleFile;
 
     @ToString.Exclude

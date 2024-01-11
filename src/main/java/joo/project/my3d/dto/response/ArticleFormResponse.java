@@ -2,7 +2,7 @@ package joo.project.my3d.dto.response;
 
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.FormStatus;
-import joo.project.my3d.dto.ArticleFileWithDimensionOptionWithDimensionDto;
+import joo.project.my3d.dto.ArticleFileWithDimensionDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import lombok.Getter;
@@ -16,14 +16,14 @@ public class ArticleFormResponse {
     private Long id;
     private FormStatus formStatus;
     private ArticleCategory[] categories;
-    private ArticleFileWithDimensionOptionWithDimensionDto modelFile;
+    private ArticleFileWithDimensionDto modelFile;
     private String title;
     private String content;
     private String articleCategory;
     private boolean valid;
     private List<String> validMessages;
 
-    private ArticleFormResponse(Long id, FormStatus formStatus, ArticleFileWithDimensionOptionWithDimensionDto modelFile, String title, String content, String articleCategory, boolean valid, List<String> validMessages) {
+    private ArticleFormResponse(Long id, FormStatus formStatus, ArticleFileWithDimensionDto modelFile, String title, String content, String articleCategory, boolean valid, List<String> validMessages) {
         this.id = id;
         this.formStatus = formStatus;
         this.categories = ArticleCategory.values();
@@ -39,7 +39,7 @@ public class ArticleFormResponse {
         return ArticleFormResponse.of(null, formStatus, null,  null, null, null, true, null);
     }
 
-    public static ArticleFormResponse of(Long id, FormStatus formStatus, ArticleFileWithDimensionOptionWithDimensionDto modelFile, String title, String content, String articleCategory, boolean isValid, List<String> validMessages) {
+    public static ArticleFormResponse of(Long id, FormStatus formStatus, ArticleFileWithDimensionDto modelFile, String title, String content, String articleCategory, boolean isValid, List<String> validMessages) {
         return new ArticleFormResponse(id, formStatus, modelFile, title, content, articleCategory, isValid, validMessages);
     }
 
@@ -51,7 +51,7 @@ public class ArticleFormResponse {
         return ArticleFormResponse.of(
                 dto.id(),
                 formStatus,
-                dto.articleFileWithDimensionOptionWithDimensionDto(),
+                dto.articleFileWithDimensionDto(),
                 dto.title(),
                 dto.content(),
                 dto.articleCategory().name(),
@@ -67,7 +67,7 @@ public class ArticleFormResponse {
         return ArticleFormResponse.of(
                 articleId,
                 formStatus,
-                ArticleFileWithDimensionOptionWithDimensionDto.from(request.getModelFile(), request.getDimensionOptions()),
+                ArticleFileWithDimensionDto.from(request.getModelFile(), request.getDimensionOptions()),
                 request.getTitle(),
                 request.getContent(),
                 request.getArticleCategory(),

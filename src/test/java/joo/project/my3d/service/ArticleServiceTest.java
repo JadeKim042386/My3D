@@ -81,7 +81,7 @@ class ArticleServiceTest {
         assertThat(articleFormDto.content()).isEqualTo("content");
         assertThat(articleFormDto.articleType()).isEqualTo(ArticleType.MODEL);
         assertThat(articleFormDto.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
-        assertThat(articleFormDto.articleFileWithDimensionOptionWithDimensionDto().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleFormDto.articleFileWithDimensionDto().originalFileName()).isEqualTo("test.stp");
         then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 

@@ -254,8 +254,7 @@ class LoginControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.email").isEmpty())
-                .andExpect(jsonPath("$.data.emailError").isEmpty());
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
 

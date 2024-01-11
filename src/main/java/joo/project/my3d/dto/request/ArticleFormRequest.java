@@ -1,6 +1,5 @@
 package joo.project.my3d.dto.request;
 
-import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.*;
@@ -38,11 +37,10 @@ public class ArticleFormRequest {
 
     /**
      * 게시글 등록시 사용
-     * @param articleFileDto 저장한 파일의 DTO
      * @param userAccountDto 작성자의 DTO
      * @param articleType
      */
-    public ArticleDto toArticleDto(ArticleFileWithDimensionOptionWithDimensionDto articleFileDto, UserAccountDto userAccountDto, ArticleType articleType) {
+    public ArticleDto toArticleDto(ArticleFileWithDimensionDto articleFile, UserAccountDto userAccountDto, ArticleType articleType) {
         return ArticleDto.of(
                 userAccountDto,
                 title,
@@ -50,7 +48,7 @@ public class ArticleFormRequest {
                 articleType,
                 ArticleCategory.valueOf(articleCategory),
                 0,
-                articleFileDto
+                articleFile
         );
     }
 
@@ -69,37 +67,21 @@ public class ArticleFormRequest {
         return dimensionOptions.get(0).toDto();
     }
 
-    public List<DimensionOptionDto> toDimensionOptionDtos() {
-        return dimensionOptions.stream()
-                .map(DimensionOptionRequest::toDto)
-                .toList();
-    }
-
     public List<DimensionDto> toDimensions(Long dimensionOptionId) {
 
         return dimensionOptions.get(0).toDimensionDtos(dimensionOptionId);
     }
 
-    public ArticleFileWithDimensionOptionWithDimensionDto toArticleFileWithDimensionDto() {
-        DimensionOptionDto dimensionOptionDto = toDimensionOptionDto();
+    public ArticleFileWithDimensionDto toArticleFileWithDimensionDto() {
         String originalFileName = modelFile.getOriginalFilename();
         String extension = FileUtils.getExtension(originalFileName);
-        String fileName = UUID.randomUUID() + "." + extension;
-        long byteSize = modelFile.getSize();
-        ArticleFile articleFile = ArticleFile.of(
-                byteSize,
-                originalFileName,
-                fileName,
-                extension,
-                dimensionOptionDto.toEntity()
-        );
-        List<DimensionDto> dimensions = toDimensions(articleFile.getDimensionOption().getId());
-        articleFile.getDimensionOption().getDimensions().addAll(
-                dimensions.stream()
-                        .map(DimensionDto -> DimensionDto.toEntity(articleFile.getDimensionOption()))
-                        .toList()
-        );
 
-        return ArticleFileWithDimensionOptionWithDimensionDto.from(articleFile);
+        return ArticleFileWithDimensionDto.of(
+                modelFile.getSize(),
+                originalFileName,
+                UUID.randomUUID() + "." + extension,
+                extension,
+                dimensionOptions.get(0).toWithDimensionDto()
+        );
     }
 }

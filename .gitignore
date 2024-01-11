@@ -209,3 +209,6 @@ gradle-app.setting
 ###
 .env
 **/static/models/
+
+### redis
+dump.rdb

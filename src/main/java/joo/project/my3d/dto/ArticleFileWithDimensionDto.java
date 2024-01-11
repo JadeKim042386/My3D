@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record ArticleFileWithDimensionOptionWithDimensionDto(
+public record ArticleFileWithDimensionDto(
         Long id,
         Long byteSize,
         String originalFileName,
@@ -14,16 +14,16 @@ public record ArticleFileWithDimensionOptionWithDimensionDto(
         String fileExtension,
         DimensionOptionWithDimensionDto dimensionOption
 ) {
-    public static ArticleFileWithDimensionOptionWithDimensionDto of(Long id, Long byteSize, String originalFileName, String fineName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
-        return new ArticleFileWithDimensionOptionWithDimensionDto(id, byteSize, originalFileName, fineName, fileExtension, dimensionOptionWithDimensionDto);
+    public static ArticleFileWithDimensionDto of(Long id, Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
+        return new ArticleFileWithDimensionDto(id, byteSize, originalFileName, fileName, fileExtension, dimensionOptionWithDimensionDto);
     }
 
-    public static ArticleFileWithDimensionOptionWithDimensionDto of(Long byteSize, String originalFileName, String fineName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
-        return new ArticleFileWithDimensionOptionWithDimensionDto(null, byteSize, originalFileName, fineName, fileExtension, dimensionOptionWithDimensionDto);
+    public static ArticleFileWithDimensionDto of(Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto) {
+        return new ArticleFileWithDimensionDto(null, byteSize, originalFileName, fileName, fileExtension, dimensionOptionWithDimensionDto);
     }
 
-    public static ArticleFileWithDimensionOptionWithDimensionDto from(ArticleFile articleFile) {
-        return ArticleFileWithDimensionOptionWithDimensionDto.of(
+    public static ArticleFileWithDimensionDto from(ArticleFile articleFile) {
+        return ArticleFileWithDimensionDto.of(
                 articleFile.getId(),
                 articleFile.getByteSize(),
                 articleFile.getOriginalFileName(),
@@ -33,8 +33,8 @@ public record ArticleFileWithDimensionOptionWithDimensionDto(
         );
     }
 
-    public static ArticleFileWithDimensionOptionWithDimensionDto from(MultipartFile file, List<DimensionOptionRequest> dimensionOptions) {
-        return ArticleFileWithDimensionOptionWithDimensionDto.of(
+    public static ArticleFileWithDimensionDto from(MultipartFile file, List<DimensionOptionRequest> dimensionOptions) {
+        return ArticleFileWithDimensionDto.of(
                 null,
                 file.getSize(),
                 null,
