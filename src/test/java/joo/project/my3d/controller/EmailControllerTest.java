@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("View 컨트롤러 - 로그인과 회원가입")
+@DisplayName("View 컨트롤러 - 이메일")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(EmailController.class)
 class EmailControllerTest {

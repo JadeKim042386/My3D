@@ -19,7 +19,7 @@ public class ArticleLikeController {
     /**
      * 특정 게시글에 좋아요 추가
      */
-    @PostMapping("/add/{articleId}")
+    @PostMapping("/{articleId}")
     public ApiResponse<Integer> addArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
@@ -32,7 +32,7 @@ public class ArticleLikeController {
     /**
      * 특정 게시글의 좋아요 해제
      */
-    @DeleteMapping("/delete/{articleId}")
+    @DeleteMapping("/{articleId}")
     public ApiResponse<Integer> deleteArticleLike(
             @PathVariable Long articleId
     ) {

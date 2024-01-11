@@ -27,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -115,7 +116,7 @@ class ModelArticlesControllerTest {
 
         // When
         mvc.perform(
-                    get("/model_articles/form")
+                    get("/model_articles/add")
                             .cookie(Fixture.getCookie())
                 )
                 .andExpect(status().isOk())
@@ -135,7 +136,7 @@ class ModelArticlesControllerTest {
         willDoNothing().given(s3Service).uploadFile(any(), anyString());
         // When
         mvc.perform(
-                    multipart("/model_articles/form")
+                    multipart(HttpMethod.POST, "/model_articles/add")
                             .file(multipartFile)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .param("title", "title")
@@ -162,7 +163,7 @@ class ModelArticlesControllerTest {
         // Given
         // When
         mvc.perform(
-                        multipart("/model_articles/form")
+                        multipart(HttpMethod.POST, "/model_articles/add")
                                 .file("modelFile", new byte[]{})
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -198,7 +199,7 @@ class ModelArticlesControllerTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
         mvc.perform(
-                        multipart("/model_articles/form")
+                        multipart(HttpMethod.POST, "/model_articles/add")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -234,7 +235,7 @@ class ModelArticlesControllerTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
         mvc.perform(
-                        multipart("/model_articles/form")
+                        multipart(HttpMethod.POST, "/model_articles/add")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -267,7 +268,7 @@ class ModelArticlesControllerTest {
         willThrow(new IOException()).given(s3Service).uploadFile(any(), anyString());
         // When
         mvc.perform(
-                        multipart("/model_articles/form")
+                        multipart(HttpMethod.POST, "/model_articles/add")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -301,9 +302,8 @@ class ModelArticlesControllerTest {
         given(articleService.getArticleForm(anyLong())).willReturn(dto);
         // When
         mvc.perform(
-                        get("/model_articles/form/1")
+                        get("/model_articles/update/1")
                                 .cookie(Fixture.getCookie())
-
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -317,7 +317,7 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("11. [POST] 게시글 수정 - 정상")
+    @DisplayName("11. [PUT] 게시글 수정 - 정상")
     @Test
     void updateRequestModelArticle() throws Exception {
         // Given
@@ -326,7 +326,7 @@ class ModelArticlesControllerTest {
         willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -348,13 +348,13 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("12. [POST][ValidationError] 게시글 수정(비어있는 파일) - 실패")
+    @DisplayName("12. [PUT][ValidationError] 게시글 수정(비어있는 파일) - 실패")
     @Test
     void updateRequestModelArticle_WithoutCategory() throws Exception {
         // Given
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file("modelFile", new byte[]{})
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -384,14 +384,14 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("13. [POST][ValidationError] 게시글 수정(카테고리를 선택하지 않았을 경우) - 실패")
+    @DisplayName("13. [PUT][ValidationError] 게시글 수정(카테고리를 선택하지 않았을 경우) - 실패")
     @Test
     void updateRequestModelArticle_EmptyFile() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -421,14 +421,14 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("14. [POST][ValidationError] 게시글 수정(치수옵션을 추가하지 않았을 경우) - 실패")
+    @DisplayName("14. [PUT][ValidationError] 게시글 수정(치수옵션을 추가하지 않았을 경우) - 실패")
     @Test
     void updateRequestModelArticle_WithoutDimensionOption() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -451,7 +451,7 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("15. [POST] 게시글 수정(파일 업데이트 실패) - 실패")
+    @DisplayName("15. [PUT] 게시글 수정(파일 업데이트 실패) - 실패")
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedFileUpdate() throws Exception {
@@ -460,7 +460,7 @@ class ModelArticlesControllerTest {
         willThrow(new FileException(ErrorCode.FAILED_DELETE)).given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -483,7 +483,7 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("16. [POST] 게시글 수정(게시글 업데이트 실패) - 실패")
+    @DisplayName("16. [PUT] 게시글 수정(게시글 업데이트 실패) - 실패")
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedArticleUpdate() throws Exception {
@@ -493,7 +493,7 @@ class ModelArticlesControllerTest {
         willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)).given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
         // When
         mvc.perform(
-                        multipart("/model_articles/form/1")
+                        multipart(HttpMethod.PUT, "/model_articles/update/1")
                                 .file(multipartFile)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .param("title", "title")
@@ -510,12 +510,13 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isString())
         ;
         // Then
     }
 
-    @DisplayName("17. [POST] 게시글 삭제 - 정상")
+    @DisplayName("17. [DELETE] 게시글 삭제 - 정상")
     @Test
     void deleteModelArticle() throws Exception {
         // Given
@@ -523,17 +524,18 @@ class ModelArticlesControllerTest {
         willDoNothing().given(articleService).deleteArticle(anyLong(), anyString());
         // When
         mvc.perform(
-                        post("/model_articles/1/delete")
+                        delete("/model_articles/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
 
-    @DisplayName("18. [POST] 게시글 삭제(게시글 삭제 실패) - 실패")
+    @DisplayName("18. [DELETE] 게시글 삭제(게시글 삭제 실패) - 실패")
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticle() throws Exception {
@@ -542,17 +544,18 @@ class ModelArticlesControllerTest {
         willThrow(new ArticleException(ErrorCode.FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
         // When
         mvc.perform(
-                        post("/model_articles/1/delete")
+                        delete("/model_articles/1/delete")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isString());
         // Then
     }
 
-    @DisplayName("19. [POST] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
+    @DisplayName("19. [DELETE] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticleFile() throws Exception {
@@ -560,12 +563,13 @@ class ModelArticlesControllerTest {
         willThrow(new FileException(ErrorCode.FAILED_DELETE)).given(articleFileService).deleteArticleFile(anyLong());
         // When
         mvc.perform(
-                        post("/model_articles/1/delete")
+                        delete("/model_articles/delete/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isString());
         // Then
     }
@@ -579,7 +583,7 @@ class ModelArticlesControllerTest {
         given(s3Service.downloadFile(anyString())).willReturn(new byte[]{1});
         //when
         mvc.perform(
-                get("/model_articles/1/download")
+                get("/model_articles/download/1")
                         .cookie(Fixture.getCookie())
         )
                 .andExpect(status().isOk())

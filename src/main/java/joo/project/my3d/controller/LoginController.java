@@ -186,7 +186,7 @@ public class LoginController {
     /**
      * 임시 비밀번호 전송 완료 페이지(프론트엔드 작업시 불필요하면 삭제)
      */
-    @GetMapping("/find_pass_success")
+    @GetMapping("/find_pass/success")
     public ApiResponse<Void> findPasswordSuccess() {
         return ApiResponse.success();
     }
@@ -195,11 +195,7 @@ public class LoginController {
      * 사업자 인증 페이지
      */
     @GetMapping("/company")
-    public ApiResponse<BusinessCertificationResponse> businessCertification(
-            @RequestParam(required = false) String b_no,
-            @RequestParam(required = false) String b_stt_cd
-    ) {
-
-        return ApiResponse.success(BusinessCertificationResponse.of(b_no, b_stt_cd, serviceKey));
+    public ApiResponse<Void> businessCertification() {
+        return ApiResponse.success();
     }
 }

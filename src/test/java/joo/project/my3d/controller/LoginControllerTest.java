@@ -116,6 +116,7 @@ class LoginControllerTest {
         mvc.perform(
                     get("/account/signup")
                             .queryParam("userRole", String.valueOf(UserRole.USER))
+                            .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -152,6 +153,7 @@ class LoginControllerTest {
                         get("/account/signup")
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .cookie(cookie)
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -179,6 +181,7 @@ class LoginControllerTest {
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .queryParam("email", "b@gmail.com")
                                 .queryParam("emailCode", "01")
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -264,7 +267,7 @@ class LoginControllerTest {
         // Given
 
         // When
-        mvc.perform(get("/account/find_pass_success"))
+        mvc.perform(get("/account/find_pass/success"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").isEmpty());
@@ -282,46 +285,7 @@ class LoginControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.b_no").isEmpty())
-                .andExpect(jsonPath("$.data.b_stt_cd").isEmpty())
-                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
-        // Then
-    }
-
-    @DisplayName("[GET] 사업자 인증 페이지 - 수정 요청")
-    @Test
-    void businessCertificationAfterModify() throws Exception {
-        // Given
-
-        // When
-        mvc.perform(
-                        get("/account/company")
-                            .queryParam("b_no", "2208162517")
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.b_no").value("2208162517"))
-                .andExpect(jsonPath("$.data.b_stt_cd").isEmpty())
-                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
-        // Then
-    }
-
-    @DisplayName("[GET] 사업자 인증 페이지 - 사업자 인증 후 redirect")
-    @Test
-    void businessCertificationAfterRedirect() throws Exception {
-        // Given
-
-        // When
-        mvc.perform(
-                        get("/account/company")
-                            .queryParam("b_no", "2208162517")
-                            .queryParam("b_stt_cd", "01")
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.b_no").value("2208162517"))
-                .andExpect(jsonPath("$.data.b_stt_cd").value("01"))
-                .andExpect(jsonPath("$.data.serviceKey").isNotEmpty());
+                .andExpect(jsonPath("$.data").isEmpty());
         // Then
     }
 }
