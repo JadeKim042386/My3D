@@ -68,7 +68,7 @@ public class SecurityConfig {
                                 "/account/login",
                                 "/account/signup",
                                 "/account/find_pass",
-                                "/account/find_pass_success",
+                                "/account/find_pass/success",
                                 "/account/type",
                                 "/account/company",
                                 "/mail/send_code",
@@ -76,13 +76,14 @@ public class SecurityConfig {
                         ).hasRole("ANONYMOUS")
                         .regexMatchers(
                                 "/model_articles/[0-9]+",
-                                "/like/.*/[0-9]+",
+                                "/like/[0-9]+",
                                 "/comments.*",
                                 "/user/account",
                                 "/user/password",
                                 "/user/alarm.*",
-                                "/model_articles/form.*",
-                                "/model_articles/[0-9]+/delete"
+                                "/model_articles/add",
+                                "/model_articles/update/[0-9]+",
+                                "/model_articles/download/[0-9]+"
                         ).authenticated()
                         .regexMatchers("/user/company")
                             .hasAnyRole("COMPANY", "ADMIN")

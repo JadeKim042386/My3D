@@ -40,7 +40,7 @@ class ArticleLikeControllerTest {
         given(articleLikeService.addArticleLike(anyLong(), anyString())).willReturn(0);
         // When
         mvc.perform(
-                post("/like/add/" + articleId)
+                post("/like/" + articleId)
                         .cookie(Fixture.getCookie())
                         .with(csrf())
         )
@@ -60,7 +60,7 @@ class ArticleLikeControllerTest {
         given(articleLikeService.deleteArticleLike(anyLong())).willReturn(1);
         // When
         mvc.perform(
-                delete("/like/delete/" + articleId)
+                delete("/like/" + articleId)
                         .cookie(Fixture.getCookie())
                         .with(csrf())
         )
