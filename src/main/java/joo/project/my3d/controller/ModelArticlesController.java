@@ -122,9 +122,8 @@ public class ModelArticlesController {
         }
 
         try {
-            ArticleFileWithDimensionOptionWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
-
             //게시글 저장
+            ArticleFileWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
             articleService.saveArticle(
                     boardPrincipal.email(),
                     articleFormRequest.toArticleDto(

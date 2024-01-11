@@ -11,8 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static javax.persistence.FetchType.LAZY;
-
 @Getter
 @ToString(callSuper = true)
 @Table(
@@ -60,8 +58,7 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
     private UserRole userRole;
 
     @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "company_id")
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private Company company;
 
     @ToString.Exclude
@@ -101,7 +98,7 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
 
     /**
      * 회원 저장(saveUser)시 사용<br>
-     * 폰번호, 주소 제외
+     * 폰번호, 주소, 기업 제외
      */
     public static UserAccount of(String email, String userPassword, String nickname, boolean signUp, UserRole userRole, String createdBy) {
         return new UserAccount(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Company.of(null, null), createdBy);
@@ -109,7 +106,7 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
 
     /**
      * DTO 를 Entity 로 변환시 사용 <br>
-     * 생성자 제외
+     * 생성자(createdBy) 제외
      */
     public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, boolean signUp, UserRole userRole, Company company) {
         return new UserAccount(email, userPassword, nickname, phone, address, signUp, userRole, company, null);

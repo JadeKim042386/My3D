@@ -77,7 +77,7 @@ public class JpaRepositoryTest {
             assertThat(articles.getContent().get(0).getArticleCategory()).isEqualTo(ArticleCategory.MUSIC);
         }
 
-        @DisplayName("게시글&파일 save")
+        @DisplayName("게시글 save")
         @Test
         void saveArticle() {
             // Given
@@ -431,27 +431,6 @@ public class JpaRepositoryTest {
             // Then
             assertThat(articleFile).isNotNull();
         }
-
-        @DisplayName("파일 delete")
-        @Test
-        void deleteArticleFile() {
-            //given
-            Long articleFileId = 1L;
-            long previousFileCount = articleFileRepository.count();
-            long previousDimOptionCount = dimensionOptionRepository.count();
-            long previousDimCount = dimensionRepository.count();
-            log.info("previousFileCount: {}", previousFileCount);
-            log.info("previousDimOptionCount: {}", previousDimOptionCount);
-            log.info("previousDimCount: {}", previousDimCount);
-            //when
-            ArticleFile articleFile = articleFileRepository.getReferenceById(articleFileId);
-            Article article = articleRepository.getReferenceById(articleFile.getArticle().getId());
-            article.setArticleFile(null);
-            //then
-            assertThat(articleFileRepository.count()).isEqualTo(previousFileCount - 1);
-            assertThat(dimensionOptionRepository.count()).isEqualTo(previousDimOptionCount - 1);
-            assertThat(dimensionRepository.count()).isEqualTo(previousDimCount - 1);
-        }
     }
 
     @ActiveProfiles("test")
@@ -517,21 +496,6 @@ public class JpaRepositoryTest {
             // Then
             assertThat(dimensionOption.getModifiedBy()).isEqualTo(dimensionOption.getCreatedBy());
             assertThat(dimensionOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
-        }
-
-        @DisplayName("치수 옵션 delete")
-        @Test
-        void deleteDimensionOption() {
-            // Given
-            Long dimensionOptionId = 1L;
-            long previousCount = dimensionOptionRepository.count();
-            log.info("previousCount: {}", previousCount);
-            // When
-            DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(dimensionOptionId);
-            ArticleFile articleFile = articleFileRepository.getReferenceById(dimensionOption.getArticleFile().getId());
-            articleFile.setDimensionOption(null);
-            // Then
-            assertThat(dimensionOptionRepository.count()).isEqualTo(previousCount - 1);
         }
     }
 

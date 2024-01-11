@@ -73,6 +73,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (RuntimeException e) {
             log.error("Error occurs while validating, {}", e.getMessage());
+            //TODO: 로그인 페이지로 Redirect
             filterChain.doFilter(request, response);
             return;
         }

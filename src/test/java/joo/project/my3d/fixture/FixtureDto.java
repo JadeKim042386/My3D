@@ -53,14 +53,14 @@ public class FixtureDto {
         );
     }
 
-    public static ArticleFileWithDimensionOptionWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
+    public static ArticleFileWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
         DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
-        return ArticleFileWithDimensionOptionWithDimensionDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
+        return ArticleFileWithDimensionDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
     }
 
     public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
+        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleDto.of(
                 id,
                 userAccountDto,
@@ -95,7 +95,7 @@ public class FixtureDto {
 
     public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
+        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleWithCommentsAndLikeCountDto.of(
                 1L,
                 userAccountDto.email(),
@@ -113,7 +113,7 @@ public class FixtureDto {
 
     public static ArticleFormDto getArticleFormDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
+        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleFormDto.of(
                 1L,
                 userAccountDto,

@@ -46,7 +46,7 @@ class CompanyServiceTest {
         CompanyDto companyDto = FixtureDto.getCompanyDto();
         given(companyRepository.save(any(Company.class))).willReturn(any(Company.class));
         // When
-        companyService.saveCompany(companyDto);
+        companyService.saveCompany(Fixture.getUserAccount(), companyDto);
         // Then
         then(companyRepository).should().save(any(Company.class));
     }

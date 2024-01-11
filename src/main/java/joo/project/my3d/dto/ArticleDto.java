@@ -15,18 +15,18 @@ public record ArticleDto(
         ArticleType articleType,
         ArticleCategory articleCategory,
         Integer likeCount,
-        ArticleFileWithDimensionOptionWithDimensionDto articleFileDto,
+        ArticleFileWithDimensionDto articleFileDto,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
 
-    public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionOptionWithDimensionDto articleFileDto, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+    public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionDto articleFileDto, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
         return new ArticleDto(id, userAccountDto, title, content, articleType, articleCategory, likeCount, articleFileDto, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionOptionWithDimensionDto articleFileDto) {
+    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionDto articleFileDto) {
         return new ArticleDto(null, userAccountDto, title, content, articleType, articleCategory, likeCount, articleFileDto, null, null, null, null);
     }
 
@@ -39,7 +39,7 @@ public record ArticleDto(
                 article.getArticleType(),
                 article.getArticleCategory(),
                 article.getLikeCount(),
-                ArticleFileWithDimensionOptionWithDimensionDto.from(article.getArticleFile()),
+                ArticleFileWithDimensionDto.from(article.getArticleFile()),
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),

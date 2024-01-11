@@ -1,8 +1,10 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
+import joo.project.my3d.dto.ArticleFileWithDimensionDto;
 import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
@@ -107,12 +109,16 @@ public class ArticleFileService {
             //파일 삭제
             s3Service.deleteFile(fileName);
             //데이터 삭제
-            articleFileRepository.deleteById(articleFile.getId());
+            articleFileRepository.delete(articleFile);
         } catch (SdkClientException | S3Exception e) {
             log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
         } catch (IllegalArgumentException e) {
             throw new FileException(ErrorCode.FAILED_DELETE, e);
         }
+    }
+
+    public void saveFil(Article article, ArticleFileWithDimensionDto articleFile) {
+        articleFileRepository.save(articleFile.toEntity());
     }
 }
