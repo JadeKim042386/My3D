@@ -27,8 +27,8 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final UserAccountRepository userAccountRepository;
 
-    public CompanyDto getCompany(Long companyId) {
-        return companyRepository.findById(companyId)
+    public CompanyDto getCompany(String email) {
+        return companyRepository.findByUserAccount_Email(email)
                 .map(CompanyDto::from)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.NOT_FOUND_COMPANY));
     }
@@ -37,7 +37,7 @@ public class CompanyService {
      * @throws CompanyException 기업 정보 저장 실패했을 경우 발생하는 예외
      */
     @Transactional
-    public void saveCompany(UserAccount userAccount, CompanyDto dto) {
+    public void saveCompany(CompanyDto dto) {
         try{
             companyRepository.save(dto.toEntity());
         } catch (IllegalArgumentException e) {

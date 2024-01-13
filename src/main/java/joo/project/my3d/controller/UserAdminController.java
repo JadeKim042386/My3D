@@ -83,7 +83,7 @@ public class UserAdminController {
      */
     @GetMapping("/company")
     public ApiResponse<CompanyAdminResponse> company(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+        CompanyDto company = companyService.getCompany(boardPrincipal.email());
 
         return ApiResponse.success(CompanyAdminResponse.from(company));
     }
@@ -96,7 +96,7 @@ public class UserAdminController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             CompanyAdminRequest companyAdminRequest
     ) {
-        CompanyDto company = userAccountService.getCompany(boardPrincipal.email());
+        CompanyDto company = companyService.getCompany(boardPrincipal.email());
         companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
         return ApiResponse.success();

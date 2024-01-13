@@ -113,7 +113,7 @@ class UserAdminControllerTest {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
         CompanyDto companyDto = FixtureDto.getCompanyDto();
-        given(userAccountService.getCompany(anyString())).willReturn(companyDto);
+        given(companyService.getCompany(anyString())).willReturn(companyDto);
         // When
         mvc.perform(
                 get("/user/company")
@@ -131,7 +131,7 @@ class UserAdminControllerTest {
     void updateCompany() throws Exception {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userCompany", UserRole.COMPANY);
-        given(userAccountService.getCompany(anyString())).willReturn(FixtureDto.getCompanyDto());
+        given(companyService.getCompany(anyString())).willReturn(FixtureDto.getCompanyDto());
         willDoNothing().given(companyService).updateCompany(any(CompanyDto.class));
         // When
         mvc.perform(

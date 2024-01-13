@@ -64,18 +64,6 @@ class UserAccountServiceTest {
         assertThat(userAccountDto.email()).isEqualTo(email);
     }
 
-    @DisplayName("기업 조회")
-    @Test
-    void getCompany() {
-        // Given
-        UserAccount userAccount = Fixture.getUserAccount();
-        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(userAccount));
-        // When
-        userAccountService.getCompany(userAccount.getEmail());
-        // Then
-        then(userAccountRepository).should().findByEmail(anyString());
-    }
-
     @DisplayName("알람 조회")
     @Test
     void getAlarms() {

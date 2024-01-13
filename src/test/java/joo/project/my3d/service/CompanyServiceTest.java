@@ -31,12 +31,12 @@ class CompanyServiceTest {
     @Test
     void getCompany() {
         // Given
+        String email = "a@gmail.com";
         Company company = Fixture.getCompany();
-        given(companyRepository.findById(company.getId())).willReturn(Optional.of(company));
+        given(companyRepository.findByUserAccount_Email(anyString())).willReturn(Optional.of(company));
         // When
-        companyService.getCompany(company.getId());
+        companyService.getCompany(email);
         // Then
-        then(companyRepository).should().findById(company.getId());
     }
 
     @DisplayName("기업 저장(추가)")
@@ -46,7 +46,7 @@ class CompanyServiceTest {
         CompanyDto companyDto = FixtureDto.getCompanyDto();
         given(companyRepository.save(any(Company.class))).willReturn(any(Company.class));
         // When
-        companyService.saveCompany(Fixture.getUserAccount(), companyDto);
+        companyService.saveCompany(companyDto);
         // Then
         then(companyRepository).should().save(any(Company.class));
     }

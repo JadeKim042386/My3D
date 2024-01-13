@@ -54,14 +54,6 @@ public class UserAccountService {
     }
 
     /**
-     * @throws UsernameNotFoundException 유저가 존재하지 않는 경우 발생하는 예외
-     */
-    public CompanyDto getCompany(String email) {
-        //TODO: companyRepository에서 조회
-        return searchUser(email).companyDto();
-    }
-
-    /**
      * DB로부터 유저 정보를 가져와 BoardPrincipal 객체로 변환한다.
      * @throws UsernameNotFoundException 주어진 이메일에 해당하는 유저 정보를 DB에서 찾을 수 없을 경우 발생하는 예외
      */
