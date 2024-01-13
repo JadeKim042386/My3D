@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -41,7 +42,7 @@ class EmailControllerTest {
         // Given
         String email = "tester@gmail.com";
         String subject = "[My3D] 이메일 인증";
-        given(userAccountService.searchUser(email)).willReturn(Optional.empty());
+        given(userAccountService.searchUser(email)).willReturn(FixtureDto.getUserAccountDto());
         willDoNothing().given(emailService).sendEmail(eq(email), eq(subject), anyString());
         // When
         mvc.perform(
@@ -60,8 +61,7 @@ class EmailControllerTest {
     void sendEmailDuplicatedError() throws Exception {
         // Given
         String email = "jk042386@gmail.com";
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        given(userAccountService.searchUser(email)).willReturn(Optional.of(userAccountDto));
+        given(userAccountService.isExistsUser(anyString())).willReturn(true);
         // When
         mvc.perform(
                         post("/mail/send_code")
@@ -81,9 +81,9 @@ class EmailControllerTest {
     void sendEmailFindPass() throws Exception {
         // Given
         String email = "jk042386@gmail.com";
-        given(userAccountService.searchUser(anyString())).willReturn(Optional.of(FixtureDto.getUserAccountDto()));
+        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto());
         willDoNothing().given(emailService).sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
-        given(userAccountService.searchUser(anyString())).willReturn(Optional.of(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN, true)));
+        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN, true));
         willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
         // When
         mvc.perform(
@@ -101,7 +101,8 @@ class EmailControllerTest {
     void sendEmailFindPassNotFound() throws Exception {
         // Given
         String email = "tester@gmail.com";
-        given(userAccountService.searchUser(anyString())).willReturn(Optional.empty());
+        willThrow(new UsernameNotFoundException("존재하지 않는 유저입니다."))
+                .given(userAccountService).searchUser(anyString());
         // Whe
         mvc.perform(
                         post("/mail/find_pass")

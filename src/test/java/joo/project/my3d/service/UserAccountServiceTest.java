@@ -56,12 +56,12 @@ class UserAccountServiceTest {
     @Test
     void getUserAccount() {
         // Given
-        String email = "a@gmail.com";
-        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.empty());
+        String email = "jk042386@gmail.com";
+        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
-        userAccountService.searchUser(email);
+        UserAccountDto userAccountDto = userAccountService.searchUser(email);
         // Then
-        then(userAccountRepository).should().findByEmail(anyString());
+        assertThat(userAccountDto.email()).isEqualTo(email);
     }
 
     @DisplayName("기업 조회")

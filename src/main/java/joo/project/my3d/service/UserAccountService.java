@@ -43,18 +43,22 @@ public class UserAccountService {
                 .map(UserAccountDto::from).toList();
     }
 
-    //TODO: private으로 접근자를 변경하고 예외처리(UsernameNotFoundException)도 수행하도록 수정
-    public Optional<UserAccountDto> searchUser(String email) {
-        return userAccountRepository.findByEmail(email).map(UserAccountDto::from);
+    public UserAccountDto searchUser(String email) {
+        return userAccountRepository.findByEmail(email)
+                .map(UserAccountDto::from)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
+    }
+
+    public boolean isExistsUser(String email) {
+        return userAccountRepository.existsByEmail(email);
     }
 
     /**
      * @throws UsernameNotFoundException 유저가 존재하지 않는 경우 발생하는 예외
      */
     public CompanyDto getCompany(String email) {
-        return searchUser(email)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email))
-                .companyDto();
+        //TODO: companyRepository에서 조회
+        return searchUser(email).companyDto();
     }
 
     /**
@@ -62,9 +66,7 @@ public class UserAccountService {
      * @throws UsernameNotFoundException 주어진 이메일에 해당하는 유저 정보를 DB에서 찾을 수 없을 경우 발생하는 예외
      */
     public BoardPrincipal getUserPrincipal(String email) {
-        return searchUser(email)
-                .map(BoardPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email));
+        return BoardPrincipal.from(searchUser(email));
     }
 
     public List<AlarmDto> getAlarms(String email) {
@@ -129,40 +131,38 @@ public class UserAccountService {
      */
     @Transactional
     public LoginResponse login(String email, String password) {
-        UserAccount userAccount = userAccountRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
+        UserAccountDto userAccountDto = searchUser(email);
 
         //비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
-        if (!encoder.matches(password, userAccount.getUserPassword())) {
+        if (!encoder.matches(password, userAccountDto.userPassword())) {
             throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
-        String accessToken = getAccessToken(email, userAccount.getNickname(), userAccount);
+        String accessToken = getAccessToken(email, userAccountDto.nickname(), userAccountDto);
         String refreshToken = tokenProvider.generateRefreshToken();
-        updateRefreshToken(userAccount.getId(), refreshToken);
+        updateRefreshToken(userAccountDto.id(), refreshToken);
 
-        return LoginResponse.of(email, userAccount.getNickname(), accessToken, refreshToken);
+        return LoginResponse.of(email, userAccountDto.nickname(), accessToken, refreshToken);
     }
 
     @Transactional
     public LoginResponse oauthLogin(String email, String nickname) {
-        UserAccount userAccount = userAccountRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
-        if (!nickname.equals(userAccount.getNickname())) {
+        UserAccountDto userAccountDto = searchUser(email);
+        if (!nickname.equals(userAccountDto.nickname())) {
             throw new AuthException(AuthErrorCode.NOT_EQUAL_NICKNAME);
         }
-        String accessToken = getAccessToken(email, nickname, userAccount);
+        String accessToken = getAccessToken(email, nickname, userAccountDto);
         String refreshToken = tokenProvider.generateRefreshToken();
-        updateRefreshToken(userAccount.getId(), refreshToken);
+        updateRefreshToken(userAccountDto.id(), refreshToken);
         return LoginResponse.of(email, nickname, accessToken, refreshToken);
     }
 
-    private String getAccessToken(String email, String nickname, UserAccount userAccount) {
-        String accessToken = tokenProvider.generateAccessToken(
+    private String getAccessToken(String email, String nickname, UserAccountDto userAccountDto) {
+
+        return tokenProvider.generateAccessToken(
                 email,
                 nickname,
-                String.format("%s:%s", userAccount.getId(), userAccount.getUserRole())
+                String.format("%s:%s", userAccountDto.id(), userAccountDto.userRole())
         );
-        return accessToken;
     }
 
     private void updateRefreshToken(Long id, String refreshToken) {

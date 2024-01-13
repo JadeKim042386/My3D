@@ -12,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -49,7 +51,7 @@ public class EmailController {
         }
 
         //이메일 중복 체크
-        if (userAccountService.searchUser(email).isPresent()) {
+        if (userAccountService.isExistsUser(email)) {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.ALREADY_EXIST_EMAIL, userRole));
         }
 
@@ -67,24 +69,24 @@ public class EmailController {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.INVALID_EMAIL_FORMAT));
         }
 
-        if (userAccountService.searchUser(email).isEmpty()) {
+        try {
+            String subject = "[My3D] 이메일 임시 비밀번호";
+            String code = String.valueOf(UUID.randomUUID()).split("-")[0];
+            emailService.sendEmail(email, subject, code);
+
+            //수정한 AuditiorAware를 위해 Admin 계정을 SecurityContextHolder에 추가
+            UserAccountDto userAccountDto = userAccountService.searchUser(adminEmail);
+            signUpService.setPrincipal(userAccountDto);
+
+            //임시 비밀번호로 변경
+            userAccountService.changePassword(email, encoder.encode(code));
+            //변경 완료 후 principal 제거
+            SecurityContextHolder.clearContext();
+
+            return ApiResponse.success(EmailResponse.sendSuccess(email));
+        } catch (UsernameNotFoundException e) {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.NOT_FOUND_EMAIL));
         }
-
-        String subject = "[My3D] 이메일 임시 비밀번호";
-        String code = String.valueOf(UUID.randomUUID()).split("-")[0];
-        emailService.sendEmail(email, subject, code);
-
-        //수정한 AuditiorAware를 위해 Admin 계정을 SecurityContextHolder에 추가
-        UserAccountDto userAccountDto = userAccountService.searchUser(adminEmail).get();
-        signUpService.setPrincipal(userAccountDto);
-
-        //임시 비밀번호로 변경
-        userAccountService.changePassword(email, encoder.encode(code));
-        //변경 완료 후 principal 제거
-        SecurityContextHolder.clearContext();
-
-        return ApiResponse.success(EmailResponse.sendSuccess(email));
     }
 
     private boolean invalidEmailFormat(String email) {

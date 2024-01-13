@@ -26,6 +26,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Configuration
@@ -129,31 +130,33 @@ public class SecurityConfig {
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
             //회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
-            return userAccountService.searchUser(email)
-                    .map(BoardPrincipal::from)
-                    .orElseGet(() ->
-                            BoardPrincipal.from(
-                                    // TODO: dto로 변환하는 과정은 불필요해 보임
-                                    UserAccountDto.from(
-                                            UserAccount.of(
-                                                    email,
-                                                    dummyPassword,
-                                                    attributes.getName(),
-                                                    false,
-                                                    UserRole.ANONYMOUS,
-                                                    UserRefreshToken.of(null),
-                                                    email
-                                            )
-                                    )
-                            ));
+            //TODO: exist 쿼리로 변경
+            try {
+                UserAccountDto userAccountDto = userAccountService.searchUser(email);
+                return BoardPrincipal.from(userAccountDto);
+            } catch (UsernameNotFoundException e) {
+                return BoardPrincipal.from(
+                        // TODO: dto로 변환하는 과정은 불필요해 보임
+                        UserAccountDto.from(
+                                UserAccount.of(
+                                        email,
+                                        dummyPassword,
+                                        attributes.getName(),
+                                        false,
+                                        UserRole.ANONYMOUS,
+                                        UserRefreshToken.of(null),
+                                        email
+                                )
+                        )
+                );
+            }
         };
     }
 
     @Bean
     public UserDetailsService userDetailsService(UserAccountService userAccountService) {
         //loadUserByUsername
-        return email -> userAccountService.searchUser(email).map(BoardPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email));
+        return userAccountService::getUserPrincipal;
     }
 
     @Bean
