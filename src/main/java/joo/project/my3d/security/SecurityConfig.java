@@ -1,11 +1,9 @@
-package joo.project.my3d.config;
+package joo.project.my3d.security;
 
-import joo.project.my3d.config.filter.JwtTokenFilter;
-import joo.project.my3d.config.handler.CustomOAuth2SuccessHandler;
 import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
-import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.dto.security.OAuthAttributes;
 import joo.project.my3d.service.UserAccountService;
@@ -16,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -48,8 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService,
-            UserAccountService userAccountService,
-            JwtProperties jwtProperties,
+            JwtTokenFilter jwtTokenFilter,
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
@@ -65,6 +63,7 @@ public class SecurityConfig {
                                 "/account/logout"
                         ).permitAll()
                         .mvcMatchers(
+                                "/account/oauth/response",
                                 "/account/login",
                                 "/account/signup",
                                 "/account/find_pass",
@@ -100,17 +99,16 @@ public class SecurityConfig {
                     .formLogin().disable()
                     .logout(logout -> logout
                             .logoutUrl("/account/logout")
-                            .deleteCookies(jwtProperties.cookieName())
                     )
                     .oauth2Login(oAuth -> oAuth
-                            .loginPage("/account/login")
+                            .loginPage("/oauth")
                             .userInfoEndpoint(userInfo -> userInfo
                                     .userService(oAuth2UserService))
                             .successHandler(customOAuth2SuccessHandler) //OAuth 로그인 후 cookie에 jwt 토큰 저장
                     )
                     //cookie에서 token을 가져와 authentication 등록
                     .addFilterBefore(
-                            new JwtTokenFilter(userAccountService, jwtProperties),
+                            jwtTokenFilter,
                             ExceptionTranslationFilter.class)
                 .build();
     }
@@ -135,6 +133,7 @@ public class SecurityConfig {
                     .map(BoardPrincipal::from)
                     .orElseGet(() ->
                             BoardPrincipal.from(
+                                    // TODO: dto로 변환하는 과정은 불필요해 보임
                                     UserAccountDto.from(
                                             UserAccount.of(
                                                     email,
@@ -142,6 +141,7 @@ public class SecurityConfig {
                                                     attributes.getName(),
                                                     false,
                                                     UserRole.ANONYMOUS,
+                                                    UserRefreshToken.of(null),
                                                     email
                                             )
                                     )
@@ -152,7 +152,8 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserAccountService userAccountService) {
         //loadUserByUsername
-        return userAccountService::getUserPrincipal;
+        return email -> userAccountService.searchUser(email).map(BoardPrincipal::from)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다. - email: " + email));
     }
 
     @Bean

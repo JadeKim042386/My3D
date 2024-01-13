@@ -1,5 +1,6 @@
 package joo.project.my3d.fixture;
 
+import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.DimUnit;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class FixtureDto {
@@ -178,5 +180,9 @@ public class FixtureDto {
 
     public static CompanyDto getCompanyDto() {
         return CompanyDto.of(2L, "company", "homepage");
+    }
+
+    public static BoardPrincipal getPrincipal() {
+        return BoardPrincipal.of(1L, "a@gmail.com", "pw", "phone", "nickname", UserRole.USER, Address.of(null, null, null), true, Map.of());
     }
 }

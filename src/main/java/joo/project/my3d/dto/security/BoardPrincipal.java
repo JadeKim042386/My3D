@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 public record BoardPrincipal(
+        Long id,
         String email,
         String password,
         String phone,
@@ -22,11 +23,12 @@ public record BoardPrincipal(
         Address address,
         boolean signUp, //회원가입 여부
         Map<String, Object> oAuth2Attributes
-        ) implements UserDetails, OAuth2User {
+) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp) {
+    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp) {
 
         return new BoardPrincipal(
+                id,
                 email,
                 password,
                 phone,
@@ -38,9 +40,10 @@ public record BoardPrincipal(
         );
     }
 
-    public static BoardPrincipal of(String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
+                id,
                 email,
                 password,
                 phone,
@@ -54,6 +57,7 @@ public record BoardPrincipal(
 
     public static BoardPrincipal from(UserAccountDto dto) {
         return BoardPrincipal.of(
+                dto.id(),
                 dto.email(),
                 dto.userPassword(),
                 dto.phone(),
@@ -66,6 +70,7 @@ public record BoardPrincipal(
 
     public UserAccountDto toDto() {
         return UserAccountDto.of(
+                id,
                 email,
                 password,
                 nickname,

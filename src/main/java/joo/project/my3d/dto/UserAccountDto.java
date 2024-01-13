@@ -3,6 +3,7 @@ package joo.project.my3d.dto;
 import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -101,7 +102,7 @@ public record UserAccountDto(
         );
     }
 
-    public UserAccount toEntity() {
+    public UserAccount toEntity(String refreshToken) {
         return UserAccount.of(
                 email,
                 userPassword,
@@ -110,6 +111,7 @@ public record UserAccountDto(
                 addressDto.toEntity(),
                 signUp,
                 userRole,
+                UserRefreshToken.of(refreshToken),
                 companyDto.toEntity()
         );
     }
