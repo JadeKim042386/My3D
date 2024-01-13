@@ -18,6 +18,15 @@
     UNIQUE (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
+CREATE TABLE `user_refresh_token` (
+    `id` bigint	AUTO_INCREMENT NOT NULL,
+    `user_account_id`	bigint NOT NULL,
+    `refresh_token`	varchar(255)	NOT NULL,
+    `reissue_count` int(10) default 0 NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
+
 CREATE TABLE `company` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
     `user_account_id` bigint NOT NULL,

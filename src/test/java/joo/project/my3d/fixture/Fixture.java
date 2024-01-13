@@ -4,13 +4,10 @@ import joo.project.my3d.domain.*;
 import joo.project.my3d.domain.constant.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.request.DimensionOptionRequest;
-import joo.project.my3d.utils.CookieUtils;
-import joo.project.my3d.utils.JwtTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.mock.web.MockMultipartFile;
 
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -41,7 +38,7 @@ public class Fixture {
     }
 
     public static UserAccount getUserAccount(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Company.of(null, null));
+        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Fixture.getUserRefreshToken(), Company.of(null, null));
     }
 
     public static UserAccount getUserAccount() {
@@ -107,18 +104,9 @@ public class Fixture {
         return DimensionOptionRequest.of("option123");
     }
 
-    public static Cookie getCookie() {
-
-        return CookieUtils.createCookie(
-                "token",
-                JwtTokenUtils.generateToken(
-                        "jooUser@gmail.com",
-                        "jooUser",
-                        "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                        100000L
-                ),
-                100,
-                "/"
-        );
+    public static UserRefreshToken getUserRefreshToken() {
+        return UserRefreshToken.of("refreshToken");
     }
+
+
 }

@@ -1,19 +1,19 @@
 package joo.project.my3d.exception;
 
-import joo.project.my3d.exception.constant.ErrorCode;
+import joo.project.my3d.exception.constant.AuthErrorCode;
 import lombok.Getter;
 
 @Getter
-public class UserAccountException extends RuntimeException {
+public class AuthException extends RuntimeException {
 
-    private ErrorCode errorCode;
+    private AuthErrorCode errorCode;
 
 
-    public UserAccountException(ErrorCode errorCode) {
+    public AuthException(AuthErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
-    public UserAccountException(ErrorCode errorCode, Exception causeException) {
+    public AuthException(AuthErrorCode errorCode, Exception causeException) {
         this.errorCode = errorCode;
         super.initCause(causeException);
     }

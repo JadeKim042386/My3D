@@ -50,5 +50,6 @@ jwt:
   token:
     cookie-name: ${JWT_COOKIE_NAME}
     secret-key: ${JWT_SECRET_KEY} # >= 256bits
-    expired-time-ms: 2592000000
+    access-expired-ms: 1800000 # 30 * 60000 = 30 minutes
+    refresh-expired-ms: 86400000 # 24 * 3600000 = 24 hours
 nts.service-key: ${NTS_BUSINESS_KEY}

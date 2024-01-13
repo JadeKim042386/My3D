@@ -1,13 +1,13 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.config.SecurityConfig;
-import joo.project.my3d.config.handler.CustomOAuth2SuccessHandler;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.properties.JwtProperties;
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.security.CustomOAuth2SuccessHandler;
+import joo.project.my3d.security.SecurityConfig;
+import joo.project.my3d.security.TokenProvider;
 import joo.project.my3d.service.AlarmService;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
@@ -20,7 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,6 +44,7 @@ class UserAdminControllerTest {
     @MockBean private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     @MockBean private CompanyService companyService;
     @MockBean private AlarmService alarmService;
+    @MockBean private TokenProvider tokenProvider;
 
     @DisplayName("[GET] 사용자 정보 요청")
     @Test
@@ -64,10 +64,10 @@ class UserAdminControllerTest {
     }
 
     @DisplayName("[POST] 사용자 정보 수정 요청")
-    @WithMockUser
     @Test
     void updateUserData() throws Exception {
         //given
+        UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("userUser", UserRole.USER);
         willDoNothing().given(userAccountService).updateUser(any(UserAccountDto.class));
         //when
         mvc.perform(
@@ -79,7 +79,7 @@ class UserAdminControllerTest {
                                 .param("detail", "123")
                                 .param("street", "강원특별자치도")
                                 .param("zipcode", "12345")
-                                .cookie(Fixture.getCookie())
+                                .with(authentication(authentication))
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -136,7 +136,6 @@ class UserAdminControllerTest {
         // When
         mvc.perform(
                 post("/user/company")
-                        .cookie(Fixture.getCookie())
                         .with(authentication(authentication))
                         .with(csrf())
         )

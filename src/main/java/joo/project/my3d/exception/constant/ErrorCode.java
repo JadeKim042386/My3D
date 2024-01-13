@@ -22,10 +22,6 @@ public enum ErrorCode {
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     DATA_FOR_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글에 필요한 정보를 찾을 수 없습니다."),
-    //User
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
-    INVALID_USER(HttpStatus.UNAUTHORIZED, "이메일과 일치하는 유저가 존재하지 않습니다."),
-    COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "기업을 찾을 수 없습니다."),
     //Dimension
     DIMENSION_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "치수 옵션을 찾을 수 없습니다."),
     DIMENSION_NOT_FOUND(HttpStatus.NOT_FOUND, "치수를 찾을 수 없습니다."),

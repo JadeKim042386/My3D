@@ -3,7 +3,9 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
+import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.CompanyException;
+import joo.project.my3d.exception.constant.AuthErrorCode;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -28,7 +30,7 @@ public class CompanyService {
     public CompanyDto getCompany(Long companyId) {
         return companyRepository.findById(companyId)
                 .map(CompanyDto::from)
-                .orElseThrow(() -> new CompanyException(ErrorCode.COMPANY_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(AuthErrorCode.NOT_FOUND_COMPANY));
     }
 
     /**
@@ -59,7 +61,7 @@ public class CompanyService {
                 company.setHomepage(dto.homepage());
             }
         } catch (EntityNotFoundException e) {
-            throw new CompanyException(ErrorCode.COMPANY_NOT_FOUND, e);
+            throw new AuthException(AuthErrorCode.NOT_FOUND_COMPANY, e);
         }
     }
 

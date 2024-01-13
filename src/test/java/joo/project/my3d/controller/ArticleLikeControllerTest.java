@@ -1,7 +1,6 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.service.ArticleLikeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +33,7 @@ class ArticleLikeControllerTest {
     @MockBean private ArticleLikeService articleLikeService;
 
     @DisplayName("[POST] 게시글 좋아요 추가")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addArticleLike() throws Exception {
         // Given
@@ -41,7 +42,6 @@ class ArticleLikeControllerTest {
         // When
         mvc.perform(
                 post("/like/" + articleId)
-                        .cookie(Fixture.getCookie())
                         .with(csrf())
         )
                 .andExpect(status().isOk())
@@ -52,7 +52,7 @@ class ArticleLikeControllerTest {
     }
 
     @DisplayName("[DELETE] 게시글 좋아요 삭제")
-    @WithMockUser
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void deleteArticleLike() throws Exception {
         // Given
@@ -61,7 +61,6 @@ class ArticleLikeControllerTest {
         // When
         mvc.perform(
                 delete("/like/" + articleId)
-                        .cookie(Fixture.getCookie())
                         .with(csrf())
         )
                 .andExpect(status().isOk())
