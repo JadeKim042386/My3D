@@ -4,6 +4,12 @@ insert into user_account (email, user_password, nickname, phone, detail, street,
 ('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', now(), 'a', now(), 'a'),
 ('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', now(), 'jujoo', now(), 'jujoo');
 
+-- Refresh Token
+insert into user_refresh_token (user_account_id, refresh_token, reissue_count) values
+(1, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+(2, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+(3, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0);
+
 -- 기업
 insert into company (user_account_id, company_name, homepage, created_at, modified_at, created_by, modified_by) values
 (3, '(주)My3D', 'www.my3d.com', now(), now(), 'jujoo', 'jujoo');
