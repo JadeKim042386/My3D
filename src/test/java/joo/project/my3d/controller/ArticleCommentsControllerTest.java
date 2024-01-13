@@ -2,7 +2,6 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.dto.ArticleCommentDto;
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.service.ArticleCommentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,6 +31,7 @@ class ArticleCommentsControllerTest {
     @MockBean private ArticleCommentService articleCommentService;
 
     @DisplayName("[GET] 댓글 추가")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addComment() throws Exception {
         // Given
@@ -38,7 +40,6 @@ class ArticleCommentsControllerTest {
         mvc.perform(
                 post("/comments")
                         .param("content", "content")
-                        .cookie(Fixture.getCookie())
                         .with(csrf())
         )
                 .andExpect(status().isOk())
@@ -47,6 +48,7 @@ class ArticleCommentsControllerTest {
     }
 
     @DisplayName("[GET] 댓글 삭제")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void deleteComment() throws Exception {
         // Given
@@ -55,7 +57,6 @@ class ArticleCommentsControllerTest {
         // When
         mvc.perform(
                         delete("/comments/" + articleCommentId)
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())

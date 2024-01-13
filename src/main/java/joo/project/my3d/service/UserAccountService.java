@@ -1,17 +1,18 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.domain.constant.UserRole;
+import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
-import joo.project.my3d.dto.properties.JwtProperties;
+import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.UserAccountException;
-import joo.project.my3d.exception.constant.ErrorCode;
+import joo.project.my3d.exception.AuthException;
+import joo.project.my3d.exception.constant.AuthErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
-import joo.project.my3d.utils.JwtTokenUtils;
+import joo.project.my3d.repository.UserRefreshTokenRepository;
+import joo.project.my3d.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -31,16 +32,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserAccountService {
 
+    private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
     private final AlarmRepository alarmRepository;
+    private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
-    private final JwtProperties jwtProperties;
 
     public List<UserAccountDto> findAllUser() {
         return userAccountRepository.findAll().stream()
                 .map(UserAccountDto::from).toList();
     }
 
+    //TODO: private으로 접근자를 변경하고 예외처리(UsernameNotFoundException)도 수행하도록 수정
     public Optional<UserAccountDto> searchUser(String email) {
         return userAccountRepository.findByEmail(email).map(UserAccountDto::from);
     }
@@ -72,42 +75,17 @@ public class UserAccountService {
     }
 
     /**
-     * @throws UserAccountException 유저 정보 저장 실패시 발생하는 예외
-     */
-    @Transactional
-    public UserAccountDto saveUser(String email, String userPassword, String nickname, UserRole userRole, boolean signUp) {
-        try {
-            return UserAccountDto.from(
-                    userAccountRepository.save(
-                            UserAccount.of(
-                                    email,
-                                    userPassword,
-                                    nickname,
-                                    signUp,
-                                    userRole,
-                                    email
-                            )
-                    )
-            );
-        } catch (IllegalArgumentException e) {
-            throw new UserAccountException(ErrorCode.FAILED_SAVE, e);
-        } catch (OptimisticLockingFailureException e) {
-            throw new UserAccountException(ErrorCode.CONFLICT_SAVE, e);
-        }
-    }
-
-    /**
      * 회원가입된 유저 저장
-     * @throws UserAccountException 유저 정보 저장 실패시 발생하는 예외
+     * @throws AuthException 유저 정보 저장 실패시 발생하는 예외
      */
     @Transactional
     public void saveUser(UserAccount userAccount) {
         try {
             userAccountRepository.save(userAccount);
         } catch (IllegalArgumentException e) {
-            throw new UserAccountException(ErrorCode.FAILED_SAVE, e);
+            throw new AuthException(AuthErrorCode.FAILED_SAVE, e);
         } catch (OptimisticLockingFailureException e) {
-            throw new UserAccountException(ErrorCode.CONFLICT_SAVE, e);
+            throw new AuthException(AuthErrorCode.CONFLICT_SAVE, e);
         }
     }
 
@@ -122,7 +100,7 @@ public class UserAccountService {
 
     /**
      * 계정 정보 수정
-     * @throws UserAccountException 유저 정보를 찾을 수 없을 경우 발생하는 예외
+     * @throws AuthException 유저 정보를 찾을 수 없을 경우 발생하는 예외
      */
     @Transactional
     public void updateUser(UserAccountDto dto) {
@@ -141,32 +119,58 @@ public class UserAccountService {
                 userAccount.setAddress(dto.addressDto().toEntity());
             }
         } catch (EntityNotFoundException e) {
-            throw new UserAccountException(ErrorCode.INVALID_USER, e);
+            throw new AuthException(AuthErrorCode.INVALID_USER, e);
         }
     }
 
     /**
      * 비밀번호 일치 확인 후 토큰을 생성하여 반환한다.
-     * @throws UserAccountException 비밀번호가 일치하지 않거나 주어진 이메일에 해당하는 유저가 존재하지 않을 경우 발생하는 예외
+     * @throws AuthException 비밀번호가 일치하지 않거나 주어진 이메일에 해당하는 유저가 존재하지 않을 경우 발생하는 예외
      */
-    public String login(String email, String password) {
-        try {
-            BoardPrincipal principal = getUserPrincipal(email);
+    @Transactional
+    public LoginResponse login(String email, String password) {
+        UserAccount userAccount = userAccountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
 
-            //비밀번호 일치 확인
-            if (!encoder.matches(password, principal.getPassword())) {
-                throw new UserAccountException(ErrorCode.INVALID_PASSWORD);
-            }
-
-            //토큰 생성 후 반환
-            return JwtTokenUtils.generateToken(
-                    email,
-                    principal.nickname(),
-                    jwtProperties.secretKey(),
-                    jwtProperties.expiredTimeMs()
-            );
-        } catch (UsernameNotFoundException e) {
-            throw new UserAccountException(ErrorCode.INVALID_USER, e);
+        //비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
+        if (!encoder.matches(password, userAccount.getUserPassword())) {
+            throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
         }
+        String accessToken = getAccessToken(email, userAccount.getNickname(), userAccount);
+        String refreshToken = tokenProvider.generateRefreshToken();
+        updateRefreshToken(userAccount.getId(), refreshToken);
+
+        return LoginResponse.of(email, userAccount.getNickname(), accessToken, refreshToken);
+    }
+
+    @Transactional
+    public LoginResponse oauthLogin(String email, String nickname) {
+        UserAccount userAccount = userAccountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
+        if (!nickname.equals(userAccount.getNickname())) {
+            throw new AuthException(AuthErrorCode.NOT_EQUAL_NICKNAME);
+        }
+        String accessToken = getAccessToken(email, nickname, userAccount);
+        String refreshToken = tokenProvider.generateRefreshToken();
+        updateRefreshToken(userAccount.getId(), refreshToken);
+        return LoginResponse.of(email, nickname, accessToken, refreshToken);
+    }
+
+    private String getAccessToken(String email, String nickname, UserAccount userAccount) {
+        String accessToken = tokenProvider.generateAccessToken(
+                email,
+                nickname,
+                String.format("%s:%s", userAccount.getId(), userAccount.getUserRole())
+        );
+        return accessToken;
+    }
+
+    private void updateRefreshToken(Long id, String refreshToken) {
+
+        userRefreshTokenRepository.findById(id)
+                .ifPresentOrElse(
+                        it -> it.updateRefreshToken(refreshToken),
+                        () -> userRefreshTokenRepository.save(UserRefreshToken.of(refreshToken))
+                );
     }
 }

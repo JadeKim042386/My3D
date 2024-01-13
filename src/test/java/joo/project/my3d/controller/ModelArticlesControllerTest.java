@@ -30,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -78,6 +80,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("2. [GET] 게시글 페이지 - 정상")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void modelArticle() throws Exception {
         // Given
@@ -94,7 +97,6 @@ class ModelArticlesControllerTest {
         // When
         mvc.perform(
                         get("/model_articles/1")
-                                .cookie(Fixture.getCookie())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -110,6 +112,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("3. [GET] 게시글 작성 페이지")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void writeNewModelArticle() throws Exception {
         // Given
@@ -117,7 +120,6 @@ class ModelArticlesControllerTest {
         // When
         mvc.perform(
                     get("/model_articles/add")
-                            .cookie(Fixture.getCookie())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -127,6 +129,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("4. [POST] 게시글 추가 - 정상")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addNewModelArticle() throws Exception {
         // Given
@@ -146,7 +149,6 @@ class ModelArticlesControllerTest {
                             .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                             .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                             .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                            .cookie(Fixture.getCookie())
                             .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -158,6 +160,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("5. [POST][ValidationError] 게시글 추가(비어있는 파일) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addNewModelArticle_WithoutFile() throws Exception {
         // Given
@@ -175,7 +178,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -193,6 +195,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("6. [POST][ValidationError] 게시글 추가(카테고리를 선택하지 않았을 경우) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addNewModelArticle_WithoutCategory() throws Exception {
         // Given
@@ -211,7 +214,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -229,6 +231,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("7. [POST][ValidationError] 게시글 추가(치수옵션을 추가하지 않았을 경우) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void addNewModelArticle_WithoutDimensionOption() throws Exception {
         // Given
@@ -241,7 +244,6 @@ class ModelArticlesControllerTest {
                                 .param("title", "title")
                                 .param("content", "content")
                                 .param("articleCategory", "MUSIC")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -258,6 +260,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("8. [POST] 게시글 추가(S3 업로드에 실패할 경우) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void addNewModelArticle_FailedS3Upload() throws Exception {
@@ -280,7 +283,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -290,6 +292,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("10. [GET] 게시글 수정 페이지")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void updateModelArticle() throws Exception {
         // Given
@@ -303,7 +306,6 @@ class ModelArticlesControllerTest {
         // When
         mvc.perform(
                         get("/model_articles/update/1")
-                                .cookie(Fixture.getCookie())
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -318,6 +320,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("11. [PUT] 게시글 수정 - 정상")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void updateRequestModelArticle() throws Exception {
         // Given
@@ -339,7 +342,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -349,6 +351,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("12. [PUT][ValidationError] 게시글 수정(비어있는 파일) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void updateRequestModelArticle_WithoutCategory() throws Exception {
         // Given
@@ -367,7 +370,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -385,6 +387,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("13. [PUT][ValidationError] 게시글 수정(카테고리를 선택하지 않았을 경우) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void updateRequestModelArticle_EmptyFile() throws Exception {
         // Given
@@ -404,7 +407,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -422,6 +424,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("14. [PUT][ValidationError] 게시글 수정(치수옵션을 추가하지 않았을 경우) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void updateRequestModelArticle_WithoutDimensionOption() throws Exception {
         // Given
@@ -435,7 +438,6 @@ class ModelArticlesControllerTest {
                                 .param("summary", "summary")
                                 .param("content", "content")
                                 .param("articleCategory", "MUSIC")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -452,6 +454,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("15. [PUT] 게시글 수정(파일 업데이트 실패) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedFileUpdate() throws Exception {
@@ -473,7 +476,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -484,6 +486,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("16. [PUT] 게시글 수정(게시글 업데이트 실패) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedArticleUpdate() throws Exception {
@@ -506,7 +509,6 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
                                 .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -517,6 +519,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("17. [DELETE] 게시글 삭제 - 정상")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void deleteModelArticle() throws Exception {
         // Given
@@ -526,7 +529,6 @@ class ModelArticlesControllerTest {
         mvc.perform(
                         delete("/model_articles/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -536,6 +538,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("18. [DELETE] 게시글 삭제(게시글 삭제 실패) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticle() throws Exception {
@@ -546,7 +549,6 @@ class ModelArticlesControllerTest {
         mvc.perform(
                         delete("/model_articles/1/delete")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -556,6 +558,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("19. [DELETE] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticleFile() throws Exception {
@@ -565,7 +568,6 @@ class ModelArticlesControllerTest {
         mvc.perform(
                         delete("/model_articles/delete/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .cookie(Fixture.getCookie())
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
@@ -575,6 +577,7 @@ class ModelArticlesControllerTest {
     }
 
     @DisplayName("20. [GET] 게시글 파일 다운로드 - 정상")
+    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void downloadArticleFile() throws Exception {
         //given
@@ -584,7 +587,6 @@ class ModelArticlesControllerTest {
         //when
         mvc.perform(
                 get("/model_articles/download/1")
-                        .cookie(Fixture.getCookie())
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

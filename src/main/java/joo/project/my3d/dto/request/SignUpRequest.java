@@ -3,6 +3,7 @@ package joo.project.my3d.dto.request;
 import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
+import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
 
 import javax.validation.constraints.NotBlank;
@@ -24,7 +25,7 @@ public record SignUpRequest(
         String detailAddress
 ) {
 
-    public UserAccount toEntity(String email) {
+    public UserAccount toEntity(String email, String refreshToken) {
         return UserAccount.of(
                 email,
                 password,
@@ -37,6 +38,7 @@ public record SignUpRequest(
                 ),
                 true,
                 userRole,
+                UserRefreshToken.of(refreshToken),
                 Company.of(
                         companyName,
                         null
