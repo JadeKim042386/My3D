@@ -1,8 +1,8 @@
 -- 테스트 계정 3개
-insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, sign_up, user_role, created_at, created_by, modified_at, modified_by) values
-('jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', null, null, null, true, 'ADMIN', now(), 'joo', now(), 'joo'),
-('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, true, 'USER', now(), 'a', now(), 'a'),
-('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, true, 'COMPANY', now(), 'jujoo', now(), 'jujoo');
+insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, user_role, created_at, created_by, modified_at, modified_by) values
+('jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', null, null, null, 'ADMIN', now(), 'joo', now(), 'joo'),
+('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, 'USER', now(), 'a', now(), 'a'),
+('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, 'COMPANY', now(), 'jujoo', now(), 'jujoo');
 
 -- Refresh Token
 insert into user_refresh_token (user_account_id, refresh_token, reissue_count) values

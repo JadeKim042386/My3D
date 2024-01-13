@@ -18,12 +18,12 @@ public class FixtureDto {
 
     public static UserAccountDto getUserAccountDto() {
         AddressDto addressDto = FixtureDto.getAddressDto();
-        return UserAccountDto.of("jk042386@gmail.com", "pw", "01011111111", "Joo", addressDto, true, UserRole.USER);
+        return UserAccountDto.of("jk042386@gmail.com", "pw", "01011111111", "Joo", addressDto, UserRole.USER);
     }
 
-    public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole, boolean isSignUp) {
+    public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole) {
         AddressDto addressDto = FixtureDto.getAddressDto();
-        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, isSignUp, userRole);
+        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, userRole);
     }
 
     public static ArticleFileDto getArticleFileDto() {
@@ -165,7 +165,7 @@ public class FixtureDto {
     }
 
     public static UsernamePasswordAuthenticationToken getAuthentication(String nickname, UserRole userRole) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto(nickname, userRole, true);
+        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto(nickname, userRole);
         BoardPrincipal principal = BoardPrincipal.from(userAccountDto);
         return new UsernamePasswordAuthenticationToken(
                 principal,
@@ -183,6 +183,6 @@ public class FixtureDto {
     }
 
     public static BoardPrincipal getPrincipal() {
-        return BoardPrincipal.of(1L, "a@gmail.com", "pw", "phone", "nickname", UserRole.USER, Address.of(null, null, null), true, Map.of());
+        return BoardPrincipal.of(1L, "a@gmail.com", "pw", "phone", "nickname", UserRole.USER, Address.of(null, null, null), Map.of());
     }
 }

@@ -184,7 +184,7 @@ public class JpaRepositoryTest {
         void saveUserAccount() {
             // Given
             String email = "joo2@gmail.com";
-            UserAccount userAccount = Fixture.getUserAccount(email, "pw", "Joo2", true, UserRole.USER);
+            UserAccount userAccount = Fixture.getUserAccount(email, "pw", "Joo2", UserRole.USER);
             long previousCount = userAccountRepository.count();
             log.info("previousCount: {}", previousCount);
             // When

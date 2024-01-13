@@ -36,7 +36,6 @@ public record SignUpRequest(
                         address,
                         detailAddress
                 ),
-                true,
                 userRole,
                 UserRefreshToken.of(refreshToken),
                 Company.of(

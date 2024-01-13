@@ -80,7 +80,7 @@ class UserAccountServiceTest {
     @Test
     void saveUserAccountByEntity() {
         // Given
-        UserAccount userAccount = Fixture.getUserAccount("a2@gmail.com", "pw", "a2", true, UserRole.USER);
+        UserAccount userAccount = Fixture.getUserAccount("a2@gmail.com", "pw", "a2", UserRole.USER);
         given(userAccountRepository.save(any(UserAccount.class))).willReturn(any(UserAccount.class));
         // When
         userAccountService.saveUser(userAccount);

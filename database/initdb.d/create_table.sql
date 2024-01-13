@@ -7,7 +7,6 @@
     `detail` varchar(50) NULL,
     `street` varchar(100) NULL,
     `zipcode` varchar(10) NULL,
-    `sign_up` boolean DEFAULT false NOT NULL,
     `user_role` varchar(10) NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,

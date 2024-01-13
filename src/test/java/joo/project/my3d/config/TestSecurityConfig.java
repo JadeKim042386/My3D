@@ -26,15 +26,15 @@ public class TestSecurityConfig {
     @BeforeTestMethod
     public void securitySetUp() {
         given(userAccountService.searchUser("jooCompany@gmail.com"))
-                .willReturn(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY, true));
+                .willReturn(FixtureDto.getUserAccountDto("jooCompany", UserRole.COMPANY));
         given(userAccountService.searchUser("jooUser@gmail.com"))
-                .willReturn(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true));
+                .willReturn(FixtureDto.getUserAccountDto("jooUser", UserRole.USER));
         given(userAccountService.getUserPrincipal("jooUser@gmail.com"))
-                .willReturn(BoardPrincipal.from(FixtureDto.getUserAccountDto("jooUser", UserRole.USER, true)));
+                .willReturn(BoardPrincipal.from(FixtureDto.getUserAccountDto("jooUser", UserRole.USER)));
         given(userAccountService.searchUser("notSignedJooUser@gmail.com"))
-                .willReturn(FixtureDto.getUserAccountDto("notSignedJooUser", UserRole.USER, false));
+                .willReturn(FixtureDto.getUserAccountDto("notSignedJooUser", UserRole.USER));
         given(userAccountService.searchUser("jooAdmin@gmail.com"))
-                .willReturn(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN, true));
+                .willReturn(FixtureDto.getUserAccountDto("jooAdmin", UserRole.ADMIN));
         willDoNothing().given(userAccountService).saveUser(any());
 
         given(tokenProvider.generateRefreshToken()).willReturn("refreshToken");

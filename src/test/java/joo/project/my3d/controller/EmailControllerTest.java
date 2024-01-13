@@ -83,7 +83,7 @@ class EmailControllerTest {
         String email = "jk042386@gmail.com";
         given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto());
         willDoNothing().given(emailService).sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
-        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN, true));
+        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN));
         willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
         // When
         mvc.perform(

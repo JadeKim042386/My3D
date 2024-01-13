@@ -21,11 +21,10 @@ public record BoardPrincipal(
         Collection<? extends GrantedAuthority> authorities,
         String nickname,
         Address address,
-        boolean signUp, //회원가입 여부
         Map<String, Object> oAuth2Attributes
 ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp) {
+    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address) {
 
         return new BoardPrincipal(
                 id,
@@ -35,12 +34,11 @@ public record BoardPrincipal(
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
                 address,
-                signUp,
                 Map.of()
         );
     }
 
-    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, boolean signUp, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, Map<String, Object> oAuth2Attributes) {
 
         return new BoardPrincipal(
                 id,
@@ -50,7 +48,6 @@ public record BoardPrincipal(
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
                 address,
-                signUp,
                 oAuth2Attributes
         );
     }
@@ -63,8 +60,7 @@ public record BoardPrincipal(
                 dto.phone(),
                 dto.nickname(),
                 dto.userRole(),
-                dto.addressDto().toEntity(),
-                dto.signUp()
+                dto.addressDto().toEntity()
         );
     }
 
@@ -76,7 +72,6 @@ public record BoardPrincipal(
                 nickname,
                 phone,
                 AddressDto.from(address),
-                signUp,
                 getUserRole()
         );
     }
@@ -126,9 +121,5 @@ public record BoardPrincipal(
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public boolean notSignUp() {
-        return !signUp;
     }
 }

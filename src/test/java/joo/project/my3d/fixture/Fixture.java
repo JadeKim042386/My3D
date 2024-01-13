@@ -37,12 +37,12 @@ public class Fixture {
         return ArticleLike.of(userAccount, article);
     }
 
-    public static UserAccount getUserAccount(String email, String userPassword, String nickname, boolean signUp, UserRole userRole) {
-        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), signUp, userRole, Fixture.getUserRefreshToken(), Company.of(null, null));
+    public static UserAccount getUserAccount(String email, String userPassword, String nickname, UserRole userRole) {
+        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), userRole, Fixture.getUserRefreshToken(), Company.of(null, null));
     }
 
     public static UserAccount getUserAccount() {
-        UserAccount userAccount = Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", true, UserRole.USER);
+        UserAccount userAccount = Fixture.getUserAccount("jk042386@gmail.com", "pw", "Joo", UserRole.USER);
         try {
             FieldUtils.writeField(userAccount, "id", 1L, true);
         } catch (IllegalAccessException e) {
@@ -57,7 +57,7 @@ public class Fixture {
         return ArticleFile.of(5555L, "test.stp", "uuid.stp", "stp", dimensionOption);
     }
 
-    public static MockMultipartFile getMultipartFile() throws IOException {
+    public static MockMultipartFile getMultipartFile() {
         return Fixture.getMultipartFile("Hello, World!");
     }
 

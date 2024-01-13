@@ -130,7 +130,6 @@ public class SecurityConfig {
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
             //회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
-            //TODO: exist 쿼리로 변경
             try {
                 UserAccountDto userAccountDto = userAccountService.searchUser(email);
                 return BoardPrincipal.from(userAccountDto);
@@ -142,7 +141,6 @@ public class SecurityConfig {
                                         email,
                                         dummyPassword,
                                         attributes.getName(),
-                                        false,
                                         UserRole.ANONYMOUS,
                                         UserRefreshToken.of(null),
                                         email
