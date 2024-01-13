@@ -117,4 +117,5 @@ jwt:
   token:
     cookie-name: "token"
     secret-key: "aaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" # >= 256bits
-    expired-time-ms: 2592000000 # 30일
+    access-expired-ms: 1800000 # 30 * 60000 = 30 minutes
+    refresh-expired-ms: 31540000000 # 24 * 3600000 = 24 hours
