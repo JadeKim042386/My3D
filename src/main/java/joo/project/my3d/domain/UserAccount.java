@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingAt;
 import joo.project.my3d.domain.constant.UserRole;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,7 @@ import java.util.Set;
         }
 )
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class UserAccount implements Persistable<Long> {
+public class UserAccount extends AuditingAt implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -85,17 +85,6 @@ public class UserAccount implements Persistable<Long> {
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "userAccount")
     private final Set<Alarm> alarms = new LinkedHashSet<>();
-
-    //TODO: Auditing 클래스를 따로 만드는 것이 나을 것 같음
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    protected LocalDateTime createdAt;
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @LastModifiedDate
-    @Column(nullable = false)
-    protected LocalDateTime modifiedAt;
 
     protected UserAccount() {
     }

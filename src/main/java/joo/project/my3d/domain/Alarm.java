@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.AlarmType;
 import lombok.Getter;
 import lombok.Setter;

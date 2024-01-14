@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingFields;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
