@@ -1,6 +1,7 @@
 package joo.project.my3d.security;
 
 import io.jsonwebtoken.Claims;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -84,8 +84,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
      * AnonymousAuthenticationFilter에서 AnonymousAuthenticationToken을 등록한다.
      */
     private void setAuthentication(HttpServletRequest request, Claims claims, String accessToken) {
-        User user = tokenProvider.getUserDetails(claims);
-        UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(user, accessToken, user.getAuthorities());
+        BoardPrincipal boardPrincipal = tokenProvider.getUserDetails(claims);
+        UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(boardPrincipal, accessToken, boardPrincipal.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
     }

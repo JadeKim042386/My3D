@@ -6,21 +6,20 @@ import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import joo.project.my3d.domain.UserRefreshToken;
+import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.properties.JwtProperties;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -102,9 +101,12 @@ public class TokenProvider {
      */
     public String[] parseSpecification(Claims claims) {
         try {
+            String[] spec = claims.get(TokenProvider.KEY_SPEC, String.class).split(":");
             return new String[]{
+                    spec[0], //id
                     claims.get(TokenProvider.KEY_EMAIL, String.class),
-                    claims.get(TokenProvider.KEY_SPEC, String.class).split(":")[1] //authority
+                    claims.get(TokenProvider.KEY_NICKNAME, String.class),
+                    spec[1] //authority
             };
         } catch (RequiredTypeException e) {
             return null;
@@ -114,11 +116,12 @@ public class TokenProvider {
     /**
      * access token의 형식이 잘못되었을 경우 ANONYMOUS로 반환
      */
-    public User getUserDetails(Claims claims) {
+    public BoardPrincipal getUserDetails(Claims claims) {
         String[] parsed = Optional.ofNullable(claims)
                 .map(this::parseSpecification)
-                .orElse(new String[]{ANONYMOUS, ANONYMOUS});
-        return new User(parsed[0], "", List.of(new SimpleGrantedAuthority(parsed[1])));
+                .orElse(new String[]{null, ANONYMOUS, ANONYMOUS, ANONYMOUS});
+
+        return BoardPrincipal.of(Long.parseLong(parsed[0]), parsed[1], parsed[2], UserRole.valueOf(parsed[3]));
     }
 
     private String getSpec(String token) {

@@ -24,22 +24,7 @@ public record BoardPrincipal(
         Map<String, Object> oAuth2Attributes
 ) implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address) {
-
-        return new BoardPrincipal(
-                id,
-                email,
-                password,
-                phone,
-                Set.of(new SimpleGrantedAuthority(userRole.getName())),
-                nickname,
-                address,
-                Map.of()
-        );
-    }
-
     public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, Map<String, Object> oAuth2Attributes) {
-
         return new BoardPrincipal(
                 id,
                 email,
@@ -49,6 +34,35 @@ public record BoardPrincipal(
                 nickname,
                 address,
                 oAuth2Attributes
+        );
+    }
+
+    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address) {
+        return BoardPrincipal.of(
+                id,
+                email,
+                password,
+                phone,
+                nickname,
+                userRole,
+                address,
+                Map.of()
+        );
+    }
+
+    /**
+     * JWT Token to BoardPrincipal
+     */
+    public static BoardPrincipal of(Long id, String email, String nickname, UserRole userRole) {
+        return BoardPrincipal.of(
+                id,
+                email,
+                null,
+                null,
+                nickname,
+                userRole,
+                null,
+                Map.of()
         );
     }
 
