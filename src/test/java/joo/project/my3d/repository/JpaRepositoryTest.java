@@ -211,7 +211,6 @@ public class JpaRepositoryTest {
             userAccountRepository.saveAndFlush(userAccount);
             // Then
             assertThat(userAccount).hasFieldOrPropertyWithValue("phone", modified_phone);
-            assertThat(userAccount.getModifiedBy()).isEqualTo(userAccount.getCreatedBy());
             assertThat(userAccount.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
 

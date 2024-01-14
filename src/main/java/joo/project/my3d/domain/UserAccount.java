@@ -4,9 +4,14 @@ import joo.project.my3d.domain.constant.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,7 +27,8 @@ import java.util.Set;
         }
 )
 @Entity
-public class UserAccount extends AuditingFields implements Persistable<Long> {
+@EntityListeners(AuditingEntityListener.class)
+public class UserAccount implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -80,10 +86,21 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
     @OneToMany(mappedBy = "userAccount")
     private final Set<Alarm> alarms = new LinkedHashSet<>();
 
+    //TODO: Auditing 클래스를 따로 만드는 것이 나을 것 같음
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    protected LocalDateTime createdAt;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @LastModifiedDate
+    @Column(nullable = false)
+    protected LocalDateTime modifiedAt;
+
     protected UserAccount() {
     }
 
-    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company, String createdBy) {
+    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company) {
         this.email = email;
         this.userPassword = userPassword;
         this.nickname = nickname;
@@ -92,15 +109,13 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
         this.userRole = userRole;
         this.userRefreshToken = userRefreshToken;
         this.company = company;
-        this.createdBy = createdBy;
-        this.modifiedBy = createdBy;
     }
 
     /**
      * 회원 저장(saveUser)시 사용<br>
      * 폰번호, 주소, 기업 제외
      */
-    public static UserAccount of(String email, String userPassword, String nickname, UserRole userRole, UserRefreshToken userRefreshToken, String createdBy) {
+    public static UserAccount of(String email, String userPassword, String nickname, UserRole userRole, UserRefreshToken userRefreshToken) {
         return new UserAccount(
                 email,
                 userPassword,
@@ -109,14 +124,12 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
                 Address.of(null, null, null),
                 userRole,
                 userRefreshToken,
-                Company.of(null, null),
-                createdBy
+                Company.of(null, null)
         );
     }
 
     /**
-     * DTO 를 Entity 로 변환시 사용 <br>
-     * 생성자(createdBy) 제외
+     * 모든 필드 주입
      */
     public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company) {
         return new UserAccount(
@@ -127,25 +140,7 @@ public class UserAccount extends AuditingFields implements Persistable<Long> {
                 address,
                 userRole,
                 userRefreshToken,
-                company,
-                null
-        );
-    }
-
-    /**
-     * 모든 필드 주입
-     */
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company, String createdBy) {
-        return new UserAccount(
-                email,
-                userPassword,
-                nickname,
-                phone,
-                address,
-                userRole,
-                userRefreshToken,
-                company,
-                createdBy
+                company
         );
     }
 

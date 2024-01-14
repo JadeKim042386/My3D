@@ -5,7 +5,6 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.response.LoginResponse;
-import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import joo.project.my3d.util.FormDataEncoder;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,6 @@ class LoginControllerTest {
     @Autowired private MockMvc mvc;
     @Autowired private FormDataEncoder formDataEncoder;
     @Autowired private UserAccountService userAccountService;
-    @MockBean private SignUpService signUpService;
     @MockBean private SecurityContextLogoutHandler logoutHandler;
 
     @DisplayName("[POST] 로그인 요청")
@@ -103,7 +101,6 @@ class LoginControllerTest {
         // Given
         String email = "tester@gmail.com";
         SignUpRequest request = new SignUpRequest(UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
-        willDoNothing().given(signUpService).setPrincipal(any());
         willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
         given(userAccountService.login(anyString(), anyString()))
                 .willReturn(LoginResponse.of(email, "nickname", "accessToken", "refreshToken"));

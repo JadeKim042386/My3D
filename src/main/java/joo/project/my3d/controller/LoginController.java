@@ -1,13 +1,11 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.security.TokenProvider;
-import joo.project.my3d.service.SignUpService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final SignUpService signUpService;
     private final UserAccountService userAccountService;
     private final BCryptPasswordEncoder encoder;
     private final TokenProvider tokenProvider;
@@ -120,20 +117,13 @@ public class LoginController {
         }
 
         String refreshToken = tokenProvider.generateRefreshToken();
-        //TODO: DTO로 변환하는 과정이 불필요해보임
-        UserAccountDto userAccountDto = UserAccountDto.from(
-                signUpRequest.toEntity(email, refreshToken),
-                encoder
+        userAccountService.saveUser(
+                signUpRequest.toEntity(email, refreshToken, encoder)
         );
-
-        //auditorAware를 위해 principal을 먼저 등록
-        //TODO: setPrincipal 함수가 꼭 필요한지 다시 확인 필요
-        signUpService.setPrincipal(userAccountDto);
-        userAccountService.saveUser(userAccountDto.toEntity(refreshToken));
 
         //로그인 처리
         return ApiResponse.success(
-                userAccountService.login(email, userAccountDto.userPassword())
+                userAccountService.login(email, signUpRequest.password())
         );
     }
 

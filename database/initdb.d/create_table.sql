@@ -10,8 +10,6 @@
     `user_role` varchar(10) NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE (`nickname`),
     UNIQUE (`email`)

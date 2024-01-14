@@ -26,7 +26,6 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Configuration
@@ -142,8 +141,7 @@ public class SecurityConfig {
                                         dummyPassword,
                                         attributes.getName(),
                                         UserRole.ANONYMOUS,
-                                        UserRefreshToken.of(null),
-                                        email
+                                        UserRefreshToken.of(null)
                                 )
                         )
                 );

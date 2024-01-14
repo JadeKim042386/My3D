@@ -3,7 +3,6 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.dto.AlarmDto;
-import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

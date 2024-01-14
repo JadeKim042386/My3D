@@ -5,6 +5,7 @@ import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -25,10 +26,10 @@ public record SignUpRequest(
         String detailAddress
 ) {
 
-    public UserAccount toEntity(String email, String refreshToken) {
+    public UserAccount toEntity(String email, String refreshToken, PasswordEncoder encoder) {
         return UserAccount.of(
                 email,
-                password,
+                encoder.encode(password),
                 nickname,
                 null,
                 Address.of(
@@ -41,8 +42,7 @@ public record SignUpRequest(
                 Company.of(
                         companyName,
                         null
-                ),
-                email
+                )
         );
     }
 }
