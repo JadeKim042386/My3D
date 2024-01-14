@@ -1,7 +1,5 @@
 package joo.project.my3d.security;
 
-import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -135,15 +133,11 @@ public class SecurityConfig {
                 return BoardPrincipal.from(userAccountDto);
             } catch (UsernameNotFoundException e) {
                 return BoardPrincipal.from(
-                        // TODO: dto로 변환하는 과정은 불필요해 보임
-                        UserAccountDto.from(
-                                UserAccount.of(
-                                        email,
-                                        dummyPassword,
-                                        attributes.getName(),
-                                        UserRole.ANONYMOUS,
-                                        UserRefreshToken.of(null)
-                                )
+                        UserAccountDto.of(
+                            email,
+                            dummyPassword,
+                            attributes.getName(),
+                            UserRole.ANONYMOUS
                         )
                 );
             }

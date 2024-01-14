@@ -7,7 +7,6 @@ import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -21,47 +20,43 @@ public record UserAccountDto(
         String phone,
         AddressDto addressDto,
         UserRole userRole,
-        CompanyDto companyDto,
-        LocalDateTime createdAt,
-        String createdBy,
-        LocalDateTime modifiedAt,
-        String modifiedBy
+        CompanyDto companyDto
 ) {
 
     /**
      * 모든 필드 주입
      */
-    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto address, UserRole userRole, CompanyDto company, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new UserAccountDto(id, email, userPassword, nickname, phone, address, userRole, company, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole, CompanyDto company) {
+        return new UserAccountDto(id, email, userPassword, nickname, phone, addressDto, userRole, company);
     }
 
     /**
-     * 생성일시, 생성자, 수정일시, 수정자, 회사 정보 제외 (개인 사용자)
+     * 회사 정보 제외 (개인 사용자)
      */
     public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
-        return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, userRole, CompanyDto.of(), null, null, null, null);
+        return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, userRole, CompanyDto.of());
     }
 
     /**
      * boardPrincipal -> DTO
      */
     public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
-        return UserAccountDto.of(null, email, userPassword, nickname, phone, addressDto, userRole, CompanyDto.of(), null, null, null, null);
+        return UserAccountDto.of(null, email, userPassword, nickname, phone, addressDto, userRole);
     }
 
     /**
      * 계정 정보 수정에 사용
-     * 생성일시, 생성자, 수정일시, 수정자, 비밀번호, 가입여부, 회사 정보 제외 (개인 사용자)
+     * 비밀번호, 회사 정보 제외 (개인 사용자)
      */
     public static UserAccountDto of(String email, String nickname, String phone, AddressDto addressDto) {
-        return UserAccountDto.of(null, email, null, nickname, phone, addressDto, null, CompanyDto.of(), null, null, null, null);
+        return UserAccountDto.of(email, null, nickname, phone, addressDto, null);
     }
 
     /**
-     * 생성일시, 생성자, 수정일시, 수정자, 폰번호, 주소 제외 (기업/기관)
+     * OAuth 최초 로그인시 임시로 생성하기위해 사용
      */
-    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole, CompanyDto company) {
-        return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, userRole, company, null, null, null, null);
+    public static UserAccountDto of(String email, String userPassword, String nickname, UserRole userRole) {
+        return UserAccountDto.of(email, userPassword, nickname, null, AddressDto.of(), userRole);
     }
 
     public static UserAccountDto from(UserAccount userAccount) {
