@@ -10,7 +10,6 @@ import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.FileException;
-import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleLikeRepository;
@@ -18,7 +17,6 @@ import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import joo.project.my3d.service.PaginationService;
 import joo.project.my3d.service.aws.S3Service;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,6 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.IOException;
 import java.util.List;
 
 import static joo.project.my3d.exception.constant.ErrorCode.*;
