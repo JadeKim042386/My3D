@@ -6,12 +6,15 @@ import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.security.TokenProvider;
+import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginController {
 
     private final UserAccountService userAccountService;
+    private final CompanyService companyService;
     private final BCryptPasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final SecurityContextLogoutHandler logoutHandler;
@@ -95,11 +99,17 @@ public class LoginController {
     /**
      * 닉네임, 기업명 중복 체크
      */
-    @GetMapping("/signup/duplicatedCheck")
-    public ApiResponse<Boolean> duplicatedNicknamesOrCompanyNamesCheck() {
-
-        //TODO: exist 쿼리로 중복 체크
-        return ApiResponse.success(true);
+    @PostMapping("/signup/duplicatedCheck")
+    public ApiResponse<Boolean> duplicatedNicknamesOrCompanyNamesCheck(
+            @RequestParam(required = false) String nickname,
+            @RequestParam(required = false) String companyName
+    ) {
+        if (StringUtils.hasText(nickname) && userAccountService.isExistsUserNickname(nickname)) {
+            return ApiResponse.success(true);
+        } else if (StringUtils.hasText(companyName) && companyService.isExistsByCompanyName(companyName)) {
+            return ApiResponse.success(true);
+        }
+        return ApiResponse.success(false);
     }
 
     /**

@@ -45,7 +45,7 @@ public class EmailController {
         }
 
         //이메일 중복 체크
-        if (userAccountService.isExistsUser(email)) {
+        if (userAccountService.isExistsUserEmail(email)) {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.ALREADY_EXIST_EMAIL, userRole));
         }
 
@@ -63,7 +63,7 @@ public class EmailController {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.INVALID_EMAIL_FORMAT));
         }
         //유저의 존재 유무 확인
-        if (!userAccountService.isExistsUser(email)) {
+        if (!userAccountService.isExistsUserEmail(email)) {
             return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.NOT_FOUND_EMAIL));
         }
         String code = String.valueOf(UUID.randomUUID()).split("-")[0];

@@ -66,6 +66,7 @@ public class SecurityConfig {
                                 "/account/oauth/response",
                                 "/account/login",
                                 "/account/signup",
+                                "/account/signup/duplicatedCheck",
                                 "/account/find_pass",
                                 "/account/find_pass/success",
                                 "/account/type",

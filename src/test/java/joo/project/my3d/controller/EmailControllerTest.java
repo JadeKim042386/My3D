@@ -55,7 +55,7 @@ class EmailControllerTest {
     void sendEmailDuplicatedError() throws Exception {
         // Given
         String email = "jk042386@gmail.com";
-        given(userAccountService.isExistsUser(anyString())).willReturn(true);
+        given(userAccountService.isExistsUserEmail(anyString())).willReturn(true);
         // When
         mvc.perform(
                         post("/mail/send_code")
@@ -94,7 +94,7 @@ class EmailControllerTest {
     void sendEmailFindPassNotFound() throws Exception {
         // Given
         String email = "tester@gmail.com";
-        given(userAccountService.isExistsUser(anyString())).willReturn(false);
+        given(userAccountService.isExistsUserEmail(anyString())).willReturn(false);
         // Whe
         mvc.perform(
                         post("/mail/find_pass")

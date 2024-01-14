@@ -33,6 +33,10 @@ public class CompanyService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.NOT_FOUND_COMPANY));
     }
 
+    public boolean isExistsByCompanyName(String companyName) {
+        return companyRepository.existsByCompanyName(companyName);
+    }
+
     /**
      * @throws CompanyException 기업 정보 저장 실패했을 경우 발생하는 예외
      */

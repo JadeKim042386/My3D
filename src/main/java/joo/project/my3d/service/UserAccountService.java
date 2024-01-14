@@ -47,8 +47,12 @@ public class UserAccountService {
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
 
-    public boolean isExistsUser(String email) {
+    public boolean isExistsUserEmail(String email) {
         return userAccountRepository.existsByEmail(email);
+    }
+
+    public boolean isExistsUserNickname(String nickname) {
+        return userAccountRepository.existsByNickname(nickname);
     }
 
     /**
