@@ -5,7 +5,6 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.CompanyException;
-import joo.project.my3d.exception.constant.AuthErrorCode;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -30,7 +29,7 @@ public class CompanyService {
     public CompanyDto getCompany(String email) {
         return companyRepository.findByUserAccount_Email(email)
                 .map(CompanyDto::from)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.NOT_FOUND_COMPANY));
+                .orElseThrow(() -> new AuthException(ErrorCode.NOT_FOUND_COMPANY));
     }
 
     public boolean isExistsByCompanyName(String companyName) {
@@ -65,7 +64,7 @@ public class CompanyService {
                 company.setHomepage(dto.homepage());
             }
         } catch (EntityNotFoundException e) {
-            throw new AuthException(AuthErrorCode.NOT_FOUND_COMPANY, e);
+            throw new AuthException(ErrorCode.NOT_FOUND_COMPANY, e);
         }
     }
 

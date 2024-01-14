@@ -1,20 +1,20 @@
 package joo.project.my3d.dto.response;
 
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.exception.constant.MailErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 
 public record EmailResponse(
         String email,
-        MailErrorCode emailError,
+        ErrorCode errorCode,
         String emailCode,
         UserRole userRole
 ) {
-    public static EmailResponse sendError(String email, MailErrorCode emailError, UserRole userRole) {
-        return new EmailResponse(email, emailError, null, userRole);
+    public static EmailResponse sendError(String email, ErrorCode errorCode, UserRole userRole) {
+        return new EmailResponse(email, errorCode, null, userRole);
     }
 
-    public static EmailResponse sendError(String email, MailErrorCode emailError) {
-        return EmailResponse.sendError(email, emailError, null);
+    public static EmailResponse sendError(String email, ErrorCode errorCode) {
+        return EmailResponse.sendError(email, errorCode, null);
     }
 
     public static EmailResponse sendSuccess(String email, String emailCode, UserRole userRole) {

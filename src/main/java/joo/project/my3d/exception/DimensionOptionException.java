@@ -4,22 +4,12 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class DimensionOptionException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
-
+public class DimensionOptionException extends CustomException {
     public DimensionOptionException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public DimensionOptionException(ErrorCode errorCode, Exception causeException) {
-        this.errorCode = errorCode;
-        super.initCause(causeException);
-    }
-
-    @Override
-    public String getMessage() {
-        return errorCode.getMessage();
+        super(errorCode, causeException);
     }
 }

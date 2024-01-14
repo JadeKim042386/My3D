@@ -15,7 +15,7 @@ public class ApiResponse<T>{
     private String message;
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(SUCCESS, data, null);
+        return new ApiResponse<>(SUCCESS, data,null);
     }
 
     public static ApiResponse<Void> success() {

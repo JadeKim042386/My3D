@@ -38,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.IOException;
 import java.util.List;
 
+import static joo.project.my3d.exception.constant.ErrorCode.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -181,6 +182,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -217,6 +219,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -247,6 +250,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -261,14 +265,13 @@ class ModelArticlesControllerTest {
 
     @DisplayName("8. [POST] 게시글 추가(S3 업로드에 실패할 경우) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void addNewModelArticle_FailedS3Upload() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
         given(articleService.saveArticle(anyString(), any(ArticleDto.class))).willReturn(article);
-        willThrow(new IOException()).given(s3Service).uploadFile(any(), anyString());
+        willThrow(new FileException(FILE_CANT_SAVE)).given(s3Service).uploadFile(any(), anyString());
         // When
         mvc.perform(
                         multipart(HttpMethod.POST, "/model_articles/add")
@@ -285,8 +288,9 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isString());
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(FILE_CANT_SAVE.getMessage()));
 
         // Then
     }
@@ -373,6 +377,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -410,6 +415,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -441,6 +447,7 @@ class ModelArticlesControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
                 .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
                 .andExpect(jsonPath("$.data.title").value("title"))
@@ -455,12 +462,11 @@ class ModelArticlesControllerTest {
 
     @DisplayName("15. [PUT] 게시글 수정(파일 업데이트 실패) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedFileUpdate() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willThrow(new FileException(ErrorCode.FAILED_DELETE)).given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
+        willThrow(new FileException(FAILED_DELETE)).given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
         // When
         mvc.perform(
                         multipart(HttpMethod.PUT, "/model_articles/update/1")
@@ -478,8 +484,9 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isString())
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()))
         ;
 
         // Then
@@ -487,13 +494,12 @@ class ModelArticlesControllerTest {
 
     @DisplayName("16. [PUT] 게시글 수정(게시글 업데이트 실패) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void updateRequestModelArticle_FailedArticleUpdate() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         willDoNothing().given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
-        willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)).given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
+        willThrow(new ArticleException(ARTICLE_NOT_FOUND)).given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
         // When
         mvc.perform(
                         multipart(HttpMethod.PUT, "/model_articles/update/1")
@@ -511,9 +517,9 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isString())
+                .andExpect(jsonPath("$.message").value(ARTICLE_NOT_FOUND.getMessage()))
         ;
         // Then
     }
@@ -539,40 +545,38 @@ class ModelArticlesControllerTest {
 
     @DisplayName("18. [DELETE] 게시글 삭제(게시글 삭제 실패) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticle() throws Exception {
         // Given
         willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
-        willThrow(new ArticleException(ErrorCode.FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
+        willThrow(new ArticleException(FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
         // When
         mvc.perform(
-                        delete("/model_articles/1/delete")
+                        delete("/model_articles/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isString());
+                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()));
         // Then
     }
 
     @DisplayName("19. [DELETE] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Disabled("ExceptionHandler 구현 후 테스트")
     @Test
     void deleteModelArticle_FailedDeleteArticleFile() throws Exception {
         // Given
-        willThrow(new FileException(ErrorCode.FAILED_DELETE)).given(articleFileService).deleteArticleFile(anyLong());
+        willThrow(new FileException(FAILED_DELETE)).given(articleFileService).deleteArticleFile(anyLong());
         // When
         mvc.perform(
-                        delete("/model_articles/delete/1")
+                        delete("/model_articles/1")
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isString());
+                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()));
         // Then
     }
 

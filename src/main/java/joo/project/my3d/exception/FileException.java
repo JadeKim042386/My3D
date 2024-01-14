@@ -4,22 +4,12 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class FileException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
-
+public class FileException extends CustomException {
     public FileException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public FileException(ErrorCode errorCode, Exception causeException) {
-        this.errorCode = errorCode;
-        super.initCause(causeException);
-    }
-
-    @Override
-    public String getMessage() {
-        return errorCode.getMessage();
+        super(errorCode, causeException);
     }
 }

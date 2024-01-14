@@ -2,7 +2,7 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.exception.constant.MailErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.UserAccountService;
@@ -65,7 +65,7 @@ class EmailControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.email").value(email))
-                .andExpect(jsonPath("$.data.emailError").value(MailErrorCode.ALREADY_EXIST_EMAIL.toString()))
+                .andExpect(jsonPath("$.data.emailError").value(ErrorCode.ALREADY_EXIST_EMAIL.toString()))
                 .andExpect(jsonPath("$.status").value("invalid"));
         // Then
     }
@@ -104,7 +104,7 @@ class EmailControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("invalid"))
                 .andExpect(jsonPath("$.data.email").value(email))
-                .andExpect(jsonPath("$.data.emailError").value(MailErrorCode.NOT_FOUND_EMAIL.toString()));
+                .andExpect(jsonPath("$.data.emailError").value(ErrorCode.NOT_FOUND_EMAIL.toString()));
         // Then
     }
 }

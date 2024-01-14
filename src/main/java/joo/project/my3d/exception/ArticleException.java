@@ -4,21 +4,12 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ArticleException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
+public class ArticleException extends CustomException {
     public ArticleException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public ArticleException(ErrorCode errorCode, Exception causeException) {
-        this.errorCode = errorCode;
-        super.initCause(causeException);
-    }
-
-    @Override
-    public String getMessage() {
-        return errorCode.getMessage();
+        super(errorCode, causeException);
     }
 }

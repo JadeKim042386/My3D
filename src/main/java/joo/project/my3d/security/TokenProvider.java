@@ -8,7 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.exception.AuthException;
-import joo.project.my3d.exception.constant.AuthErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class TokenProvider {
         long userAccountId = Long.parseLong(spec.split(":")[0]);
         // 조회하려는 refresh token은 재발행 횟수 제한보다 적게 재발행이 되어야한다.
         UserRefreshToken refreshToken = userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
-                .orElseThrow(() -> new AuthException(AuthErrorCode.EXCEED_REISSUE));
+                .orElseThrow(() -> new AuthException(ErrorCode.EXCEED_REISSUE));
         refreshToken.increaseReissueCount();
 
         return generateAccessToken(
@@ -83,7 +83,7 @@ public class TokenProvider {
         // 조회하려는 refresh token은 현재 유저의 실제 refresh token과 일치해야한다.
         userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
                 .filter(token -> token.equalRefreshToken(refreshToken))
-                .orElseThrow(() -> new AuthException(AuthErrorCode.NOT_EQUAL_TOKEN));
+                .orElseThrow(() -> new AuthException(ErrorCode.NOT_EQUAL_TOKEN));
     }
 
     /**

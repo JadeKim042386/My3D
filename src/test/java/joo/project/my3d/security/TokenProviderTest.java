@@ -3,7 +3,7 @@ package joo.project.my3d.security;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.exception.AuthException;
-import joo.project.my3d.exception.constant.AuthErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -72,11 +72,11 @@ class TokenProviderTest {
     void regenerateAccessToken_exceedReissue() {
         //given
         given(userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(anyLong(), anyLong()))
-                .willThrow(new AuthException(AuthErrorCode.EXCEED_REISSUE));
+                .willThrow(new AuthException(ErrorCode.EXCEED_REISSUE));
         //when
         assertThatThrownBy(() -> tokenProvider.regenerateAccessToken(ACCESS_TOKEN))
                 .isInstanceOf(AuthException.class)
-                .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.EXCEED_REISSUE)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.EXCEED_REISSUE)
         ;
         //then
     }
@@ -100,11 +100,11 @@ class TokenProviderTest {
         //given
         String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwMzg4MDUsImV4cCI6MTcwNTEyNTIwNX0.LOdbNm68s1FxvEoibKOTpQCj_Ball2gBjAQiWl3yw5s";
         given(userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(anyLong(), anyLong()))
-                .willThrow(new AuthException(AuthErrorCode.NOT_EQUAL_TOKEN));
+                .willThrow(new AuthException(ErrorCode.NOT_EQUAL_TOKEN));
         //when
         assertThatThrownBy(() -> tokenProvider.validateRefreshToken(refreshToken, ACCESS_TOKEN))
                 .isInstanceOf(AuthException.class)
-                .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.NOT_EQUAL_TOKEN);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_EQUAL_TOKEN);
         //then
     }
 }

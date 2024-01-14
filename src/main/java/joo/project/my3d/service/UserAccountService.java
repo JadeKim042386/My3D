@@ -7,7 +7,7 @@ import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
-import joo.project.my3d.exception.constant.AuthErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
@@ -79,9 +79,9 @@ public class UserAccountService {
         try {
             userAccountRepository.save(userAccount);
         } catch (IllegalArgumentException e) {
-            throw new AuthException(AuthErrorCode.FAILED_SAVE, e);
+            throw new AuthException(ErrorCode.FAILED_SAVE, e);
         } catch (OptimisticLockingFailureException e) {
-            throw new AuthException(AuthErrorCode.CONFLICT_SAVE, e);
+            throw new AuthException(ErrorCode.CONFLICT_SAVE, e);
         }
     }
 
@@ -115,7 +115,7 @@ public class UserAccountService {
                 userAccount.setAddress(dto.addressDto().toEntity());
             }
         } catch (EntityNotFoundException e) {
-            throw new AuthException(AuthErrorCode.INVALID_USER, e);
+            throw new AuthException(ErrorCode.INVALID_USER, e);
         }
     }
 
@@ -129,7 +129,7 @@ public class UserAccountService {
 
         //비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
         if (!encoder.matches(password, userAccountDto.userPassword())) {
-            throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
+            throw new AuthException(ErrorCode.INVALID_PASSWORD);
         }
         String accessToken = getAccessToken(email, userAccountDto.nickname(), userAccountDto);
         String refreshToken = tokenProvider.generateRefreshToken();
@@ -142,7 +142,7 @@ public class UserAccountService {
     public LoginResponse oauthLogin(String email, String nickname) {
         UserAccountDto userAccountDto = searchUser(email);
         if (!nickname.equals(userAccountDto.nickname())) {
-            throw new AuthException(AuthErrorCode.NOT_EQUAL_NICKNAME);
+            throw new AuthException(ErrorCode.NOT_EQUAL_NICKNAME);
         }
         String accessToken = getAccessToken(email, nickname, userAccountDto);
         String refreshToken = tokenProvider.generateRefreshToken();

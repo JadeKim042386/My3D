@@ -2,7 +2,7 @@ package joo.project.my3d.security;
 
 import io.jsonwebtoken.Claims;
 import joo.project.my3d.exception.AuthException;
-import joo.project.my3d.exception.constant.AuthErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -45,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String refreshToken = parseBearerToken(request, REFRESH_TOKEN_HEADER);
             if (ObjectUtils.isEmpty(refreshToken)) {
                 //TODO: 예외처리
-                request.setAttribute("exception", new AuthException(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN, e));
+                request.setAttribute("exception", new AuthException(ErrorCode.NOT_FOUND_REFRESH_TOKEN, e));
             } else {
                 reissueAccessToken(request, response, refreshToken);
             }

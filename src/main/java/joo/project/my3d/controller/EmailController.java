@@ -3,7 +3,7 @@ package joo.project.my3d.controller;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.EmailResponse;
-import joo.project.my3d.exception.constant.MailErrorCode;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +41,12 @@ public class EmailController {
     ) {
         //이메일 형식 체크
         if (invalidEmailFormat(email)) {
-            return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.INVALID_EMAIL_FORMAT, userRole));
+            return ApiResponse.invalid(EmailResponse.sendError(email, ErrorCode.INVALID_EMAIL_FORMAT, userRole));
         }
 
         //이메일 중복 체크
         if (userAccountService.isExistsUserEmail(email)) {
-            return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.ALREADY_EXIST_EMAIL, userRole));
+            return ApiResponse.invalid(EmailResponse.sendError(email, ErrorCode.ALREADY_EXIST_EMAIL, userRole));
         }
 
         String subject = "[My3D] 이메일 인증";
@@ -60,11 +60,11 @@ public class EmailController {
     public ApiResponse<EmailResponse> sendEmailFindPass(@RequestParam String email) {
         //이메일 형식 체크
         if (invalidEmailFormat(email)) {
-            return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.INVALID_EMAIL_FORMAT));
+            return ApiResponse.invalid(EmailResponse.sendError(email, ErrorCode.INVALID_EMAIL_FORMAT));
         }
         //유저의 존재 유무 확인
         if (!userAccountService.isExistsUserEmail(email)) {
-            return ApiResponse.invalid(EmailResponse.sendError(email, MailErrorCode.NOT_FOUND_EMAIL));
+            return ApiResponse.invalid(EmailResponse.sendError(email, ErrorCode.NOT_FOUND_EMAIL));
         }
         String code = String.valueOf(UUID.randomUUID()).split("-")[0];
         emailService.sendEmail(

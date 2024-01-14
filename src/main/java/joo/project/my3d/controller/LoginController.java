@@ -70,8 +70,7 @@ public class LoginController {
         if (signup) {
             return ApiResponse.success(userAccountService.oauthLogin(email, nickname));
         }
-        //회원가입 안되어있다면 회원 유형 선택 페이지로 redirect
-        //TODO: 회원가입이 안되어있다면 email과 nickmame 전달하고 프론트엔드에서 처리하도록 적용
+        //회원가입이 안되어있다면 email과 nickmame 전달하고 프론트엔드에서 처리하도록 적용
         return ApiResponse.error(String.format("%s:%s", email, nickname));
     }
 

@@ -4,21 +4,12 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class MailException extends RuntimeException {
-
-    private ErrorCode errorCode;
-
+public class MailException extends CustomException {
     public MailException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public MailException(ErrorCode errorCode, Exception causeException) {
-        this.errorCode = errorCode;
-        super.initCause(causeException);
-    }
-
-    @Override
-    public String getMessage() {
-        return errorCode.getMessage();
+        super(errorCode, causeException);
     }
 }
