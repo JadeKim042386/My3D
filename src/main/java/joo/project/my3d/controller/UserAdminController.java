@@ -110,7 +110,7 @@ public class UserAdminController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         return ApiResponse.success(
-                userAccountService.getAlarms(boardPrincipal.email()).stream()
+                alarmService.getAlarms(boardPrincipal.email()).stream()
                 .map(AlarmResponse::from)
                 .toList()
         );

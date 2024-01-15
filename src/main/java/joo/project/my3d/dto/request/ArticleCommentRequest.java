@@ -1,7 +1,6 @@
 package joo.project.my3d.dto.request;
 
 import joo.project.my3d.dto.ArticleCommentDto;
-import joo.project.my3d.dto.UserAccountDto;
 
 public record ArticleCommentRequest(
         Long articleId,
@@ -16,12 +15,12 @@ public record ArticleCommentRequest(
         return ArticleCommentRequest.of(articleId, content, null);
     }
 
-    public ArticleCommentDto toDto(UserAccountDto userAccountDto) {
+    public ArticleCommentDto toDto(String nickname, String email) {
         return ArticleCommentDto.of(
                 articleId,
                 content,
-                userAccountDto.nickname(),
-                userAccountDto.email(),
+                nickname,
+                email,
                 parentCommentId
         );
     }

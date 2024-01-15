@@ -25,7 +25,12 @@ public class ArticleCommentsController {
             ArticleCommentRequest articleCommentRequest,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleCommentService.saveComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
+        articleCommentService.saveComment(
+                articleCommentRequest.toDto(
+                        boardPrincipal.nickname(),
+                        boardPrincipal.email()
+                )
+        );
 
         return ApiResponse.success();
     }

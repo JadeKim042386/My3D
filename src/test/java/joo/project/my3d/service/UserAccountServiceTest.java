@@ -6,7 +6,6 @@ import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
@@ -36,7 +35,6 @@ import static org.mockito.BDDMockito.then;
 class UserAccountServiceTest {
     @InjectMocks private UserAccountService userAccountService;
     @Mock private UserAccountRepository userAccountRepository;
-    @Mock private AlarmRepository alarmRepository;
     @Mock private UserRefreshTokenRepository userRefreshTokenRepository;
     @Mock private TokenProvider tokenProvider;
     @Mock private BCryptPasswordEncoder encoder;
@@ -62,18 +60,6 @@ class UserAccountServiceTest {
         UserAccountDto userAccountDto = userAccountService.searchUser(email);
         // Then
         assertThat(userAccountDto.email()).isEqualTo(email);
-    }
-
-    @DisplayName("알람 조회")
-    @Test
-    void getAlarms() {
-        // Given
-        UserAccount userAccount = Fixture.getUserAccount();
-        given(alarmRepository.findAllByUserAccount_Email(userAccount.getEmail())).willReturn(List.of());
-        // When
-        userAccountService.getAlarms(userAccount.getEmail());
-        // Then
-        then(alarmRepository).should().findAllByUserAccount_Email(userAccount.getEmail());
     }
 
     @DisplayName("회원 추가 - 엔티티 주입")

@@ -150,7 +150,7 @@ class UserAdminControllerTest {
     void getAlarms() throws Exception {
         // Given
         UsernamePasswordAuthenticationToken authentication = FixtureDto.getAuthentication("jujoo042386", UserRole.COMPANY);
-        given(userAccountService.getAlarms(anyString())).willReturn(List.of());
+        given(alarmService.getAlarms(anyString())).willReturn(List.of());
         // When
         mvc.perform(
                 get("/user/alarm")

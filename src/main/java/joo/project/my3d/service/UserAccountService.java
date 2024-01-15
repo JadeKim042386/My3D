@@ -2,13 +2,11 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.UserRefreshToken;
-import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -32,7 +29,6 @@ public class UserAccountService {
 
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
-    private final AlarmRepository alarmRepository;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
 
@@ -61,13 +57,6 @@ public class UserAccountService {
      */
     public BoardPrincipal getUserPrincipal(String email) {
         return BoardPrincipal.from(searchUser(email));
-    }
-
-    public List<AlarmDto> getAlarms(String email) {
-        return alarmRepository.findAllByUserAccount_Email(email).stream()
-                .map(AlarmDto::from)
-                .sorted(Comparator.comparing(AlarmDto::createdAt).reversed())
-                .toList();
     }
 
     /**

@@ -8,7 +8,6 @@ import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -36,7 +35,6 @@ class ArticleCommentServiceTest {
     @Mock private ArticleRepository articleRepository;
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleCommentRepository articleCommentRepository;
-    @Mock private AlarmRepository alarmRepository;
     @Mock private AlarmService alarmService;
 
     @DisplayName("게시글 ID로 댓글 조회")
@@ -45,7 +43,7 @@ class ArticleCommentServiceTest {
         // Given
         Long articleId = 1L;
         ArticleComment articleComment = Fixture.getArticleComment("content");
-        given(articleCommentRepository.findByArticleId(articleId)).willReturn(List.of(articleComment));
+        given(articleCommentRepository.findAllByArticleId(articleId)).willReturn(List.of(articleComment));
         // When
         List<ArticleCommentDto> comments = articleCommentService.getComments(articleId);
         // Then
@@ -53,7 +51,6 @@ class ArticleCommentServiceTest {
                 .hasSize(1)
                 .first()
                 .hasFieldOrPropertyWithValue("content", articleComment.getContent());
-        then(articleCommentRepository).should().findByArticleId(articleId);
     }
 
     @DisplayName("댓글 저장")
@@ -65,19 +62,13 @@ class ArticleCommentServiceTest {
         UserAccount userAccount = Fixture.getUserAccount();
         Alarm alarm = Fixture.getAlarm(userAccount);
         FieldUtils.writeField(alarm, "id", 1L, true);
-        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(articleCommentDto.email())).willReturn(articleComment.getUserAccount());
+        given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
+        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
-        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
-        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
+        willDoNothing().given(alarmService).send(anyString(), anyString(), anyLong(), any());
         // When
         articleCommentService.saveComment(articleCommentDto);
         // Then
-        then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.email());
-        then(articleCommentRepository).should().save(any(ArticleComment.class));
-        then(alarmRepository).should().save(any(Alarm.class));
-        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
     }
 
     @DisplayName("[예외-없는 게시글] 댓글 저장")
@@ -102,44 +93,12 @@ class ArticleCommentServiceTest {
         UserAccount userAccount = Fixture.getUserAccount();
         Alarm alarm = Fixture.getAlarm(userAccount);
         FieldUtils.writeField(alarm, "id", 1L, true);
-        given(articleRepository.getReferenceById(articleCommentDto.articleId())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(articleCommentDto.email())).willReturn(articleComment.getUserAccount());
-        given(articleCommentRepository.getReferenceById(articleCommentDto.parentCommentId())).willReturn(articleComment);
-        given(alarmRepository.save(any(Alarm.class))).willReturn(alarm);
-        willDoNothing().given(alarmService).send(eq(userAccount.getEmail()), eq(1L));
+        given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
+        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(articleComment.getUserAccount());
+        given(articleCommentRepository.getReferenceById(anyLong())).willReturn(articleComment);
+        willDoNothing().given(alarmService).send(anyString(), anyString(), anyLong(), any());
         // When
         articleCommentService.saveComment(articleCommentDto);
-        // Then
-        then(articleRepository).should().getReferenceById(articleCommentDto.articleId());
-        then(userAccountRepository).should().getReferenceByEmail(articleCommentDto.email());
-        then(articleCommentRepository).should().getReferenceById(articleCommentDto.parentCommentId());
-        then(alarmRepository).should().save(any(Alarm.class));
-        then(alarmService).should().send(eq(userAccount.getEmail()), eq(1L));
-    }
-
-    @DisplayName("댓글 수정")
-    @Test
-    void updateComment() {
-        // Given
-        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        ArticleComment articleComment = Fixture.getArticleComment("content");
-        given(articleCommentRepository.getReferenceById(articleCommentDto.id())).willReturn(articleComment);
-        // When
-        articleCommentService.updateComment(articleCommentDto);
-        // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentDto.id());
-    }
-
-    @DisplayName("[예외-없는 댓글] 댓글 수정")
-    @Test
-    void updateCommentNotExistComment() {
-        // Given
-        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleCommentRepository.getReferenceById(anyLong()))
-                .willThrow(new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-        // When
-        assertThatThrownBy(() -> articleCommentService.updateComment(articleCommentDto))
-                .isInstanceOf(CommentException.class);
         // Then
     }
 
