@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public record ArticleWithCommentsAndLikeCountDto(
+public record ArticleWithCommentsDto(
         Long id,
         String email,
         String nickname,
@@ -24,15 +24,14 @@ public record ArticleWithCommentsAndLikeCountDto(
         ArticleType articleType,
         ArticleCategory articleCategory,
         Set<ArticleCommentDto> articleComments,
-        int likeCount,
         String createdAt
 ) {
-    public static ArticleWithCommentsAndLikeCountDto of(Long id, String email, String nickname, ArticleFileWithDimensionDto articleFileWithDimensionDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, int likeCount, LocalDateTime createdAt) {
-        return new ArticleWithCommentsAndLikeCountDto(id, email, nickname, articleFileWithDimensionDto, title, content, articleType, articleCategory, articleCommentDtos, likeCount, LocalDateTimeUtils.format(createdAt));
+    public static ArticleWithCommentsDto of(Long id, String email, String nickname, ArticleFileWithDimensionDto articleFileWithDimensionDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, LocalDateTime createdAt) {
+        return new ArticleWithCommentsDto(id, email, nickname, articleFileWithDimensionDto, title, content, articleType, articleCategory, articleCommentDtos, LocalDateTimeUtils.format(createdAt));
     }
 
-    public static ArticleWithCommentsAndLikeCountDto from(Article article) {
-        return ArticleWithCommentsAndLikeCountDto.of(
+    public static ArticleWithCommentsDto from(Article article) {
+        return ArticleWithCommentsDto.of(
                 article.getId(),
                 article.getUserAccount().getEmail(),
                 article.getUserAccount().getNickname(),
@@ -42,7 +41,6 @@ public record ArticleWithCommentsAndLikeCountDto(
                 article.getArticleType(),
                 article.getArticleCategory(),
                 organizeChildComments(article.getArticleComments()),
-                article.getLikeCount(),
                 article.getCreatedAt()
         );
     }

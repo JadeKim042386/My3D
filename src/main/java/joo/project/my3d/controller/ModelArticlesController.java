@@ -89,10 +89,11 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        int likeCount = articleLikeRepository.countByUserAccount_EmailAndArticle_Id(boardPrincipal.email(), articleId);
-        ArticleWithCommentsAndLikeCountDto article = articleService.getArticleWithComments(articleId);
+        boolean addedLike = articleLikeRepository.existsByArticleIdAndUserAccount_Email(articleId, boardPrincipal.email());
+        int likeCount = articleLikeRepository.countByArticleId(articleId);
+        ArticleWithCommentsDto article = articleService.getArticleWithComments(articleId);
 
-        return ApiResponse.success(ArticleDetailResponse.of(article, likeCount > 0, S3Url));
+        return ApiResponse.success(ArticleDetailResponse.of(article, likeCount, addedLike, S3Url));
     }
 
     /**

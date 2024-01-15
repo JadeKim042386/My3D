@@ -49,7 +49,6 @@ public class FixtureDto {
                 content,
                 articleType,
                 articleCategory,
-                1,
                 articleFileDto,
                 LocalDateTime.now()
         );
@@ -70,7 +69,6 @@ public class FixtureDto {
                 content,
                 articleType,
                 articleCategory,
-                1,
                 articleFileDto,
                 LocalDateTime.now(),
                 userAccountDto.email(),
@@ -95,10 +93,10 @@ public class FixtureDto {
         );
     }
 
-    public static ArticleWithCommentsAndLikeCountDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleWithCommentsDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
-        return ArticleWithCommentsAndLikeCountDto.of(
+        return ArticleWithCommentsDto.of(
                 1L,
                 userAccountDto.email(),
                 userAccountDto.nickname(),
@@ -108,7 +106,6 @@ public class FixtureDto {
                 articleType,
                 articleCategory,
                 Set.of(FixtureDto.getArticleCommentDto("content")),
-                2,
                 LocalDateTime.now()
         );
     }

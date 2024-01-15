@@ -7,7 +7,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -58,9 +58,9 @@ public class ArticleService {
      * 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)
      * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
-    public ArticleWithCommentsAndLikeCountDto getArticleWithComments(Long articleId) {
+    public ArticleWithCommentsDto getArticleWithComments(Long articleId) {
         return articleRepository.findByIdFetchDetail(articleId)
-                .map(ArticleWithCommentsAndLikeCountDto::from)
+                .map(ArticleWithCommentsDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 

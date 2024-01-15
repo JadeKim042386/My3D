@@ -9,7 +9,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
@@ -105,20 +105,18 @@ class ArticleServiceTest {
         // Given
         Article article = Fixture.getArticle();
         FieldUtils.writeField(article, "createdAt", LocalDateTime.now(), true);
-        article.setLikeCount(2);
         ArticleComment comment = Fixture.getArticleComment("comment");
         FieldUtils.writeField(comment, "id", 1L, true);
         article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
         // When
-        ArticleWithCommentsAndLikeCountDto articleWithComments = articleService.getArticleWithComments(1L);
+        ArticleWithCommentsDto articleWithComments = articleService.getArticleWithComments(1L);
         // Then
         assertThat(articleWithComments.title()).isEqualTo("title");
         assertThat(articleWithComments.content()).isEqualTo("content");
         assertThat(articleWithComments.articleType()).isEqualTo(ArticleType.MODEL);
         assertThat(articleWithComments.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
         assertThat(articleWithComments.articleFile().originalFileName()).isEqualTo("test.stp");
-        assertThat(articleWithComments.likeCount()).isEqualTo(2);
         assertThat(articleWithComments.articleComments().size()).isEqualTo(1);
     }
 

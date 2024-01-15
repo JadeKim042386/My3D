@@ -1,13 +1,14 @@
 package joo.project.my3d.dto.response;
 
-import joo.project.my3d.dto.ArticleWithCommentsAndLikeCountDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 
 public record ArticleDetailResponse(
-        ArticleWithCommentsAndLikeCountDto article,
+        ArticleWithCommentsDto article,
+        int likeCount,
         boolean addedLike,
         String modelPath
 ) {
-    public static ArticleDetailResponse of(ArticleWithCommentsAndLikeCountDto article, boolean addedLike, String modelPath) {
-        return new ArticleDetailResponse(article, addedLike, modelPath);
+    public static ArticleDetailResponse of(ArticleWithCommentsDto article, int likeCount, boolean addedLike, String modelPath) {
+        return new ArticleDetailResponse(article, likeCount, addedLike, modelPath);
     }
 }

@@ -14,7 +14,6 @@ public record ArticleDto(
         String content,
         ArticleType articleType,
         ArticleCategory articleCategory,
-        Integer likeCount,
         ArticleFileWithDimensionDto articleFileDto,
         LocalDateTime createdAt,
         String createdBy,
@@ -22,12 +21,12 @@ public record ArticleDto(
         String modifiedBy
 ) {
 
-    public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionDto articleFileDto, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleDto(id, userAccountDto, title, content, articleType, articleCategory, likeCount, articleFileDto, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFileWithDimensionDto articleFileDto, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleDto(id, userAccountDto, title, content, articleType, articleCategory, articleFileDto, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Integer likeCount, ArticleFileWithDimensionDto articleFileDto) {
-        return new ArticleDto(null, userAccountDto, title, content, articleType, articleCategory, likeCount, articleFileDto, null, null, null, null);
+    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFileWithDimensionDto articleFileDto) {
+        return new ArticleDto(null, userAccountDto, title, content, articleType, articleCategory, articleFileDto, null, null, null, null);
     }
 
     public static ArticleDto from(Article article) {
@@ -38,7 +37,6 @@ public record ArticleDto(
                 article.getContent(),
                 article.getArticleType(),
                 article.getArticleCategory(),
-                article.getLikeCount(),
                 ArticleFileWithDimensionDto.from(article.getArticleFile()),
                 article.getCreatedAt(),
                 article.getCreatedBy(),

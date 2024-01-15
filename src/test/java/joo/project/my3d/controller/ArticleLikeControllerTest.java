@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,13 +51,12 @@ class ArticleLikeControllerTest {
     }
 
     @DisplayName("[DELETE] 게시글 좋아요 삭제")
-    @WithMockUser
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleLikeService.deleteArticleLike(anyLong())).willReturn(1);
+        given(articleLikeService.deleteArticleLike(anyLong(), anyString())).willReturn(1);
         // When
         mvc.perform(
                 delete("/like/" + articleId)
@@ -69,6 +66,5 @@ class ArticleLikeControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").value(1));
         // Then
-        then(articleLikeService).should().deleteArticleLike(anyLong());
     }
 }
