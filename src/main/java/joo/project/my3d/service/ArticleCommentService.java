@@ -40,8 +40,6 @@ public class ArticleCommentService {
     @Transactional
     public void saveComment(ArticleCommentDto dto) {
         try{
-            //TODO: UserAccount에 접근하면서 N+1 문제가 발생 (userAccount + company + userRefreshToken)
-            // -> @OneToOne 관계라 조회시 EAGER Loading이 적용됨
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
             ArticleComment articleComment = dto.toEntity(
                     articleRepository.getReferenceById(dto.articleId()),
