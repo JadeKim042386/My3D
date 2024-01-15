@@ -231,12 +231,12 @@ public class JpaRepositoryTest {
             // When
             articleRepository.findAllByUserAccount_Email(email)
                     .forEach(article -> {
-                        articleCommentRepository.deleteByArticleId(article.getId());
-                        articleCommentRepository.deleteByUserAccount_Email(email);
-                        articleLikeRepository.deleteByArticleId(article.getId());
-                        articleLikeRepository.deleteByUserAccount_Email(email);
-                        articleRepository.deleteById(article.getId());
+                        article.getArticleComments().clear();
+                        article.getArticleLikes().clear();
                     });
+            UserAccount userAccount = userAccountRepository.findById(userAccountId).get();
+            userAccount.getArticleComments().clear();
+            userAccount.getArticleLikes().clear();
             userAccountRepository.deleteById(userAccountId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);

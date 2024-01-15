@@ -68,12 +68,12 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     private final Set<Article> articles = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount")
+    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount")
+    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude

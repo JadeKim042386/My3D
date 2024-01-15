@@ -89,11 +89,11 @@ public class Article extends AuditingFields implements Persistable<Long> {
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     protected Article() {
