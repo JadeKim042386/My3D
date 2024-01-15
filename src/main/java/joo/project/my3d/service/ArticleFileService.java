@@ -51,33 +51,19 @@ public class ArticleFileService {
      */
     @Transactional
     public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
-        MultipartFile file = articleFormRequest.getModelFile();
-        String fileName = null;
         try {
             ArticleFile articleFile = articleFileRepository.findByArticleId(articleId)
                     .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
-            //업데이트 여부 확인
-            if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
 
-                //S3에 저장한 파일 삭제
-                fileName = articleFile.getFileName();
-                s3Service.deleteFile(fileName);
+            updateS3File(articleFile, articleFormRequest.getModelFile());
 
-                String originalFileName = file.getOriginalFilename();
-                String extension = FileUtils.getExtension(originalFileName);
-                fileName = UUID.randomUUID() + "." + extension;
-                //업데이트된 파일로 S3에 저장
-                s3Service.uploadFile(file, fileName);
-
-                //파일 업데이트
-                long byteSize = file.getSize();
-                articleFile.update(byteSize, originalFileName, fileName, extension);
-            }
             //치수 옵션 업데이트
-            DimensionOptionDto dimensionOptionDto = articleFormRequest.toDimensionOptionDto();
-            articleFile.setDimensionOption(dimensionOptionDto.toEntity());
+            articleFile.getDimensionOption().setOptionName(
+                    articleFormRequest.toDimensionOptionDto().optionName()
+            );
 
             //치수 업데이트
+            //TODO: 치수 업데이트 부분은 따로 분리할 수 있을 것 같음
             DimensionOption dimensionOption = articleFile.getDimensionOption();
             List<DimensionDto> dimensions = articleFormRequest.toDimensions(dimensionOption.getId());
             dimensionOption.getDimensions().clear();
@@ -86,13 +72,7 @@ public class ArticleFileService {
                             .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
                             .toList()
             );
-        } catch (SdkClientException | S3Exception e) {
-            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
-            throw new FileException(ErrorCode.FAILED_DELETE, e);
-        } catch (IOException e) {
-            log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
-            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
-        } catch (FileException e) {
+        }  catch (FileException e) {
             log.error("게시글 id: {} 에 해당하는 파일을 찾을 수 없습니다.", articleId);
             throw e;
         }
@@ -118,7 +98,31 @@ public class ArticleFileService {
         }
     }
 
-    public void saveFil(Article article, ArticleFileWithDimensionDto articleFile) {
-        articleFileRepository.save(articleFile.toEntity());
+    private void updateS3File(ArticleFile articleFile, MultipartFile file) {
+        String fileName = "";
+        try {
+            //업데이트 여부 확인
+            if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
+                //S3에 저장한 파일 삭제
+                fileName = articleFile.getFileName();
+                s3Service.deleteFile(fileName);
+
+                String originalFileName = file.getOriginalFilename();
+                String extension = FileUtils.getExtension(originalFileName);
+                fileName = UUID.randomUUID() + "." + extension;
+                //업데이트된 파일로 S3에 저장
+                s3Service.uploadFile(file, fileName);
+
+                //파일 업데이트
+                long byteSize = file.getSize();
+                articleFile.update(byteSize, originalFileName, fileName, extension);
+            }
+        } catch (SdkClientException | S3Exception e) {
+            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
+            throw new FileException(ErrorCode.FAILED_DELETE, e);
+        } catch (IOException e) {
+            log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
+            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
+        }
     }
 }

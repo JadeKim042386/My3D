@@ -149,7 +149,6 @@ public class ModelArticlesController {
      */
     @GetMapping("/update/{articleId}")
     public ApiResponse<?> articleUpdateForm(@PathVariable Long articleId) {
-        //TODO: 수정을 요청한 사용자와 게시글 작성자가 일치하는지 확인
         ArticleFormDto article = articleService.getArticleForm(articleId);
 
         return ApiResponse.success(ArticleFormResponse.from(article, UPDATE));
@@ -175,6 +174,7 @@ public class ModelArticlesController {
             ));
         }
 
+        //TODO: ArticleFile 수정 후 updateArticle에서 예외가 발생할 경우 파일만 수정된 상태가됨
         articleFileService.updateArticleFile(articleFormRequest, articleId);
         articleService.updateArticle(
                 articleId,
