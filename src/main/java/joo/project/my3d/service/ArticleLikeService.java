@@ -1,8 +1,6 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleLike;
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.exception.ArticleLikeException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleLikeRepository;
@@ -29,13 +27,15 @@ public class ArticleLikeService {
      * @return 좋아요 추가 후 반영된 게시글의 좋아요 총 개수
      */
     @Transactional
-    public int addArticleLike(Long articleId, String userId) {
+    public int addArticleLike(Long articleId, String email) {
         try {
-            Article article = articleRepository.getReferenceById(articleId);
-            article.addLike();
-            UserAccount userAccount = userAccountRepository.getReferenceByEmail(userId);
-            articleLikeRepository.save(ArticleLike.of(userAccount, article));
-            return article.getLikeCount();
+            articleLikeRepository.save(
+                    ArticleLike.of(
+                            userAccountRepository.getReferenceByEmail(email),
+                            articleRepository.getReferenceById(articleId)
+                    )
+            );
+            return getLikeCount(articleId);
         } catch (EntityNotFoundException e) {
             throw new ArticleLikeException(ErrorCode.ARTICLE_NOT_FOUND, e);
         } catch (IllegalArgumentException e) {
@@ -49,16 +49,16 @@ public class ArticleLikeService {
      * @return 좋아요 해제 후 반영된 게시글의 좋아요 총 개수
      */
     @Transactional
-    public int deleteArticleLike(Long articleId) {
+    public int deleteArticleLike(Long articleId, String email) {
         try {
-            Article article = articleRepository.getReferenceById(articleId);
-
-            article.deleteLike();
-            articleLikeRepository.deleteByArticleId(articleId);
-
-            return article.getLikeCount();
+            articleLikeRepository.deleteByArticleIdAndUserAccount_Email(articleId, email);
+            return getLikeCount(articleId);
         } catch (EntityNotFoundException e) {
             throw new ArticleLikeException(ErrorCode.FAILED_DELETE, e);
         }
+    }
+
+    private int getLikeCount(Long articleId) {
+        return articleLikeRepository.countByArticleId(articleId);
     }
 }

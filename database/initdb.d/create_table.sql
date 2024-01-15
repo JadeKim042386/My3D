@@ -44,7 +44,6 @@ CREATE TABLE `article` (
    `content`	varchar(255)	NOT NULL,
    `article_type`	varchar(50)	NOT NULL,
    `article_category`	varchar(50)	NULL,
-   `like_count` int(11) DEFAULT 0 NOT NULL,
    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
    `modified_at`	datetime	NOT NULL,
    `created_by`	varchar(100)	NOT NULL,
@@ -122,8 +121,6 @@ CREATE TABLE `article_like` (
     FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`),
     FOREIGN KEY (`article_id`) REFERENCES `article` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='좋아요';
-
-
 
 CREATE TABLE `alarm` (
      `id`	bigint	AUTO_INCREMENT NOT NULL,

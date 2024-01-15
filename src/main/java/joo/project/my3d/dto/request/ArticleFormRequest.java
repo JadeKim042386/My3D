@@ -47,7 +47,6 @@ public class ArticleFormRequest {
                 content,
                 articleType,
                 ArticleCategory.valueOf(articleCategory),
-                0,
                 articleFile
         );
     }

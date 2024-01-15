@@ -82,9 +82,10 @@ class ModelArticlesControllerTest {
     @Test
     void modelArticle() throws Exception {
         // Given
-        given(articleLikeRepository.countByUserAccount_EmailAndArticle_Id(anyString(), anyLong()))
-                .willReturn(2);
-        ArticleWithCommentsAndLikeCountDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto(
+        given(articleLikeRepository.existsByArticleIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
+        given(articleLikeRepository.countByArticleId(anyLong())).willReturn(2);
+        ArticleWithCommentsDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto(
                 "title",
                 "content",
                 ArticleType.MODEL,
@@ -102,7 +103,7 @@ class ModelArticlesControllerTest {
                 .andExpect(jsonPath("$.data.article.content").value("content"))
                 .andExpect(jsonPath("$.data.article.articleType").value(ArticleType.MODEL.toString()))
                 .andExpect(jsonPath("$.data.article.articleCategory").value(ArticleCategory.ARCHITECTURE.toString()))
-                .andExpect(jsonPath("$.data.article.likeCount").value(2))
+                .andExpect(jsonPath("$.data.likeCount").value(2))
                 .andExpect(jsonPath("$.data.addedLike").value(true))
                 .andExpect(jsonPath("$.data.modelPath").exists());
 

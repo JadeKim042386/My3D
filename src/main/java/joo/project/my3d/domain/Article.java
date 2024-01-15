@@ -82,10 +82,6 @@ public class Article extends AuditingFields implements Persistable<Long> {
     @Column
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
 
-    @Setter
-    @Column(nullable = false)
-    private int likeCount = 0;
-
     @ToString.Exclude
     @Setter
     @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
@@ -130,14 +126,6 @@ public class Article extends AuditingFields implements Persistable<Long> {
     @Override
     public int hashCode() {
         return Objects.hash(this.getId());
-    }
-
-    public void addLike() {
-        this.likeCount += 1;
-    }
-
-    public void deleteLike() {
-        this.likeCount -= 1;
     }
 
     @Override

@@ -24,9 +24,9 @@ public class ArticleLikeController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        int likeCount = articleLikeService.addArticleLike(articleId, boardPrincipal.email());
-
-        return ApiResponse.success(likeCount);
+        return ApiResponse.success(
+                articleLikeService.addArticleLike(articleId, boardPrincipal.email())
+        );
     }
 
     /**
@@ -34,10 +34,12 @@ public class ArticleLikeController {
      */
     @DeleteMapping("/{articleId}")
     public ApiResponse<Integer> deleteArticleLike(
-            @PathVariable Long articleId
+            @PathVariable Long articleId,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        int likeCount = articleLikeService.deleteArticleLike(articleId);
 
-        return ApiResponse.success(likeCount);
+        return ApiResponse.success(
+                articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())
+        );
     }
 }

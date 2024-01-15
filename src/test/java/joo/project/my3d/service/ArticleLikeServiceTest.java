@@ -4,7 +4,6 @@ import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.fixture.Fixture;
-import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
@@ -17,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
 
 @ActiveProfiles("test")
@@ -27,8 +27,6 @@ class ArticleLikeServiceTest {
     @Mock ArticleLikeRepository articleLikeRepository;
     @Mock ArticleRepository articleRepository;
     @Mock UserAccountRepository userAccountRepository;
-    @Mock private AlarmRepository alarmRepository;
-    @Mock private AlarmService alarmService;
 
     @DisplayName("좋아요 추가")
     @Test
@@ -43,12 +41,11 @@ class ArticleLikeServiceTest {
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
         given(userAccountRepository.getReferenceByEmail(userId)).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
+        given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When
-        articleLikeService.addArticleLike(articleId, userId);
+        int likeCount = articleLikeService.addArticleLike(articleId, userId);
         // Then
-        then(articleRepository).should().getReferenceById(articleId);
-        then(userAccountRepository).should().getReferenceByEmail(userId);
-        then(articleLikeRepository).should().save(any(ArticleLike.class));
+        assertThat(likeCount).isEqualTo(1);
     }
 
     @DisplayName("좋아요 삭제")
@@ -56,13 +53,12 @@ class ArticleLikeServiceTest {
     void deleteArticleLike() {
         // Given
         Long articleId = 1L;
-        ArticleLike articleLike = Fixture.getArticleLike();
-        given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
+        String email = "a@gmail.com";
+        willDoNothing().given(articleLikeRepository).deleteByArticleIdAndUserAccount_Email(anyLong(), anyString());
+        given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When
-        articleLikeService.deleteArticleLike(articleId);
+        int likeCount = articleLikeService.deleteArticleLike(articleId, email);
         // Then
-        then(articleRepository).should().getReferenceById(articleId);
-        then(articleLikeRepository).should().deleteByArticleId(articleId);
+        assertThat(likeCount).isEqualTo(1);
     }
 }
