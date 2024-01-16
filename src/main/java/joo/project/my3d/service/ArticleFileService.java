@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -79,22 +80,20 @@ public class ArticleFileService {
     }
 
     /**
-     * @throws FileException S3 파일 삭제 또는 DB 파일 삭제시 발생하는 예외
+     * @throws FileException S3 파일 삭제 또는 DB에 존재하지 않을 경우 발생하는 예외
      */
-    @Transactional
     public void deleteArticleFile(Long articleId) {
-        ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
-        String fileName = articleFile.getFileName();
         try {
+            //TODO: fileName만 조회하는 쿼리 메소드를 추가하여 적용
+            ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
+            String fileName = articleFile.getFileName();
             //파일 삭제
             s3Service.deleteFile(fileName);
-            //데이터 삭제
-            articleFileRepository.delete(articleFile);
         } catch (SdkClientException | S3Exception e) {
-            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
+            log.error("S3 파일 삭제 실패 - articleId: {}", articleId);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
-        } catch (IllegalArgumentException e) {
-            throw new FileException(ErrorCode.FAILED_DELETE, e);
+        } catch (EntityNotFoundException e) {
+            throw new FileException(ErrorCode.FILE_NOT_FOUND, e);
         }
     }
 

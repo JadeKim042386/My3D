@@ -527,24 +527,6 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("19. [DELETE] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
-    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    void deleteModelArticle_FailedDeleteArticleFile() throws Exception {
-        // Given
-        willThrow(new FileException(FAILED_DELETE)).given(articleFileService).deleteArticleFile(anyLong());
-        // When
-        mvc.perform(
-                        delete("/model_articles/1")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .with(csrf())
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()));
-        // Then
-    }
-
     @DisplayName("20. [GET] 게시글 파일 다운로드 - 정상")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test

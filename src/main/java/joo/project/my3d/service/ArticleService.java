@@ -34,8 +34,6 @@ import java.util.Optional;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final ArticleLikeRepository articleLikeRepository;
-    private final ArticleCommentRepository articleCommentRepository;
     private final UserAccountRepository userAccountRepository;
     private final ArticleFileService articleFileService;
 
@@ -117,10 +115,10 @@ public class ArticleService {
             Article article = articleRepository.getReferenceById(articleId); //작성자
             //작성자와 삭제를 요청한 유저가 같은지 확인
             if (article.getUserAccount().getEmail().equals(email)) {
+                //S3 파일 삭제
+                articleFileService.deleteArticleFile(articleId);
                 //게시글에 속한 댓글, 좋아요도 같이 삭제
-                //TODO: comment, like를 먼저 삭제해야되는 것인지 다시 확인 필요
-                articleCommentRepository.deleteByArticleId(articleId);
-                articleLikeRepository.deleteByArticleId(articleId);
+                article.deleteAll();
                 articleRepository.delete(article);
             }else {
                 log.error("작성자와 수정자가 다릅니다. 작성자: {}, 삭제 요청자: {}",

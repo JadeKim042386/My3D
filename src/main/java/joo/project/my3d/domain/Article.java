@@ -132,4 +132,9 @@ public class Article extends AuditingFields implements Persistable<Long> {
     public boolean isNew() {
         return this.createdAt == null;
     }
+
+    public void deleteAll() {
+        this.articleComments.clear();
+        this.articleLikes.clear();
+    }
 }

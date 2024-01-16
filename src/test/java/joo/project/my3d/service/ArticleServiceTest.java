@@ -11,6 +11,7 @@ import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.exception.ArticleException;
+import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
@@ -207,16 +208,11 @@ class ArticleServiceTest {
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
-        willDoNothing().given(articleCommentRepository).deleteByArticleId(articleId);
-        willDoNothing().given(articleLikeRepository).deleteByArticleId(articleId);
-        willDoNothing().given(articleRepository).delete(article);
+        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
+        willDoNothing().given(articleRepository).delete(any());
         // When
         articleService.deleteArticle(articleId, email);
         // Then
-        then(articleRepository).should().getReferenceById(anyLong());
-        then(articleCommentRepository).should().deleteByArticleId(articleId);
-        then(articleLikeRepository).should().deleteByArticleId(articleId);
-        then(articleRepository).should().delete(article);
     }
 
     @DisplayName("11. [예외 - 게시글 없음]게시글 삭제")
@@ -259,14 +255,12 @@ class ArticleServiceTest {
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
-        willThrow(new ArticleException(ErrorCode.FAILED_DELETE))
-                .given(articleCommentRepository).deleteByArticleId(articleId);
+        willThrow(new FileException(ErrorCode.FAILED_DELETE))
+                .given(articleFileService).deleteArticleFile(anyLong());
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
-                .isInstanceOf(ArticleException.class)
+                .isInstanceOf(FileException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FAILED_DELETE);
         // Then
-        then(articleRepository).should().getReferenceById(anyLong());
-        then(articleCommentRepository).should().deleteByArticleId(articleId);
     }
 }

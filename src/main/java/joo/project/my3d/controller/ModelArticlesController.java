@@ -191,8 +191,6 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        //TODO: 하나의 트랜잭션에서 수행되도록 수정
-        articleFileService.deleteArticleFile(articleId);
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
         return ApiResponse.success();
