@@ -4,7 +4,10 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.ArticleFileWithDimensionDto;
+import joo.project.my3d.dto.ArticleFormDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
@@ -174,11 +177,9 @@ public class ModelArticlesController {
             ));
         }
 
-        //TODO: ArticleFile 수정 후 updateArticle에서 예외가 발생할 경우 파일만 수정된 상태가됨
-        articleFileService.updateArticleFile(articleFormRequest, articleId);
         articleService.updateArticle(
+                articleFormRequest,
                 articleId,
-                articleFormRequest.toArticleDto(),
                 boardPrincipal.email()
         );
 
@@ -193,7 +194,6 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleFileService.deleteArticleFile(articleId);
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
         return ApiResponse.success();
@@ -204,9 +204,7 @@ public class ModelArticlesController {
      */
     @GetMapping("/download/{articleId}")
     public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
-        ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
-        byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
 
-        return ApiResponse.success(downloadFile);
+        return ApiResponse.success(articleFileService.download(articleId));
     }
 }

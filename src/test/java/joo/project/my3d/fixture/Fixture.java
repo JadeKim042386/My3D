@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -88,13 +87,15 @@ public class Fixture {
         return Alarm.of(AlarmType.NEW_COMMENT_ON_POST, "a@gmail.com", 1L, false, userAccount);
     }
 
-    public static ArticleFormRequest getArticleFormRequest() throws IOException, IllegalAccessException {
+    public static ArticleFormRequest getArticleFormRequest() throws IllegalAccessException {
 
         return getArticleFormRequest(Fixture.getMultipartFile());
     }
 
     public static ArticleFormRequest getArticleFormRequest(MockMultipartFile file) throws IllegalAccessException {
         ArticleFormRequest articleFormRequest = new ArticleFormRequest();
+        FieldUtils.writeField(articleFormRequest, "title", "new title", true);
+        FieldUtils.writeField(articleFormRequest, "content", "new content", true);
         FieldUtils.writeField(articleFormRequest, "dimensionOptions", List.of(Fixture.getDimensionOptionRequest()), true);
         FieldUtils.writeField(articleFormRequest, "modelFile", file, true);
         return articleFormRequest;

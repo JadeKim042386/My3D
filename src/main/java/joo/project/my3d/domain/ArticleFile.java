@@ -36,7 +36,7 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
     private String fileExtension;
 
     @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "article_id")
     private Article article;
 

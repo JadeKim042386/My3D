@@ -23,6 +23,9 @@ spring:
 
 logging.level:
   joo.project.my3d: debug
+  org.springframework:
+    orm.jpa: debug
+    transaction: debug
 spring:
   config.activate.on-profile: local
   jpa:

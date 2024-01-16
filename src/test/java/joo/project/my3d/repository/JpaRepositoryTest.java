@@ -131,8 +131,7 @@ public class JpaRepositoryTest {
             log.info("previousDimension: {}", previousDimension);
             log.info("previousDimensionOption: {}", previousDimensionOption);
             // When
-            articleCommentRepository.deleteByArticleId(articleId);
-            articleLikeRepository.deleteByArticleId(articleId);
+            articleRepository.getReferenceById(articleId).deleteAll();
             articleRepository.deleteById(articleId);
             // Then
             assertThat(articleRepository.count()).isEqualTo(previousCount - 1);
@@ -230,10 +229,7 @@ public class JpaRepositoryTest {
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
             articleRepository.findAllByUserAccount_Email(email)
-                    .forEach(article -> {
-                        article.getArticleComments().clear();
-                        article.getArticleLikes().clear();
-                    });
+                    .forEach(Article::deleteAll);
             UserAccount userAccount = userAccountRepository.findById(userAccountId).get();
             userAccount.getArticleComments().clear();
             userAccount.getArticleLikes().clear();

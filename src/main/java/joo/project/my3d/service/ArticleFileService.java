@@ -76,23 +76,19 @@ public class ArticleFileService {
     }
 
     /**
-     * @throws FileException S3 파일 삭제 또는 DB 파일 삭제시 발생하는 예외
+     * @throws FileException S3 파일 삭제 또는 DB에 존재하지 않을 경우 발생하는 예외
      */
-    @Transactional
     public void deleteArticleFile(Long articleId) {
-        ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
-        String fileName = articleFile.getFileName();
         try {
-            //파일 삭제
-            s3Service.deleteFile(fileName);
-            //데이터 삭제
-            articleFileRepository.delete(articleFile);
+            s3Service.deleteFile(searchFileName(articleId));
         } catch (SdkClientException | S3Exception e) {
-            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
-            throw new FileException(ErrorCode.FAILED_DELETE, e);
-        } catch (IllegalArgumentException e) {
+            log.error("S3 파일 삭제 실패 - articleId: {}", articleId);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
         }
+    }
+
+    public byte[] download(Long articleId) {
+        return s3Service.downloadFile(searchFileName(articleId));
     }
 
     private void updateS3File(ArticleFile articleFile, MultipartFile file) {
@@ -121,5 +117,11 @@ public class ArticleFileService {
             log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
+    }
+
+    private String searchFileName(Long articleId) {
+        return articleFileRepository.findFileNameByArticleId(articleId)
+                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
+                .getFileName();
     }
 }

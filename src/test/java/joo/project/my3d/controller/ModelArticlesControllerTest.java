@@ -6,8 +6,10 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
-import joo.project.my3d.dto.*;
-import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFormDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
@@ -327,8 +329,7 @@ class ModelArticlesControllerTest {
     void updateRequestModelArticle() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willDoNothing().given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
-        willDoNothing().given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
+        willDoNothing().given(articleService).updateArticle(any(), anyLong(), anyString());
         // When
         mvc.perform(
                         multipart(HttpMethod.PUT, "/model_articles/update/1")
@@ -458,37 +459,6 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("15. [PUT] 게시글 수정(파일 업데이트 실패) - 실패")
-    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    void updateRequestModelArticle_FailedFileUpdate() throws Exception {
-        // Given
-        MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willThrow(new FileException(FAILED_DELETE)).given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
-        // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/model_articles/update/1")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .with(csrf())
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()))
-        ;
-
-        // Then
-    }
 
     @DisplayName("16. [PUT] 게시글 수정(게시글 업데이트 실패) - 실패")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -496,8 +466,7 @@ class ModelArticlesControllerTest {
     void updateRequestModelArticle_FailedArticleUpdate() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willDoNothing().given(articleFileService).updateArticleFile(any(ArticleFormRequest.class), anyLong());
-        willThrow(new ArticleException(ARTICLE_NOT_FOUND)).given(articleService).updateArticle(anyLong(), any(ArticleDto.class), anyString());
+        willThrow(new ArticleException(ARTICLE_NOT_FOUND)).given(articleService).updateArticle(any(), anyLong(), anyString());
         // When
         mvc.perform(
                         multipart(HttpMethod.PUT, "/model_articles/update/1")
@@ -560,32 +529,12 @@ class ModelArticlesControllerTest {
         // Then
     }
 
-    @DisplayName("19. [DELETE] 게시글 삭제(게시글 파일 삭제 실패) - 실패")
-    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    void deleteModelArticle_FailedDeleteArticleFile() throws Exception {
-        // Given
-        willThrow(new FileException(FAILED_DELETE)).given(articleFileService).deleteArticleFile(anyLong());
-        // When
-        mvc.perform(
-                        delete("/model_articles/1")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .with(csrf())
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()));
-        // Then
-    }
-
     @DisplayName("20. [GET] 게시글 파일 다운로드 - 정상")
     @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void downloadArticleFile() throws Exception {
         //given
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
-        given(s3Service.downloadFile(anyString())).willReturn(new byte[]{1});
+        given(articleFileService.download(anyLong())).willReturn(new byte[]{1});
         //when
         mvc.perform(
                 get("/model_articles/download/1")
