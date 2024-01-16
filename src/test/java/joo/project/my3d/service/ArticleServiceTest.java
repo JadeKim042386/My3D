@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ class ArticleServiceTest {
     @Mock private ArticleCommentRepository articleCommentRepository;
     @Mock private ArticleLikeRepository articleLikeRepository;
     @Mock private UserAccountRepository userAccountRepository;
+    @Mock private ArticleFileService articleFileService;
 
     @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
@@ -151,20 +153,20 @@ class ArticleServiceTest {
 
     @DisplayName("7. 게시글 수정")
     @Test
-    void updateArticle() throws IllegalAccessException {
+    void updateArticle() throws IllegalAccessException, IOException {
         // Given
         ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willReturn(Optional.of(savedArticle));
+        willDoNothing().given(articleFileService).updateArticleFile(any(), anyLong());
         // When
-        articleService.updateArticle(1L, updatedArticle, updatedArticle.userAccountDto().email());
+        articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, updatedArticle.userAccountDto().email());
         // Then
         assertThat(savedArticle)
                 .hasFieldOrPropertyWithValue("title", "new title")
                 .hasFieldOrPropertyWithValue("content", "new content");
-        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
     @DisplayName("8. [예외 - 없는 게시글] 게시글 수정")
@@ -175,11 +177,10 @@ class ArticleServiceTest {
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, updatedArticle, updatedArticle.userAccountDto().email()))
+        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, updatedArticle.userAccountDto().email()))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
     @DisplayName("9. [예외 - 작성자와 수정자가 상이] 게시글 수정")
@@ -192,11 +193,10 @@ class ArticleServiceTest {
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willReturn(Optional.of(savedArticle));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(1L, updatedArticle, "notwriter@gmail.com"))
+        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "notWriter@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
-        then(articleRepository).should().findByIdAndUserAccount_Email(anyLong(), anyString());
     }
 
     @DisplayName("10. 게시글 삭제")

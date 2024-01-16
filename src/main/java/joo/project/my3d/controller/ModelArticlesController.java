@@ -174,11 +174,9 @@ public class ModelArticlesController {
             ));
         }
 
-        //TODO: ArticleFile 수정 후 updateArticle에서 예외가 발생할 경우 파일만 수정된 상태가됨
-        articleFileService.updateArticleFile(articleFormRequest, articleId);
         articleService.updateArticle(
+                articleFormRequest,
                 articleId,
-                articleFormRequest.toArticleDto(),
                 boardPrincipal.email()
         );
 
@@ -193,6 +191,7 @@ public class ModelArticlesController {
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
+        //TODO: 하나의 트랜잭션에서 수행되도록 수정
         articleFileService.deleteArticleFile(articleId);
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
@@ -204,6 +203,7 @@ public class ModelArticlesController {
      */
     @GetMapping("/download/{articleId}")
     public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
+        //TODO: fileName만 조회하는 쿼리 메소드를 추가하는 것이 좋을 것 같음
         ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
         byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
 

@@ -3,11 +3,12 @@ package joo.project.my3d.service;
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.domain.constant.ArticleType;
+import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
+import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,6 +37,7 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
     private final UserAccountRepository userAccountRepository;
+    private final ArticleFileService articleFileService;
 
     /**
      * 게시판에 표시할 전체 게시글 조회
@@ -77,30 +80,27 @@ public class ArticleService {
     }
 
     /**
+     * @param articleFormRequest 게시글 수정 입력 정보
      * @param articleId 수정하려는 게시글 ID
-     * @param articleDto 수정 입력 폼에 입력된 정보
      * @param requestEmail 수정하려는 사용자의 이메일
      * @throws ArticleException 게시글 작성자와 수정자가 다를 경우 또는 게시글이 DB에 존재하지 않는 경우 발생하는 예외
      */
     @Transactional
-    public void updateArticle(Long articleId, ArticleDto articleDto, String requestEmail) {
+    public void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, String requestEmail) {
         Article article = articleRepository.findByIdAndUserAccount_Email(articleId, requestEmail)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); //작성자
 
         //작성자와 수정자가 같은지 확인
         if (Objects.equals(article.getUserAccount().getEmail(), requestEmail)) {
-            if (articleDto.title() != null) {
-                article.setTitle(articleDto.title());
-            }
-            if (articleDto.content() != null) {
-                article.setContent(articleDto.content());
-            }
-            if (articleDto.articleType() != null) {
-                article.setArticleType(articleDto.articleType());
-            }
-            if (articleDto.articleType() == ArticleType.MODEL && articleDto.articleCategory() != null) {
-                article.setArticleCategory(articleDto.articleCategory());
-            }
+            //파일 수정
+            articleFileService.updateArticleFile(articleFormRequest, articleId);
+            //게시글 수정
+            Optional.ofNullable(articleFormRequest.getTitle())
+                    .ifPresent(article::setTitle);
+            Optional.ofNullable(articleFormRequest.getContent())
+                    .ifPresent(article::setContent);
+            Optional.ofNullable(articleFormRequest.getArticleCategory())
+                    .ifPresent(category -> article.setArticleCategory(ArticleCategory.valueOf(category)));
         } else {
             log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
                     article.getUserAccount().getEmail(), requestEmail);
@@ -118,6 +118,7 @@ public class ArticleService {
             //작성자와 삭제를 요청한 유저가 같은지 확인
             if (article.getUserAccount().getEmail().equals(email)) {
                 //게시글에 속한 댓글, 좋아요도 같이 삭제
+                //TODO: comment, like를 먼저 삭제해야되는 것인지 다시 확인 필요
                 articleCommentRepository.deleteByArticleId(articleId);
                 articleLikeRepository.deleteByArticleId(articleId);
                 articleRepository.delete(article);
