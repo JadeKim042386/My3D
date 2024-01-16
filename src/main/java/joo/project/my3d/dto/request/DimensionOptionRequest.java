@@ -46,9 +46,9 @@ public class DimensionOptionRequest {
                 );
         }
 
-        public List<DimensionDto> toDimensionDtos(Long dimensionOptionId) {
+        public List<DimensionDto> toDimensionDtos() {
                 return dimensions.stream()
-                        .map(dimensionRequest -> dimensionRequest.toDto(dimensionOptionId))
+                        .map(DimensionRequest::toDto)
                         .toList();
         }
 

@@ -24,18 +24,12 @@ public class DimensionRequest {
                 return new DimensionRequest(dimName, dimValue, dimUnit);
         }
 
-        //TODO: dimensionOptionId가 불필요해보임
-        public DimensionDto toDto(Long dimensionOptionId) {
+        public DimensionDto toDto() {
                 return DimensionDto.of(
-                        dimensionOptionId,
                         dimName,
                         dimValue,
                         dimUnit
                 );
-        }
-
-        public DimensionDto toDto() {
-                return toDto(null);
         }
 
         public static DimensionRequest from(DimensionDto dto) {

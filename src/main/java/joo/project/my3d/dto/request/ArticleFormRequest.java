@@ -66,9 +66,9 @@ public class ArticleFormRequest {
         return dimensionOptions.get(0).toDto();
     }
 
-    public List<DimensionDto> toDimensions(Long dimensionOptionId) {
+    public List<DimensionDto> toDimensions() {
 
-        return dimensionOptions.get(0).toDimensionDtos(dimensionOptionId);
+        return dimensionOptions.get(0).toDimensionDtos();
     }
 
     public ArticleFileWithDimensionDto toArticleFileWithDimensionDto() {

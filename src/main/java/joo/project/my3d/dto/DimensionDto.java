@@ -6,18 +6,17 @@ import joo.project.my3d.domain.constant.DimUnit;
 
 public record DimensionDto(
         Long id,
-        Long dimensionOptionId,
         String dimName,
         Float dimValue,
         DimUnit dimUnit
 ) {
 
-    public static DimensionDto of(Long id, Long dimensionOptionId, String dimName, Float dimValue, DimUnit dimUnit) {
-        return new DimensionDto(id, dimensionOptionId, dimName, dimValue, dimUnit);
+    public static DimensionDto of(Long id, String dimName, Float dimValue, DimUnit dimUnit) {
+        return new DimensionDto(id, dimName, dimValue, dimUnit);
     }
 
-    public static DimensionDto of(Long dimensionOptionId, String dimName, Float dimValue, DimUnit dimUnit) {
-        return DimensionDto.of(null, dimensionOptionId, dimName, dimValue, dimUnit);
+    public static DimensionDto of(String dimName, Float dimValue, DimUnit dimUnit) {
+        return DimensionDto.of(null, dimName, dimValue, dimUnit);
     }
 
     public Dimension toEntity(DimensionOption dimensionOption) {
@@ -32,7 +31,6 @@ public record DimensionDto(
     public static DimensionDto from(Dimension dimension) {
         return DimensionDto.of(
                 dimension.getId(),
-                dimension.getDimensionOption().getId(),
                 dimension.getDimName(),
                 dimension.getDimValue(),
                 dimension.getDimUnit()

@@ -128,10 +128,9 @@ public class FixtureDto {
         );
     }
 
-    public static DimensionDto getDimensionDto(Long dimensionId, Long dimensionOptionId) {
+    public static DimensionDto getDimensionDto(Long dimensionId) {
         return DimensionDto.of(
                 dimensionId,
-                dimensionOptionId,
                 "너비",
                 10.0f,
                 DimUnit.MM
@@ -139,7 +138,7 @@ public class FixtureDto {
     }
 
     public static DimensionDto getDimensionDto() {
-        return FixtureDto.getDimensionDto(1L, 3L);
+        return FixtureDto.getDimensionDto(1L);
     }
 
     public static DimensionOptionDto getDimensionOptionDto(Long dimensionOptionId) {

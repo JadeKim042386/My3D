@@ -1,12 +1,9 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleFileWithDimensionDto;
 import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
@@ -65,7 +62,7 @@ public class ArticleFileService {
             //치수 업데이트
             //TODO: 치수 업데이트 부분은 따로 분리할 수 있을 것 같음
             DimensionOption dimensionOption = articleFile.getDimensionOption();
-            List<DimensionDto> dimensions = articleFormRequest.toDimensions(dimensionOption.getId());
+            List<DimensionDto> dimensions = articleFormRequest.toDimensions();
             dimensionOption.getDimensions().clear();
             dimensionOption.getDimensions().addAll(
                     dimensions.stream()
