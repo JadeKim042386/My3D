@@ -1,12 +1,9 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.ArticleFileWithDimensionDto;
 import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.dto.DimensionOptionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
@@ -21,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -84,17 +80,15 @@ public class ArticleFileService {
      */
     public void deleteArticleFile(Long articleId) {
         try {
-            //TODO: fileName만 조회하는 쿼리 메소드를 추가하여 적용
-            ArticleFile articleFile = articleFileRepository.getReferenceByArticle_Id(articleId);
-            String fileName = articleFile.getFileName();
-            //파일 삭제
-            s3Service.deleteFile(fileName);
+            s3Service.deleteFile(searchFileName(articleId));
         } catch (SdkClientException | S3Exception e) {
             log.error("S3 파일 삭제 실패 - articleId: {}", articleId);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
-        } catch (EntityNotFoundException e) {
-            throw new FileException(ErrorCode.FILE_NOT_FOUND, e);
         }
+    }
+
+    public byte[] download(Long articleId) {
+        return s3Service.downloadFile(searchFileName(articleId));
     }
 
     private void updateS3File(ArticleFile articleFile, MultipartFile file) {
@@ -123,5 +117,11 @@ public class ArticleFileService {
             log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
+    }
+
+    private String searchFileName(Long articleId) {
+        return articleFileRepository.findFileNameByArticleId(articleId)
+                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
+                .getFileName();
     }
 }

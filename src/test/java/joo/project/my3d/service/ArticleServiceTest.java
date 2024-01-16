@@ -15,8 +15,6 @@ import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.ArticleCommentRepository;
-import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -48,8 +46,6 @@ import static org.mockito.BDDMockito.*;
 class ArticleServiceTest {
     @InjectMocks private ArticleService articleService;
     @Mock private ArticleRepository articleRepository;
-    @Mock private ArticleCommentRepository articleCommentRepository;
-    @Mock private ArticleLikeRepository articleLikeRepository;
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleFileService articleFileService;
 

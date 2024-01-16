@@ -11,8 +11,6 @@ import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.repository.ArticleCommentRepository;
-import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;

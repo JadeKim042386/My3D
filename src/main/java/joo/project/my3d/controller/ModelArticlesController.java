@@ -4,7 +4,10 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.ArticleFileWithDimensionDto;
+import joo.project.my3d.dto.ArticleFormDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
@@ -201,10 +204,7 @@ public class ModelArticlesController {
      */
     @GetMapping("/download/{articleId}")
     public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
-        //TODO: fileName만 조회하는 쿼리 메소드를 추가하는 것이 좋을 것 같음
-        ArticleFileDto articleFile = articleFileService.getArticleFile(articleId);
-        byte[] downloadFile = s3Service.downloadFile(articleFile.fileName());
 
-        return ApiResponse.success(downloadFile);
+        return ApiResponse.success(articleFileService.download(articleId));
     }
 }

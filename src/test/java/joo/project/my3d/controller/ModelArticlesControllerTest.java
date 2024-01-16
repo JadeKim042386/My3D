@@ -6,8 +6,10 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.FormStatus;
-import joo.project.my3d.dto.*;
-import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.dto.ArticleFormDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
+import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
@@ -532,9 +534,7 @@ class ModelArticlesControllerTest {
     @Test
     void downloadArticleFile() throws Exception {
         //given
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        given(articleFileService.getArticleFile(anyLong())).willReturn(articleFileDto);
-        given(s3Service.downloadFile(anyString())).willReturn(new byte[]{1});
+        given(articleFileService.download(anyLong())).willReturn(new byte[]{1});
         //when
         mvc.perform(
                 get("/model_articles/download/1")
