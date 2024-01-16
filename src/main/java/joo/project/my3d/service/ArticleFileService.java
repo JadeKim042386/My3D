@@ -3,7 +3,6 @@ package joo.project.my3d.service;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.ArticleFileDto;
-import joo.project.my3d.dto.DimensionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
@@ -19,7 +18,6 @@ import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -55,17 +53,14 @@ public class ArticleFileService {
             updateS3File(articleFile, articleFormRequest.getModelFile());
 
             //치수 옵션 업데이트
-            articleFile.getDimensionOption().setOptionName(
+            DimensionOption dimensionOption = articleFile.getDimensionOption();
+            dimensionOption.setOptionName(
                     articleFormRequest.toDimensionOptionDto().optionName()
             );
 
             //치수 업데이트
-            //TODO: 치수 업데이트 부분은 따로 분리할 수 있을 것 같음
-            DimensionOption dimensionOption = articleFile.getDimensionOption();
-            List<DimensionDto> dimensions = articleFormRequest.toDimensions();
-            dimensionOption.getDimensions().clear();
-            dimensionOption.getDimensions().addAll(
-                    dimensions.stream()
+            dimensionOption.updateDimensions(
+                    articleFormRequest.toDimensions().stream()
                             .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
                             .toList()
             );

@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -66,5 +67,10 @@ public class DimensionOption extends AuditingFields implements Persistable<Long>
     @Override
     public boolean isNew() {
         return this.createdAt == null;
+    }
+
+    public void updateDimensions(Collection<Dimension> dimensions) {
+        this.dimensions.clear();
+        this.dimensions.addAll(dimensions);
     }
 }
