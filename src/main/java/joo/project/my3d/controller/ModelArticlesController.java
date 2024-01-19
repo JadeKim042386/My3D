@@ -30,6 +30,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -54,6 +58,7 @@ public class ModelArticlesController {
     private final ArticleLikeRepository articleLikeRepository;
     private final S3Service s3Service;
 
+    //TODO: local, test 에서는 local 경로로 지정
     @Value("${aws.s3.url}")
     private String S3Url;
 
@@ -61,7 +66,7 @@ public class ModelArticlesController {
      * 게시판 페이지 요청
      */
     @GetMapping
-    public ApiResponse<ArticlePreviewResponse> articles(
+    public ResponseEntity<ArticlePreviewResponse> articles(
             @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @QuerydslPredicate(root = Article.class) Predicate predicate
     ) {
@@ -76,7 +81,8 @@ public class ModelArticlesController {
             );
         }
 
-        return ApiResponse.success(ArticlePreviewResponse.of(
+        //TODO: 페이징 처리를 위한 Response 객체를 따로 생성한 후 생성한 Response 객체로 반환
+        return ResponseEntity.ok(ArticlePreviewResponse.of(
                 articles,
                 S3Url,
                 ArticleCategory.values(),
@@ -88,7 +94,7 @@ public class ModelArticlesController {
      * 특정 게시글 페이지 요청
      */
     @GetMapping("/{articleId}")
-    public ApiResponse<ArticleDetailResponse> article(
+    public ResponseEntity<ArticleDetailResponse> article(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -96,29 +102,32 @@ public class ModelArticlesController {
         int likeCount = articleLikeRepository.countByArticleId(articleId);
         ArticleWithCommentsDto article = articleService.getArticleWithComments(articleId);
 
-        return ApiResponse.success(ArticleDetailResponse.of(article, likeCount, addedLike, S3Url));
+        //TODO: modelmapper 사용
+        return ResponseEntity.ok(ArticleDetailResponse.of(article, likeCount, addedLike, S3Url));
     }
 
     /**
      * 게시글 작성 페이지 요청 (프론트엔드 작업시 불필요하면 삭제)
      */
     @GetMapping("/add")
-    public ApiResponse<ArticleFormResponse> articleAddForm() {
-        return ApiResponse.success(ArticleFormResponse.of(CREATE));
+    public ResponseEntity<ArticleFormResponse> articleAddForm() {
+        return ResponseEntity.ok(ArticleFormResponse.of(CREATE));
     }
 
     /**
      * 게시글 저장 요청
      */
     @PostMapping("/add")
-    public ApiResponse<?> postNewArticle(
+    public ResponseEntity<?> postNewArticle(
             @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
-            return ApiResponse.invalid(ArticleFormResponse.validError(
+            //TODO: response 객체 재정의 필요
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ArticleFormResponse.validError(
                     articleFormRequest,
                     CREATE,
                     bindingResult.getAllErrors().stream().map(ObjectError::getDefaultMessage).toList()
@@ -128,6 +137,7 @@ public class ModelArticlesController {
         try {
             //게시글 저장
             ArticleFileWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
+            //TODO: 하나의 트랜잭션에서 수행하도록 수정
             articleService.saveArticle(
                     boardPrincipal.email(),
                     articleFormRequest.toArticleDto(
@@ -144,24 +154,27 @@ public class ModelArticlesController {
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
 
-        return ApiResponse.success();
+        //TODO: 추가한 article 반환
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("You successfully added article"));
     }
 
     /**
      * 특정 게시글 수정을 위해 요청 게시글의 기존 데이터 요청
      */
     @GetMapping("/update/{articleId}")
-    public ApiResponse<?> articleUpdateForm(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleFormResponse> articleUpdateForm(@PathVariable Long articleId) {
         ArticleFormDto article = articleService.getArticleForm(articleId);
 
-        return ApiResponse.success(ArticleFormResponse.from(article, UPDATE));
+        //TODO: modelmapper 사용
+        return ResponseEntity.ok(ArticleFormResponse.from(article, UPDATE));
     }
 
     /**
      * 특정 게시글 수정 요청
      */
     @PutMapping("/update/{articleId}")
-    public ApiResponse<?> postUpdateArticle(
+    public ResponseEntity<?> postUpdateArticle(
             @PathVariable Long articleId,
             @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
@@ -169,7 +182,9 @@ public class ModelArticlesController {
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("formBindingResult={}", bindingResult);
-            return ApiResponse.invalid(ArticleFormResponse.validError(
+            //TODO: response 객체 재정의 필요
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ArticleFormResponse.validError(
                     articleId,
                     articleFormRequest,
                     UPDATE,
@@ -183,28 +198,37 @@ public class ModelArticlesController {
                 boardPrincipal.email()
         );
 
-        return ApiResponse.success();
+        //TODO: 업데이트한 article 반환
+        return ResponseEntity.ok(ApiResponse.of("You successfully updated article"));
     }
 
     /**
      * 특정 게시글 삭제 요청
      */
     @DeleteMapping("/{articleId}")
-    public ApiResponse<Void> deleteArticle(
+    public ResponseEntity<ApiResponse> deleteArticle(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
-        return ApiResponse.success();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.of("You successfully deleted article"));
     }
 
     /**
      * 특정 게시글의 모델 파일 다운로드 요청
      */
+    //TODO: 테스트
     @GetMapping("/download/{articleId}")
-    public ApiResponse<byte[]> downloadArticleFile(@PathVariable Long articleId) {
-
-        return ApiResponse.success(articleFileService.download(articleId));
+    public ResponseEntity<byte[]> downloadArticleFile(@PathVariable Long articleId) {
+        byte[] file = articleFileService.download(articleId);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentLength(file.length);
+        httpHeaders.setContentDispositionFormData("attachment", "");
+        return ResponseEntity.status(HttpStatus.OK)
+                .headers(httpHeaders)
+                .body(file);
     }
 }

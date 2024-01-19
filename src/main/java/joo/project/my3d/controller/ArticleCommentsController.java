@@ -6,6 +6,8 @@ import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,7 @@ public class ArticleCommentsController {
      *  댓글 추가
      */
     @PostMapping
-    public ApiResponse<Void> postNewComment(
+    public ResponseEntity<ApiResponse> postNewComment(
             ArticleCommentRequest articleCommentRequest,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -32,19 +34,22 @@ public class ArticleCommentsController {
                 )
         );
 
-        return ApiResponse.success();
+        //TODO: 추가한 comment 반환
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("You successfully added comment"));
     }
 
     /**
      * 댓글 삭제
      */
     @DeleteMapping("/{commentId}")
-    public ApiResponse<Void> deleteComment(
+    public ResponseEntity<ApiResponse> deleteComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
         articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
 
-        return ApiResponse.success();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.of("You successfully deleted comment"));
     }
 }

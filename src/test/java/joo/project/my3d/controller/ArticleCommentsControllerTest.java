@@ -42,8 +42,8 @@ class ArticleCommentsControllerTest {
                         .param("content", "content")
                         .with(csrf())
         )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").isNotEmpty());
         // Then
     }
 
@@ -59,8 +59,8 @@ class ArticleCommentsControllerTest {
                         delete("/comments/" + articleCommentId)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$").isNotEmpty());
         // Then
     }
 }

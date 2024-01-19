@@ -45,7 +45,7 @@ class EmailControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -62,9 +62,8 @@ class EmailControllerTest {
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email))
-                .andExpect(jsonPath("$.status").value("invalid"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -73,8 +72,8 @@ class EmailControllerTest {
     void sendEmailFindPass() throws Exception {
         // Given
         String email = "jk042386@gmail.com";
+        given(userAccountService.isExistsUserEmail(anyString())).willReturn(true);
         willDoNothing().given(emailService).sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
-        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN));
         willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
         // When
         mvc.perform(
@@ -83,7 +82,7 @@ class EmailControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -99,9 +98,8 @@ class EmailControllerTest {
                                 .queryParam("email", email)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("invalid"))
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 }

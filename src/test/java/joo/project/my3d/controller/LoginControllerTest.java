@@ -55,10 +55,10 @@ class LoginControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.email").value("a@gmail.com"))
-                .andExpect(jsonPath("$.data.nickname").value("nickname"))
-                .andExpect(jsonPath("$.data.accessToken").value("accessToken"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refreshToken"));
+                .andExpect(jsonPath("$.email").value("a@gmail.com"))
+                .andExpect(jsonPath("$.nickname").value("nickname"))
+                .andExpect(jsonPath("$.accessToken").value("accessToken"))
+                .andExpect(jsonPath("$.refreshToken").value("refreshToken"));
         //then
     }
 
@@ -77,10 +77,10 @@ class LoginControllerTest {
             )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.email").value("a@gmail.com"))
-                .andExpect(jsonPath("$.data.nickname").value("nickname"))
-                .andExpect(jsonPath("$.data.accessToken").value("accessToken"))
-                .andExpect(jsonPath("$.data.refreshToken").value("refreshToken"));
+                .andExpect(jsonPath("$.email").value("a@gmail.com"))
+                .andExpect(jsonPath("$.nickname").value("nickname"))
+                .andExpect(jsonPath("$.accessToken").value("accessToken"))
+                .andExpect(jsonPath("$.refreshToken").value("refreshToken"));
         //then
     }
 
@@ -96,7 +96,7 @@ class LoginControllerTest {
                         .with(csrf())
             )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(true));
+                .andExpect(jsonPath("$").value(true));
         //then
     }
 
@@ -112,7 +112,7 @@ class LoginControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(true));
+                .andExpect(jsonPath("$").value(true));
         //then
     }
 
@@ -133,8 +133,8 @@ class LoginControllerTest {
                                 .content(formDataEncoder.encode(request))
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -149,8 +149,7 @@ class LoginControllerTest {
                     get("/account/company")
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$").doesNotExist());
         // Then
     }
 }

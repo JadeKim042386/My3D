@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 
 @Service
+//TODO: 트랜잭션이 불필요해보임
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArticleLikeService {

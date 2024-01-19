@@ -1,10 +1,11 @@
 package joo.project.my3d.controller;
 
-import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,12 @@ public class ArticleLikeController {
      * 특정 게시글에 좋아요 추가
      */
     @PostMapping("/{articleId}")
-    public ApiResponse<Integer> addArticleLike(
+    public ResponseEntity<Integer> addArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        return ApiResponse.success(
+        //TODO: Response 객체로 반환
+        return ResponseEntity.ok(
                 articleLikeService.addArticleLike(articleId, boardPrincipal.email())
         );
     }
@@ -33,13 +35,12 @@ public class ArticleLikeController {
      * 특정 게시글의 좋아요 해제
      */
     @DeleteMapping("/{articleId}")
-    public ApiResponse<Integer> deleteArticleLike(
+    public ResponseEntity<Integer> deleteArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-
-        return ApiResponse.success(
-                articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())
-        );
+        //TODO: Response 객체로 반환
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(articleLikeService.deleteArticleLike(articleId, boardPrincipal.email()));
     }
 }

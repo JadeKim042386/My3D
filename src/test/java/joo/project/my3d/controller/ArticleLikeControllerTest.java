@@ -45,7 +45,7 @@ class ArticleLikeControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").value(0));
+                .andExpect(jsonPath("$").value(0));
 
         // Then
     }
@@ -62,9 +62,9 @@ class ArticleLikeControllerTest {
                 delete("/like/" + articleId)
                         .with(csrf())
         )
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$").value(1));
         // Then
     }
 }

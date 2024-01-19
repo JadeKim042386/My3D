@@ -58,8 +58,8 @@ class UserAdminControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.nickname").value("userUser"))
-                .andExpect(jsonPath("$.data.email").value("userUser@gmail.com"));
+                .andExpect(jsonPath("$.nickname").value("userUser"))
+                .andExpect(jsonPath("$.email").value("userUser@gmail.com"));
         //then
     }
 
@@ -83,8 +83,7 @@ class UserAdminControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$").doesNotExist())
         ;
         //then
     }
@@ -102,8 +101,7 @@ class UserAdminControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$").doesNotExist());
         //then
     }
 
@@ -121,8 +119,8 @@ class UserAdminControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.companyName").value(companyDto.companyName()))
-                .andExpect(jsonPath("$.data.homepage").value(companyDto.homepage()));
+                .andExpect(jsonPath("$.companyName").value(companyDto.companyName()))
+                .andExpect(jsonPath("$.homepage").value(companyDto.homepage()));
         // Then
     }
 
@@ -140,8 +138,7 @@ class UserAdminControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$").doesNotExist());
         // Then
     }
 
@@ -158,7 +155,7 @@ class UserAdminControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.size()").value(0))
+                .andExpect(jsonPath("$.size()").value(0))
         ;
         // Then
     }
@@ -175,8 +172,7 @@ class UserAdminControllerTest {
                         .with(authentication(authentication))
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$").doesNotExist())
         ;
         // Then
     }
