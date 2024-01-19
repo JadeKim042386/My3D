@@ -83,7 +83,8 @@ class UserAdminControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").doesNotExist())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty())
         ;
         //then
     }
@@ -101,7 +102,8 @@ class UserAdminControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").doesNotExist());
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty());
         //then
     }
 
@@ -138,7 +140,8 @@ class UserAdminControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").doesNotExist());
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty());
         // Then
     }
 

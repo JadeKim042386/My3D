@@ -23,6 +23,14 @@ public class ArticleLikeService {
     private final UserAccountRepository userAccountRepository;
     private final ArticleLikeRepository articleLikeRepository;
 
+    public boolean addedLike(Long articleId, String email) {
+        return articleLikeRepository.existsByArticleIdAndUserAccount_Email(articleId, email);
+    }
+
+    public int getLikeCountByArticleId(Long articleId) {
+        return articleLikeRepository.countByArticleId(articleId);
+    }
+
     /**
      * @throws ArticleLikeException 게시글을 찾을 수 없거나 좋아요를 추가할 수 없을시 발생하는 예외
      * @return 좋아요 추가 후 반영된 게시글의 좋아요 총 개수

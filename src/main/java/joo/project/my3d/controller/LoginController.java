@@ -2,8 +2,13 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.request.UserLoginRequest;
+import joo.project.my3d.dto.response.ApiResponse;
+import joo.project.my3d.dto.response.DuplicatedCheckResponse;
+import joo.project.my3d.dto.response.ExceptionResponse;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.exception.AuthException;
+import joo.project.my3d.exception.ValidatedException;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.security.TokenProvider;
 import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
@@ -16,7 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +66,7 @@ public class LoginController {
      * @param signup 회원가입 여부
      */
     @GetMapping("/oauth/response")
-    public ResponseEntity<?> oauthResponse(
+    public ResponseEntity<LoginResponse> oauthResponse(
             @RequestParam String email,
             @RequestParam String nickname,
             @RequestParam boolean signup
@@ -72,19 +76,18 @@ public class LoginController {
             return ResponseEntity.ok(userAccountService.oauthLogin(email, nickname));
         }
         //회원가입이 안되어있다면 email과 nickmame 전달하고 프론트엔드에서 처리하도록 적용
-        //TODO: response 객체로 반환
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(String.format("%s:%s", email, nickname));
+                .body(LoginResponse.of(email, nickname));
     }
 
     /**
      * 로그아웃 요청
      */
     @GetMapping("/logout")
-    public ResponseEntity<Void> requestLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse> requestLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         logoutHandler.logout(request, response, authentication);
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(ApiResponse.of("You successfully logout"));
     }
 
     /**
@@ -101,16 +104,16 @@ public class LoginController {
      * 닉네임, 기업명 중복 체크
      */
     @PostMapping("/signup/duplicatedCheck")
-    public ResponseEntity<Boolean> duplicatedNicknamesOrCompanyNamesCheck(
+    public ResponseEntity<DuplicatedCheckResponse> duplicatedNicknamesOrCompanyNamesCheck(
             @RequestParam(required = false) String nickname,
             @RequestParam(required = false) String companyName
     ) {
         if (StringUtils.hasText(nickname) && userAccountService.isExistsUserNickname(nickname)) {
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(DuplicatedCheckResponse.of(true));
         } else if (StringUtils.hasText(companyName) && companyService.isExistsByCompanyName(companyName)) {
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(DuplicatedCheckResponse.of(true));
         }
-        return ResponseEntity.ok(false);
+        return ResponseEntity.ok(DuplicatedCheckResponse.of(false));
     }
 
     /**
@@ -124,9 +127,13 @@ public class LoginController {
     ) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
-            //TODO: response 객체 재정의 필요
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(bindingResult.getAllErrors().stream().map(ObjectError::getDefaultMessage).toList());
+            throw new ValidatedException(
+                    ErrorCode.INVALID_REQUEST,
+                    ExceptionResponse.fromBindingResult(
+                            "signup validated error",
+                            bindingResult
+                    )
+                );
         }
 
         String refreshToken = tokenProvider.generateRefreshToken();

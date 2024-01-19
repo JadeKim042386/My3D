@@ -96,7 +96,7 @@ class LoginControllerTest {
                         .with(csrf())
             )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(true));
+                .andExpect(jsonPath("$.duplicated").value(true));
         //then
     }
 
@@ -112,7 +112,7 @@ class LoginControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(true));
+                .andExpect(jsonPath("$.duplicated").value(true));
         //then
     }
 
@@ -135,6 +135,29 @@ class LoginControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value(email));
+        // Then
+    }
+
+    @DisplayName("[POST][Validation Error] 회원가입 요청 - 닉네임 미입력")
+    @Test
+    void requestSignup_validationError() throws Exception {
+        // Given
+        String email = "tester@gmail.com";
+        SignUpRequest request = new SignUpRequest(UserRole.USER, null, "", "pw1234@@", "1234", "address", "detailAddress");
+        willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
+        given(userAccountService.login(anyString(), anyString()))
+                .willReturn(LoginResponse.of(email, "nickname", "accessToken", "refreshToken"));
+        // When
+        mvc.perform(
+                        post("/account/signup")
+                                .queryParam("email", email)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(formDataEncoder.encode(request))
+                                .with(csrf())
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
         // Then
     }
 

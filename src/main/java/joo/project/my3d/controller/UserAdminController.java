@@ -4,6 +4,7 @@ import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.request.UserAdminRequest;
 import joo.project.my3d.dto.response.AlarmResponse;
+import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -53,10 +54,12 @@ public class UserAdminController {
      * 사용자 정보 수정 요청
      */
     @PostMapping("/account")
-    public ResponseEntity<Void> updateUserData(UserAdminRequest userAdminRequest) {
+    public ResponseEntity<ApiResponse> updateUserData(UserAdminRequest userAdminRequest) {
         userAccountService.updateUser(userAdminRequest.toDto());
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully updated user account")
+        );
     }
 
     /**
@@ -72,13 +75,15 @@ public class UserAdminController {
      * 비밀번호 변경 요청
      */
     @PostMapping("/password")
-    public ResponseEntity<Void> changePassword(
+    public ResponseEntity<ApiResponse> changePassword(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             UserAdminRequest userAdminRequest
     ) {
         userAccountService.changePassword(boardPrincipal.email(), userAdminRequest.password());
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully changed password")
+        );
     }
 
     /**
@@ -100,15 +105,16 @@ public class UserAdminController {
      * 기업 정보 수정 요청
      */
     @PostMapping("/company")
-    //TODO: 업데이트한 company 반환
-    public ResponseEntity<Void> updateCompany(
+    public ResponseEntity<ApiResponse> updateCompany(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             CompanyAdminRequest companyAdminRequest
     ) {
         CompanyDto company = companyService.getCompany(boardPrincipal.email());
         companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully updated company")
+        );
     }
 
     /**
@@ -131,7 +137,6 @@ public class UserAdminController {
     @GetMapping("/alarm/subscribe")
     public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        //TODO: Response 객체로 반환
         return ResponseEntity.ok(
                 alarmService.connectAlarm(boardPrincipal.email())
         );

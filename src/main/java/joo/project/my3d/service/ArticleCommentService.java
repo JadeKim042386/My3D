@@ -38,7 +38,7 @@ public class ArticleCommentService {
      * @throws CommentException 댓글 저장에 필요한 게시글, 유저 정보를 찾을 수 없거나 저장에 실패했을 경우 발생하는 예외
      */
     @Transactional
-    public void saveComment(ArticleCommentDto dto) {
+    public ArticleCommentDto saveComment(ArticleCommentDto dto) {
         try{
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
             ArticleComment articleComment = dto.toEntity(
@@ -52,6 +52,7 @@ public class ArticleCommentService {
                 articleCommentRepository.save(articleComment);
             }
             alarmService.send(dto.email(), dto.nickname(), dto.articleId(), userAccount);
+            return ArticleCommentDto.from(articleComment);
         } catch (EntityNotFoundException e) {
             throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);
         } catch (IllegalArgumentException e) {

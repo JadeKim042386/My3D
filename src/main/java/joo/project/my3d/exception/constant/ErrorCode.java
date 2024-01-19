@@ -32,7 +32,7 @@ public enum ErrorCode {
     //Mail
     MAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송 실패"),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "이메일 형식이 잘못되었습니다."),
-    ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT,"이미 존재하는 이메일입니다."),
+    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST,"이미 존재하는 이메일입니다."),
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND,"사용자가 존재하지 않는 이메일입니다."),
     //Auth
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),

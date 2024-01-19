@@ -3,8 +3,6 @@ package joo.project.my3d.dto.response;
 import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.utils.LocalDateTimeUtils;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 

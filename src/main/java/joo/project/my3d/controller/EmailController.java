@@ -1,12 +1,12 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.response.EmailResponse;
+import joo.project.my3d.exception.MailException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.EmailService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,19 +30,12 @@ public class EmailController {
     /**
      * 인증 코드 전송 후 코드와 이메일을 세션에 저장
      */
-    //TODO: response 객체 재정의 필요
     @PostMapping("/send_code")
     public ResponseEntity<EmailResponse> sendEmailCertification(@RequestParam String email) {
-        //이메일 형식 체크
-        if (invalidEmailFormat(email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(EmailResponse.sendError(email, ErrorCode.INVALID_EMAIL_FORMAT));
-        }
-
+        validateEmail(email);
         //이메일 중복 체크
         if (userAccountService.isExistsUserEmail(email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(EmailResponse.sendError(email, ErrorCode.ALREADY_EXIST_EMAIL));
+            throw new MailException(ErrorCode.ALREADY_EXIST_EMAIL);
         }
 
         String subject = "[My3D] 이메일 인증";
@@ -52,20 +45,15 @@ public class EmailController {
         return ResponseEntity.ok(EmailResponse.sendSuccess(email, code));
     }
 
-    //TODO: response 객체 재정의 필요
     @PostMapping("/find_pass")
     public ResponseEntity<EmailResponse> sendEmailFindPass(@RequestParam String email) {
-        //이메일 형식 체크
-        if (invalidEmailFormat(email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(EmailResponse.sendError(email, ErrorCode.INVALID_EMAIL_FORMAT));
-        }
+        validateEmail(email);
         //유저의 존재 유무 확인
         if (!userAccountService.isExistsUserEmail(email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(EmailResponse.sendError(email, ErrorCode.NOT_FOUND_EMAIL));
+            throw new MailException(ErrorCode.NOT_FOUND_EMAIL);
         }
         String code = String.valueOf(UUID.randomUUID()).split("-")[0];
+        //TODO: 하나의 트랜잭션에서 동작하도록 수정
         emailService.sendEmail(
                 email,
                 "[My3D] 이메일 임시 비밀번호",
@@ -73,6 +61,12 @@ public class EmailController {
         );
         userAccountService.changePassword(email, encoder.encode(code));
         return ResponseEntity.ok(EmailResponse.sendSuccess(email));
+    }
+
+    private void validateEmail(String email) {
+        if (invalidEmailFormat(email)) {
+            throw new MailException(ErrorCode.INVALID_EMAIL_FORMAT);
+        }
     }
 
     private boolean invalidEmailFormat(String email) {

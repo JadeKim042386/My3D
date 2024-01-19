@@ -9,6 +9,7 @@ import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
+import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
@@ -34,6 +35,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
     private final ArticleFileService articleFileService;
+    private final ArticleLikeService articleLikeService;
 
     /**
      * 게시판에 표시할 전체 게시글 조회
@@ -57,9 +59,14 @@ public class ArticleService {
      * 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)
      * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
-    public ArticleWithCommentsDto getArticleWithComments(Long articleId) {
+    public ArticleDetailResponse getArticleWithComments(Long articleId, String email) {
         return articleRepository.findByIdFetchDetail(articleId)
-                .map(ArticleWithCommentsDto::from)
+                .map(comment -> ArticleDetailResponse.of(
+                        ArticleWithCommentsDto.from(comment),
+                        articleLikeService.getLikeCountByArticleId(articleId),
+                        articleLikeService.addedLike(articleId, email)
+                        )
+                )
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 

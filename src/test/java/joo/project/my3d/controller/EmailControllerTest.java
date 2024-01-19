@@ -63,7 +63,24 @@ class EmailControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.email").value(email));
+                .andExpect(jsonPath("$.message").isNotEmpty());
+        // Then
+    }
+
+    @DisplayName("[POST] 이메일 인증 발송 - 잘못된 이메일 형식")
+    @Test
+    void sendEmail_invalidEmail() throws Exception {
+        // Given
+        String email = "jk042386gmail.com";
+        // When
+        mvc.perform(
+                        post("/mail/send_code")
+                                .queryParam("email", email)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .with(csrf())
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
     }
 
@@ -98,8 +115,8 @@ class EmailControllerTest {
                                 .queryParam("email", email)
                                 .with(csrf())
                 )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.email").value(email));
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
     }
 }

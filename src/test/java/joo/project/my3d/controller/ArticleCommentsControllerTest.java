@@ -2,6 +2,7 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.dto.ArticleCommentDto;
+import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.ArticleCommentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,8 @@ class ArticleCommentsControllerTest {
     @Test
     void addComment() throws Exception {
         // Given
-        willDoNothing().given(articleCommentService).saveComment(any(ArticleCommentDto.class));
+        given(articleCommentService.saveComment(any(ArticleCommentDto.class)))
+                .willReturn(FixtureDto.getArticleCommentDto("content"));
         // When
         mvc.perform(
                 post("/comments")
@@ -43,7 +45,7 @@ class ArticleCommentsControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").isNotEmpty());
+                .andExpect(jsonPath("$.content").value("content"));
         // Then
     }
 

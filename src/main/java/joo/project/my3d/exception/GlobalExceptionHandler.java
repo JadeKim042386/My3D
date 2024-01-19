@@ -36,9 +36,17 @@ public class GlobalExceptionHandler {
                 .body(ExceptionResponse.of(e.getMessage()));
     }
 
+    @ExceptionHandler(value = ValidatedException.class)
+    public ResponseEntity<ExceptionResponse> resolveException(ValidatedException e) {
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(e.getExceptionResponse());
+    }
+
     @ExceptionHandler(value = CustomException.class)
     public ResponseEntity<ExceptionResponse> resolveException(CustomException e) {
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ExceptionResponse.of(e.getErrorCode().getMessage()));
     }
+
+
 }

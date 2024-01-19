@@ -1,7 +1,9 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.dto.request.ArticleCommentRequest;
 import joo.project.my3d.dto.response.ApiResponse;
+import joo.project.my3d.dto.response.ArticleCommentResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
@@ -23,20 +25,19 @@ public class ArticleCommentsController {
      *  댓글 추가
      */
     @PostMapping
-    public ResponseEntity<ApiResponse> postNewComment(
+    public ResponseEntity<ArticleCommentResponse> postNewComment(
             ArticleCommentRequest articleCommentRequest,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleCommentService.saveComment(
+        ArticleCommentDto commentDto = articleCommentService.saveComment(
                 articleCommentRequest.toDto(
                         boardPrincipal.nickname(),
                         boardPrincipal.email()
                 )
         );
 
-        //TODO: 추가한 comment 반환
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of("You successfully added comment"));
+                .body(ArticleCommentResponse.from(commentDto));
     }
 
     /**

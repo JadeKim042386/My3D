@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.dto.response.ArticleLikeResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,14 @@ public class ArticleLikeController {
      * 특정 게시글에 좋아요 추가
      */
     @PostMapping("/{articleId}")
-    public ResponseEntity<Integer> addArticleLike(
+    public ResponseEntity<ArticleLikeResponse> addArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        //TODO: Response 객체로 반환
         return ResponseEntity.ok(
-                articleLikeService.addArticleLike(articleId, boardPrincipal.email())
+                ArticleLikeResponse.of(
+                        articleLikeService.addArticleLike(articleId, boardPrincipal.email())
+                )
         );
     }
 
@@ -35,12 +37,15 @@ public class ArticleLikeController {
      * 특정 게시글의 좋아요 해제
      */
     @DeleteMapping("/{articleId}")
-    public ResponseEntity<Integer> deleteArticleLike(
+    public ResponseEntity<ArticleLikeResponse> deleteArticleLike(
             @PathVariable Long articleId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        //TODO: Response 객체로 반환
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(articleLikeService.deleteArticleLike(articleId, boardPrincipal.email()));
+                .body(
+                        ArticleLikeResponse.of(
+                                articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())
+                        )
+                );
     }
 }

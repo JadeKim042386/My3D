@@ -45,7 +45,7 @@ class ArticleLikeControllerTest {
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value(0));
+                .andExpect(jsonPath("$.likeCount").value(0));
 
         // Then
     }
@@ -64,7 +64,7 @@ class ArticleLikeControllerTest {
         )
                 .andExpect(status().isNoContent())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value(1));
+                .andExpect(jsonPath("$.likeCount").value(1));
         // Then
     }
 }
