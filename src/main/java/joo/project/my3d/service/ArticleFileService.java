@@ -32,6 +32,7 @@ public class ArticleFileService {
     /**
      * article ID로 파일 조회
      */
+    //TODO: no usages
     public ArticleFileDto getArticleFile(Long articleId) {
 
         return ArticleFileDto.from(

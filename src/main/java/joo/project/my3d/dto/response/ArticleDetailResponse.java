@@ -5,10 +5,9 @@ import joo.project.my3d.dto.ArticleWithCommentsDto;
 public record ArticleDetailResponse(
         ArticleWithCommentsDto article,
         int likeCount,
-        boolean addedLike,
-        String modelPath
+        boolean addedLike
 ) {
-    public static ArticleDetailResponse of(ArticleWithCommentsDto article, int likeCount, boolean addedLike, String modelPath) {
-        return new ArticleDetailResponse(article, likeCount, addedLike, modelPath);
+    public static ArticleDetailResponse of(ArticleWithCommentsDto article, int likeCount, boolean addedLike) {
+        return new ArticleDetailResponse(article, likeCount, addedLike);
     }
 }

@@ -10,6 +10,7 @@ import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
+import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
@@ -52,9 +53,7 @@ class ModelArticlesControllerTest {
 
     @Autowired private MockMvc mvc;
     @MockBean private ArticleService articleService;
-    @MockBean private PaginationService paginationService;
     @MockBean private ArticleFileService articleFileService;
-    @MockBean private ArticleLikeRepository articleLikeRepository;
     @MockBean private S3Service s3Service;
 
     @DisplayName("1. [GET] 게시판 페이지(게시글이 존재할 경우) - 정상")
@@ -64,17 +63,13 @@ class ModelArticlesControllerTest {
         ArticlePreviewDto articlesDto = FixtureDto.getArticlesDto();
         given(articleService.getArticlesForPreview(any(Predicate.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(articlesDto)));
-        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0));
         // When
         mvc.perform(
                 get("/model_articles")
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.articles.totalElements").value(1))
-                .andExpect(jsonPath("$.data.modelPath").exists())
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.barNumbers.size()").value(1));
+                .andExpect(jsonPath("$.totalElements").value(1));
 
         // Then
     }
@@ -84,30 +79,26 @@ class ModelArticlesControllerTest {
     @Test
     void modelArticle() throws Exception {
         // Given
-        given(articleLikeRepository.existsByArticleIdAndUserAccount_Email(anyLong(), anyString()))
-                .willReturn(true);
-        given(articleLikeRepository.countByArticleId(anyLong())).willReturn(2);
         ArticleWithCommentsDto dto = FixtureDto.getArticleWithCommentsAndLikeCountDto(
                 "title",
                 "content",
                 ArticleType.MODEL,
                 ArticleCategory.ARCHITECTURE
         );
-        given(articleService.getArticleWithComments(anyLong()))
-                .willReturn(dto);
+        given(articleService.getArticleWithComments(anyLong(), anyString()))
+                .willReturn(ArticleDetailResponse.of(dto, 2, true));
         // When
         mvc.perform(
                         get("/model_articles/1")
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.article.title").value("title"))
-                .andExpect(jsonPath("$.data.article.content").value("content"))
-                .andExpect(jsonPath("$.data.article.articleType").value(ArticleType.MODEL.toString()))
-                .andExpect(jsonPath("$.data.article.articleCategory").value(ArticleCategory.ARCHITECTURE.toString()))
-                .andExpect(jsonPath("$.data.likeCount").value(2))
-                .andExpect(jsonPath("$.data.addedLike").value(true))
-                .andExpect(jsonPath("$.data.modelPath").exists());
+                .andExpect(jsonPath("$.article.title").value("title"))
+                .andExpect(jsonPath("$.article.content").value("content"))
+                .andExpect(jsonPath("$.article.articleType").value(ArticleType.MODEL.toString()))
+                .andExpect(jsonPath("$.article.articleCategory").value(ArticleCategory.ARCHITECTURE.toString()))
+                .andExpect(jsonPath("$.likeCount").value(2))
+                .andExpect(jsonPath("$.addedLike").value(true));
 
         // Then
     }
@@ -124,8 +115,8 @@ class ModelArticlesControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length));
+                .andExpect(jsonPath("$.formStatus").value(FormStatus.CREATE.toString()))
+                .andExpect(jsonPath("$.categories.length()").value(ArticleCategory.values().length));
         // Then
     }
 
@@ -152,9 +143,9 @@ class ModelArticlesControllerTest {
                             .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                             .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.message").isNotEmpty())
         ;
 
         // Then
@@ -181,18 +172,10 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("MUSIC"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.optionName").value("option1"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.dimensionDtos[0].dimName").value("dimName"))
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty());
-
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
         // Then
     }
 
@@ -218,17 +201,10 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("카테고리를 선택해주세요."))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.optionName").value("option1"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.dimensionDtos[0].dimName").value("dimName"))
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty());
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
 
         // Then
     }
@@ -249,16 +225,10 @@ class ModelArticlesControllerTest {
                                 .param("articleCategory", "MUSIC")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.CREATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("MUSIC"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption").isEmpty())
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty());
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
 
         // Then
     }
@@ -313,11 +283,11 @@ class ModelArticlesControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("MUSIC"))
+                .andExpect(jsonPath("$.formStatus").value(FormStatus.UPDATE.toString()))
+                .andExpect(jsonPath("$.categories.length()").value(ArticleCategory.values().length))
+                .andExpect(jsonPath("$.title").value("title"))
+                .andExpect(jsonPath("$.content").value("content"))
+                .andExpect(jsonPath("$.articleCategory").value("MUSIC"))
                 ;
 
         // Then
@@ -375,18 +345,10 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("MUSIC"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.optionName").value("option1"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.dimensionDtos[0].dimName").value("dimName"))
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty())
-                ;
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
         // Then
     }
 
@@ -413,18 +375,10 @@ class ModelArticlesControllerTest {
                                 .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("카테고리를 선택해주세요."))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.optionName").value("option1"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption.dimensionDtos[0].dimName").value("dimName"))
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty())
-        ;
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
         // Then
     }
 
@@ -445,17 +399,10 @@ class ModelArticlesControllerTest {
                                 .param("articleCategory", "MUSIC")
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data.formStatus").value(FormStatus.UPDATE.toString()))
-                .andExpect(jsonPath("$.data.categories.length()").value(ArticleCategory.values().length))
-                .andExpect(jsonPath("$.data.title").value("title"))
-                .andExpect(jsonPath("$.data.content").value("content"))
-                .andExpect(jsonPath("$.data.articleCategory").value("MUSIC"))
-                .andExpect(jsonPath("$.data.modelFile.dimensionOption").isEmpty())
-                .andExpect(jsonPath("$.data.valid").value(false))
-                .andExpect(jsonPath("$.data.validMessages").isNotEmpty())
-        ;
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.errors.size()").value(1));
         // Then
     }
 
@@ -504,9 +451,9 @@ class ModelArticlesControllerTest {
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
     }
 
@@ -540,8 +487,7 @@ class ModelArticlesControllerTest {
                 get("/model_articles/download/1")
         )
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$").exists())
                 ;
         //then
     }

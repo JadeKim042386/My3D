@@ -13,6 +13,7 @@ import joo.project.my3d.service.CompanyService;
 import joo.project.my3d.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -36,83 +38,96 @@ public class UserAdminController {
      * 사용자 정보 요청
      */
     @GetMapping("/account")
-    public ApiResponse<UserAdminResponse> userData(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    public ResponseEntity<UserAdminResponse> userData(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        return ApiResponse.success(UserAdminResponse.of(
-                boardPrincipal.nickname(),
-                boardPrincipal.phone(),
-                boardPrincipal.email(),
-                boardPrincipal.address()
-        ));
+        return ResponseEntity.ok(
+                UserAdminResponse.of(
+                        boardPrincipal.nickname(),
+                        boardPrincipal.phone(),
+                        boardPrincipal.email(),
+                        boardPrincipal.address()
+                )
+        );
     }
 
     /**
      * 사용자 정보 수정 요청
      */
     @PostMapping("/account")
-    public ApiResponse<Void> updateUserData(UserAdminRequest userAdminRequest) {
+    public ResponseEntity<ApiResponse> updateUserData(UserAdminRequest userAdminRequest) {
         userAccountService.updateUser(userAdminRequest.toDto());
 
-        return ApiResponse.success();
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully updated user account")
+        );
     }
 
     /**
      * 비밀번호 변경 페이지 요청(프론트엔드 작업시 불필요하면 삭제)
      */
     @GetMapping("/password")
-    public ApiResponse<Void> password() {
+    public ResponseEntity<Void> password() {
 
-        return ApiResponse.success();
+        return ResponseEntity.ok(null);
     }
 
     /**
      * 비밀번호 변경 요청
      */
     @PostMapping("/password")
-    public ApiResponse<Void> changePassword(
+    public ResponseEntity<ApiResponse> changePassword(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             UserAdminRequest userAdminRequest
     ) {
         userAccountService.changePassword(boardPrincipal.email(), userAdminRequest.password());
 
-        return ApiResponse.success();
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully changed password")
+        );
     }
 
     /**
      * 기업 정보 괸리 페이지 요청
      */
     @GetMapping("/company")
-    public ApiResponse<CompanyAdminResponse> company(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    public ResponseEntity<CompanyAdminResponse> company(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         CompanyDto company = companyService.getCompany(boardPrincipal.email());
 
-        return ApiResponse.success(CompanyAdminResponse.from(company));
+        return ResponseEntity.ok(
+                CompanyAdminResponse.of(
+                        company.companyName(),
+                        company.homepage()
+                )
+        );
     }
 
     /**
      * 기업 정보 수정 요청
      */
     @PostMapping("/company")
-    public ApiResponse<Void> updateCompany(
+    public ResponseEntity<ApiResponse> updateCompany(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             CompanyAdminRequest companyAdminRequest
     ) {
         CompanyDto company = companyService.getCompany(boardPrincipal.email());
         companyService.updateCompany(companyAdminRequest.toDto(company.id()));
 
-        return ApiResponse.success();
+        return ResponseEntity.ok(
+                ApiResponse.of("You successfully updated company")
+        );
     }
 
     /**
      * 현재 로그인한 사용자에게 온 알람 조회
      */
     @GetMapping("/alarm")
-    public ApiResponse<List<AlarmResponse>> getAlarms(
+    public ResponseEntity<List<AlarmResponse>> getAlarms(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        return ApiResponse.success(
-                alarmService.getAlarms(boardPrincipal.email()).stream()
-                .map(AlarmResponse::from)
-                .toList()
+        return ResponseEntity.ok(
+                    alarmService.getAlarms(boardPrincipal.email()).stream()
+                            .map(AlarmResponse::from)
+                            .collect(Collectors.toList())
         );
     }
 
@@ -120,9 +135,9 @@ public class UserAdminController {
      * SSE 연결 요청
      */
     @GetMapping("/alarm/subscribe")
-    public ApiResponse<SseEmitter> subscribe(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+    public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        return ApiResponse.success(
+        return ResponseEntity.ok(
                 alarmService.connectAlarm(boardPrincipal.email())
         );
     }

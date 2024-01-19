@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+//TODO: 사용하지않는 빈으로 삭제
 @Configuration
 public class RestConfig {
     @Bean

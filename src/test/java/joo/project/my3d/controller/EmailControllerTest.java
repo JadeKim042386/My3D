@@ -45,7 +45,7 @@ class EmailControllerTest {
                                 .with(csrf())
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -62,9 +62,25 @@ class EmailControllerTest {
                                 .queryParam("userRole", String.valueOf(UserRole.USER))
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email))
-                .andExpect(jsonPath("$.status").value("invalid"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").isNotEmpty());
+        // Then
+    }
+
+    @DisplayName("[POST] 이메일 인증 발송 - 잘못된 이메일 형식")
+    @Test
+    void sendEmail_invalidEmail() throws Exception {
+        // Given
+        String email = "jk042386gmail.com";
+        // When
+        mvc.perform(
+                        post("/mail/send_code")
+                                .queryParam("email", email)
+                                .queryParam("userRole", String.valueOf(UserRole.USER))
+                                .with(csrf())
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
     }
 
@@ -73,8 +89,8 @@ class EmailControllerTest {
     void sendEmailFindPass() throws Exception {
         // Given
         String email = "jk042386@gmail.com";
+        given(userAccountService.isExistsUserEmail(anyString())).willReturn(true);
         willDoNothing().given(emailService).sendEmail(eq(email), eq("[My3D] 이메일 임시 비밀번호"), anyString());
-        given(userAccountService.searchUser(anyString())).willReturn(FixtureDto.getUserAccountDto("admin", UserRole.ADMIN));
         willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
         // When
         mvc.perform(
@@ -83,7 +99,7 @@ class EmailControllerTest {
                         .with(csrf())
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(jsonPath("$.email").value(email));
         // Then
     }
 
@@ -99,9 +115,8 @@ class EmailControllerTest {
                                 .queryParam("email", email)
                                 .with(csrf())
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("invalid"))
-                .andExpect(jsonPath("$.data.email").value(email));
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
     }
 }

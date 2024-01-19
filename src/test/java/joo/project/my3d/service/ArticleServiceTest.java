@@ -9,7 +9,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
-import joo.project.my3d.dto.ArticleWithCommentsDto;
+import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
@@ -48,6 +48,7 @@ class ArticleServiceTest {
     @Mock private ArticleRepository articleRepository;
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleFileService articleFileService;
+    @Mock private ArticleLikeService articleLikeService;
 
     @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
@@ -108,15 +109,19 @@ class ArticleServiceTest {
         FieldUtils.writeField(comment, "id", 1L, true);
         article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
+        given(articleLikeService.getLikeCountByArticleId(anyLong())).willReturn(2);
+        given(articleLikeService.addedLike(anyLong(), anyString())).willReturn(true);
         // When
-        ArticleWithCommentsDto articleWithComments = articleService.getArticleWithComments(1L);
+        ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(1L, article.getUserAccount().getEmail());
         // Then
-        assertThat(articleWithComments.title()).isEqualTo("title");
-        assertThat(articleWithComments.content()).isEqualTo("content");
-        assertThat(articleWithComments.articleType()).isEqualTo(ArticleType.MODEL);
-        assertThat(articleWithComments.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
-        assertThat(articleWithComments.articleFile().originalFileName()).isEqualTo("test.stp");
-        assertThat(articleWithComments.articleComments().size()).isEqualTo(1);
+        assertThat(articleDetailResponse.likeCount()).isEqualTo(2);
+        assertThat(articleDetailResponse.addedLike()).isEqualTo(true);
+        assertThat(articleDetailResponse.article().title()).isEqualTo("title");
+        assertThat(articleDetailResponse.article().content()).isEqualTo("content");
+        assertThat(articleDetailResponse.article().articleType()).isEqualTo(ArticleType.MODEL);
+        assertThat(articleDetailResponse.article().articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
+        assertThat(articleDetailResponse.article().articleFile().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleDetailResponse.article().articleComments().size()).isEqualTo(1);
     }
 
     @DisplayName("5. [예외 - 게시글 없음] 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
@@ -126,7 +131,7 @@ class ArticleServiceTest {
         given(articleRepository.findByIdFetchDetail(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.getArticleWithComments(1L))
+        assertThatThrownBy(() -> articleService.getArticleWithComments(1L, "a@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then

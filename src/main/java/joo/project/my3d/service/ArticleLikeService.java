@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 
 @Service
+//TODO: 트랜잭션이 불필요해보임
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArticleLikeService {
@@ -21,6 +22,14 @@ public class ArticleLikeService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
     private final ArticleLikeRepository articleLikeRepository;
+
+    public boolean addedLike(Long articleId, String email) {
+        return articleLikeRepository.existsByArticleIdAndUserAccount_Email(articleId, email);
+    }
+
+    public int getLikeCountByArticleId(Long articleId) {
+        return articleLikeRepository.countByArticleId(articleId);
+    }
 
     /**
      * @throws ArticleLikeException 게시글을 찾을 수 없거나 좋아요를 추가할 수 없을시 발생하는 예외
