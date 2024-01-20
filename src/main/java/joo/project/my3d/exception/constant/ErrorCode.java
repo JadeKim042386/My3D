@@ -19,6 +19,7 @@ public enum ErrorCode {
     NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
     //File
     FILE_CANT_SAVE(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 저장 할 수 없습니다. 파일 경로를 다시 확인해주세요."),
+    FILE_CANT_READ(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 읽을 수 없습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
     FILE_DOWNLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "파일 다운로드 실패"),
     //Comment
