@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * 프론트엔드 작업시 참고하기위해 유지
+ */
 @Service
 public class PaginationService {
     private static final int BAR_LENGTH = 5;

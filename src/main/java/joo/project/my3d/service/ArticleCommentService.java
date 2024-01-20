@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -27,12 +26,6 @@ public class ArticleCommentService {
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
     private final AlarmService alarmService;
-
-    public List<ArticleCommentDto> getComments(Long articleId) {
-        return articleCommentRepository.findAllByArticleId(articleId)
-                .stream().map(ArticleCommentDto::from)
-                .toList();
-    }
 
     /**
      * @throws CommentException 댓글 저장에 필요한 게시글, 유저 정보를 찾을 수 없거나 저장에 실패했을 경우 발생하는 예외

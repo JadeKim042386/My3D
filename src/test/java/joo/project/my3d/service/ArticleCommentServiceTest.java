@@ -20,9 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -36,22 +33,6 @@ class ArticleCommentServiceTest {
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleCommentRepository articleCommentRepository;
     @Mock private AlarmService alarmService;
-
-    @DisplayName("게시글 ID로 댓글 조회")
-    @Test
-    void getCommentWithArticleId() {
-        // Given
-        Long articleId = 1L;
-        ArticleComment articleComment = Fixture.getArticleComment("content");
-        given(articleCommentRepository.findAllByArticleId(articleId)).willReturn(List.of(articleComment));
-        // When
-        List<ArticleCommentDto> comments = articleCommentService.getComments(articleId);
-        // Then
-        assertThat(comments)
-                .hasSize(1)
-                .first()
-                .hasFieldOrPropertyWithValue("content", articleComment.getContent());
-    }
 
     @DisplayName("댓글 저장")
     @Test

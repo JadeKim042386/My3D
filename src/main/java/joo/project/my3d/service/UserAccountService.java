@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -33,11 +32,6 @@ public class UserAccountService {
     private final EmailService emailService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
-
-    public List<UserAccountDto> findAllUser() {
-        return userAccountRepository.findAll().stream()
-                .map(UserAccountDto::from).toList();
-    }
 
     public UserAccountDto searchUser(String email) {
         return userAccountRepository.findByEmail(email)

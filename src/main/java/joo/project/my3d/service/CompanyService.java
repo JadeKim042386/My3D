@@ -1,17 +1,13 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Company;
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.CompanyException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.CompanyRepository;
-import joo.project.my3d.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +20,6 @@ import javax.persistence.EntityNotFoundException;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
-    private final UserAccountRepository userAccountRepository;
 
     public CompanyDto getCompany(String email) {
         return companyRepository.findByUserAccount_Email(email)
@@ -34,20 +29,6 @@ public class CompanyService {
 
     public boolean isExistsByCompanyName(String companyName) {
         return companyRepository.existsByCompanyName(companyName);
-    }
-
-    /**
-     * @throws CompanyException 기업 정보 저장 실패했을 경우 발생하는 예외
-     */
-    @Transactional
-    public void saveCompany(CompanyDto dto) {
-        try{
-            companyRepository.save(dto.toEntity());
-        } catch (IllegalArgumentException e) {
-            throw new CompanyException(ErrorCode.FAILED_SAVE, e);
-        } catch (OptimisticLockingFailureException e) {
-            throw new CompanyException(ErrorCode.CONFLICT_SAVE, e);
-        }
     }
 
     /**
@@ -65,27 +46,6 @@ public class CompanyService {
             }
         } catch (EntityNotFoundException e) {
             throw new AuthException(ErrorCode.NOT_FOUND_COMPANY, e);
-        }
-    }
-
-    /**
-     * @throws UsernameNotFoundException 기업 유저를 찾을 수 없을 경우 발생하는 예외
-     * @throws CompanyException 대상 유저와 삭제 요청 유저가 다르거나 삭제에 실패했을 경우 발생하는 예외
-     */
-    @Transactional
-    public void deleteCompany(Long companyId, String email) {
-        UserAccount userAccount = userAccountRepository.findByCompanyId(companyId)
-                .orElseThrow(() -> new UsernameNotFoundException("기업 유저를 찾을 수 없습니다."));
-        //작성자와 삭제 요청 유저가 같은지 확인
-        if (userAccount.getEmail().equals(email)) {
-            try {
-                companyRepository.deleteById(companyId);
-            } catch (IllegalArgumentException e) {
-                throw new CompanyException(ErrorCode.FAILED_DELETE, e);
-            }
-        } else {
-            log.error("대상 기업의 유저와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", userAccount.getEmail(), email);
-            throw new CompanyException(ErrorCode.NOT_WRITER);
         }
     }
 }

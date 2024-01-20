@@ -20,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,17 +37,6 @@ class UserAccountServiceTest {
     @Mock private UserRefreshTokenRepository userRefreshTokenRepository;
     @Mock private TokenProvider tokenProvider;
     @Mock private BCryptPasswordEncoder encoder;
-
-    @DisplayName("회원 목록 조회")
-    @Test
-    void getUserAccounts() {
-        // Given
-        given(userAccountRepository.findAll()).willReturn(List.of());
-        // When
-        userAccountService.findAllUser();
-        // Then
-        then(userAccountRepository).should().findAll();
-    }
 
     @DisplayName("회원 조회")
     @Test

@@ -2,7 +2,6 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
-import joo.project.my3d.dto.ArticleFileDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
@@ -28,18 +27,6 @@ public class ArticleFileService {
 
     private final ArticleFileRepository articleFileRepository;
     private final S3Service s3Service;
-
-    /**
-     * article ID로 파일 조회
-     */
-    //TODO: no usages
-    public ArticleFileDto getArticleFile(Long articleId) {
-
-        return ArticleFileDto.from(
-                articleFileRepository.findByArticleId(articleId)
-                        .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
-        );
-    }
 
     /**
      * 파일의 업데이트 여부를 확인하여 반환

@@ -1,12 +1,10 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Company;
-import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.CompanyRepository;
-import joo.project.my3d.repository.UserAccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +23,6 @@ import static org.mockito.BDDMockito.*;
 class CompanyServiceTest {
     @InjectMocks private CompanyService companyService;
     @Mock private CompanyRepository companyRepository;
-    @Mock private UserAccountRepository userAccountRepository;
 
     @DisplayName("기업 조회")
     @Test
@@ -39,18 +36,6 @@ class CompanyServiceTest {
         // Then
     }
 
-    @DisplayName("기업 저장(추가)")
-    @Test
-    void saveCompany() {
-        // Given
-        CompanyDto companyDto = FixtureDto.getCompanyDto();
-        given(companyRepository.save(any(Company.class))).willReturn(any(Company.class));
-        // When
-        companyService.saveCompany(companyDto);
-        // Then
-        then(companyRepository).should().save(any(Company.class));
-    }
-
     @DisplayName("기업 수정")
     @Test
     void updateCompany() {
@@ -61,20 +46,5 @@ class CompanyServiceTest {
         companyService.updateCompany(companyDto);
         // Then
         then(companyRepository).should().getReferenceById(companyDto.id());
-    }
-
-    @DisplayName("기업 삭제")
-    @Test
-    void deleteCompany() {
-        // Given
-        Long companyId = 1L;
-        UserAccount userAccount = Fixture.getUserAccount();
-        given(userAccountRepository.findByCompanyId(companyId)).willReturn(Optional.of(userAccount));
-        willDoNothing().given(companyRepository).deleteById(companyId);
-        // When
-        companyService.deleteCompany(companyId, userAccount.getEmail());
-        // Then
-        then(userAccountRepository).should().findByCompanyId(companyId);
-        then(companyRepository).should().deleteById(companyId);
     }
 }
