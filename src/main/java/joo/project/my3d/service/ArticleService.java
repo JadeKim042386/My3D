@@ -11,11 +11,9 @@ import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
-import joo.project.my3d.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,7 +37,7 @@ public class ArticleService {
     private final UserAccountRepository userAccountRepository;
     private final ArticleFileService articleFileService;
     private final ArticleLikeService articleLikeService;
-    private final S3Service s3Service;
+    private final FileServiceInterface fileService;
 
     /**
      * 게시판에 표시할 전체 게시글 조회
@@ -80,15 +77,10 @@ public class ArticleService {
      */
     @Transactional
     public Article saveArticle(String email, ArticleDto articleDto, MultipartFile file) {
-        try {
-            UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
-            Article article = articleRepository.save(articleDto.toEntity(userAccount));
-            s3Service.uploadFile(file, article.getArticleFile().getFileName());
-            return article;
-        } catch (IOException e) {
-            log.error("Amazon S3에 파일 저장 실패");
-            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
-        }
+        UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
+        Article article = articleRepository.save(articleDto.toEntity(userAccount));
+        fileService.uploadFile(file, article.getArticleFile().getFileName());
+        return article;
     }
 
     /**

@@ -6,7 +6,6 @@ import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleFileRepository;
-import joo.project.my3d.service.aws.S3Service;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class ArticleFileService {
 
     private final ArticleFileRepository articleFileRepository;
-    private final S3Service s3Service;
+    private final FileServiceInterface fileService;
 
     /**
      * 파일의 업데이트 여부를 확인하여 반환
@@ -38,7 +37,7 @@ public class ArticleFileService {
             ArticleFile articleFile = articleFileRepository.findByArticleId(articleId)
                     .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
 
-            updateS3File(articleFile, articleFormRequest.getModelFile());
+            updateFile(articleFile, articleFormRequest.getModelFile());
 
             //치수 옵션 업데이트
             DimensionOption dimensionOption = articleFile.getDimensionOption();
@@ -63,7 +62,7 @@ public class ArticleFileService {
      */
     public void deleteArticleFile(Long articleId) {
         try {
-            s3Service.deleteFile(searchFileName(articleId));
+            fileService.deleteFile(searchFileName(articleId));
         } catch (SdkClientException | S3Exception e) {
             log.error("S3 파일 삭제 실패 - articleId: {}", articleId);
             throw new FileException(ErrorCode.FAILED_DELETE, e);
@@ -71,33 +70,30 @@ public class ArticleFileService {
     }
 
     public byte[] download(Long articleId) {
-        return s3Service.downloadFile(searchFileName(articleId));
+        return fileService.downloadFile(searchFileName(articleId));
     }
 
-    private void updateS3File(ArticleFile articleFile, MultipartFile file) {
+    private void updateFile(ArticleFile articleFile, MultipartFile file) {
         String fileName = "";
         try {
             //업데이트 여부 확인
             if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
                 //S3에 저장한 파일 삭제
                 fileName = articleFile.getFileName();
-                s3Service.deleteFile(fileName);
+                fileService.deleteFile(fileName);
 
                 String originalFileName = file.getOriginalFilename();
                 String extension = FileUtils.getExtension(originalFileName);
                 fileName = UUID.randomUUID() + "." + extension;
                 //업데이트된 파일로 S3에 저장
-                s3Service.uploadFile(file, fileName);
+                fileService.uploadFile(file, fileName);
 
                 //파일 업데이트
                 long byteSize = file.getSize();
                 articleFile.update(byteSize, originalFileName, fileName, extension);
             }
-        } catch (SdkClientException | S3Exception e) {
-            log.error("S3 파일 삭제 실패 - Filename: {}", fileName);
-            throw new FileException(ErrorCode.FAILED_DELETE, e);
         } catch (IOException e) {
-            log.error("S3 파일 업로드 실패 - Filename: {}", fileName);
+            log.error("파일을 읽을 수 없습니다. - Filename: {}", fileName);
             throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
         }
     }

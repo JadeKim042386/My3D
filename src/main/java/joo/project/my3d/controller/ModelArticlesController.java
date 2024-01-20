@@ -13,7 +13,6 @@ import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -38,10 +37,6 @@ public class ModelArticlesController {
 
     private final ArticleService articleService;
     private final ArticleFileService articleFileService;
-
-    //TODO: local, test 에서는 local 경로로 지정
-    @Value("${aws.s3.url}")
-    private String S3Url;
 
     /**
      * 게시판 페이지 요청
