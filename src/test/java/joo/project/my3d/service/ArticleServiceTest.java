@@ -17,6 +17,7 @@ import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.aws.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,7 @@ class ArticleServiceTest {
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleFileService articleFileService;
     @Mock private ArticleLikeService articleLikeService;
+    @Mock private S3Service s3Service;
 
     @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
@@ -147,7 +149,7 @@ class ArticleServiceTest {
         given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         // When
-        articleService.saveArticle(article.getUserAccount().getEmail(), articleDto);
+        articleService.saveArticle(article.getUserAccount().getEmail(), articleDto, Fixture.getMultipartFile());
         // Then
         then(userAccountRepository).should().getReferenceByEmail(anyString());
         then(articleRepository).should().save(any(Article.class));

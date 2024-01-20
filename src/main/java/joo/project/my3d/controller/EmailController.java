@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -25,7 +24,6 @@ public class EmailController {
 
     private final EmailService emailService;
     private final UserAccountService userAccountService;
-    private final BCryptPasswordEncoder encoder;
 
     /**
      * 인증 코드 전송 후 코드와 이메일을 세션에 저장
@@ -52,14 +50,7 @@ public class EmailController {
         if (!userAccountService.isExistsUserEmail(email)) {
             throw new MailException(ErrorCode.NOT_FOUND_EMAIL);
         }
-        String code = String.valueOf(UUID.randomUUID()).split("-")[0];
-        //TODO: 하나의 트랜잭션에서 동작하도록 수정
-        emailService.sendEmail(
-                email,
-                "[My3D] 이메일 임시 비밀번호",
-                code
-        );
-        userAccountService.changePassword(email, encoder.encode(code));
+        userAccountService.sendTemporaryPassword(email);
         return ResponseEntity.ok(EmailResponse.sendSuccess(email));
     }
 

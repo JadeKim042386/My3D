@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,6 +30,7 @@ public class UserAccountService {
 
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
+    private final EmailService emailService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
 
@@ -81,6 +83,20 @@ public class UserAccountService {
     public void changePassword(String email, String changedPassword) {
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
         userAccount.setUserPassword(encoder.encode(changedPassword));
+    }
+
+    /**
+     * 임시 비밀번호 전송
+     */
+    @Transactional
+    public void sendTemporaryPassword(String email) {
+        String code = String.valueOf(UUID.randomUUID()).split("-")[0];
+        emailService.sendEmail(
+                email,
+                "[My3D] 이메일 임시 비밀번호",
+                code
+        );
+        changePassword(email, code);
     }
 
     /**

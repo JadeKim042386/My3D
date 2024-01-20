@@ -7,12 +7,10 @@ import joo.project.my3d.dto.ArticleFileWithDimensionDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
-import joo.project.my3d.service.aws.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,8 +27,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 import static joo.project.my3d.domain.constant.FormStatus.CREATE;
 import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
 
@@ -42,7 +38,6 @@ public class ModelArticlesController {
 
     private final ArticleService articleService;
     private final ArticleFileService articleFileService;
-    private final S3Service s3Service;
 
     //TODO: local, test 에서는 local 경로로 지정
     @Value("${aws.s3.url}")
@@ -107,27 +102,20 @@ public class ModelArticlesController {
             );
         }
 
-        try {
-            //게시글 저장
-            ArticleFileWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
-            //TODO: 하나의 트랜잭션에서 수행하도록 수정
-            articleService.saveArticle(
-                    boardPrincipal.email(),
-                    articleFormRequest.toArticleDto(
-                            articleFile,
-                            boardPrincipal.toDto(),
-                            ArticleType.MODEL
-                    )
-            );
+        //게시글 저장
+        ArticleFileWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
+        articleService.saveArticle(
+                boardPrincipal.email(),
+                articleFormRequest.toArticleDto(
+                        articleFile,
+                        boardPrincipal.toDto(),
+                        ArticleType.MODEL
+                ),
+                articleFormRequest.getModelFile()
+        );
 
-            //S3 파일 저장
-            s3Service.uploadFile(articleFormRequest.getModelFile(), articleFile.fileName());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponse.of("You successfully added article"));
-        } catch (IOException e) {
-            log.error("Amazon S3에 파일 저장 실패");
-            throw new FileException(ErrorCode.FILE_CANT_SAVE, e);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of("You successfully added article"));
     }
 
     /**

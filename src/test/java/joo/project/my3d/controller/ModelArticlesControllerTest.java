@@ -12,14 +12,10 @@ import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
-import joo.project.my3d.exception.FileException;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.service.ArticleFileService;
 import joo.project.my3d.service.ArticleService;
-import joo.project.my3d.service.PaginationService;
-import joo.project.my3d.service.aws.S3Service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +34,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static joo.project.my3d.exception.constant.ErrorCode.*;
+import static joo.project.my3d.exception.constant.ErrorCode.ARTICLE_NOT_FOUND;
+import static joo.project.my3d.exception.constant.ErrorCode.FAILED_DELETE;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -54,7 +51,6 @@ class ModelArticlesControllerTest {
     @Autowired private MockMvc mvc;
     @MockBean private ArticleService articleService;
     @MockBean private ArticleFileService articleFileService;
-    @MockBean private S3Service s3Service;
 
     @DisplayName("1. [GET] 게시판 페이지(게시글이 존재할 경우) - 정상")
     @Test
@@ -127,8 +123,7 @@ class ModelArticlesControllerTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        given(articleService.saveArticle(anyString(), any(ArticleDto.class))).willReturn(article);
-        willDoNothing().given(s3Service).uploadFile(any(), anyString());
+        given(articleService.saveArticle(anyString(), any(ArticleDto.class), any())).willReturn(article);
         // When
         mvc.perform(
                     multipart(HttpMethod.POST, "/model_articles/add")
@@ -229,38 +224,6 @@ class ModelArticlesControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.errors.size()").value(1));
-
-        // Then
-    }
-
-    @DisplayName("8. [POST] 게시글 추가(S3 업로드에 실패할 경우) - 실패")
-    @WithUserDetails(value = "jooUser@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    void addNewModelArticle_FailedS3Upload() throws Exception {
-        // Given
-        MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        Article article = Fixture.getArticle();
-        given(articleService.saveArticle(anyString(), any(ArticleDto.class))).willReturn(article);
-        willThrow(new FileException(FILE_CANT_SAVE)).given(s3Service).uploadFile(any(), anyString());
-        // When
-        mvc.perform(
-                        multipart(HttpMethod.POST, "/model_articles/add")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .with(csrf())
-                )
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(FILE_CANT_SAVE.getMessage()));
 
         // Then
     }
