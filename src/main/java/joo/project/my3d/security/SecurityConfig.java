@@ -23,6 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.session.SessionManagementFilter;
 
 import java.util.UUID;
 
@@ -46,6 +47,7 @@ public class SecurityConfig {
             HttpSecurity http,
             OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService,
             JwtTokenFilter jwtTokenFilter,
+            JwtExceptionTranslationFilter jwtExceptionTranslationFilter,
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
@@ -106,9 +108,13 @@ public class SecurityConfig {
                             .successHandler(customOAuth2SuccessHandler) //OAuth 로그인 후 cookie에 jwt 토큰 저장
                     )
                     //cookie에서 token을 가져와 authentication 등록
-                    .addFilterBefore(
+                    .addFilterAfter(
                             jwtTokenFilter,
-                            ExceptionTranslationFilter.class)
+                            SessionManagementFilter.class)
+                    .addFilterBefore(
+                            jwtExceptionTranslationFilter,
+                            ExceptionTranslationFilter.class
+                    )
                 .build();
     }
 

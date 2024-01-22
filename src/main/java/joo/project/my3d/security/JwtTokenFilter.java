@@ -44,17 +44,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } catch (AuthException e) {
             String refreshToken = parseBearerToken(request, REFRESH_TOKEN_HEADER);
             if (ObjectUtils.isEmpty(refreshToken)) {
-                //TODO: 예외처리
-                request.setAttribute("exception", new AuthException(ErrorCode.NOT_FOUND_REFRESH_TOKEN, e));
+                throw new AuthException(ErrorCode.NOT_FOUND_REFRESH_TOKEN, e);
             } else {
                 reissueAccessToken(request, response, refreshToken);
             }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             log.error("Error occurs during authenticate, {}", e.getMessage());
-            //TODO: 예외처리
-            request.setAttribute("exception", e);
+            throw new AuthException(ErrorCode.INVALID_REQUEST, e);
         }
         filterChain.doFilter(request, response);
     }
@@ -74,8 +70,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             setAuthentication(request, tokenProvider.parseOrValidateClaims(newAccessToken), newAccessToken);
             response.setHeader("New-Access-Token", newAccessToken);
         } catch (Exception e) {
-            //TODO: 예외처리
-            request.setAttribute("exception", e);
+            throw new AuthException(ErrorCode.FAILED_REISSUE, e);
         }
     }
 

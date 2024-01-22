@@ -26,6 +26,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static joo.project.my3d.domain.constant.FormStatus.CREATE;
 import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
 
@@ -47,7 +49,7 @@ public class ModelArticlesController {
             @QuerydslPredicate(root = Article.class) Predicate predicate
     ) {
 
-        //TODO: 파일 경로, 카테고리 리스트, 페이지네이션 바 숫자 리스트는 프론트엔드에서 처리
+        //파일 경로, 카테고리 리스트, 페이지네이션 바 숫자 리스트는 프론트엔드에서 처리
         return ResponseEntity.ok(
                 PagedResponse.fromArticlePreview(
                         articleService.getArticlesForPreview(predicate, pageable)
@@ -176,7 +178,6 @@ public class ModelArticlesController {
     /**
      * 특정 게시글의 모델 파일 다운로드 요청
      */
-    //TODO: 테스트
     @GetMapping("/download/{articleId}")
     public ResponseEntity<byte[]> downloadArticleFile(@PathVariable Long articleId) {
         byte[] file = articleFileService.download(articleId);
