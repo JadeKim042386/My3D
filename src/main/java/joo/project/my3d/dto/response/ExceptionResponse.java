@@ -1,8 +1,5 @@
 package joo.project.my3d.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -10,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class ExceptionResponse {
-    private String message;
-    private Map<String, List<String>> errors;
-
+public record ExceptionResponse(
+        String message,
+        Map<String, List<String>> errors
+) {
     public static ExceptionResponse of(String message) {
         return new ExceptionResponse(message, null);
     }

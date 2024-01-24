@@ -170,4 +170,6 @@ public class LoginController {
     public ResponseEntity<Void> businessCertification() {
         return ResponseEntity.ok(null);
     }
+
+    //TODO: 사업자 인증 요청
 }

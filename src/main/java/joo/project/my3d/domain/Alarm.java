@@ -2,13 +2,13 @@ package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.AlarmType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @ToString(callSuper = true)
@@ -19,9 +19,11 @@ import java.util.Objects;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Alarm extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -54,18 +56,6 @@ public class Alarm extends AuditingFields implements Persistable<Long> {
 
     public static Alarm of(AlarmType alarmType, String fromUserNickname, Long targetId, boolean isChecked, UserAccount userAccount) {
         return new Alarm(alarmType, fromUserNickname, targetId, isChecked, userAccount);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Alarm that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     @Override

@@ -3,6 +3,7 @@ package joo.project.my3d.domain;
 import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @NamedEntityGraph(
@@ -55,9 +55,11 @@ import java.util.Set;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Article extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ToString.Exclude
@@ -114,18 +116,6 @@ public class Article extends AuditingFields implements Persistable<Long> {
 
     public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleFile articleFile) {
         return Article.of(userAccount, title, content, articleType, null, articleFile);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Article that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     @Override

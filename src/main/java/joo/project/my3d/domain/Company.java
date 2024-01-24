@@ -1,13 +1,13 @@
 package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingFields;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -20,9 +20,11 @@ import static javax.persistence.FetchType.LAZY;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Company extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Setter
@@ -47,18 +49,6 @@ public class Company extends AuditingFields implements Persistable<Long> {
 
     public static Company of(String companyName, String homepage) {
         return new Company(companyName, homepage);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Company that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     @Override

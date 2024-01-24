@@ -1,12 +1,12 @@
 package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingFields;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @ToString(callSuper = true)
@@ -17,9 +17,11 @@ import java.util.Objects;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleLike extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ToString.Exclude
@@ -42,18 +44,6 @@ public class ArticleLike extends AuditingFields implements Persistable<Long> {
 
     public static ArticleLike of(UserAccount userAccount, Article article) {
         return new ArticleLike(userAccount, article);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ArticleLike that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     @Override

@@ -2,13 +2,13 @@ package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.DimUnit;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @ToString(callSuper = true)
@@ -19,9 +19,11 @@ import java.util.Objects;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Dimension extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Setter
@@ -52,18 +54,6 @@ public class Dimension extends AuditingFields implements Persistable<Long> {
 
     public static Dimension of(DimensionOption dimensionOption, String dimName, Float dimValue, DimUnit dimUnit) {
         return new Dimension(dimensionOption, dimName, dimValue, dimUnit);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Dimension that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     @Override

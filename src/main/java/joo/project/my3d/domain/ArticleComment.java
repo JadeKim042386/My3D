@@ -1,6 +1,7 @@
 package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingFields;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,7 +9,6 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -21,9 +21,11 @@ import java.util.Set;
         }
 )
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleComment extends AuditingFields implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ToString.Exclude
@@ -65,18 +67,6 @@ public class ArticleComment extends AuditingFields implements Persistable<Long> 
 
     public static ArticleComment of(UserAccount userAccount, Article article, String content) {
         return new ArticleComment(userAccount, article, content, null);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ArticleComment that)) return false;
-        return this.getId() != null && Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.getId());
     }
 
     public void addChildComment(ArticleComment child) {
