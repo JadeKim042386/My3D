@@ -1,18 +1,22 @@
 package joo.project.my3d.dto.security;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Map;
 
 @Getter
-@Builder
+@AllArgsConstructor
 public class OAuthAttributes {
     private Map<String, Object> attributes;
     private String nameAttributeKey;
     private String name;
     private String email;
     private String provider;
+
+    public static OAuthAttributes of(String name, String email, String provider, Map<String, Object> attributes, String nameAttributeKey) {
+        return new OAuthAttributes(attributes, nameAttributeKey, name, email, provider);
+    }
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         if("naver".equals(registrationId)) {
@@ -25,37 +29,39 @@ public class OAuthAttributes {
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributes.builder()
-                .name((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .provider("Google")
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        return OAuthAttributes.of(
+                (String) attributes.get("name"),
+                (String) attributes.get("email"),
+                "Google",
+                attributes,
+                userNameAttributeName
+        );
     }
 
+    @SuppressWarnings("unchecked")
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
-        return OAuthAttributes.builder()
-                .name((String) response.get("name"))
-                .email((String) response.get("email"))
-                .provider("Naver")
-                .attributes(response)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        return OAuthAttributes.of(
+                (String) response.get("name"),
+                (String) response.get("email"),
+                "Naver",
+                response,
+                userNameAttributeName
+        );
     }
 
+    @SuppressWarnings("unchecked")
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> account = (Map<String, Object>) response.get("profile");
 
-        return OAuthAttributes.builder()
-                .name((String) account.get("nickname"))
-                .email((String) response.get("email"))
-                .provider("Kakao")
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        return OAuthAttributes.of(
+                (String) account.get("nickname"),
+                (String) response.get("email"),
+                "Kakao",
+                attributes,
+                userNameAttributeName
+        );
     }
 }

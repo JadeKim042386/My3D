@@ -52,13 +52,6 @@ public class ArticleFormRequest {
     }
 
     /**
-     * 게시글 업데이트시 사용
-     */
-    public ArticleDto toArticleDto() {
-        return toArticleDto(null, null, ArticleType.MODEL);
-    }
-
-    /**
      * 하나의 DimensionOption을 반환하며 이후 기능 개선시 삭제될 예정
      */
     public DimensionOptionDto toDimensionOptionDto() {

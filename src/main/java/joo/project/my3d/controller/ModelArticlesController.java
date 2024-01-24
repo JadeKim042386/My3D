@@ -4,6 +4,7 @@ import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleFileWithDimensionDto;
+import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
@@ -26,10 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static joo.project.my3d.domain.constant.FormStatus.CREATE;
-import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
+import static joo.project.my3d.domain.constant.FormStatus.*;
 
 @Slf4j
 @RestController
@@ -44,7 +42,7 @@ public class ModelArticlesController {
      * 게시판 페이지 요청
      */
     @GetMapping
-    public ResponseEntity<PagedResponse> articles(
+    public ResponseEntity<PagedResponse<ArticlePreviewDto>> articles(
             @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @QuerydslPredicate(root = Article.class) Predicate predicate
     ) {

@@ -7,10 +7,6 @@ public record EmailResponse(
         ErrorCode errorCode,
         String emailCode
 ) {
-    public static EmailResponse sendError(String email, ErrorCode errorCode) {
-        return new EmailResponse(email, errorCode, null);
-    }
-
     public static EmailResponse sendSuccess(String email, String emailCode) {
         return new EmailResponse(email, null, emailCode);
     }
