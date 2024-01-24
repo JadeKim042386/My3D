@@ -4,7 +4,7 @@ import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.dto.security.OAuthAttributes;
-import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

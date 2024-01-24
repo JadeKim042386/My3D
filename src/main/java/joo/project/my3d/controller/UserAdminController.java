@@ -8,9 +8,12 @@ import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.service.AlarmService;
-import joo.project.my3d.service.CompanyService;
-import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.service.AlarmServiceInterface;
+import joo.project.my3d.service.CompanyServiceInterface;
+import joo.project.my3d.service.UserAccountServiceInterface;
+import joo.project.my3d.service.impl.AlarmService;
+import joo.project.my3d.service.impl.CompanyService;
+import joo.project.my3d.service.impl.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +33,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserAdminController {
 
-    private final UserAccountService userAccountService;
-    private final CompanyService companyService;
-    private final AlarmService alarmService;
+    private final UserAccountServiceInterface userAccountService;
+    private final CompanyServiceInterface companyService;
+    private final AlarmServiceInterface<SseEmitter> alarmService;
 
     /**
      * 사용자 정보 요청

@@ -7,6 +7,7 @@ import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.impl.ArticleLikeService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,8 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("비지니스 로직 - 모델 게시글 좋아요")
 @ExtendWith(MockitoExtension.class)
 class ArticleLikeServiceTest {
-    @InjectMocks ArticleLikeService articleLikeService;
+    @InjectMocks
+    ArticleLikeService articleLikeService;
     @Mock ArticleLikeRepository articleLikeRepository;
     @Mock ArticleRepository articleRepository;
     @Mock UserAccountRepository userAccountRepository;

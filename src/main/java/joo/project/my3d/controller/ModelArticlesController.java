@@ -10,8 +10,8 @@ import joo.project.my3d.dto.response.*;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.service.ArticleFileService;
-import joo.project.my3d.service.ArticleService;
+import joo.project.my3d.service.ArticleFileServiceInterface;
+import joo.project.my3d.service.ArticleServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -35,8 +35,8 @@ import static joo.project.my3d.domain.constant.FormStatus.*;
 @RequiredArgsConstructor
 public class ModelArticlesController {
 
-    private final ArticleService articleService;
-    private final ArticleFileService articleFileService;
+    private final ArticleServiceInterface articleService;
+    private final ArticleFileServiceInterface articleFileService;
 
     /**
      * 게시판 페이지 요청

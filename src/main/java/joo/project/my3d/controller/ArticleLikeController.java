@@ -2,7 +2,8 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.response.ArticleLikeResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.service.ArticleLikeService;
+import joo.project.my3d.service.ArticleLikeServiceInterface;
+import joo.project.my3d.service.impl.ArticleLikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ArticleLikeController {
 
-    private final ArticleLikeService articleLikeService;
+    private final ArticleLikeServiceInterface articleLikeService;
 
     /**
      * 특정 게시글에 좋아요 추가

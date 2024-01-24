@@ -11,6 +11,8 @@ import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.impl.AlarmService;
+import joo.project.my3d.service.impl.ArticleCommentService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

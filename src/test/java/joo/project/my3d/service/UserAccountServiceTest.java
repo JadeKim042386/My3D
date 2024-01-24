@@ -9,6 +9,7 @@ import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

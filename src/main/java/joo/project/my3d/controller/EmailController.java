@@ -3,8 +3,10 @@ package joo.project.my3d.controller;
 import joo.project.my3d.dto.response.EmailResponse;
 import joo.project.my3d.exception.MailException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.service.EmailService;
-import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.service.EmailServiceInterface;
+import joo.project.my3d.service.UserAccountServiceInterface;
+import joo.project.my3d.service.impl.EmailService;
+import joo.project.my3d.service.impl.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class EmailController {
 
-    private final EmailService emailService;
-    private final UserAccountService userAccountService;
+    private final EmailServiceInterface emailService;
+    private final UserAccountServiceInterface userAccountService;
 
     /**
      * 인증 코드 전송 후 코드와 이메일을 세션에 저장

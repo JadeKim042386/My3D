@@ -3,7 +3,7 @@ package joo.project.my3d.controller;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.dto.ArticleCommentDto;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.service.ArticleCommentService;
+import joo.project.my3d.service.impl.ArticleCommentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

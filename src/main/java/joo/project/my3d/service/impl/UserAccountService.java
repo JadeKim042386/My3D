@@ -1,4 +1,4 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.UserRefreshToken;
@@ -10,6 +10,8 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
+import joo.project.my3d.service.EmailServiceInterface;
+import joo.project.my3d.service.UserAccountServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -25,41 +27,44 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserAccountService {
+public class UserAccountService implements UserAccountServiceInterface {
 
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
-    private final EmailService emailService;
+    private final EmailServiceInterface emailService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
 
+    @Override
     public UserAccountDto searchUser(String email) {
         return userAccountRepository.findByEmail(email)
                 .map(UserAccountDto::from)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
 
+    @Override
     public boolean isExistsUserEmail(String email) {
         return userAccountRepository.existsByEmail(email);
     }
 
+    @Override
     public boolean isExistsUserNickname(String nickname) {
         return userAccountRepository.existsByNickname(nickname);
     }
 
     /**
-     * DB로부터 유저 정보를 가져와 BoardPrincipal 객체로 변환한다.
      * @throws UsernameNotFoundException 주어진 이메일에 해당하는 유저 정보를 DB에서 찾을 수 없을 경우 발생하는 예외
      */
+    @Override
     public BoardPrincipal getUserPrincipal(String email) {
         return BoardPrincipal.from(searchUser(email));
     }
 
     /**
-     * 회원가입된 유저 저장
      * @throws AuthException 유저 정보 저장 실패시 발생하는 예외
      */
     @Transactional
+    @Override
     public void saveUser(UserAccount userAccount) {
         try {
             userAccountRepository.save(userAccount);
@@ -70,19 +75,15 @@ public class UserAccountService {
         }
     }
 
-    /**
-     * 비밀번호 변경
-     */
     @Transactional
+    @Override
     public void changePassword(String email, String changedPassword) {
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
         userAccount.setUserPassword(encoder.encode(changedPassword));
     }
 
-    /**
-     * 임시 비밀번호 전송
-     */
     @Transactional
+    @Override
     public void sendTemporaryPassword(String email) {
         String code = String.valueOf(UUID.randomUUID()).split("-")[0];
         emailService.sendEmail(
@@ -94,10 +95,10 @@ public class UserAccountService {
     }
 
     /**
-     * 계정 정보 수정
      * @throws AuthException 유저 정보를 찾을 수 없을 경우 발생하는 예외
      */
     @Transactional
+    @Override
     public void updateUser(UserAccountDto dto) {
         try {
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
@@ -119,10 +120,10 @@ public class UserAccountService {
     }
 
     /**
-     * 비밀번호 일치 확인 후 토큰을 생성하여 반환한다.
      * @throws AuthException 비밀번호가 일치하지 않거나 주어진 이메일에 해당하는 유저가 존재하지 않을 경우 발생하는 예외
      */
     @Transactional
+    @Override
     public LoginResponse login(String email, String password) {
         UserAccountDto userAccountDto = searchUser(email);
 
@@ -138,6 +139,7 @@ public class UserAccountService {
     }
 
     @Transactional
+    @Override
     public LoginResponse oauthLogin(String email, String nickname) {
         UserAccountDto userAccountDto = searchUser(email);
         if (!nickname.equals(userAccountDto.nickname())) {
@@ -149,7 +151,8 @@ public class UserAccountService {
         return LoginResponse.of(email, nickname, accessToken, refreshToken);
     }
 
-    private String getAccessToken(String email, String nickname, UserAccountDto userAccountDto) {
+    @Override
+    public String getAccessToken(String email, String nickname, UserAccountDto userAccountDto) {
 
         return tokenProvider.generateAccessToken(
                 email,
@@ -158,7 +161,8 @@ public class UserAccountService {
         );
     }
 
-    private void updateRefreshToken(Long id, String refreshToken) {
+    @Override
+    public void updateRefreshToken(Long id, String refreshToken) {
 
         userRefreshTokenRepository.findById(id)
                 .ifPresentOrElse(

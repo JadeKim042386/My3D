@@ -1,7 +1,8 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.exception.MailException;
 import joo.project.my3d.exception.constant.ErrorCode;
+import joo.project.my3d.service.EmailServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailAuthenticationException;
@@ -17,17 +18,15 @@ import javax.mail.internet.MimeMessage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class EmailService implements EmailServiceInterface {
 
     private final JavaMailSender javaMailSender;
 
     /**
-     * @param to 수신자
-     * @param subject 제목
-     * @param text 본문
      * @throws MailException 이메일 전송 실패 예외
      */
     @Async
+    @Override
     public void sendEmail(String to, String subject, String text) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {

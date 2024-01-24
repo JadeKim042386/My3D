@@ -5,6 +5,7 @@ import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.EmitterRepository;
+import joo.project.my3d.service.impl.AlarmService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

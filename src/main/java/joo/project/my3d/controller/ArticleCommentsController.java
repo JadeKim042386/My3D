@@ -5,7 +5,8 @@ import joo.project.my3d.dto.request.ArticleCommentRequest;
 import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.ArticleCommentResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.service.ArticleCommentService;
+import joo.project.my3d.service.ArticleCommentServiceInterface;
+import joo.project.my3d.service.impl.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ArticleCommentsController {
 
-    private final ArticleCommentService articleCommentService;
+    private final ArticleCommentServiceInterface articleCommentService;
 
     /**
      *  댓글 추가

@@ -14,8 +14,8 @@ import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.service.ArticleFileService;
-import joo.project.my3d.service.ArticleService;
+import joo.project.my3d.service.impl.ArticleFileService;
+import joo.project.my3d.service.impl.ArticleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -406,7 +406,7 @@ class ModelArticlesControllerTest {
     @Test
     void deleteModelArticle() throws Exception {
         // Given
-        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
+        willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleService).deleteArticle(anyLong(), anyString());
         // When
         mvc.perform(
@@ -425,7 +425,7 @@ class ModelArticlesControllerTest {
     @Test
     void deleteModelArticle_FailedDeleteArticle() throws Exception {
         // Given
-        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
+        willDoNothing().given(articleFileService).deleteFile(anyLong());
         willThrow(new ArticleException(FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
         // When
         mvc.perform(

@@ -6,7 +6,7 @@ import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.security.CustomOAuth2SuccessHandler;
 import joo.project.my3d.security.SecurityConfig;
 import joo.project.my3d.security.TokenProvider;
-import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.event.annotation.BeforeTestMethod;

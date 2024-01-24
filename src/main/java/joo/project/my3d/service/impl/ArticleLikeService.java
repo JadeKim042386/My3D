@@ -1,4 +1,4 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.ArticleLike;
 import joo.project.my3d.exception.ArticleLikeException;
@@ -6,6 +6,7 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.ArticleLikeServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -16,25 +17,27 @@ import javax.persistence.EntityNotFoundException;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ArticleLikeService {
+public class ArticleLikeService implements ArticleLikeServiceInterface {
 
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
     private final ArticleLikeRepository articleLikeRepository;
 
+    @Override
     public boolean addedLike(Long articleId, String email) {
         return articleLikeRepository.existsByArticleIdAndUserAccount_Email(articleId, email);
     }
 
+    @Override
     public int getLikeCountByArticleId(Long articleId) {
         return articleLikeRepository.countByArticleId(articleId);
     }
 
     /**
      * @throws ArticleLikeException 게시글을 찾을 수 없거나 좋아요를 추가할 수 없을시 발생하는 예외
-     * @return 좋아요 추가 후 반영된 게시글의 좋아요 총 개수
      */
     @Transactional
+    @Override
     public int addArticleLike(Long articleId, String email) {
         try {
             articleLikeRepository.save(
@@ -43,7 +46,7 @@ public class ArticleLikeService {
                             articleRepository.getReferenceById(articleId)
                     )
             );
-            return getLikeCount(articleId);
+            return getLikeCountByArticleId(articleId);
         } catch (EntityNotFoundException e) {
             throw new ArticleLikeException(ErrorCode.ARTICLE_NOT_FOUND, e);
         } catch (IllegalArgumentException e) {
@@ -53,20 +56,14 @@ public class ArticleLikeService {
         }
     }
 
-    /**
-     * @return 좋아요 해제 후 반영된 게시글의 좋아요 총 개수
-     */
     @Transactional
+    @Override
     public int deleteArticleLike(Long articleId, String email) {
         try {
             articleLikeRepository.deleteByArticleIdAndUserAccount_Email(articleId, email);
-            return getLikeCount(articleId);
+            return getLikeCountByArticleId(articleId);
         } catch (EntityNotFoundException e) {
             throw new ArticleLikeException(ErrorCode.FAILED_DELETE, e);
         }
-    }
-
-    private int getLikeCount(Long articleId) {
-        return articleLikeRepository.countByArticleId(articleId);
     }
 }

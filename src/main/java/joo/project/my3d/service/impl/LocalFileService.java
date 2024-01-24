@@ -1,7 +1,8 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
+import joo.project.my3d.service.FileServiceInterface;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

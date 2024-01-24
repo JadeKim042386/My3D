@@ -1,4 +1,4 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
@@ -6,6 +6,8 @@ import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleFileRepository;
+import joo.project.my3d.service.ArticleFileServiceInterface;
+import joo.project.my3d.service.FileServiceInterface;
 import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +24,16 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ArticleFileService {
+public class ArticleFileService implements ArticleFileServiceInterface {
 
     private final ArticleFileRepository articleFileRepository;
     private final FileServiceInterface fileService;
 
     /**
-     * 파일의 업데이트 여부를 확인하여 반환
      * @throws FileException 파일이 정상적이지 않을 경우 발생하는 예외
      */
     @Transactional
+    @Override
     public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
         try {
             ArticleFile articleFile = articleFileRepository.findByArticleId(articleId)
@@ -60,7 +62,8 @@ public class ArticleFileService {
     /**
      * @throws FileException S3 파일 삭제 또는 DB에 존재하지 않을 경우 발생하는 예외
      */
-    public void deleteArticleFile(Long articleId) {
+    @Override
+    public void deleteFile(Long articleId) {
         try {
             fileService.deleteFile(searchFileName(articleId));
         } catch (SdkClientException | S3Exception e) {
@@ -69,11 +72,13 @@ public class ArticleFileService {
         }
     }
 
+    @Override
     public byte[] download(Long articleId) {
         return fileService.downloadFile(searchFileName(articleId));
     }
 
-    private void updateFile(ArticleFile articleFile, MultipartFile file) {
+    @Override
+    public void updateFile(ArticleFile articleFile, MultipartFile file) {
         String fileName = "";
         try {
             //업데이트 여부 확인
@@ -98,7 +103,8 @@ public class ArticleFileService {
         }
     }
 
-    private String searchFileName(Long articleId) {
+    @Override
+    public String searchFileName(Long articleId) {
         return articleFileRepository.findFileNameByArticleId(articleId)
                 .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
                 .getFileName();

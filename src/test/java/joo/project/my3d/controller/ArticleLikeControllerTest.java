@@ -1,7 +1,7 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.service.ArticleLikeService;
+import joo.project.my3d.service.impl.ArticleLikeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

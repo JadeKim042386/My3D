@@ -17,7 +17,10 @@ import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
-import joo.project.my3d.service.aws.S3Service;
+import joo.project.my3d.service.impl.ArticleFileService;
+import joo.project.my3d.service.impl.ArticleLikeService;
+import joo.project.my3d.service.impl.ArticleService;
+import joo.project.my3d.service.impl.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -211,7 +214,7 @@ class ArticleServiceTest {
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
-        willDoNothing().given(articleFileService).deleteArticleFile(anyLong());
+        willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleRepository).delete(any());
         // When
         articleService.deleteArticle(articleId, email);
@@ -259,7 +262,7 @@ class ArticleServiceTest {
         String email = "jk042386@gmail.com";
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
-                .given(articleFileService).deleteArticleFile(anyLong());
+                .given(articleFileService).deleteFile(anyLong());
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
                 .isInstanceOf(FileException.class)

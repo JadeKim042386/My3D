@@ -10,8 +10,10 @@ import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.security.TokenProvider;
-import joo.project.my3d.service.CompanyService;
-import joo.project.my3d.service.UserAccountService;
+import joo.project.my3d.service.CompanyServiceInterface;
+import joo.project.my3d.service.UserAccountServiceInterface;
+import joo.project.my3d.service.impl.CompanyService;
+import joo.project.my3d.service.impl.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final UserAccountService userAccountService;
-    private final CompanyService companyService;
+    private final UserAccountServiceInterface userAccountService;
+    private final CompanyServiceInterface companyService;
     private final BCryptPasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final SecurityContextLogoutHandler logoutHandler;
@@ -170,6 +172,4 @@ public class LoginController {
     public ResponseEntity<Void> businessCertification() {
         return ResponseEntity.ok(null);
     }
-
-    //TODO: 사업자 인증 요청
 }

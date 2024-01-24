@@ -1,4 +1,4 @@
-package joo.project.my3d.service.aws;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;

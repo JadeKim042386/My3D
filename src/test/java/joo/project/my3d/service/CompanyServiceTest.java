@@ -5,6 +5,7 @@ import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.CompanyRepository;
+import joo.project.my3d.service.impl.CompanyService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,8 +1,8 @@
 package joo.project.my3d.config;
 
 import joo.project.my3d.service.FileServiceInterface;
-import joo.project.my3d.service.LocalFileService;
-import joo.project.my3d.service.aws.S3Service;
+import joo.project.my3d.service.impl.LocalFileService;
+import joo.project.my3d.service.impl.S3Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

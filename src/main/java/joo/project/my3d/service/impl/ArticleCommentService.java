@@ -1,4 +1,4 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.UserAccount;
@@ -8,29 +8,32 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
+import joo.project.my3d.service.AlarmServiceInterface;
+import joo.project.my3d.service.ArticleCommentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.persistence.EntityNotFoundException;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class ArticleCommentService {
+public class ArticleCommentService implements ArticleCommentServiceInterface {
 
     private final ArticleCommentRepository articleCommentRepository;
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
-    private final AlarmService alarmService;
+    private final AlarmServiceInterface<SseEmitter> alarmService;
 
     /**
      * @throws CommentException 댓글 저장에 필요한 게시글, 유저 정보를 찾을 수 없거나 저장에 실패했을 경우 발생하는 예외
      */
-    @Transactional
+    @Override
     public ArticleCommentDto saveComment(ArticleCommentDto dto) {
         try{
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
@@ -58,7 +61,7 @@ public class ArticleCommentService {
     /**
      * @throws CommentException 댓글 작성자와 삭제 요청자가 다를 경우 또는 삭제에 실패할 경우 발생하는 예외
      */
-    @Transactional
+    @Override
     public void deleteComment(Long articleCommentId, String email) {
         ArticleComment articleComment = articleCommentRepository.getReferenceById(articleCommentId);
         //작성자와 삭제 요청 유저가 같은지 확인

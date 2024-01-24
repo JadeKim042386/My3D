@@ -1,4 +1,4 @@
-package joo.project.my3d.service;
+package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.UserAccount;
@@ -8,6 +8,7 @@ import joo.project.my3d.exception.AlarmException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
 import joo.project.my3d.repository.EmitterRepository;
+import joo.project.my3d.service.AlarmServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,13 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class AlarmService {
+public class AlarmService implements AlarmServiceInterface<SseEmitter> {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private static final Long SSE_TIMEOUT = 60L * 60 * 1000; //1시간
     private static final String ALARM_NAME = "alarm";
 
+    @Override
     public List<AlarmDto> getAlarms(String email) {
         return alarmRepository.findAllByUserAccount_Email(email).stream()
                 .map(AlarmDto::from)
@@ -39,6 +41,7 @@ public class AlarmService {
      * @throws AlarmException 알람 전송 실패 예외
      */
     @Transactional
+    @Override
     public void send(String email, String nickname, Long articleId, UserAccount userAccount) {
         Long alarmId = saveAlarm(articleId, nickname, userAccount).getId();
         emitterRepository.get(email).ifPresentOrElse(sseEmitter -> {
@@ -54,6 +57,7 @@ public class AlarmService {
     /**
      * @throws AlarmException 알람 접속 실패 예외
      */
+    @Override
     public SseEmitter connectAlarm(String email) {
         SseEmitter sseEmitter = new SseEmitter(SSE_TIMEOUT);
         emitterRepository.save(email, sseEmitter);
@@ -70,12 +74,15 @@ public class AlarmService {
     }
 
     @Transactional
+    @Override
     public void checkAlarm(Long alarmId) {
         Alarm alarm = alarmRepository.getReferenceById(alarmId);
         alarm.setChecked(true);
     }
 
-    private Alarm saveAlarm(Long articleId, String nickname, UserAccount userAccount) {
+    @Transactional
+    @Override
+    public Alarm saveAlarm(Long articleId, String nickname, UserAccount userAccount) {
         return alarmRepository.save(
                 Alarm.of(
                         AlarmType.NEW_COMMENT_ON_POST,
