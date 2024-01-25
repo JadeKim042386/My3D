@@ -31,7 +31,7 @@ import static joo.project.my3d.domain.constant.FormStatus.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/model_articles")
+@RequestMapping("/api/v1/model_articles")
 @RequiredArgsConstructor
 public class ModelArticlesController {
 

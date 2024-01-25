@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @RestController
-@RequestMapping("/mail")
+@RequestMapping("/api/v1/mail")
 @RequiredArgsConstructor
 public class EmailController {
 

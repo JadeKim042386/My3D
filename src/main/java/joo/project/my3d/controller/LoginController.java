@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
 public class LoginController {
 

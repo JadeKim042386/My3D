@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 public class ArticleCommentsController {
 
