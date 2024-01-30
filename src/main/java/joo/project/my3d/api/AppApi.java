@@ -1,4 +1,4 @@
-package joo.project.my3d.controller;
+package joo.project.my3d.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
-public class ProfileController {
+public class AppApi {
     private final Environment env;
 
     @GetMapping("/profile")
@@ -17,5 +17,9 @@ public class ProfileController {
         return Arrays.stream(env.getActiveProfiles())
                 .findFirst()
                 .orElse("local");
+    }
+
+    @GetMapping("favicon.ico")
+    void returnNoFavicon() {
     }
 }

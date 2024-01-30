@@ -51,42 +51,23 @@ public class SecurityConfig {
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
-                .httpBasic().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .mvcMatchers(
                                 "/",
-                                "/model_articles",
-                                "/guide/materials",
-                                "/guide/printing_process",
-                                "/profile",
-                                "/account/logout"
+                                "/profile"
                         ).permitAll()
-                        .mvcMatchers(
-                                "/account/oauth/response",
-                                "/account/login",
-                                "/account/signup",
-                                "/account/signup/duplicatedCheck",
-                                "/account/find_pass",
-                                "/account/find_pass/success",
-                                "/account/type",
-                                "/account/company",
-                                "/mail/send_code",
-                                "/mail/find_pass"
+                        .regexMatchers(
+                                "/api/v1/mail.*",
+                                "/api/v1/signin",
+                                "/api/v1/signup.*",
+                                "/signin.*",
+                                "/signup.*"
                         ).hasRole("ANONYMOUS")
                         .regexMatchers(
-                                "/model_articles/[0-9]+",
-                                "/like/[0-9]+",
-                                "/comments.*",
-                                "/user/account",
-                                "/user/password",
-                                "/user/alarm.*",
-                                "/model_articles/add",
-                                "/model_articles/update/[0-9]+",
-                                "/model_articles/download/[0-9]+"
-                        ).authenticated()
-                        .regexMatchers("/user/company")
-                            .hasAnyRole("COMPANY", "ADMIN")
+                                "/api/v1/admin/company",
+                                "/admin/company"
+                        ).hasAnyRole("COMPANY", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf((csrf) -> csrf
@@ -99,10 +80,10 @@ public class SecurityConfig {
                 .and()
                     .formLogin().disable()
                     .logout(logout -> logout
-                            .logoutUrl("/account/logout")
+                            .logoutUrl("/api/v1/signin/logout")
                     )
                     .oauth2Login(oAuth -> oAuth
-                            .loginPage("/oauth")
+                            .loginPage("/signin")
                             .userInfoEndpoint(userInfo -> userInfo
                                     .userService(oAuth2UserService))
                             .successHandler(customOAuth2SuccessHandler) //OAuth 로그인 후 cookie에 jwt 토큰 저장
@@ -110,7 +91,8 @@ public class SecurityConfig {
                     //cookie에서 token을 가져와 authentication 등록
                     .addFilterAfter(
                             jwtTokenFilter,
-                            SessionManagementFilter.class)
+                            SessionManagementFilter.class
+                    )
                     .addFilterBefore(
                             jwtExceptionTranslationFilter,
                             ExceptionTranslationFilter.class

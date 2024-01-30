@@ -3,19 +3,18 @@ package joo.project.my3d.dto.request;
 import joo.project.my3d.dto.ArticleCommentDto;
 
 public record ArticleCommentRequest(
-        Long articleId,
         String content,
         Long parentCommentId
 ) {
-    public static ArticleCommentRequest of(Long articleId, String content, Long parentCommentId) {
-        return new ArticleCommentRequest(articleId, content, parentCommentId);
+    public static ArticleCommentRequest of(String content, Long parentCommentId) {
+        return new ArticleCommentRequest(content, parentCommentId);
     }
 
-    public static ArticleCommentRequest of(Long articleId, String content) {
-        return ArticleCommentRequest.of(articleId, content, null);
+    public static ArticleCommentRequest of(String content) {
+        return ArticleCommentRequest.of(content, null);
     }
 
-    public ArticleCommentDto toDto(String nickname, String email) {
+    public ArticleCommentDto toDto(Long articleId, String nickname, String email) {
         return ArticleCommentDto.of(
                 articleId,
                 content,

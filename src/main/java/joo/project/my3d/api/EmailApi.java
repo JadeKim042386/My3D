@@ -1,12 +1,10 @@
-package joo.project.my3d.controller;
+package joo.project.my3d.api;
 
 import joo.project.my3d.dto.response.EmailResponse;
 import joo.project.my3d.exception.MailException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.EmailServiceInterface;
 import joo.project.my3d.service.UserAccountServiceInterface;
-import joo.project.my3d.service.impl.EmailService;
-import joo.project.my3d.service.impl.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +19,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/api/v1/mail")
 @RequiredArgsConstructor
-public class EmailController {
+public class EmailApi {
 
     private final EmailServiceInterface emailService;
     private final UserAccountServiceInterface userAccountService;

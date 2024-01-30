@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JoinColumnOrFormula;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -18,7 +19,8 @@ import java.util.Set;
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),
                 @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
-                @NamedAttributeNode(value = "articleComments")
+                @NamedAttributeNode(value = "articleComments"),
+                @NamedAttributeNode(value = "articleLikes")
         },
         subgraphs = {
                 @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
@@ -37,7 +39,7 @@ import java.util.Set;
         }
 )
 @NamedEntityGraph(
-        name = "Article.fetchIndex",
+        name = "Article.fetchPreview",
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),
                 @NamedAttributeNode(value = "articleFile"),
@@ -73,6 +75,7 @@ public class Article extends AuditingFields implements Persistable<Long> {
     @Setter
     @Column(nullable = false)
     private String content;
+    private Integer likeCount;
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -126,5 +129,10 @@ public class Article extends AuditingFields implements Persistable<Long> {
     public void deleteAll() {
         this.articleComments.clear();
         this.articleLikes.clear();
+    }
+
+    public void updateLikeCount(boolean isAdd) {
+        if (isAdd) likeCount++;
+        else likeCount--;
     }
 }
