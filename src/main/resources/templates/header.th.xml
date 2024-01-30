@@ -3,9 +3,6 @@
   <!--헤더-->
   <attr sel="header">
     <attr sel="#home" th:href="@{/}" th:method="get"/>
-    <attr sel="#models" th:href="@{/model_articles}" th:method="get"/>
-    <attr sel="#materials" th:href="@{/guide/materials}" th:method="get"/>
-    <attr sel="#printing-process" th:href="@{/guide/printing_process}" th:method="get"/>
     <!--로그인-->
     <attr sel="#userAdminButton" sec:authorize="isAuthenticated()"/>
     <attr sel="#headerNickname"
@@ -14,19 +11,19 @@
     />
     <attr sel="#login"
           sec:authorize="!isAuthenticated()"
-          th:href="@{/account/login}"
+          th:href="@{/signin}"
           th:method="get"
     />
     <attr sel="#logout"
           sec:authorize="isAuthenticated()"
-          th:action="@{/account/logout}"
+          th:action="@{/api/v1/signin/logout}"
           th:method="post"
     />
     <attr sel="#alarmButton" sec:authorize="isAuthenticated()"/>
     <!--유저 계정 관리 링크-->
-    <attr sel="#adminCompany" sec:authorize="hasRole('ROLE_COMPANY')" th:href="@{/user/company}"/>
-    <attr sel="#adminAccount" th:href="@{/user/account}"/>
-    <attr sel="#adminPassword" th:href="@{/user/password}"/>
+    <attr sel="#adminCompany" sec:authorize="hasRole('ROLE_COMPANY')" th:href="@{/admin/company}"/>
+    <attr sel="#adminAccount" th:href="@{/admin}"/>
+    <attr sel="#adminPassword" th:href="@{/admin/password}"/>
   </attr>
   <attr sel="#alarm-script" sec:authorize="isAuthenticated()"/>
 </thlogic>

@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/oAuth-Buttons/css/oauth-buttons.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <meta name="_csrf"/>
+  <meta name="_csrf_header"/>
 </head>
 <body>
   <!--헤더-->
@@ -24,13 +26,13 @@
               <h3 class="mb-5">로그인</h3>
 
               <!--login form-->
-              <form id="login">
+              <form id="login" method="post">
                 <p id="login-error" class="field-error"></p>
                 <div class="form-outline mb-4">
-                  <input type="email" name="email" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
+                  <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="이메일을 입력해주세요." />
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="password" name="password" class="form-control form-control-lg" placeholder="비밀번호를 입력해주세요." />
+                  <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="비밀번호를 입력해주세요." />
                 </div>
                 <div class="d-grid gap-2 mx-auto">
                   <button class="btn btn-dark btn-lg btn-block" type="submit">이메일로 시작하기</button>
@@ -86,6 +88,37 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="/oAuth-Buttons/js/oauth-buttons.min.js"></script>
   <script src="/js/hiddenUrlParameter.js"></script>
+  <script src="/js/getRequest.js"></script>
   <script id="alarmScript"></script>
+  <script>
+    $(document).ready(function () {
+      const csrfToken = $("meta[name='_csrf']").attr("content");
+      const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+      $('form').submit(function (e) {
+        e.preventDefault();
+        const formData = {
+          email: $('#email').val(),
+          password: $('#password').val()
+        };
+        $.ajax({
+          url: '/api/v1/signin',
+          type: 'POST',
+          data: formData,
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+          },
+          success: function (result) {
+            localStorage.setItem('accessToken', result['accessToken']);
+            localStorage.setItem('refreshToken', result['refreshToken']);
+            localStorage.setItem('nickname', result['nickname']);
+            window.location.href = "/";
+          },
+          error: function (result) {
+            $('#login-error').text(result['message']);
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

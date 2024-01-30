@@ -3,5 +3,62 @@
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
-    <attr sel=".online_3d_viewer" th:model="${modelPath} + 'model.stl'"/>
+    <!--카테고리-->
+    <attr sel="#category">
+        <attr sel="a[1]"
+              th:each="category : ${categories}"
+              th:text="${category.description}"
+              th:href="@{/(articleCategory=${category})}"
+              th:classappend="${#strings.equals(param.articleCategory, category.name)} ? 'active' : ''"
+        />
+    </attr>
+    <!--정렬-->
+    <attr sel="#sorting">
+        <attr sel="li[0]/a"
+              th:href="@{/(articleCategory=${param.articleCategory}, page=${articles.number}, sort='createdAt,desc')}"
+              th:classappend="${articles.sort.getOrderFor('createdAt')} == null ? (${articles.sort.getOrderFor('likeCount')} == null ? 'active' : '') : (${articles.sort.getOrderFor('createdAt').direction.name} == 'DESC' ? 'active' : '')"
+        />
+        <attr sel="li[1]/a"
+              th:href="@{/(articleCategory=${param.articleCategory}, page=${articles.number}, sort='createdAt')}"
+              th:classappend="${articles.sort.getOrderFor('createdAt')} == null ? '' : (${articles.sort.getOrderFor('createdAt').direction.name} != 'DESC' ? 'active' : '')"
+        />
+        <attr sel="li[2]/a"
+              th:href="@{/(articleCategory=${param.articleCategory}, page=${articles.number}, sort='likeCount,desc')}"
+              th:classappend="${articles.sort.getOrderFor('likeCount')} != null ? 'active' : ''"
+        />
+    </attr>
+    <!--글쓰기-->
+    <attr sel="#write-article" th:href="@{/form}" th:method="get"/>
+    <!--모델 뷰-->
+    <attr sel="#model" th:each="article : ${articles}">
+        <attr sel="div.model_view/div"
+              th:model="${filePath} + ${article.articleFile.fileName}" />
+        <attr sel="#title" th:text="${article.title}" th:href="@{'/' + ${article.id}}"/>
+        <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
+        <attr sel="div.like/span" th:text="${article.likeCount}"/>
+    </attr>
+    <!--페이지네이션-->
+    <attr sel="#pagination">
+        <attr sel="li[0]/a"
+              th:text="'Prev'"
+              th:href="@{/(page=${articles.number - 1})}"
+              th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
+        />
+        <attr sel="li[1]" th:class="page-item" th:each="pageNumber : ${paginationBarNumbers}">
+            <attr sel="a"
+                  th:text="${pageNumber + 1}"
+                  th:href="@{/(page=${pageNumber})}"
+                  th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' disabled' : '')"
+            />
+        </attr>
+        <attr sel="li[2]/a"
+              th:text="'Next'"
+              th:href="@{/(page=${articles.number + 1})}"
+              th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
+        />
+    </attr>
+    <!--검색-->
+    <attr sel="#search-form" th:action="@{/}" th:method="get">
+        <attr sel="#article-category" th:value="${param.articleCategory}"/>
+    </attr>
 </thlogic>
