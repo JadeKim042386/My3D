@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#header" th:replace="header :: header"></attr>
+    <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
+    <!--csrf-->
+    <attr sel="meta[name='_csrf']" th:content="${_csrf.token}"/>
+    <attr sel="meta[name='_csrf_header']" th:content="${_csrf.headerName}"/>
+    <!--이메일(oauth 로그인 후 redirect된 경우 이메일 인증 disable)-->
+    <attr sel="#email" th:value="${email}" th:disabled="${email}"/>
+    <attr sel="#email-form" th:class="${email} ? 'col-12' : 'col-9'"/>
+    <attr sel="#email-certification" th:hidden="${email}"/>
+    <!--이메일 인증-->
+    <attr sel="#register-form" th:object="${signUpData}">
+        <!--회원 유형-->
+        <attr sel="#userRole" th:name="userRole" th:value="*{userRole}"/>
+        <!--기업명-->
+        <attr sel="#company" th:if="(*{userRole.name} == 'ROLE_COMPANY')"/>
+        <!--닉네임-->
+        <attr sel="#nickname" th:value="*{nickname}"/>
+    </attr>
+    <!--스크립트-->
+    <attr sel="#script" th:inline="javascript"/>
+</thlogic>

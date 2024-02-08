@@ -11,11 +11,10 @@ public class UserRefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
+    @OneToOne(mappedBy = "userRefreshToken")
     private UserAccount userAccount;
     private String refreshToken;
-    private int reissueCount = 0;
+    private long reissueCount = 0;
 
     protected UserRefreshToken() {
     }

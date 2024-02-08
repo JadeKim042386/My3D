@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My3D 게시글</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
+    <meta name="_csrf"/>
+    <meta name="_csrf_header"/>
+    <style>
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        table {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+<!--헤더-->
+<header id="header"></header>
+<main class="container w-75 pt-4" id="article-main">
+    <!--수정&삭제-->
+    <div class="row mb-3" id="article-buttons">
+        <div class="col">
+            <div class="d-flex justify-content-end">
+                <a id="update-article" class="btn btn-success me-md-2" role="button">수정</a>
+                <button id="delete-article" class="btn btn-danger" type="button">삭제</button>
+            </div>
+        </div>
+    </div>
+    <!--닉네임&작성일시-->
+    <div class="row mb-3">
+        <div class="col">
+            <p id="nickname">nickname</p>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-end">
+                <p id="created_at">2023-08-08</p>
+            </div>
+        </div>
+    </div>
+    <!--본문-->
+    <div class="row mb-4">
+        <!--모델 뷰-->
+        <div class="col-6">
+            <div id="model-view"
+                 class="online_3d_viewer"
+                 cameraMode=2
+                 model="/models/model.stl">
+            </div>
+            <!--현재 선택한 치수 옵션 정보-->
+            <table class="table table-bordered" id="dimensionTable">
+                <thead>
+                    <tr>
+                        <th>치수명</th>
+                        <th>치수</th>
+                        <th>단위</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>높이</td>
+                        <td>100</td>
+                        <td>MM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--제목&내용-->
+        <div class="col-6">
+            <p id="title" class="fs-4">Title</p>
+            <p id="content">
+                업로드한 모델에 대해서 간단히 설명해주세요. <br>
+            </p>
+        </div>
+    </div>
+    <!--좋아요&요청 버튼-->
+    <div class="row mb-3">
+        <div class="col-6" id="like-button">
+            <div class="d-flex justify-content-start">
+                <div class="btn-group" role="group">
+                    <button id="notLike" type="button" class="btn btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M323.8 34.8c-38.2-10.9-78.1 11.2-89 49.4l-5.7 20c-3.7 13-10.4 25-19.5 35l-51.3 56.4c-8.9 9.8-8.2 25 1.6 33.9s25 8.2 33.9-1.6l51.3-56.4c14.1-15.5 24.4-34 30.1-54.1l5.7-20c3.6-12.7 16.9-20.1 29.7-16.5s20.1 16.9 16.5 29.7l-5.7 20c-5.7 19.9-14.7 38.7-26.6 55.5c-5.2 7.3-5.8 16.9-1.7 24.9s12.3 13 21.3 13L448 224c8.8 0 16 7.2 16 16c0 6.8-4.3 12.7-10.4 15c-7.4 2.8-13 9-14.9 16.7s.1 15.8 5.3 21.7c2.5 2.8 4 6.5 4 10.6c0 7.8-5.6 14.3-13 15.7c-8.2 1.6-15.1 7.3-18 15.1s-1.6 16.7 3.6 23.3c2.1 2.7 3.4 6.1 3.4 9.9c0 6.7-4.2 12.6-10.2 14.9c-11.5 4.5-17.7 16.9-14.4 28.8c.4 1.3 .6 2.8 .6 4.3c0 8.8-7.2 16-16 16H286.5c-12.6 0-25-3.7-35.5-10.7l-61.7-41.1c-11-7.4-25.9-4.4-33.3 6.7s-4.4 25.9 6.7 33.3l61.7 41.1c18.4 12.3 40 18.8 62.1 18.8H384c34.7 0 62.9-27.6 64-62c14.6-11.7 24-29.7 24-50c0-4.5-.5-8.8-1.3-13c15.4-11.7 25.3-30.2 25.3-51c0-6.5-1-12.8-2.8-18.7C504.8 273.7 512 257.7 512 240c0-35.3-28.6-64-64-64l-92.3 0c4.7-10.4 8.7-21.2 11.8-32.2l5.7-20c10.9-38.2-11.2-78.1-49.4-89zM32 192c-17.7 0-32 14.3-32 32V448c0 17.7 14.3 32 32 32H96c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32H32z"/></svg>
+                    </button>
+                    <button id="like" type="button" class="btn btn-outline-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2H464c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48H294.5c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3V320 272 247.1c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192H96c17.7 0 32 14.3 32 32V448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V224c0-17.7 14.3-32 32-32z"/></svg>
+                    </button>
+                    <button id="likeCount" type="button" class="btn btn-outline-secondary disabled">0</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="d-flex justify-content-center">
+                <a id="downloadButton" type="button" class="btn btn-primary">다운로드</a>
+            </div>
+        </div>
+    </div>
+    <!--댓글 작성-->
+    <form class="row mb-5 comment-form">
+        <div class="mb-3">
+            <textarea class="form-control comment-textbox" name="content" rows="3"></textarea>
+        </div>
+        <div class="row justify-content-end pe-0">
+            <div class="col-sm-6 text-end pe-0">
+                <button type="submit" class="btn btn-primary">작성</button>
+            </div>
+        </div>
+    </form>
+    <!--댓글 리스트-->
+    <div class="row" id="article-comments">
+        <div class="d-flex flex-start">
+            <div class="flex-grow-1 flex-shrink-1">
+                <!--부모 댓글-->
+                <div id="parent-comment">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-1">
+                            <strong class="comment-nickname">Maria Smantha</strong> <span class="small comment-createdAt">- 2 hours ago</span>
+                        </p>
+                        <button class="delete-article-comment btn btn-danger me-3" type="button">삭제</button>
+                    </div>
+                    <p class="small mb-0 comment-content">
+                        It is a long established fact that a reader will be distracted by
+                        the readable content of a page.
+                    </p>
+                    <!--자식 댓글-->
+                    <div id="child-comments">
+                        <div class="child-comment border-start border-2">
+                            <div class="d-flex flex-start mt-4 ms-4">
+                                <div class="flex-grow-1 flex-shrink-1">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="mb-1">
+                                                <strong class="comment-nickname">Simona Disa</strong> <span class="small comment-createdAt">- 3 hours ago</span>
+                                            </p>
+                                            <button class="delete-article-comment btn btn-danger me-3" type="button">삭제</button>
+                                        </div>
+                                        <p class="comment-content small mb-0">
+                                            letters, as opposed to using 'Content here, content here',
+                                            making it look like readable English.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--대댓글 작성 폼-->
+                    <div class="row text-end pe-4">
+                        <details class="mb-4 mt-4">
+                            <summary class="mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z"/></svg>
+                                <span class="small"> 답글</span>
+                            </summary>
+                            <form class="row mb-5 comment-form">
+                                <div class="mb-3">
+                                    <input type="hidden" class="parent-comment-id">
+                                    <textarea class="form-control comment-textbox" name="content" rows="3"></textarea>
+                                </div>
+                                <div class="row justify-content-end pe-0">
+                                    <div class="col-sm-6 text-end pe-0">
+                                        <button type="submit" class="btn btn-primary">작성</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--푸터-->
+<footer id="footer"></footer>
+<!--스크립트-->
+<script src="/js/hiddenUrlParameter.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/initHeader.js"></script>
+<script type="text/javascript" src="/js/formatString.js"></script>
+<script>
+    window.addEventListener('load', () => {
+        OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
+        OV.Init3DViewerElements();
+    })
+    var articleId = window.location.pathname.slice(1);
+    const csrfToken = $("meta[name='_csrf']").attr("content");
+    const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+    $('form').submit(function (e) {
+        e.preventDefault();
+        var thisElement = $(this);
+        var formData = {
+            'content': thisElement.find('textarea').val(),
+            'parentCommentId': thisElement.find('.parent-comment-id').val()
+        }
+        $.ajax({
+            url: '/api/v1/articles/' + articleId + '/comments',
+            type: 'POST',
+            data: formData,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function (result) {
+                $('textarea').val('');
+                addComment(result, thisElement);
+            },
+            error: function (result) {
+                alert(result.responseJSON['message']);
+            }
+        });
+    })
+
+    /**
+     * 댓글 추가
+     * parentCommentId가 존재한다면 대댓글, null이라면 부모 댓글
+     */
+    const addComment = (result, thisElement) => {
+        var parentCommentDOM = "<div id=\"parent-comment\">\n" +
+            "                    <div class=\"d-flex justify-content-between align-items-center\">\n" +
+            "                        <p class=\"mb-1\">\n" +
+            "                            <strong class=\"comment-nickname\">{0}</strong> <span class=\"small comment-createdAt\">- {1}</span>\n" +
+            "                        </p>\n" +
+            "                        <button class=\"delete-article-comment btn btn-danger me-3\" type=\"button\" onclick='deleteComment({3}, this)'>삭제</button>\n" +
+            "                    </div>\n" +
+            "                    <p class=\"small mb-0 comment-content\">{2}</p>" +
+            "                    <div id=\"child-comments\"></div>" +
+            "                    <div class=\"row text-end pe-4\">\n" +
+            "                        <details class=\"mb-4 mt-4\">\n" +
+            "                            <summary class=\"mb-2\">\n" +
+            "                                <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"1em\" viewBox=\"0 0 512 512\"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d=\"M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z\"/></svg>\n" +
+            "                                <span class=\"small\"> 답글</span>\n" +
+            "                            </summary>\n" +
+            "                            <form class=\"row mb-5 comment-form\">\n" +
+            "                                <div class=\"mb-3\">\n" +
+            "                                    <input type=\"hidden\" class=\"parent-comment-id\" value='{3}'>\n" +
+            "                                    <textarea class=\"form-control comment-textbox\" name=\"content\" rows=\"3\"></textarea>\n" +
+            "                                </div>\n" +
+            "                                <div class=\"row justify-content-end pe-0\">\n" +
+            "                                    <div class=\"col-sm-6 text-end pe-0\">\n" +
+            "                                        <button type=\"submit\" class=\"btn btn-primary\">작성</button>\n" +
+            "                                    </div>\n" +
+            "                                </div>\n" +
+            "                            </form>\n" +
+            "                        </details>\n" +
+            "                    </div>\n" +
+            "                </div>";
+        var childCommentDOM = "<div class=\"child-comment border-start border-2\">\n" +
+            "                            <div class=\"d-flex flex-start mt-4 ms-4\">\n" +
+            "                                <div class=\"flex-grow-1 flex-shrink-1\">\n" +
+            "                                    <div>\n" +
+            "                                        <div class=\"d-flex justify-content-between align-items-center\">\n" +
+            "                                            <p class=\"mb-1\">\n" +
+            "                                                <strong class=\"comment-nickname\">{0}</strong> <span class=\"small comment-createdAt\">- {1}</span>\n" +
+            "                                            </p>\n" +
+            "                                            <button class=\"delete-article-comment btn btn-danger me-3\" type=\"button\" onclick='deleteComment({3}, this)'>삭제</button>\n" +
+            "                                        </div>\n" +
+            "                                        <p class=\"comment-content small mb-0\">{2}</p>" +
+            "                                    </div>\n" +
+            "                                </div>\n" +
+            "                            </div>\n" +
+            "                        </div>";
+        if (result['parentCommentId'] === null) {
+            $('#article-comments')
+                .children('div')
+                .children('div')
+                .prepend(
+                    formatString(
+                        parentCommentDOM,
+                        result['nickname'],
+                        result['createdAt'],
+                        result['content'],
+                        result['id']
+                    )
+                );
+        } else {
+            thisElement.parents('#parent-comment').find('#child-comments')
+                .append(
+                    formatString(
+                        childCommentDOM,
+                        result['nickname'],
+                        result['createdAt'],
+                        result['content'],
+                        result['id']
+                    )
+                )
+        }
+    }
+
+    /**
+     * DB 댓글 삭제 요청
+     */
+    const deleteComment = (commentId, $this) => {
+        $.ajax({
+            url: '/api/v1/articles/' + articleId + '/comments/' + commentId,
+            type: 'DELETE',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function () {
+                var childCommentDOM = $($this).parents('.child-comment');
+                if (childCommentDOM.length > 0) {
+                    childCommentDOM.remove();
+                } else {
+                    $($this).parents('#parent-comment').remove();
+                }
+            },
+            error: function (result) {
+                alert(result.responseJSON['message']);
+            }
+        });
+    }
+
+    /**
+     * 게시글 삭제
+     */
+    $('#delete-article').on('click', function () {
+        $.ajax({
+            url: '/api/v1/articles/' + articleId,
+            type: 'DELETE',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function (result) {
+                window.location.href = '/';
+            },
+            error: function (xhr, status, error) {
+                alert(JSON.parse(xhr.responseText).message);
+            }
+        })
+    })
+</script>
+<script id="inline-js">
+    $(document).ready(function(){
+
+        function updateLike(likeCount, addedLike) {
+            if (addedLike) {
+                $("#notLike").attr("hidden", true);
+                $("#like").attr("hidden", false);
+            } else {
+                $("#notLike").attr("hidden", false);
+                $("#like").attr("hidden", true);
+            }
+            $("#likeCount").text(likeCount);
+        }
+
+
+        $("#notLike").click(function () {
+            $.ajax({
+                url: "/like/" + articleId,
+                type: "GET",
+                success: function (result) {
+                    updateLike(result.result['likeCount'], true);
+                },
+                error: function (result) {
+                    console.log(result.responseText);
+                }
+            });
+        })
+
+        $("#like").click(function () {
+            $.ajax({
+                url: "/like/" + articleId + "/delete",
+                type: "GET",
+                success: function (result) {
+                    updateLike(result.result['likeCount'], false);
+                },
+                error: function (result) {
+                    console.log(result.responseText);
+                }
+            });
+        })
+    })
+</script>
+<script id="alarmScript"></script>
+</body>
+</html>

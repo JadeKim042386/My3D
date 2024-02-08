@@ -61,7 +61,7 @@ public record BoardPrincipal(
                 null,
                 nickname,
                 userRole,
-                null,
+                Address.of(null, null, null),
                 Map.of()
         );
     }

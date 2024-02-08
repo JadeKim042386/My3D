@@ -14,6 +14,9 @@ public enum ErrorCode {
     FAILED_DELETE(HttpStatus.INTERNAL_SERVER_ERROR, "삭제에 실패했습니다."),
     CONFLICT_DELETE(HttpStatus.CONFLICT, "삭제시 Optimistic Lock 충돌이 일어났습니다."),
     CONFLICT_SAVE(HttpStatus.CONFLICT, "저장시 Optimistic Lock 충돌이 일어났습니다."),
+    //Sign Up
+    ALREADY_EXIST_EMAIL_OR_NICKNAME(HttpStatus.BAD_REQUEST,"이미 존재하는 이메일 또는 닉네임입니다."),
+    ALREADY_EXIST_COMPANY_NAME(HttpStatus.BAD_REQUEST,"이미 존재하는 상호명입니다."),
     //Article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
     NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
@@ -33,19 +36,20 @@ public enum ErrorCode {
     //Mail
     MAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "메일 전송 실패"),
     INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "이메일 형식이 잘못되었습니다."),
-    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST,"이미 존재하는 이메일입니다."),
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND,"사용자가 존재하지 않는 이메일입니다."),
     //Auth
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     INVALID_USER(HttpStatus.NOT_FOUND, "이메일과 일치하는 유저가 존재하지 않습니다."),
     NOT_EQUAL_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
+    NOT_FOUND_USER(HttpStatus.FORBIDDEN, "가입되지 않은 유저입니다."),
     NOT_FOUND_COMPANY(HttpStatus.NOT_FOUND, "기업을 찾을 수 없습니다."),
     FAILED_REISSUE(HttpStatus.INTERNAL_SERVER_ERROR, "Access Token을 재발행하는데 실패했습니다."),
     EXCEED_REISSUE(HttpStatus.INTERNAL_SERVER_ERROR, "Refresh Token의 잔여 reissue count가 없습니다."),
     NOT_EQUAL_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "Refresh Token이 일치하지 않습니다."),
-    NOT_FOUND_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "Refresh Token이 없습니다.")
+    NOT_FOUND_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "Refresh Token이 없습니다."),
+    EXPIRED_TOKEN(HttpStatus.FORBIDDEN, "Token이 만료되었습니다."),
     ;
 
-    private HttpStatus status;
-    private String message;
+    private final HttpStatus status;
+    private final String message;
 }

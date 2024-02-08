@@ -12,14 +12,10 @@ public interface UserAccountServiceInterface {
     UserAccountDto searchUser(String email);
 
     /**
-     * 이메일 존재 유무 조회
+     * 이메일 또는 닉네임 존재 유무 조회
      */
-    boolean isExistsUserEmail(String email);
-
-    /**
-     * 닉네임 존재 유무 조회
-     */
-    boolean isExistsUserNickname(String nickname);
+    boolean isExistsUserEmailOrNickname(String email, String nickname);
+    boolean isExistsUserEmailOrNickname(String email);
 
     /**
      * 유저 정보를 조회하여 BoardPrincipal 객체로 반환
@@ -38,7 +34,7 @@ public interface UserAccountServiceInterface {
     /**
      * 임시 비밀번호 발급
      */
-    void sendTemporaryPassword(String email);
+    String sendTemporaryPassword(String email);
     /**
      * 유저 정보 수정
      */
@@ -62,4 +58,9 @@ public interface UserAccountServiceInterface {
      * Refresh Token 업데이트 (이미 존재할 경우 업데이트하고 없다면 저장)
      */
     void updateRefreshToken(Long id, String refreshToken);
+
+    /**
+     * Validate Token (토큰이 유효하지 않다면 예외 발생)과 Role 반환
+     */
+    String getRoleFromToken(String token);
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thlogic>
+    <attr sel="#header" th:replace="header :: header"></attr>
+    <attr sel="#footer" th:replace="footer :: footer"></attr>
+    <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
+    <!--csrf-->
+    <attr sel="meta[name='_csrf']" th:content="${_csrf.token}"/>
+    <attr sel="meta[name='_csrf_header']" th:content="${_csrf.headerName}"/>
+
+    <attr sel="#sidebarName"
+          sec:authorize="isAuthenticated()"
+          sec:authentication="principal.nickname"
+    />
+    <attr sel="#userType" sec:authorize="hasRole('ROLE_USER')"/>
+    <attr sel="#companyType" sec:authorize="hasRole('ROLE_COMPANY')"/>
+    <attr sel="#nav-company" sec:authorize="hasRole('ROLE_COMPANY')"/>
+    <attr sel="#account-form" th:object="${userData}">
+        <attr sel="#email" th:value="*{email}"/>
+        <attr sel="#nickname" th:value="*{nickname}"/>
+        <attr sel="#phone" th:value="*{phone}"/>
+        <attr sel="#zipcode" th:value="*{zipcode}"/>
+        <attr sel="#street" th:value="*{street}"/>
+        <attr sel="#detail" th:value="*{detail}"/>
+    </attr>
+</thlogic>

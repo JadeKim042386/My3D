@@ -1,5 +1,7 @@
 package joo.project.my3d.dto.request;
 
+import joo.project.my3d.domain.Dimension;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.dto.DimensionDto;
 import lombok.Getter;
@@ -26,6 +28,15 @@ public class DimensionRequest {
 
         public DimensionDto toDto() {
                 return DimensionDto.of(
+                        dimName,
+                        dimValue,
+                        dimUnit
+                );
+        }
+
+        public Dimension toEntity(DimensionOption dimensionOption) {
+                return Dimension.of(
+                        dimensionOption,
                         dimName,
                         dimValue,
                         dimUnit

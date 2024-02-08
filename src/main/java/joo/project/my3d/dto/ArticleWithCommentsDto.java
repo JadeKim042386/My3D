@@ -61,10 +61,7 @@ public record ArticleWithCommentsDto(
         return map.values().stream()
                 .filter(comment -> !comment.hasParentComment())
                 .collect(Collectors.toCollection(() ->
-                        new TreeSet<>(Comparator
-                                .comparing(ArticleCommentDto::createdAt)
-                                .reversed()
-                                .thenComparingLong(ArticleCommentDto::id)
+                        new TreeSet<>(Comparator.comparing(ArticleCommentDto::id).reversed()
                         )
                 ));
     }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Joo">
+  <title>My3D</title>
+  <link href="/css/main.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+  <!--헤더-->
+  <header id="header"></header>
+  <!--회원 유형-->
+  <section>
+    <div class="container py-5">
+      <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+              <h3 class="mb-5">회원 유형을 선택해주세요</h3>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="role" id="company">
+                <label class="form-check-label" for="company">
+                  기업 / 기관
+                </label>
+              </div>
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="radio" name="role" id="personal" checked>
+                <label class="form-check-label" for="personal">
+                  개인 사용자
+                </label>
+              </div>
+              <div class="d-grid gap-2 col-6 mx-auto">
+                <a id="next" class="btn btn-dark" href="#" role="button">다음으로</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--푸터-->
+  <footer id="footer"></footer>
+  <!--스크립트-->
+  <script src="/js/hiddenUrlParameter.js"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/initHeader.js"></script>
+  <script>
+    $(document).ready(function() {
+        $('#next').on('click', function () {
+          if ($('#company').is(':checked')) {
+            location.href = '/signup/company'
+          } else {
+            location.href = '/signup?userRole=USER'
+          }
+        })
+    })
+  </script>
+  <script id="alarmScript"></script>
+</body>
+</html>

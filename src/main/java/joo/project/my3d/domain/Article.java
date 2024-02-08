@@ -18,7 +18,8 @@ import java.util.Set;
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),
                 @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
-                @NamedAttributeNode(value = "articleComments")
+                @NamedAttributeNode(value = "articleComments"),
+                @NamedAttributeNode(value = "articleLikes")
         },
         subgraphs = {
                 @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
@@ -37,7 +38,7 @@ import java.util.Set;
         }
 )
 @NamedEntityGraph(
-        name = "Article.fetchIndex",
+        name = "Article.fetchPreview",
         attributeNodes = {
                 @NamedAttributeNode(value = "userAccount", subgraph = "company"),
                 @NamedAttributeNode(value = "articleFile"),
@@ -73,6 +74,8 @@ public class Article extends AuditingFields implements Persistable<Long> {
     @Setter
     @Column(nullable = false)
     private String content;
+    @Column(nullable = false)
+    private Integer likeCount = 0;
 
     @Setter
     @Enumerated(EnumType.STRING)
@@ -85,8 +88,8 @@ public class Article extends AuditingFields implements Persistable<Long> {
     private ArticleCategory articleCategory; //"ArticleType=MODEL"일 경우 non-null
 
     @ToString.Exclude
-    @Setter
-    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "articleFileId")
     private ArticleFile articleFile;
 
     @ToString.Exclude
@@ -101,21 +104,21 @@ public class Article extends AuditingFields implements Persistable<Long> {
     protected Article() {
     }
 
-    private Article(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
+    private Article(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         this.userAccount = userAccount;
+        this.articleFile = articleFile;
         this.title = title;
         this.content = content;
         this.articleType = articleType;
         this.articleCategory = articleCategory;
-        this.articleFile = articleFile;
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFile articleFile) {
-        return new Article(userAccount, title, content, articleType, articleCategory, articleFile);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        return new Article(userAccount, articleFile, title, content, articleType, articleCategory);
     }
 
-    public static Article of(UserAccount userAccount, String title, String content, ArticleType articleType, ArticleFile articleFile) {
-        return Article.of(userAccount, title, content, articleType, null, articleFile);
+    public static Article of(UserAccount userAccount, ArticleFile articleFile, String title, String content, ArticleType articleType) {
+        return Article.of(userAccount, articleFile, title, content, articleType, null);
     }
 
     @Override
@@ -126,5 +129,10 @@ public class Article extends AuditingFields implements Persistable<Long> {
     public void deleteAll() {
         this.articleComments.clear();
         this.articleLikes.clear();
+    }
+
+    public void updateLikeCount(boolean isAdd) {
+        if (isAdd) likeCount++;
+        else likeCount--;
     }
 }

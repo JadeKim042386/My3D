@@ -1,8 +1,10 @@
 package joo.project.my3d.dto.request;
 
+import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.ArticleFile;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
 import joo.project.my3d.utils.FileUtils;
@@ -12,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ArticleFormRequest {
-    @Null
     private Long id;
     @NotBlank
     private String title;
@@ -37,43 +37,28 @@ public class ArticleFormRequest {
 
     /**
      * 게시글 등록시 사용
-     * @param userAccountDto 작성자의 DTO
-     * @param articleType
      */
-    public ArticleDto toArticleDto(ArticleFileWithDimensionDto articleFile, UserAccountDto userAccountDto, ArticleType articleType) {
-        return ArticleDto.of(
-                userAccountDto,
+    public Article toArticleEntity(UserAccount userAccount, ArticleType articleType) {
+        return Article.of(
+                userAccount,
+                toArticleFileEntity(),
                 title,
                 content,
                 articleType,
-                ArticleCategory.valueOf(articleCategory),
-                articleFile
+                ArticleCategory.valueOf(articleCategory)
         );
     }
 
-    /**
-     * 하나의 DimensionOption을 반환하며 이후 기능 개선시 삭제될 예정
-     */
-    public DimensionOptionDto toDimensionOptionDto() {
-
-        return dimensionOptions.get(0).toDto();
-    }
-
-    public List<DimensionDto> toDimensions() {
-
-        return dimensionOptions.get(0).toDimensionDtos();
-    }
-
-    public ArticleFileWithDimensionDto toArticleFileWithDimensionDto() {
+    public ArticleFile toArticleFileEntity() {
         String originalFileName = modelFile.getOriginalFilename();
         String extension = FileUtils.getExtension(originalFileName);
 
-        return ArticleFileWithDimensionDto.of(
+        return ArticleFile.of(
                 modelFile.getSize(),
                 originalFileName,
                 UUID.randomUUID() + "." + extension,
                 extension,
-                dimensionOptions.get(0).toWithDimensionDto()
+                dimensionOptions.get(0).toDimensionOptionEntity()
         );
     }
 }

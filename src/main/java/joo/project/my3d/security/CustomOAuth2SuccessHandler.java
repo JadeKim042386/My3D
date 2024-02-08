@@ -26,6 +26,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         flashMap.put("nickname", principal.nickname());
         flashMap.put("signup", !Objects.isNull(principal.id()));
         new SessionFlashMapManager().saveOutputFlashMap(flashMap, request, response);
-        this.getRedirectStrategy().sendRedirect(request, response, "/oauth/response");
+        this.getRedirectStrategy().sendRedirect(request, response, "/oauth");
     }
 }

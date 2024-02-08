@@ -4,8 +4,8 @@ import joo.project.my3d.domain.Address;
 
 public record AddressDto(
         String zipcode,
-        String address,
-        String detailAddress
+        String street,
+        String detail
 ) {
     public static AddressDto of() {
         return AddressDto.of(null, null, null);
@@ -24,6 +24,6 @@ public record AddressDto(
     }
 
     public Address toEntity() {
-        return Address.of(zipcode, address, detailAddress);
+        return Address.of(zipcode, street, detail);
     }
 }

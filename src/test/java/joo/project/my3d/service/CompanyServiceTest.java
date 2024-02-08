@@ -39,13 +39,14 @@ class CompanyServiceTest {
 
     @DisplayName("기업 수정")
     @Test
-    void updateCompany() {
+    void updateCompany() throws IllegalAccessException {
         // Given
         CompanyDto companyDto = FixtureDto.getCompanyDto();
-        given(companyRepository.getReferenceById(companyDto.id())).willReturn(companyDto.toEntity());
+        String email = "a@gmail.com";
+        given(companyRepository.findByUserAccount_Email(anyString())).willReturn(Optional.of(companyDto.toEntity()));
         // When
-        companyService.updateCompany(companyDto);
+        companyService.updateCompany(FixtureDto.getCompanyAdminRequest(), email);
         // Then
-        then(companyRepository).should().getReferenceById(companyDto.id());
+        then(companyRepository).should().findByUserAccount_Email(anyString());
     }
 }

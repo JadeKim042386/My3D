@@ -57,11 +57,13 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     private UserRole userRole;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "userRefreshTokenId")
     private UserRefreshToken userRefreshToken;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "companyId")
     private Company company;
 
     @ToString.Exclude

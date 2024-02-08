@@ -1,8 +1,7 @@
 package joo.project.my3d.dto.request;
 
-import joo.project.my3d.dto.DimensionDto;
-import joo.project.my3d.dto.DimensionOptionDto;
-import joo.project.my3d.dto.DimensionOptionWithDimensionDto;
+import joo.project.my3d.domain.Dimension;
+import joo.project.my3d.domain.DimensionOption;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,36 +18,13 @@ public class DimensionOptionRequest {
         @NotNull
         private final List<DimensionRequest> dimensions = new ArrayList<>();
 
-        private DimensionOptionRequest(String optionName) {
-                this.optionName = optionName;
+        public DimensionOption toDimensionOptionEntity() {
+                return DimensionOption.of(optionName);
         }
 
-        public static DimensionOptionRequest of(String optionName) {
-                return new DimensionOptionRequest(optionName);
-        }
-
-        public DimensionOptionDto toDto() {
-                return DimensionOptionDto.of(
-                        optionName
-                );
-        }
-
-        public DimensionOptionWithDimensionDto toWithDimensionDto() {
-                return DimensionOptionWithDimensionDto.of(
-                        optionName,
-                        dimensions.stream().map(DimensionRequest::toDto).toList()
-                );
-        }
-
-        public static DimensionOptionRequest from(DimensionOptionDto dto) {
-                return DimensionOptionRequest.of(
-                        dto.optionName()
-                );
-        }
-
-        public List<DimensionDto> toDimensionDtos() {
+        public List<Dimension> toDimensionEntities(DimensionOption dimensionOption) {
                 return dimensions.stream()
-                        .map(DimensionRequest::toDto)
+                        .map((dimension) -> dimension.toEntity(dimensionOption))
                         .toList();
         }
 

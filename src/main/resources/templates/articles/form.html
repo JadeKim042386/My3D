@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>새 게시글 등록</title>
+  <meta name="_csrf"/>
+  <meta name="_csrf_header"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link href="/css/main.css" rel="stylesheet">
+  <link href="/css/file-form.less" rel="stylesheet/less" type="text/css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .table-title h2 {
+      margin: 6px 0 0;
+      font-size: 22px;
+    }
+    .table-title .add-new i {
+      margin-right: 4px;
+    }
+    table.table {
+      table-layout: fixed;
+    }
+    table.table tr th, table.table tr td {
+      border-color: #e9e9e9;
+    }
+    table.table th i {
+      font-size: 13px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    table.table th:last-child {
+      width: 100px;
+    }
+    table.table td a {
+      cursor: pointer;
+      display: inline-block;
+      margin: 0 5px;
+      min-width: 24px;
+    }
+    table.table td a.save {
+      color: #27C46B;
+    }
+    table.table td a.edit {
+      color: #FFC107;
+    }
+    table.table td a.delete {
+      color: #E34724;
+    }
+    table.table td i {
+      font-size: 19px;
+    }
+    table.table td a.add i {
+      font-size: 24px;
+      margin-right: -1px;
+      position: relative;
+      top: 3px;
+    }
+    table.table .form-control.error {
+      border-color: #f50000;
+    }
+    table.table td .save {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!--헤더-->
+  <header id="header"></header>
+  <div class="container">
+    <div id="article-form">
+      <input type="hidden" id="formStatus">
+      <!--제목-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <input type="text" class="form-control" id="title" name="title" placeholder="제목" required>
+        </div>
+      </div>
+      <!--본문-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <textarea class="form-control" id="content" name="content" rows="5" placeholder="상품에 대해서 자세히 설명해주세요." required></textarea>
+        </div>
+      </div>
+      <!--모델 파일-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <div class="input-group custom-file-button">
+            <label class="input-group-text" for="modelFile">모델 파일 선택</label>
+            <input type="file" accept=".stl,.stp" class="form-control" id="modelFile" name="modelFile">
+            <label id="modelFileName" for="modelFile" hidden></label>
+          </div>
+          <p id="model-file-error" class="mb-0"></p>
+        </div>
+      </div>
+      <!--치수 옵션-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <button id="addDimensionOptionButton" type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">치수옵션 추가</button>
+          <p id="dimensionOption-error"></p>
+        </div>
+      </div>
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-7">
+          <select class="form-select" id="dimensionOption-select" onchange="selectDimensionOption()">
+            <option selected>치수 옵션</option>
+          </select>
+        </div>
+        <div class="col-sm-1 col-lg-2">
+          <button id="editDimensionOption" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#dimensionOptionModal">수정</button>
+          <button type="button" class="btn btn-danger" onclick="removeDimensionOption()">삭제</button>
+        </div>
+      </div>
+      <!--상품옵션 모달-->
+      <div class="modal fade" id="dimensionOptionModal" tabindex="-1" aria-labelledby="dimensionOptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="dimensionOptionModalLabel">치수 설정</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <input type="text" class="form-control" id="optionName" placeholder="그룹명">
+                <p id="optionName-error" class="mb-0"></p>
+              </div>
+              <!--치수 테이블-->
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4">
+                <div class="col-sm-4 p-0">
+                  <button type="button" class="btn btn-info btn-sm add-new">치수 추가</button>
+                </div>
+              </div>
+              <div class="row mb-3 justify-content-md-start ps-4 pe-4 table-responsive">
+                <table class="table table-bordered" id="dimensionTable">
+                  <thead>
+                    <tr>
+                      <th>치수명</th>
+                      <th>치수</th>
+                      <th>단위</th>
+                      <th>추가/수정</th>
+                      <th>삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>dim1</td>
+                      <td>dim1</td>
+                      <td>dim1</td>
+                      <td>
+                        <a class="save"><i class="material-icons">&#xE03B;</i></a>
+                        <a class="edit"><i class="material-icons">&#xE254;</i></a>
+                      </td>
+                      <td>
+                        <a class="delete"><i class="material-icons">&#xE872;</i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-primary" onclick="addDimensionOption()">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--치수 테이블-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <table class="table table-bordered" id="addedDimensionTable">
+            <thead>
+              <tr>
+                <th>치수명</th>
+                <th>치수</th>
+                <th>단위</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!--카테고리-->
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <select class="form-select" id="category" name="articleCategory">
+            <option>카테고리를 선택해주세요.</option>
+          </select>
+          <p id="category-error" class="mb-0"></p>
+        </div>
+      </div>
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <p id="errors" class="mb-0 field-error"></p>
+        </div>
+      </div>
+      <!--저장&취소-->
+      <div class="row mb-5 justify-content-md-end">
+        <div class="col-sm-8 col-lg-9">
+          <div class="col-sm-10 d-grid d-sm-flex justify-content-sm-end">
+            <button type="button" class="btn btn-primary me-2" id="submit-button">저장</button>
+            <button type="button" class="btn btn-secondary" id="cancel-button">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--푸터-->
+  <footer id="footer"></footer>
+  <!--스크립트-->
+  <script src="/js/hiddenUrlParameter.js"></script>
+  <script src="/js/file_input.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/less"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/constants/articleCategory.js"></script>
+  <script type="text/javascript" src="/js/formatString.js"></script>
+  <script type="text/javascript" src="/js/initHeader.js"></script>
+  <script id="inline-js">
+    var DIM_PREFIX = "dim_";
+    //모달을 통해 입력된 치수 옵션 추가
+    function addDimensionOption() {
+      var optionName = $('#optionName').val();
+      // -- 옵션명이 입력안되었을 경우 에러 메세지 표시
+      if (optionName === "") {
+        $('#optionName').parent().append('<p id="optionName-error" class="mb-0 field-error">옵션명을 입력해주세요.</p>');
+        return;
+      } else {
+        $('#optionName-error').remove();
+      }
+
+      // -- 입력된 치수 정보를 localStorage에 저장
+      var dimensionOption = {
+        "optionName": optionName,
+        "dimensions": []
+      };
+      $('#dimensionTable tbody').find("tr").each(function () {
+        if ($(this).find('.edit').css('display') !== "none") {
+          var dimension = {};
+          dimension["dimName"] = $(this).children().eq(0).text();
+          dimension["dimValue"] = $(this).children().eq(1).text();
+          dimension["dimUnit"] = $(this).children().eq(2).text();
+          dimensionOption["dimensions"].push(dimension);
+        }
+      })
+      localStorage.setItem(DIM_PREFIX + optionName, JSON.stringify(dimensionOption));
+
+      //-- 현재 치수 옵션 드롭다운 아이템에 존재하는 옵션명인지 확인
+      var options = [];
+      $("#dimensionOption-select").find("option").each(function () {
+        options.push($(this).text());
+      })
+      if (!options.includes(optionName)) {
+        addSelectOption(optionName);
+      }
+
+      $('#dimensionOptionModal').modal('hide');
+      $('#editDimensionOption').removeAttr("disabled");
+      selectDimensionOption();
+    }
+
+    //현재 선택된 치수옵션 삭제
+    function removeDimensionOption() {
+      var selectedOption = getSelectedOption();
+      var optionName = selectedOption.text();
+      localStorage.removeItem(DIM_PREFIX + optionName);
+      selectedOption.remove();
+      selectDimensionOption();
+    }
+
+    //현재 선택된 치수옵션 수정
+    $('#editDimensionOption').click(function () {
+      $(".add-new").removeAttr("disabled");
+      // -- 현재 선택된 치수옵션의 치수 정보들을 업데이트
+      var selectedOptionName = getSelectedOption().text();
+      var dimensionOption = JSON.parse(localStorage.getItem(DIM_PREFIX + selectedOptionName));
+      if (dimensionOption != null) {
+        $('#optionName').val(dimensionOption['optionName']);
+        $('#dimensionTable tbody').find("tr").remove();
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '<td>' + getSaveEditIconButton() + '</td>' +
+                  '<td>' + getDeleteIconButton() + '</td>' +
+                  '</tr>';
+          $("#dimensionTable tbody").append(row);
+        }
+      }
+    })
+
+    // 현재 선택된 치수옵션
+    function getSelectedOption() {
+      return $("#dimensionOption-select option:selected");
+    }
+
+    //게시글 추가/수정 버튼 클릭
+    $('#submit-button').click(function () {
+      const csrfToken = $("meta[name='_csrf']").attr("content");
+      const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+      var formData = new FormData();
+      formData.append('title', $('#title').val());
+      formData.append('content', $('#content').val());
+      formData.append('articleCategory', $('#category option:selected').val());
+      var file = $('#modelFile')[0].files[0];
+      formData.append('modelFile', file.name === '' ? new File([], '') : file);
+      // -- formData에 치수 옵션 추가
+      var dimensionOptionIdx = 0;
+      for (var i=0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key.startsWith(DIM_PREFIX)) {
+          continue;
+        }
+
+        var dimensionOption = JSON.parse(localStorage.getItem(key));
+        formData.append(
+                `dimensionOptions[${dimensionOptionIdx}].optionName`,
+                dimensionOption["optionName"]
+        );
+        for (var dimIdx in dimensionOption['dimensions']) {
+          var dimension = dimensionOption['dimensions'][dimIdx];
+          `dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimName`
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimName`, dimension["dimName"]);
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimValue`, dimension["dimValue"]);
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimUnit`, dimension["dimUnit"]);
+        }
+        dimensionOptionIdx += 1;
+      }
+
+      var url;
+      var method;
+      if ($('#formStatus').val() === 'CREATE') {
+        url = '/api/v1/articles';
+        method = 'POST';
+      } else {
+        url = '/api/v1/articles/' + window.location.pathname.split('/')[1];
+        method = 'PUT';
+      }
+
+      $.ajax({
+        url: url,
+        type: method,
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(csrfHeader, csrfToken);
+        },
+        success: function (result) {
+          window.location.href = '/' + result.message;
+        },
+        error: function (xhr, _, _) {
+          var response = JSON.parse(xhr.responseText);
+          console.log(response.message);
+          var errorsDOM = $('#errors');
+          errorsDOM.children().remove()
+          var errorDOM = '<p>{0}</p>'
+          for (var error of response.errors) {
+            errorsDOM.append(formatString(errorDOM, error.message));
+          }
+        }
+      })
+    })
+
+    // 치수옵션 드롭다운 아이템 추가
+    function addSelectOption(optionName) {
+      var option = $("<option>" + optionName + "</option>");
+      $("#dimensionOption-select").append(option);
+    }
+
+    //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
+    function buttonDisabled() {
+      if (localStorage.length === 0) {
+        $('#editDimensionOption').attr("disabled", true);
+        $('#addDimensionOptionButton').removeAttr("disabled");
+      } else {
+        $('#addDimensionOptionButton').attr("disabled", true);
+      }
+    }
+
+    //현재 선택된 치수옵션 정보를 테이블로 표시
+    function selectDimensionOption() {
+      var selectedOptionName = getSelectedOption().text();
+      var dimensionOption = JSON.parse(localStorage.getItem(DIM_PREFIX + selectedOptionName));
+      $('#addedDimensionTable tbody').find("tr").remove();
+      if (dimensionOption != null) {
+        for (var dimension of dimensionOption['dimensions']) {
+          var row = '<tr>' +
+                  '<td>' + dimension['dimName'] + '</td>' +
+                  '<td>' + dimension['dimValue'] + '</td>' +
+                  '<td>' + dimension['dimUnit'] + '</td>' +
+                  '</tr>';
+          $("#addedDimensionTable tbody").append(row);
+        }
+      }
+      buttonDisabled();
+    }
+
+    //초기화
+    function initialize() {
+      localStorage.clear();
+      // -- 카테고리
+      var categoryItem = '<option value="{2}" {1}>{0}</option>';
+      var currentCategory = [[${article.articleCategory}]];
+      for (const [name, value] of Object.entries(ArticleCategory)) {
+        $('#category').append(
+                formatString(categoryItem, value, name === currentCategory ? 'selected' : '', name)
+        );
+      }
+      $("#dimensionOption-select").find("option").remove();
+      var modelFile = [[${article.modelFile}]];
+      // -- 게시글을 수정할 경우 해당 게시글의 치수옵션들을 load
+      if (modelFile !== null) {
+        var dimensionOptions = [modelFile.dimensionOption];
+        for (var dimensionOption of dimensionOptions) {
+          var optionName = dimensionOption['optionName'];
+          addSelectOption(optionName);
+          var dimensionOptionJson = {
+            "optionName": optionName,
+            "dimensions": []
+          };
+          for (var dimension of dimensionOption.dimensions) {
+            var dimensionJson = {};
+            dimensionJson["dimName"] = dimension.dimName;
+            dimensionJson["dimValue"] = dimension.dimValue;
+            dimensionJson["dimUnit"] = dimension.dimUnit;
+            dimensionOptionJson["dimensions"].push(dimensionJson);
+          }
+          localStorage.setItem(DIM_PREFIX + optionName, JSON.stringify(dimensionOptionJson));
+        }
+        buttonDisabled();
+        selectDimensionOption();
+      }
+    }
+
+    // 상품옵션 추가 버튼 클릭시 입력 폼 초기화
+    function initializeDimensionOptionModal() {
+      $("#addDimensionOptionButton").click(function () {
+        $('#optionName').val("");
+        $('#dimensionTable tbody').find("tr").remove();
+      })
+    }
+
+    function getSaveEditIconButton() {
+      return '<a class="save"><i class="material-icons">&#xE03B;</i></a>'
+              + '<a class="edit"><i class="material-icons">&#xE254;</i></a>';
+    }
+
+    function getDeleteIconButton() {
+      return '<a class="delete"><i class="material-icons">&#xE872;</i></a>';
+    }
+
+    $(document).ready(function(){
+      initialize();
+      initializeDimensionOptionModal();
+
+      // -- 치수 추가 버튼 클릭
+      $(".add-new").click(function(){
+        var index = $("#dimensionTable tbody tr:last-child").index();
+        var row = '<tr>' +
+                '<td><input type="text" class="form-control" name="dimName" id="dimName"></td>' +
+                '<td><input type="text" class="form-control" name="dimValue" id="dimValue"></td>' +
+                '<td><select id="dimUnit" class="form-control input-xs"><option>MM</option><option>INCH</option></select></td>' +
+                '<td>' + getSaveEditIconButton() + '</td>' +
+                '<td>' + getDeleteIconButton() + '</td>' +
+                '</tr>';
+        $("#dimensionTable").append(row);
+        $("#dimensionTable tbody tr").eq(index + 1).find(".save, .edit").toggle();
+      });
+
+      // -- 하나의 행에 해당하는 치수 정보 저장 버튼 클릭
+      $(document).on("click", ".save", function(){
+        // -- 입력되지 않은 칸이 있는지 확인
+        var empty = false;
+        var input = $(this).parents("tr").find('input[type="text"], select');
+        input.each(function(){
+          if(!$(this).val()){
+            $(this).addClass("error");
+            empty = true;
+          } else{
+            $(this).removeClass("error");
+          }
+        });
+
+        // -- 입력되지 않은 칸이 있다면 해당 칸으로 focus하고 모두 입력되었다면 입력 폼에서 일반 텍스트로 변환
+        if(empty){
+          $(this).parents("tr").find(".error").first().focus();
+        } else {
+          input.each(function(){
+            $(this).parent("td").html($(this).val());
+          });
+          $(this).parents("tr").find(".save, .edit").toggle();
+          $(".add-new").removeAttr("disabled");
+        }
+      });
+
+      // -- 하나의 행에 해당하는 치수 정보의 수정 버튼 클릭
+      $(document).on("click", ".edit", function(){
+        $(this).parents("tr").find("td:nth-child(1), td:nth-child(2)").each(function(){
+          $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+        });
+        $(this).parents("tr").find("td:nth-child(3)").each(function(){
+          $(this).html('<select id="dimUnit" class="form-control input-xs"><option' + ($(this).text() === "MM" ? ' selected' : '') + '>MM</option><option' + ($(this).text() === "INCH" ? ' selected' : '') + '>INCH</option></select>');
+        });
+        $(this).parents("tr").find(".save, .edit").toggle();
+        // -- 수정 중에는 치수 추가를 할 수 없도록 설정
+        $(".add-new").attr("disabled", "disabled");
+      });
+
+      // -- 하나의 행에 해당하는 치수 정보 삭제 버튼 클릭
+      $(document).on("click", ".delete", function(){
+        $(this).parents("tr").remove();
+        $(".add-new").removeAttr("disabled");
+      });
+    });
+  </script>
+  <script id="alarmScript"></script>
+</body>
+</html>

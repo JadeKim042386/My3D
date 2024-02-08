@@ -20,7 +20,6 @@ import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.ArticleFileService;
 import joo.project.my3d.service.impl.ArticleLikeService;
 import joo.project.my3d.service.impl.ArticleService;
-import joo.project.my3d.service.impl.S3Service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class ArticleServiceTest {
     @Mock private UserAccountRepository userAccountRepository;
     @Mock private ArticleFileService articleFileService;
     @Mock private ArticleLikeService articleLikeService;
-    @Mock private S3Service s3Service;
+    @Mock private FileServiceInterface fileService;
 
     @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
@@ -145,14 +144,15 @@ class ArticleServiceTest {
 
     @DisplayName("6. 게시글 저장")
     @Test
-    void saveArticle() {
+    void saveArticle() throws IllegalAccessException {
         // Given
         ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title",  "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
+        willDoNothing().given(fileService).uploadFile(any(), anyString());
         // When
-        articleService.saveArticle(article.getUserAccount().getEmail(), articleDto, Fixture.getMultipartFile());
+        articleService.saveArticle(article.getUserAccount().getEmail(), Fixture.getArticleFormRequest());
         // Then
         then(userAccountRepository).should().getReferenceByEmail(anyString());
         then(articleRepository).should().save(any(Article.class));
