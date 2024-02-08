@@ -42,18 +42,19 @@
 <script src="/js/hiddenUrlParameter.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/initHeader.js"></script>
 <script id="inline-js">
     var serviceKey = [[${serviceKey}]];
     $('#submit-button').click(
         function () {
             var b_no = $('#companyCCC').val();
             var data = {
-                "b_no": [b_no]
+                "b_no": [b_no] //example: 2208162517
             };
             var nextButton = $("<a id='next' class='btn btn-dark' href='javascript:void(0)' role='button'>다음으로</a>");
             nextButton.click(
                 function () {
-                    location.href = '/account/sign_up?userRole=COMPANY';
+                    location.href = '/signup?userRole=COMPANY';
                 }
             );
             //수정
@@ -63,8 +64,10 @@
                 $('#next').remove();
                 return;
             }
-            //숫자 10자리인지 확인
+            //숫자 10자리인지 확인 후 인증 요청
             if (/^\d{10}$/.test(b_no)) {
+                var resultDOM = $("<p id='certification-result'></p>");
+                var fieldClass = 'field-error';
                 $.ajax({
                     url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + serviceKey,
                     type: "POST",
@@ -75,12 +78,12 @@
                     beforeSend: function () {
                       $('html').css('cursor', 'wait');
                     },
+                    timeout: 10000,
                     success: function (result) {
                         $('html').css('cursor', 'auto');
                         $('#certification-result').remove();
                         $('#next').remove();
                         var msg;
-                        var fieldClass = 'field-error';
                         var b_stt_cd = result.data[0].b_stt_cd;
                         console.log(b_stt_cd);
                         if (b_stt_cd == '01') {
@@ -96,13 +99,15 @@
                         } else if (b_stt_cd == '') {
                             msg = '존재하지않는 기업입니다';
                         }
-                        var innerHtml = $("<p id='certification-result'></p>");
-                        innerHtml.addClass(fieldClass);
-                        innerHtml.text(msg);
-                        $('#certification-form').append(innerHtml);
+                        resultDOM.addClass(fieldClass);
+                        resultDOM.text(msg);
+                        $('#certification-form').append(resultDOM);
                     },
                     error: function (result) {
-                        console.log(result.responseText);
+                        $('html').css('cursor', 'auto');
+                        resultDOM.addClass(fieldClass);
+                        resultDOM.text(JSON.parse(result.responseText).msg);
+                        $('#certification-form').append(resultDOM);
                     }
                 });
             } else {

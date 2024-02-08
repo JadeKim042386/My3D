@@ -1,10 +1,12 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.dto.CompanyDto;
+import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
 import joo.project.my3d.dto.response.UserAdminResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.service.CompanyServiceInterface;
+import joo.project.my3d.service.UserAccountServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class UserAdminController {
 
+    private final UserAccountServiceInterface userAccountService;
     private final CompanyServiceInterface companyService;
 
     /**
@@ -36,12 +39,14 @@ public class UserAdminController {
         @AuthenticationPrincipal BoardPrincipal boardPrincipal,
         Model model
     ) {
+        UserAccountDto userAccountDto = userAccountService.searchUser(boardPrincipal.email());
         model.addAttribute(
+                "userData",
                 UserAdminResponse.of(
-                        boardPrincipal.nickname(),
-                        boardPrincipal.phone(),
-                        boardPrincipal.email(),
-                        boardPrincipal.address()
+                        userAccountDto.nickname(),
+                        userAccountDto.phone(),
+                        userAccountDto.email(),
+                        userAccountDto.addressDto()
                 )
         );
         return "admin/account";
@@ -60,8 +65,9 @@ public class UserAdminController {
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
-        CompanyDto company = companyService.getCompany(boardPrincipal.email());
+        CompanyDto company = companyService.getCompanyDto(boardPrincipal.email());
         model.addAttribute(
+                "companyData",
                 CompanyAdminResponse.of(
                         company.companyName(),
                         company.homepage()

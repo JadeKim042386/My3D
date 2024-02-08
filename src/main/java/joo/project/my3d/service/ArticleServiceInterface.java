@@ -2,14 +2,12 @@ package joo.project.my3d.service;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
-import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface ArticleServiceInterface {
     /**
@@ -29,7 +27,7 @@ public interface ArticleServiceInterface {
     /**
      * 게시글 저장
      */
-    Article saveArticle(String email, ArticleDto articleDto, MultipartFile file);
+    Article saveArticle(String email, ArticleFormRequest articleFormRequest);
     /**
      * 게시글 수정
      * @param articleFormRequest 게시글 수정 입력 정보

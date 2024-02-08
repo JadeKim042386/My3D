@@ -5,6 +5,7 @@ import joo.project.my3d.config.AppConfig;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.dto.response.ArticleFormResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import joo.project.my3d.service.AlarmServiceInterface;
 import joo.project.my3d.service.ArticleServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 import static joo.project.my3d.domain.constant.FormStatus.CREATE;
 import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
@@ -29,6 +32,7 @@ import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
 public class ArticlesController {
 
     private final ArticleServiceInterface articleService;
+    private final AlarmServiceInterface<SseEmitter> alarmService;
 
     /**
      * 게시판 페이지
@@ -46,7 +50,6 @@ public class ArticlesController {
      */
     @GetMapping
     public String articleBoard(
-            HttpServletRequest request,
             @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @QuerydslPredicate(root = Article.class) Predicate predicate,
             Model model
@@ -75,6 +78,7 @@ public class ArticlesController {
     @GetMapping("/form")
     public String articleAddForm(Model model) {
         model.addAttribute(
+                "article",
                 ArticleFormResponse.of(CREATE)
         );
         return "articles/form";
@@ -98,6 +102,7 @@ public class ArticlesController {
             Model model
     ) {
         model.addAttribute(
+                "article",
                 ArticleFormResponse.from(
                         articleService.getArticleForm(articleId),
                         UPDATE
@@ -118,12 +123,19 @@ public class ArticlesController {
     @GetMapping("/{articleId}")
     public String articleDetail(
             @PathVariable Long articleId,
+            @RequestParam(required = false) Long alarmId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             Model model
     ) {
+        //알람을 통해 이동될 경우 읽음 처리
+        if (!Objects.isNull(alarmId)) {
+            alarmService.checkAlarm(alarmId);
+        }
         model.addAttribute(
+                "article",
                 articleService.getArticleWithComments(articleId, boardPrincipal.email())
         );
+        model.addAttribute("filePath", AppConfig.filePath);
         return "articles/detail";
     }
 }

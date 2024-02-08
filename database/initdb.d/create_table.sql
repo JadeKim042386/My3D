@@ -1,5 +1,25 @@
-﻿CREATE TABLE `user_account` (
+﻿CREATE TABLE `user_refresh_token` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
+    `refresh_token`	varchar(255)	NOT NULL,
+    `reissue_count` bigint default 0 NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
+
+CREATE TABLE `company` (
+    `id` bigint	AUTO_INCREMENT NOT NULL,
+    `company_name` varchar(100) NOT NULL,
+    `homepage` varchar(255) NULL,
+    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    `modified_at`	datetime	NOT NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='기업';
+
+CREATE TABLE `user_account` (
+    `id` bigint	AUTO_INCREMENT NOT NULL,
+    `user_refresh_token_id`	bigint NOT NULL,
+    `company_id`	bigint,
     `email`	varchar(100)	NOT NULL,
     `user_password`	varchar(255)	NOT NULL,
     `nickname`	varchar(100)	NOT NULL,
@@ -12,33 +32,40 @@
     `modified_at`	datetime	NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE (`nickname`),
-    UNIQUE (`email`)
+    UNIQUE (`email`),
+    FOREIGN KEY (`user_refresh_token_id`) REFERENCES `user_refresh_token` (`id`),
+    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
 
-CREATE TABLE `user_refresh_token` (
-    `id` bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id`	bigint NOT NULL,
-    `refresh_token`	varchar(255)	NOT NULL,
-    `reissue_count` int(10) default 0 NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
+CREATE TABLE `dimension_option` (
+    `id`	bigint	AUTO_INCREMENT NOT NULL,
+    `option_name`	varchar(50)	NOT NULL,
+    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
+    `modified_at`	datetime	NOT NULL,
+    `created_by`	varchar(100)	NOT NULL,
+    `modified_by`	varchar(100)	NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수 옵션';
 
-CREATE TABLE `company` (
-    `id` bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id` bigint NOT NULL,
-    `company_name` varchar(100) NOT NULL,
-    `homepage` varchar(255) NULL,
+CREATE TABLE `article_file` (
+    `id`	bigint	AUTO_INCREMENT NOT NULL,
+    `dimension_option_id` bigint NOT NULL,
+    `byte_size`	bigint	NOT NULL,
+    `original_file_name`	varchar(100)	NOT NULL,
+    `file_name`	varchar(100)	NOT NULL,
+    `file_extension`	varchar(100)	NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,
     `created_by`	varchar(100)	NOT NULL,
     `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='기업';
+    FOREIGN KEY (`dimension_option_id`) REFERENCES `dimension_option` (`id`),
+    UNIQUE (`file_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
 
 CREATE TABLE `article` (
    `id`	bigint	AUTO_INCREMENT NOT NULL,
+   `article_file_id`   bigint	NOT NULL,
    `user_account_id`   bigint	NOT NULL,
    `title`	varchar(255)	NOT NULL,
    `content`	varchar(255)	NOT NULL,
@@ -50,36 +77,9 @@ CREATE TABLE `article` (
    `created_by`	varchar(100)	NOT NULL,
    `modified_by`	varchar(100)	NOT NULL,
    PRIMARY KEY (`id`),
+   FOREIGN KEY (`article_file_id`) REFERENCES `article_file` (`id`),
    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='게시글';
-
-CREATE TABLE `article_file` (
-    `id`	bigint	AUTO_INCREMENT NOT NULL,
-    `article_id` bigint NOT NULL,
-    `byte_size`	bigint	NOT NULL,
-    `original_file_name`	varchar(100)	NOT NULL,
-    `file_name`	varchar(100)	NOT NULL,
-    `file_extension`	varchar(100)	NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
-    UNIQUE (`file_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
-
-CREATE TABLE `dimension_option` (
-    `id`	bigint	AUTO_INCREMENT NOT NULL,
-    `article_file_id` bigint NOT NULL,
-    `option_name`	varchar(50)	NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`article_file_id`) REFERENCES `article_file` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수 옵션';
 
 CREATE TABLE `dimension` (
      `id`	bigint	AUTO_INCREMENT NOT NULL,

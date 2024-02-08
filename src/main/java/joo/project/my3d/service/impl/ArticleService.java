@@ -2,9 +2,10 @@ package joo.project.my3d.service.impl;
 
 import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
+import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
-import joo.project.my3d.dto.ArticleDto;
+import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.ArticleWithCommentsDto;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
@@ -65,8 +65,8 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public ArticleDetailResponse getArticleWithComments(Long articleId, String email) {
         return articleRepository.findByIdFetchDetail(articleId)
-                .map(comment -> ArticleDetailResponse.of(
-                        ArticleWithCommentsDto.from(comment),
+                .map(article -> ArticleDetailResponse.of(
+                        ArticleWithCommentsDto.from(article),
                         articleLikeService.getLikeCountByArticleId(articleId),
                         articleLikeService.addedLike(articleId, email)
                         )
@@ -76,11 +76,21 @@ public class ArticleService implements ArticleServiceInterface {
 
     @Transactional
     @Override
-    public Article saveArticle(String email, ArticleDto articleDto, MultipartFile file) {
+    public Article saveArticle(String email, ArticleFormRequest articleFormRequest) {
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
-        Article article = articleRepository.save(articleDto.toEntity(userAccount));
-        fileService.uploadFile(file, article.getArticleFile().getFileName());
-        return article;
+        Article savedArticle = articleRepository.save(
+                articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL)
+        );
+        DimensionOption dimensionOption = savedArticle.getArticleFile().getDimensionOption();
+        dimensionOption.getDimensions().addAll(
+                articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption)
+        );
+        fileService.uploadFile(
+                articleFormRequest.getModelFile(),
+                savedArticle.getArticleFile().getFileName()
+        );
+        log.debug("{}에 의해 게시글이 저장되었습니다.", email);
+        return savedArticle;
     }
 
     /**

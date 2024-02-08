@@ -46,13 +46,14 @@
   <script src="/js/hiddenUrlParameter.js"></script>
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/initHeader.js"></script>
   <script>
     $(document).ready(function() {
         $('#next').on('click', function () {
           if ($('#company').is(':checked')) {
-            location.href = 'company'
+            location.href = '/signup/company'
           } else {
-            location.href = 'sign_up?userRole=USER'
+            location.href = '/signup?userRole=USER'
           }
         })
     })

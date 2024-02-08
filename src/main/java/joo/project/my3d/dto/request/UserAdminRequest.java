@@ -2,6 +2,9 @@ package joo.project.my3d.dto.request;
 
 import joo.project.my3d.dto.AddressDto;
 import joo.project.my3d.dto.UserAccountDto;
+import org.springframework.util.StringUtils;
+
+import javax.validation.constraints.NotBlank;
 
 public record UserAdminRequest(
         String nickname,
@@ -17,7 +20,7 @@ public record UserAdminRequest(
                 email,
                 nickname,
                 phone,
-                AddressDto.of(zipcode, street, detail)
+                StringUtils.hasText(zipcode + street + detail) ? AddressDto.of(zipcode, street, detail) : null
         );
     }
 }

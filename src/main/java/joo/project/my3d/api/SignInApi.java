@@ -1,20 +1,18 @@
 package joo.project.my3d.api;
 
 import joo.project.my3d.dto.request.UserLoginRequest;
-import joo.project.my3d.dto.response.ApiResponse;
 import joo.project.my3d.dto.response.LoginResponse;
+import joo.project.my3d.dto.response.UserInfo;
+import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
+import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.UserAccountServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @RestController
@@ -23,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 public class SignInApi {
 
     private final UserAccountServiceInterface userAccountService;
-    private final SecurityContextLogoutHandler logoutHandler;
 
     /**
      * 로그인 요청
@@ -46,26 +43,29 @@ public class SignInApi {
     public ResponseEntity<LoginResponse> oauthResponse(
             @RequestParam String email,
             @RequestParam String nickname,
-            @RequestParam boolean signup
+            @RequestParam boolean signup,
+            RedirectAttributes redirectAttributes
     ) {
-        //회원가입이 되어있다면 로그인처리
-        if (signup) {
-            return ResponseEntity.ok(userAccountService.oauthLogin(email, nickname));
+        //회원가입이 안되어있다면 회원가입 페이지로 email과 nickmame와 같이 redirect
+        if (!signup) {
+            redirectAttributes.addFlashAttribute("email", email);
+            redirectAttributes.addFlashAttribute("nickname", nickname);
         }
-        //회원가입이 안되어있다면 email과 nickmame 전달하고 프론트엔드에서 처리하도록 적용
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(LoginResponse.of(email, nickname));
+
+        //회원가입이 되어있다면 로그인처리
+        return ResponseEntity.ok(userAccountService.oauthLogin(email, nickname));
     }
 
     /**
-     * 로그아웃 요청
+     * 토큰을 통해 유저의 Role을 반환함과 동시에 validation도 확인
      */
-    @GetMapping("/logout")
-    public ResponseEntity<ApiResponse> requestLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
-        logoutHandler.logout(request, response, authentication);
+    @GetMapping("/info")
+    public ResponseEntity<UserInfo> parseSpecificationFromToken(
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
+    ) {
 
-        return ResponseEntity.ok(ApiResponse.of("You successfully logout"));
+        return ResponseEntity.ok(
+                UserInfo.of(boardPrincipal.email(), boardPrincipal.nickname(), boardPrincipal.getUserRole())
+        );
     }
-
-
 }

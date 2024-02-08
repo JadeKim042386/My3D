@@ -1,5 +1,6 @@
 package joo.project.my3d.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.dto.properties.JwtProperties;
 import joo.project.my3d.exception.AuthException;
@@ -56,7 +57,7 @@ class TokenProviderTest {
 
     @DisplayName("access token 재발행")
     @Test
-    void regenerateAccessToken() {
+    void regenerateAccessToken() throws JsonProcessingException {
         //given
         String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwMzg4MDUsImV4cCI6MTcwNTEyNTIwNX0.LOdbNm68s1FxvEoibKOTpQCj_Ball2gBjAQiWl3yw5s";
         given(userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(anyLong(), anyLong()))

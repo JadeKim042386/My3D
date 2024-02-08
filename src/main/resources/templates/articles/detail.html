@@ -6,6 +6,8 @@
     <title>My3D 게시글</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
+    <meta name="_csrf"/>
+    <meta name="_csrf_header"/>
     <style>
         details > summary {
             list-style: none;
@@ -21,17 +23,13 @@
 <body>
 <!--헤더-->
 <header id="header"></header>
-<main class="container w-75" id="article-main">
+<main class="container w-75 pt-4" id="article-main">
     <!--수정&삭제-->
     <div class="row mb-3" id="article-buttons">
         <div class="col">
             <div class="d-flex justify-content-end">
-                <form id="delete-article">
-                    <div class="d-grid d-md-block">
-                        <a class="update-article btn btn-success me-md-2" role="button">수정</a>
-                        <button class="btn btn-danger" type="submit">삭제</button>
-                    </div>
-                </form>
+                <a id="update-article" class="btn btn-success me-md-2" role="button">수정</a>
+                <button id="delete-article" class="btn btn-danger" type="button">삭제</button>
             </div>
         </div>
     </div>
@@ -123,22 +121,12 @@
                         <p class="mb-1">
                             <strong class="comment-nickname">Maria Smantha</strong> <span class="small comment-createdAt">- 2 hours ago</span>
                         </p>
+                        <button class="delete-article-comment btn btn-danger me-3" type="button">삭제</button>
                     </div>
                     <p class="small mb-0 comment-content">
                         It is a long established fact that a reader will be distracted by
                         the readable content of a page.
                     </p>
-                    <div class="row mb-3 article-comment-buttons">
-                        <div class="col">
-                            <div class="d-flex justify-content-end">
-                                <form class="delete-article-comment">
-                                    <div class="d-grid d-md-block">
-                                        <button class="btn btn-danger" type="submit">삭제</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     <!--자식 댓글-->
                     <div id="child-comments">
                         <div class="child-comment border-start border-2">
@@ -149,22 +137,12 @@
                                             <p class="mb-1">
                                                 <strong class="comment-nickname">Simona Disa</strong> <span class="small comment-createdAt">- 3 hours ago</span>
                                             </p>
+                                            <button class="delete-article-comment btn btn-danger me-3" type="button">삭제</button>
                                         </div>
                                         <p class="comment-content small mb-0">
                                             letters, as opposed to using 'Content here, content here',
                                             making it look like readable English.
                                         </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3 article-comment-buttons">
-                                <div class="col">
-                                    <div class="d-flex justify-content-end">
-                                        <form class="delete-article-comment">
-                                            <div class="d-grid d-md-block">
-                                                <button class="btn btn-danger" type="submit">삭제</button>
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -203,10 +181,157 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/node_modules/online-3d-viewer/build/engine/o3dv.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/initHeader.js"></script>
+<script type="text/javascript" src="/js/formatString.js"></script>
 <script>
     window.addEventListener('load', () => {
         OV.SetExternalLibLocation('/node_modules/online-3d-viewer/libs');
         OV.Init3DViewerElements();
+    })
+    var articleId = window.location.pathname.slice(1);
+    const csrfToken = $("meta[name='_csrf']").attr("content");
+    const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+    $('form').submit(function (e) {
+        e.preventDefault();
+        var thisElement = $(this);
+        var formData = {
+            'content': thisElement.find('textarea').val(),
+            'parentCommentId': thisElement.find('.parent-comment-id').val()
+        }
+        $.ajax({
+            url: '/api/v1/articles/' + articleId + '/comments',
+            type: 'POST',
+            data: formData,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function (result) {
+                $('textarea').val('');
+                addComment(result, thisElement);
+            },
+            error: function (result) {
+                alert(result.responseJSON['message']);
+            }
+        });
+    })
+
+    /**
+     * 댓글 추가
+     * parentCommentId가 존재한다면 대댓글, null이라면 부모 댓글
+     */
+    const addComment = (result, thisElement) => {
+        var parentCommentDOM = "<div id=\"parent-comment\">\n" +
+            "                    <div class=\"d-flex justify-content-between align-items-center\">\n" +
+            "                        <p class=\"mb-1\">\n" +
+            "                            <strong class=\"comment-nickname\">{0}</strong> <span class=\"small comment-createdAt\">- {1}</span>\n" +
+            "                        </p>\n" +
+            "                        <button class=\"delete-article-comment btn btn-danger me-3\" type=\"button\" onclick='deleteComment({3}, this)'>삭제</button>\n" +
+            "                    </div>\n" +
+            "                    <p class=\"small mb-0 comment-content\">{2}</p>" +
+            "                    <div id=\"child-comments\"></div>" +
+            "                    <div class=\"row text-end pe-4\">\n" +
+            "                        <details class=\"mb-4 mt-4\">\n" +
+            "                            <summary class=\"mb-2\">\n" +
+            "                                <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"1em\" viewBox=\"0 0 512 512\"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d=\"M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z\"/></svg>\n" +
+            "                                <span class=\"small\"> 답글</span>\n" +
+            "                            </summary>\n" +
+            "                            <form class=\"row mb-5 comment-form\">\n" +
+            "                                <div class=\"mb-3\">\n" +
+            "                                    <input type=\"hidden\" class=\"parent-comment-id\" value='{3}'>\n" +
+            "                                    <textarea class=\"form-control comment-textbox\" name=\"content\" rows=\"3\"></textarea>\n" +
+            "                                </div>\n" +
+            "                                <div class=\"row justify-content-end pe-0\">\n" +
+            "                                    <div class=\"col-sm-6 text-end pe-0\">\n" +
+            "                                        <button type=\"submit\" class=\"btn btn-primary\">작성</button>\n" +
+            "                                    </div>\n" +
+            "                                </div>\n" +
+            "                            </form>\n" +
+            "                        </details>\n" +
+            "                    </div>\n" +
+            "                </div>";
+        var childCommentDOM = "<div class=\"child-comment border-start border-2\">\n" +
+            "                            <div class=\"d-flex flex-start mt-4 ms-4\">\n" +
+            "                                <div class=\"flex-grow-1 flex-shrink-1\">\n" +
+            "                                    <div>\n" +
+            "                                        <div class=\"d-flex justify-content-between align-items-center\">\n" +
+            "                                            <p class=\"mb-1\">\n" +
+            "                                                <strong class=\"comment-nickname\">{0}</strong> <span class=\"small comment-createdAt\">- {1}</span>\n" +
+            "                                            </p>\n" +
+            "                                            <button class=\"delete-article-comment btn btn-danger me-3\" type=\"button\" onclick='deleteComment({3}, this)'>삭제</button>\n" +
+            "                                        </div>\n" +
+            "                                        <p class=\"comment-content small mb-0\">{2}</p>" +
+            "                                    </div>\n" +
+            "                                </div>\n" +
+            "                            </div>\n" +
+            "                        </div>";
+        if (result['parentCommentId'] === null) {
+            $('#article-comments')
+                .children('div')
+                .children('div')
+                .prepend(
+                    formatString(
+                        parentCommentDOM,
+                        result['nickname'],
+                        result['createdAt'],
+                        result['content'],
+                        result['id']
+                    )
+                );
+        } else {
+            thisElement.parents('#parent-comment').find('#child-comments')
+                .append(
+                    formatString(
+                        childCommentDOM,
+                        result['nickname'],
+                        result['createdAt'],
+                        result['content'],
+                        result['id']
+                    )
+                )
+        }
+    }
+
+    /**
+     * DB 댓글 삭제 요청
+     */
+    const deleteComment = (commentId, $this) => {
+        $.ajax({
+            url: '/api/v1/articles/' + articleId + '/comments/' + commentId,
+            type: 'DELETE',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function () {
+                var childCommentDOM = $($this).parents('.child-comment');
+                if (childCommentDOM.length > 0) {
+                    childCommentDOM.remove();
+                } else {
+                    $($this).parents('#parent-comment').remove();
+                }
+            },
+            error: function (result) {
+                alert(result.responseJSON['message']);
+            }
+        });
+    }
+
+    /**
+     * 게시글 삭제
+     */
+    $('#delete-article').on('click', function () {
+        $.ajax({
+            url: '/api/v1/articles/' + articleId,
+            type: 'DELETE',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function (result) {
+                window.location.href = '/';
+            },
+            error: function (xhr, status, error) {
+                alert(JSON.parse(xhr.responseText).message);
+            }
+        })
     })
 </script>
 <script id="inline-js">
@@ -226,7 +351,7 @@
 
         $("#notLike").click(function () {
             $.ajax({
-                url: "/like/" + window.location.pathname.at(-1),
+                url: "/like/" + articleId,
                 type: "GET",
                 success: function (result) {
                     updateLike(result.result['likeCount'], true);
@@ -239,7 +364,7 @@
 
         $("#like").click(function () {
             $.ajax({
-                url: "/like/" + window.location.pathname.at(-1) + "/delete",
+                url: "/like/" + articleId + "/delete",
                 type: "GET",
                 success: function (result) {
                     updateLike(result.result['likeCount'], false);

@@ -15,7 +15,7 @@ import java.io.IOException;
 @Service
 public class LocalFileService implements FileServiceInterface {
 
-    @Value("${file.path}")
+    @Value("${file.save-path}")
     private String path;
     @Override
     public void uploadFile(MultipartFile file, String fileName) throws FileException {

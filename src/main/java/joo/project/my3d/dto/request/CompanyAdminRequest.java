@@ -1,16 +1,15 @@
 package joo.project.my3d.dto.request;
 
-import joo.project.my3d.dto.CompanyDto;
+import lombok.Getter;
+import lombok.Setter;
 
-public record CompanyAdminRequest(
-        String companyName,
-        String homepage
-) {
-    public CompanyDto toDto(Long companyId) {
-        return CompanyDto.of(
-                companyId,
-                companyName,
-                homepage
-        );
-    }
+import javax.validation.constraints.NotBlank;
+
+@Getter
+@Setter
+public class CompanyAdminRequest{
+    @NotBlank
+    private String companyName;
+    @NotBlank
+    private String homepage;
 }

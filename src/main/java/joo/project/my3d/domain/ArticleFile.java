@@ -3,7 +3,6 @@ package joo.project.my3d.domain;
 import joo.project.my3d.domain.auditing.AuditingFields;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
@@ -38,13 +37,12 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
     private String fileExtension;
 
     @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "article_id")
+    @OneToOne(mappedBy = "articleFile")
     private Article article;
 
     @ToString.Exclude
-    @Setter
-    @OneToOne(mappedBy = "articleFile", cascade = CascadeType.ALL)
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "dimensionOptionId")
     private DimensionOption dimensionOption;
 
     protected ArticleFile() {

@@ -1,8 +1,10 @@
 package joo.project.my3d.api;
 
+import joo.project.my3d.dto.request.DuplicatedCheckRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.response.DuplicatedCheckResponse;
 import joo.project.my3d.dto.response.ExceptionResponse;
+import joo.project.my3d.exception.SignUpException;
 import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.security.TokenProvider;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/signup")
@@ -33,28 +37,11 @@ public class SignUpApi {
     private final TokenProvider tokenProvider;
 
     /**
-     * 닉네임, 기업명 중복 체크
-     */
-    @PostMapping("/duplicatedCheck")
-    public ResponseEntity<DuplicatedCheckResponse> duplicatedNicknamesOrCompanyNamesCheck(
-            @RequestParam(required = false) String nickname,
-            @RequestParam(required = false) String companyName
-    ) {
-        if (StringUtils.hasText(nickname) && userAccountService.isExistsUserNickname(nickname)) {
-            return ResponseEntity.ok(DuplicatedCheckResponse.of(true));
-        } else if (StringUtils.hasText(companyName) && companyService.isExistsByCompanyName(companyName)) {
-            return ResponseEntity.ok(DuplicatedCheckResponse.of(true));
-        }
-        return ResponseEntity.ok(DuplicatedCheckResponse.of(false));
-    }
-
-    /**
      * 회원가입 요청
      */
     @PostMapping
     public ResponseEntity<?> signup(
-            @RequestParam String email,
-            @Validated SignUpRequest signUpRequest,
+            @Valid SignUpRequest signUpRequest,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -67,14 +54,32 @@ public class SignUpApi {
                     )
             );
         }
-
+        duplicatedEmailOrNicknameOrCompanyNameCheck(
+                signUpRequest.email(),
+                signUpRequest.nickname(),
+                signUpRequest.companyName()
+        );
         String refreshToken = tokenProvider.generateRefreshToken();
         userAccountService.saveUser(
-                signUpRequest.toEntity(email, refreshToken, encoder)
+                signUpRequest.toEntity(signUpRequest.email(), refreshToken, encoder)
         );
 
         //로그인 처리
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userAccountService.login(email, signUpRequest.password()));
+                .body(userAccountService.login(signUpRequest.email(), signUpRequest.password()));
+    }
+
+    /**
+     * 이메일, 닉네임, 기업명 중복 체크
+     */
+    private void duplicatedEmailOrNicknameOrCompanyNameCheck(
+            String email, String nickname, String companyName
+    ) {
+        if ((StringUtils.hasText(email) || StringUtils.hasText(nickname)) && userAccountService.isExistsUserEmailOrNickname(email, nickname)) {
+            throw new SignUpException(ErrorCode.ALREADY_EXIST_EMAIL_OR_NICKNAME);
+        }
+        if (StringUtils.hasText(companyName) && companyService.isExistsByCompanyName(companyName)) {
+            throw new SignUpException(ErrorCode.ALREADY_EXIST_COMPANY_NAME);
+        }
     }
 }

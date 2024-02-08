@@ -43,11 +43,11 @@ public interface ArticleRepository extends
     Page<Article> findAll(Predicate predicate, Pageable pageable);
 
     @EntityGraph(value = "Article.fetchForm", type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select a from Article a where a.id = :id")
+    @Query("select a from Article a where a.id = ?1")
     Optional<Article> findByIdFetchForm(Long id);
 
     @EntityGraph(value = "Article.fetchDetail", type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select a from Article a where a.id = :id")
+    @Query("select a from Article a where a.id = ?1")
     Optional<Article> findByIdFetchDetail(Long id);
 
     @Modifying

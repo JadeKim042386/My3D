@@ -2,7 +2,6 @@ window.addEventListener('load', function () {
     const input = document.getElementById('modelFile');
     const uploadedFile = input.files[0];
     const fileName = document.getElementById('modelFileName').getAttribute('value');
-    console.log(fileName);
     if (uploadedFile == null && fileName != null) {
         const newFile = new File(["NotUpdated"], fileName);
         const dT = new DataTransfer();

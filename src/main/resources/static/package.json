@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "online-3d-viewer": "^0.9.0"
+    "online-3d-viewer": "^0.9.0",
+    "react-router-dom": "^6.21.3"
   }
 }

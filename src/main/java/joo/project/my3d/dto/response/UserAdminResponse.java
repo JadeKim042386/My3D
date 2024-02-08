@@ -1,6 +1,6 @@
 package joo.project.my3d.dto.response;
 
-import joo.project.my3d.domain.Address;
+import joo.project.my3d.dto.AddressDto;
 
 public record UserAdminResponse(
         String nickname,
@@ -10,7 +10,7 @@ public record UserAdminResponse(
         String street,
         String zipcode
 ) {
-    public static UserAdminResponse of(String nickname, String phone, String email, Address address) {
-        return new UserAdminResponse(nickname, phone, email, address.getDetail(), address.getStreet(), address.getZipcode());
+    public static UserAdminResponse of(String nickname, String phone, String email, AddressDto address) {
+        return new UserAdminResponse(nickname, phone, email, address.detail(), address.street(), address.zipcode());
     }
 }

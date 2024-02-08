@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>새 게시글 등록</title>
+  <meta name="_csrf"/>
+  <meta name="_csrf_header"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <link href="/css/main.css" rel="stylesheet">
   <link href="/css/file-form.less" rel="stylesheet/less" type="text/css">
@@ -66,7 +68,8 @@
   <!--헤더-->
   <header id="header"></header>
   <div class="container">
-    <form id="article-form" enctype="multipart/form-data">
+    <div id="article-form">
+      <input type="hidden" id="formStatus">
       <!--제목-->
       <div class="row mb-3 justify-content-md-center">
         <div class="col-sm-8 col-lg-9">
@@ -184,21 +187,25 @@
         <div class="col-sm-8 col-lg-9">
           <select class="form-select" id="category" name="articleCategory">
             <option>카테고리를 선택해주세요.</option>
-            <option>All</option>
           </select>
           <p id="category-error" class="mb-0"></p>
+        </div>
+      </div>
+      <div class="row mb-3 justify-content-md-center">
+        <div class="col-sm-8 col-lg-9">
+          <p id="errors" class="mb-0 field-error"></p>
         </div>
       </div>
       <!--저장&취소-->
       <div class="row mb-5 justify-content-md-end">
         <div class="col-sm-8 col-lg-9">
           <div class="col-sm-10 d-grid d-sm-flex justify-content-sm-end">
-            <button type="submit" class="btn btn-primary me-2" id="submit-button">저장</button>
+            <button type="button" class="btn btn-primary me-2" id="submit-button">저장</button>
             <button type="button" class="btn btn-secondary" id="cancel-button">취소</button>
           </div>
         </div>
       </div>
-    </form>
+    </div>
   </div>
   <!--푸터-->
   <footer id="footer"></footer>
@@ -209,7 +216,11 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/js/constants/articleCategory.js"></script>
+  <script type="text/javascript" src="/js/formatString.js"></script>
+  <script type="text/javascript" src="/js/initHeader.js"></script>
   <script id="inline-js">
+    var DIM_PREFIX = "dim_";
     //모달을 통해 입력된 치수 옵션 추가
     function addDimensionOption() {
       var optionName = $('#optionName').val();
@@ -235,7 +246,7 @@
           dimensionOption["dimensions"].push(dimension);
         }
       })
-      localStorage.setItem(optionName, JSON.stringify(dimensionOption));
+      localStorage.setItem(DIM_PREFIX + optionName, JSON.stringify(dimensionOption));
 
       //-- 현재 치수 옵션 드롭다운 아이템에 존재하는 옵션명인지 확인
       var options = [];
@@ -255,7 +266,7 @@
     function removeDimensionOption() {
       var selectedOption = getSelectedOption();
       var optionName = selectedOption.text();
-      localStorage.removeItem(optionName);
+      localStorage.removeItem(DIM_PREFIX + optionName);
       selectedOption.remove();
       selectDimensionOption();
     }
@@ -265,7 +276,7 @@
       $(".add-new").removeAttr("disabled");
       // -- 현재 선택된 치수옵션의 치수 정보들을 업데이트
       var selectedOptionName = getSelectedOption().text();
-      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      var dimensionOption = JSON.parse(localStorage.getItem(DIM_PREFIX + selectedOptionName));
       if (dimensionOption != null) {
         $('#optionName').val(dimensionOption['optionName']);
         $('#dimensionTable tbody').find("tr").remove();
@@ -289,19 +300,70 @@
 
     //게시글 추가/수정 버튼 클릭
     $('#submit-button').click(function () {
-      // -- 추가된 치수옵션을 input[type=hidden]으로 추가하여 submit되도록 적용
+      const csrfToken = $("meta[name='_csrf']").attr("content");
+      const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+      var formData = new FormData();
+      formData.append('title', $('#title').val());
+      formData.append('content', $('#content').val());
+      formData.append('articleCategory', $('#category option:selected').val());
+      var file = $('#modelFile')[0].files[0];
+      formData.append('modelFile', file.name === '' ? new File([], '') : file);
+      // -- formData에 치수 옵션 추가
+      var dimensionOptionIdx = 0;
       for (var i=0; i < localStorage.length; i++) {
-        var dimensionOption = JSON.parse(localStorage.getItem(localStorage.key(i)));
-        var dimensionOptionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].optionName' value='" + dimensionOption["optionName"] + "'>";
-        $('#article-form').append(dimensionOptionInputs);
+        var key = localStorage.key(i);
+        if (!key.startsWith(DIM_PREFIX)) {
+          continue;
+        }
+
+        var dimensionOption = JSON.parse(localStorage.getItem(key));
+        formData.append(
+                `dimensionOptions[${dimensionOptionIdx}].optionName`,
+                dimensionOption["optionName"]
+        );
         for (var dimIdx in dimensionOption['dimensions']) {
           var dimension = dimensionOption['dimensions'][dimIdx];
-          var dimensionInputs = "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimName' value='" + dimension["dimName"] + "'>"
-                                + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimValue' value='" + dimension["dimValue"] + "'>"
-                                + "<input type='hidden' name='dimensionOptions[" + i + "].dimensions[" + dimIdx + "].dimUnit' value='" + dimension["dimUnit"] + "'>";
-          $('#article-form').append(dimensionInputs);
+          `dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimName`
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimName`, dimension["dimName"]);
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimValue`, dimension["dimValue"]);
+          formData.append(`dimensionOptions[${dimensionOptionIdx}].dimensions[${dimIdx}].dimUnit`, dimension["dimUnit"]);
         }
+        dimensionOptionIdx += 1;
       }
+
+      var url;
+      var method;
+      if ($('#formStatus').val() === 'CREATE') {
+        url = '/api/v1/articles';
+        method = 'POST';
+      } else {
+        url = '/api/v1/articles/' + window.location.pathname.split('/')[1];
+        method = 'PUT';
+      }
+
+      $.ajax({
+        url: url,
+        type: method,
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(csrfHeader, csrfToken);
+        },
+        success: function (result) {
+          window.location.href = '/' + result.message;
+        },
+        error: function (xhr, _, _) {
+          var response = JSON.parse(xhr.responseText);
+          console.log(response.message);
+          var errorsDOM = $('#errors');
+          errorsDOM.children().remove()
+          var errorDOM = '<p>{0}</p>'
+          for (var error of response.errors) {
+            errorsDOM.append(formatString(errorDOM, error.message));
+          }
+        }
+      })
     })
 
     // 치수옵션 드롭다운 아이템 추가
@@ -312,7 +374,7 @@
 
     //치수가 없으면 수정 버튼 비활성, 치수옵션 추가 버튼 활성
     function buttonDisabled() {
-      if (localStorage.length == 0) {
+      if (localStorage.length === 0) {
         $('#editDimensionOption').attr("disabled", true);
         $('#addDimensionOptionButton').removeAttr("disabled");
       } else {
@@ -323,7 +385,7 @@
     //현재 선택된 치수옵션 정보를 테이블로 표시
     function selectDimensionOption() {
       var selectedOptionName = getSelectedOption().text();
-      var dimensionOption = JSON.parse(localStorage.getItem(selectedOptionName));
+      var dimensionOption = JSON.parse(localStorage.getItem(DIM_PREFIX + selectedOptionName));
       $('#addedDimensionTable tbody').find("tr").remove();
       if (dimensionOption != null) {
         for (var dimension of dimensionOption['dimensions']) {
@@ -341,11 +403,19 @@
     //초기화
     function initialize() {
       localStorage.clear();
+      // -- 카테고리
+      var categoryItem = '<option value="{2}" {1}>{0}</option>';
+      var currentCategory = [[${article.articleCategory}]];
+      for (const [name, value] of Object.entries(ArticleCategory)) {
+        $('#category').append(
+                formatString(categoryItem, value, name === currentCategory ? 'selected' : '', name)
+        );
+      }
       $("#dimensionOption-select").find("option").remove();
       var modelFile = [[${article.modelFile}]];
       // -- 게시글을 수정할 경우 해당 게시글의 치수옵션들을 load
       if (modelFile !== null) {
-        var dimensionOptions = modelFile.dimensionOptions;
+        var dimensionOptions = [modelFile.dimensionOption];
         for (var dimensionOption of dimensionOptions) {
           var optionName = dimensionOption['optionName'];
           addSelectOption(optionName);
@@ -360,7 +430,7 @@
             dimensionJson["dimUnit"] = dimension.dimUnit;
             dimensionOptionJson["dimensions"].push(dimensionJson);
           }
-          localStorage.setItem(optionName, JSON.stringify(dimensionOptionJson));
+          localStorage.setItem(DIM_PREFIX + optionName, JSON.stringify(dimensionOptionJson));
         }
         buttonDisabled();
         selectDimensionOption();

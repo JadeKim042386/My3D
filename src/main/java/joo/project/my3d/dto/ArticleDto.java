@@ -48,11 +48,11 @@ public record ArticleDto(
     public Article toEntity(UserAccount userAccount) {
         return Article.of(
             userAccount,
+            articleFileDto.toEntity(),
             title,
             content,
             articleType,
-            articleCategory,
-            articleFileDto.toEntity()
+            articleCategory
         );
     }
 }

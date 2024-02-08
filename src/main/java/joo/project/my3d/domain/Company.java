@@ -9,8 +9,6 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 
-import static javax.persistence.FetchType.LAZY;
-
 @Getter
 @ToString(callSuper = true)
 @Table(
@@ -35,8 +33,7 @@ public class Company extends AuditingFields implements Persistable<Long> {
     private String homepage;
 
     @ToString.Exclude
-    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
+    @OneToOne(mappedBy = "company")
     private UserAccount userAccount;
 
     protected Company() {

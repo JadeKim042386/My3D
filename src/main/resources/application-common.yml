@@ -13,7 +13,9 @@ spring:
         format_sql: true
         default_batch_fetch_size: 10
   thymeleaf3.decoupled-logic: true
-file.path: ${LOCAL_FILE_PATH}
+file:
+  path: ${LOCAL_FILE_PATH}
+  save-path: ${LOCAL_SAVE_FILE_PATH}
 aws:
   bucketName: ${S3_BUCKET_NAME}
   s3:

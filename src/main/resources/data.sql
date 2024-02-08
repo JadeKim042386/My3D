@@ -1,34 +1,34 @@
--- 테스트 계정 3개
-insert into user_account (email, user_password, nickname, phone, detail, street, zipcode, user_role, created_at, modified_at) values
-('jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', null, null, null, 'ADMIN', now(), now()),
-('a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', null, null, null, 'USER', now(), now()),
-('jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', null, null, null, 'COMPANY', now(), now());
-
 -- Refresh Token
-insert into user_refresh_token (user_account_id, refresh_token, reissue_count) values
-(1, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
-(2, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
-(3, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0);
+insert into user_refresh_token (refresh_token, reissue_count) values
+('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0);
 
 -- 기업
-insert into company (user_account_id, company_name, homepage, created_at, modified_at, created_by, modified_by) values
-(3, '(주)My3D', 'www.my3d.com', now(), now(), 'jujoo', 'jujoo');
+insert into company (company_name, homepage, created_at, modified_at, created_by, modified_by) values
+('(주)My3D', 'www.my3d.com', now(), now(), 'jujoo', 'jujoo');
 
--- 게시글 10개
-insert into article (user_account_id, title, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count) values
-(1, 'Morbi non lectus.',  'Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus.', 'joo', 'joo', '2022-12-15 02:41:19', '2023-02-23 23:27:58', 'MODEL', 'MUSIC', 1),
-(1, 'Phasellus id sapien in sapien iaculis congue.',  'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 'joo', 'joo', '2022-07-29 07:00:14', '2023-02-10 04:07:29', 'MODEL', 'MUSIC', 0),
-(1, 'Morbi non quam nec dui luctus rutrum.',  'Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.', 'joo', 'joo', '2023-05-25 14:26:02', '2023-04-12 06:13:46', 'MODEL', 'MUSIC', 0),
-(3, 'Etiam vel augue.', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'joo', 'joo', '2023-03-27 23:12:02', '2022-07-15 10:32:48', 'MODEL', 'MUSIC', 0),
-(1, 'Curabitur convallis.', 'Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.', 'joo', 'joo', '2023-02-07 19:12:16', '2023-03-29 15:11:34', 'MODEL', 'MUSIC', 0),
-(3, 'Donec vitae nisi.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Hayward', 'Valentina', '2022-10-26 10:56:28', '2023-02-24 10:22:47', 'MODEL', 'MUSIC', 1),
-(3, 'Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl.', 'In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.', 'Remus', 'Natale', '2023-02-11 18:39:15', '2022-08-29 05:07:08', 'MODEL', 'CARS_VEHICLES', 1),
-(1, 'In congue.', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 'Dicky', 'Dud', '2023-01-15 05:59:09', '2023-03-26 17:46:37', 'MODEL', 'CARS_VEHICLES', 0),
-(3, 'In hac habitasse platea dictumst.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Karee', 'Virgie', '2023-01-06 15:54:30', '2022-08-20 04:28:34', 'MODEL', 'FASHION_STYLE', 2),
-(3,  'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est.', 'Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'Florina', 'Maurine', '2022-10-05 14:50:19', '2022-07-31 12:38:29', 'MODEL', 'FASHION_STYLE', 1);
+-- 테스트 계정 3개
+insert into user_account (user_refresh_token_id, company_id, email, user_password, nickname, phone, detail, street, zipcode, user_role, created_at, modified_at) values
+(1, null, 'jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', 'detail', 'street', '11111', 'ADMIN', now(), now()),
+(2, null, 'a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', 'detail', 'street', '11111', 'USER', now(), now()),
+(3, 1, 'jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', 'detail', 'street', '11111', 'COMPANY', now(), now());
+
+-- 치수 옵션
+insert into dimension_option (option_name, created_at, modified_at, created_by, modified_by) values
+('option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option3', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option4', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option5', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option6', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option7', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option8', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option9', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
+('option10', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
 
 -- 파일 10개
-insert into article_file (article_id, byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
+insert into article_file (dimension_option_id, byte_size, original_file_name, file_name, file_extension, created_at, modified_at, created_by, modified_by) values
 (1, 4172, 'model0.stl', '5a93b139-bd32-4514-a798-e0cd2471995e.stl', 'stl', '2023-01-01 08:52:42', '2023-01-16 13:24:34', 'joo', 'joo'),
 (2, 9598, 'model1.stp', 'da50408b-7655-4a80-9927-2890007e9e30.stp', 'stp', '2023-04-20 13:15:23', '2023-04-12 14:04:14', 'jujoo', 'jujoo'),
 (3, 3861, 'model2.stp','9d495214-d376-4b0e-a03b-67b5c2b5afdb.stp', 'stp', '2023-03-19 17:20:14', '2023-05-08 04:26:34', 'jujoo', 'jujoo'),
@@ -40,18 +40,18 @@ insert into article_file (article_id, byte_size, original_file_name, file_name, 
 (9, 1973, 'model8.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9c3.stl', 'stl', '2022-11-01 01:49:02', '2023-05-21 20:08:55', 'a', 'a'),
 (10, 5555, 'model9.stl', '1a3c4eb6-f117-4465-bf88-62be0ea7f9cq.stl', 'stl', '2022-11-01 01:59:02', '2023-05-21 20:08:30', 'a', 'a');
 
--- 치수 옵션
-insert into dimension_option (article_file_id, option_name, created_at, modified_at, created_by, modified_by) values
-(1, 'option1', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(2, 'option2', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(3, 'option3', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(4, 'option4', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(5, 'option5', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(6, 'option6', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(7, 'option7', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(8, 'option8', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(9, 'option9', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo'),
-(10, 'option10', '2022-10-26 21:15:44', '2022-10-26 21:15:44', 'joo', 'joo');
+-- 게시글 10개
+insert into article (article_file_id, user_account_id, title, content, created_by, modified_by, created_at, modified_at, article_type, article_category, like_count) values
+(1, 1, 'Morbi non lectus.',  'Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus.', 'joo', 'joo', '2022-12-15 02:41:19', '2023-02-23 23:27:58', 'MODEL', 'MUSIC', 1),
+(2, 1, 'Phasellus id sapien in sapien iaculis congue.',  'Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.', 'joo', 'joo', '2022-07-29 07:00:14', '2023-02-10 04:07:29', 'MODEL', 'MUSIC', 0),
+(3, 1, 'Morbi non quam nec dui luctus rutrum.',  'Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.', 'joo', 'joo', '2023-05-25 14:26:02', '2023-04-12 06:13:46', 'MODEL', 'MUSIC', 0),
+(4, 3, 'Etiam vel augue.', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'joo', 'joo', '2023-03-27 23:12:02', '2022-07-15 10:32:48', 'MODEL', 'MUSIC', 0),
+(5, 1, 'Curabitur convallis.', 'Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.', 'joo', 'joo', '2023-02-07 19:12:16', '2023-03-29 15:11:34', 'MODEL', 'MUSIC', 0),
+(6, 3, 'Donec vitae nisi.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Hayward', 'Valentina', '2022-10-26 10:56:28', '2023-02-24 10:22:47', 'MODEL', 'MUSIC', 1),
+(7, 3, 'Vivamus metus arcu, adipiscing molestie, hendrerit at, vulputate vitae, nisl.', 'In sagittis dui vel nisl. Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.', 'Remus', 'Natale', '2023-02-11 18:39:15', '2022-08-29 05:07:08', 'MODEL', 'CARS_VEHICLES', 1),
+(8, 1, 'In congue.', 'Vestibulum ac est lacinia nisi venenatis tristique. Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 'Dicky', 'Dud', '2023-01-15 05:59:09', '2023-03-26 17:46:37', 'MODEL', 'CARS_VEHICLES', 0),
+(9, 3, 'In hac habitasse platea dictumst.', 'Curabitur in libero ut massa volutpat convallis. Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo. Maecenas pulvinar lobortis est.', 'Karee', 'Virgie', '2023-01-06 15:54:30', '2022-08-20 04:28:34', 'MODEL', 'FASHION_STYLE', 2),
+(10, 3, 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est.', 'Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'Florina', 'Maurine', '2022-10-05 14:50:19', '2022-07-31 12:38:29', 'MODEL', 'FASHION_STYLE', 1);
 
 -- 치수
 insert into dimension (dimension_option_id, dim_name, dim_value, dim_unit, created_at, modified_at, created_by, modified_by) values

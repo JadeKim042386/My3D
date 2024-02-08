@@ -21,7 +21,6 @@ public class JpaConfig {
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getPrincipal)
-                .map(BoardPrincipal.class::cast)
-                .map(BoardPrincipal::email);
+                .map(Object -> Object.equals("anonymousUser") ? "ANONYMOUS" : ((BoardPrincipal) Object).email());
     }
 }

@@ -33,7 +33,7 @@ public class Alarm extends AuditingFields implements Persistable<Long> {
     @Column(nullable = false)
     private String fromUserNickname; //알람을 발생시킨 유저
     @Column(nullable = false)
-    private Long targetId; //게시글, 기업 엔티티의 id
+    private Long targetId; //게시글 id
     @Setter
     @Column(nullable = false)
     private boolean isChecked;

@@ -104,7 +104,6 @@ class UserAccountServiceTest {
         //when
         LoginResponse loginResponse = userAccountService.login(email, password);
         //then
-        assertThat(loginResponse.email()).isEqualTo(email);
         assertThat(loginResponse.accessToken()).isEqualTo("accessToken");
     }
 

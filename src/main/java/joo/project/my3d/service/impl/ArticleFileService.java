@@ -44,14 +44,13 @@ public class ArticleFileService implements ArticleFileServiceInterface {
             //치수 옵션 업데이트
             DimensionOption dimensionOption = articleFile.getDimensionOption();
             dimensionOption.setOptionName(
-                    articleFormRequest.toDimensionOptionDto().optionName()
+                    articleFormRequest.getDimensionOptions().get(0).getOptionName()
             );
 
             //치수 업데이트
             dimensionOption.updateDimensions(
-                    articleFormRequest.toDimensions().stream()
-                            .map(DimensionDto -> DimensionDto.toEntity(dimensionOption))
-                            .toList()
+                    articleFormRequest.getDimensionOptions().get(0)
+                            .toDimensionEntities(dimensionOption)
             );
         }  catch (FileException e) {
             log.error("게시글 id: {} 에 해당하는 파일을 찾을 수 없습니다.", articleId);
@@ -73,8 +72,8 @@ public class ArticleFileService implements ArticleFileServiceInterface {
     }
 
     @Override
-    public byte[] download(Long articleId) {
-        return fileService.downloadFile(searchFileName(articleId));
+    public byte[] download(String fileName) {
+        return fileService.downloadFile(fileName);
     }
 
     @Override

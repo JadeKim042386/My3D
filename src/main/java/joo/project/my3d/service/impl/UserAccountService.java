@@ -10,7 +10,6 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
-import joo.project.my3d.service.EmailServiceInterface;
 import joo.project.my3d.service.UserAccountServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
-    private final EmailServiceInterface emailService;
     private final TokenProvider tokenProvider;
     private final BCryptPasswordEncoder encoder;
 
@@ -43,13 +41,13 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
-    public boolean isExistsUserEmail(String email) {
-        return userAccountRepository.existsByEmail(email);
+    public boolean isExistsUserEmailOrNickname(String email, String nickname) {
+        return userAccountRepository.existsByEmailOrNickname(email, nickname);
     }
 
     @Override
-    public boolean isExistsUserNickname(String nickname) {
-        return userAccountRepository.existsByNickname(nickname);
+    public boolean isExistsUserEmailOrNickname(String email) {
+        return userAccountRepository.existsByEmailOrNickname(email, null);
     }
 
     /**
@@ -84,14 +82,10 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Transactional
     @Override
-    public void sendTemporaryPassword(String email) {
+    public String sendTemporaryPassword(String email) {
         String code = String.valueOf(UUID.randomUUID()).split("-")[0];
-        emailService.sendEmail(
-                email,
-                "[My3D] 이메일 임시 비밀번호",
-                code
-        );
         changePassword(email, code);
+        return code;
     }
 
     /**
@@ -135,7 +129,7 @@ public class UserAccountService implements UserAccountServiceInterface {
         String refreshToken = tokenProvider.generateRefreshToken();
         updateRefreshToken(userAccountDto.id(), refreshToken);
 
-        return LoginResponse.of(email, userAccountDto.nickname(), accessToken, refreshToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
     @Transactional
@@ -148,7 +142,7 @@ public class UserAccountService implements UserAccountServiceInterface {
         String accessToken = getAccessToken(email, nickname, userAccountDto);
         String refreshToken = tokenProvider.generateRefreshToken();
         updateRefreshToken(userAccountDto.id(), refreshToken);
-        return LoginResponse.of(email, nickname, accessToken, refreshToken);
+        return LoginResponse.of(accessToken, refreshToken);
     }
 
     @Override
@@ -169,5 +163,12 @@ public class UserAccountService implements UserAccountServiceInterface {
                         it -> it.updateRefreshToken(refreshToken),
                         () -> userRefreshTokenRepository.save(UserRefreshToken.of(refreshToken))
                 );
+    }
+
+    @Override
+    public String getRoleFromToken(String token) {
+        return tokenProvider.parseSpecification(
+                tokenProvider.parseOrValidateClaims(token)
+        )[3];
     }
 }

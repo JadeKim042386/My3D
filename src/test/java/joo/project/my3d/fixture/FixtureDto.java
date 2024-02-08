@@ -6,7 +6,9 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.dto.*;
+import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.security.BoardPrincipal;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDateTime;
@@ -44,6 +46,7 @@ public class FixtureDto {
         ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
         return ArticlePreviewDto.of(
                 id,
+                0,
                 userAccountDto.nickname(),
                 title,
                 content,
@@ -85,7 +88,8 @@ public class FixtureDto {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         return ArticleCommentDto.of(
                 1L,
-                1L, content,
+                1L,
+                content,
                 LocalDateTime.now(),
                 userAccountDto.nickname(),
                 userAccountDto.email(),
@@ -178,7 +182,14 @@ public class FixtureDto {
         return CompanyDto.of(2L, "company", "homepage");
     }
 
-    public static BoardPrincipal getPrincipal() {
-        return BoardPrincipal.of(1L, "a@gmail.com", "pw", "phone", "nickname", UserRole.USER, Address.of(null, null, null), Map.of());
+    public static BoardPrincipal getPrincipal(String nickname, UserRole userRole) {
+        return BoardPrincipal.of(1L, nickname + "@gmail.com", "pw", "phone", nickname, userRole, Address.of(null, null, null), Map.of());
+    }
+
+    public static CompanyAdminRequest getCompanyAdminRequest() throws IllegalAccessException {
+        CompanyAdminRequest request = new CompanyAdminRequest();
+        FieldUtils.writeField(request, "companyName", "companyName", true);
+        FieldUtils.writeField(request, "homepage", "homepage", true);
+        return request;
     }
 }

@@ -1,33 +1,26 @@
 package joo.project.my3d.api;
 
-import com.querydsl.core.types.Predicate;
 import joo.project.my3d.domain.Article;
-import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.ArticleFileWithDimensionDto;
-import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.request.ArticleFormRequest;
-import joo.project.my3d.dto.response.*;
+import joo.project.my3d.dto.response.ApiResponse;
+import joo.project.my3d.dto.response.ExceptionResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.ArticleFileServiceInterface;
 import joo.project.my3d.service.ArticleServiceInterface;
+import joo.project.my3d.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static joo.project.my3d.domain.constant.FormStatus.*;
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -43,7 +36,7 @@ public class ArticlesApi {
      */
     @PostMapping
     public ResponseEntity<ApiResponse> postNewArticle(
-            @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
+            @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -59,19 +52,13 @@ public class ArticlesApi {
         }
 
         //게시글 저장
-        ArticleFileWithDimensionDto articleFile = articleFormRequest.toArticleFileWithDimensionDto();
-        articleService.saveArticle(
+        Article article = articleService.saveArticle(
                 boardPrincipal.email(),
-                articleFormRequest.toArticleDto(
-                        articleFile,
-                        boardPrincipal.toDto(),
-                        ArticleType.MODEL
-                ),
-                articleFormRequest.getModelFile()
+                articleFormRequest
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of("You successfully added article"));
+                .body(ApiResponse.of(String.valueOf(article.getId())));
     }
 
     /**
@@ -80,7 +67,7 @@ public class ArticlesApi {
     @PutMapping("/{articleId}")
     public ResponseEntity<ApiResponse> postUpdateArticle(
             @PathVariable Long articleId,
-            @ModelAttribute("article") @Validated ArticleFormRequest articleFormRequest,
+            @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
@@ -102,7 +89,7 @@ public class ArticlesApi {
         );
 
         return ResponseEntity.ok(
-                ApiResponse.of("You successfully updated article")
+                ApiResponse.of(String.valueOf(articleId))
         );
     }
 
@@ -125,11 +112,12 @@ public class ArticlesApi {
      */
     @GetMapping("/{articleId}/download")
     public ResponseEntity<byte[]> downloadArticleFile(@PathVariable Long articleId) {
-        byte[] file = articleFileService.download(articleId);
+        String fileName = articleFileService.searchFileName(articleId);
+        byte[] file = articleFileService.download(fileName);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         httpHeaders.setContentLength(file.length);
-        httpHeaders.setContentDispositionFormData("attachment", "");
+        httpHeaders.setContentDispositionFormData("attachment", "model." + FileUtils.getExtension(fileName));
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(httpHeaders)
                 .body(file);

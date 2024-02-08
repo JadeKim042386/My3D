@@ -3,52 +3,21 @@
     <attr sel="#header" th:replace="header :: header"></attr>
     <attr sel="#footer" th:replace="footer :: footer"></attr>
     <attr sel="#alarmScript" th:replace="header :: #alarm-script"></attr>
-    <!--이메일-->
-    <attr sel="#email" th:value="${email}" th:disabled="${oauthLogin}"/>
-    <attr sel="#email-form" th:class="${oauthLogin} ? 'col-12' : 'col-9'"/>
-    <attr sel="#email-certification" th:hidden="${oauthLogin}"/>
-    <!--이메일 중복 에러-->
-    <attr sel="#email-error" th:hidden="!${emailError}" th:text="${emailError} == 'format' ? '이메일 형식이 잘못되었습니다' : '이미 존재하는 이메일입니다'"/>
+    <!--csrf-->
+    <attr sel="meta[name='_csrf']" th:content="${_csrf.token}"/>
+    <attr sel="meta[name='_csrf_header']" th:content="${_csrf.headerName}"/>
+    <!--이메일(oauth 로그인 후 redirect된 경우 이메일 인증 disable)-->
+    <attr sel="#email" th:value="${email}" th:disabled="${email}"/>
+    <attr sel="#email-form" th:class="${email} ? 'col-12' : 'col-9'"/>
+    <attr sel="#email-certification" th:hidden="${email}"/>
     <!--이메일 인증-->
-    <attr sel="#certification-form" th:action="@{/mail/send_code(userRole=${signUpData.userRole})}" th:method="post"/>
-    <attr sel="#certification-check" th:if="${code} and !${emailError}"/>
     <attr sel="#register-form" th:object="${signUpData}">
         <!--회원 유형-->
         <attr sel="#userRole" th:name="userRole" th:value="*{userRole}"/>
-        <!--존재하는 기업 리스트-->
-        <attr sel="#companyNames" th:text="${companyNames}"/>
-        <!--존재하는 닉네임 리스트-->
-        <attr sel="#nicknames" th:text="${nicknames}"/>
         <!--기업명-->
         <attr sel="#company" th:if="(*{userRole.name} == 'ROLE_COMPANY')"/>
         <!--닉네임-->
         <attr sel="#nickname" th:value="*{nickname}"/>
-        <!--validation 에러-->
-        <attr sel="#signup-validation-userRole-error"
-              th:field="*{userRole}"
-              th:if="${#fields.hasErrors('userRole')}"
-              th:errors="*{userRole}"
-        />
-        <attr sel="#signup-validation-nickname-error"
-              th:field="*{nickname}"
-              th:if="!${#fields.hasErrors('userRole')} and ${#fields.hasErrors('nickname')}"
-              th:errors="*{nickname}"
-        />
-        <attr sel="#signup-validation-password-error"
-              th:field="*{password}"
-              th:if="!${#fields.hasErrors('userRole')} and !${#fields.hasErrors('nickname')} and ${#fields.hasErrors('password')}"
-              th:errors="*{password}"
-        />
-        <attr sel="#signup-validation-address-error"
-              th:field="*{address}"
-              th:if="!${#fields.hasErrors('userRole')} and !${#fields.hasErrors('nickname')} and !${#fields.hasErrors('password')} and ${#fields.hasErrors('address')}"
-              th:errors="*{address}"
-        />
-        <attr sel="#signup-validation-detailAddress-error"
-              th:field="*{detailAddress}"
-              th:if="!${#fields.hasErrors('userRole')} and !${#fields.hasErrors('nickname')} and !${#fields.hasErrors('password')} and !${#fields.hasErrors('address')} and ${#fields.hasErrors('detailAddress')}"
-              th:errors="*{detailAddress}"
-        />
     </attr>
     <!--스크립트-->
     <attr sel="#script" th:inline="javascript"/>

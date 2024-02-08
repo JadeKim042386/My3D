@@ -17,7 +17,7 @@ public class Fixture {
     public static Article getArticle(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
         ArticleFile articleFile = Fixture.getArticleFile();
-        return Article.of(userAccount, title, content, articleType, articleCategory, articleFile);
+        return Article.of(userAccount, articleFile, title, content, articleType, articleCategory);
     }
 
     public static Article getArticle() {
@@ -98,11 +98,14 @@ public class Fixture {
         FieldUtils.writeField(articleFormRequest, "content", "new content", true);
         FieldUtils.writeField(articleFormRequest, "dimensionOptions", List.of(Fixture.getDimensionOptionRequest()), true);
         FieldUtils.writeField(articleFormRequest, "modelFile", file, true);
+        FieldUtils.writeField(articleFormRequest, "articleCategory", ArticleCategory.ARCHITECTURE.toString(), true);
         return articleFormRequest;
     }
 
-    public static DimensionOptionRequest getDimensionOptionRequest() {
-        return DimensionOptionRequest.of("option123");
+    public static DimensionOptionRequest getDimensionOptionRequest() throws IllegalAccessException {
+        DimensionOptionRequest dimensionOptionRequest = new DimensionOptionRequest();
+        FieldUtils.writeField(dimensionOptionRequest, "optionName", "option123", true);
+        return dimensionOptionRequest;
     }
 
     public static UserRefreshToken getUserRefreshToken() {

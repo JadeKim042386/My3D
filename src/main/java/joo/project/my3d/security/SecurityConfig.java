@@ -20,8 +20,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.SessionManagementFilter;
 
@@ -47,7 +45,6 @@ public class SecurityConfig {
             HttpSecurity http,
             OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService,
             JwtTokenFilter jwtTokenFilter,
-            JwtExceptionTranslationFilter jwtExceptionTranslationFilter,
             CustomOAuth2SuccessHandler customOAuth2SuccessHandler
     ) throws Exception {
         return http
@@ -79,9 +76,6 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션이 아닌 JWT를 이용하여 인증 진행
                 .and()
                     .formLogin().disable()
-                    .logout(logout -> logout
-                            .logoutUrl("/api/v1/signin/logout")
-                    )
                     .oauth2Login(oAuth -> oAuth
                             .loginPage("/signin")
                             .userInfoEndpoint(userInfo -> userInfo
@@ -92,10 +86,6 @@ public class SecurityConfig {
                     .addFilterAfter(
                             jwtTokenFilter,
                             SessionManagementFilter.class
-                    )
-                    .addFilterBefore(
-                            jwtExceptionTranslationFilter,
-                            ExceptionTranslationFilter.class
                     )
                 .build();
     }
@@ -141,10 +131,5 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder encoderPassword() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public SecurityContextLogoutHandler securityContextLogoutHandler() {
-        return new SecurityContextLogoutHandler();
     }
 }
