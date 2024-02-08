@@ -9,12 +9,10 @@ import joo.project.my3d.dto.*;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class FixtureDto {
 
@@ -26,35 +24,6 @@ public class FixtureDto {
     public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole) {
         AddressDto addressDto = FixtureDto.getAddressDto();
         return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, userRole);
-    }
-
-    public static ArticleFileDto getArticleFileDto() {
-        return ArticleFileDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp");
-    }
-
-    public static ArticlePreviewDto getArticlesDto() {
-        return FixtureDto.getArticlesDto(
-                1L,
-                "title",
-                "content",
-                ArticleType.MODEL,
-                ArticleCategory.ARCHITECTURE
-        );
-    }
-    public static ArticlePreviewDto getArticlesDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileDto articleFileDto = FixtureDto.getArticleFileDto();
-        return ArticlePreviewDto.of(
-                id,
-                0,
-                userAccountDto.nickname(),
-                title,
-                content,
-                articleType,
-                articleCategory,
-                articleFileDto,
-                LocalDateTime.now()
-        );
     }
 
     public static ArticleFileWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
@@ -97,41 +66,6 @@ public class FixtureDto {
         );
     }
 
-    public static ArticleWithCommentsDto getArticleWithCommentsAndLikeCountDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
-        return ArticleWithCommentsDto.of(
-                1L,
-                userAccountDto.email(),
-                userAccountDto.nickname(),
-                articleFileDto,
-                title,
-                content,
-                articleType,
-                articleCategory,
-                Set.of(FixtureDto.getArticleCommentDto("content")),
-                LocalDateTime.now()
-        );
-    }
-
-    public static ArticleFormDto getArticleFormDto(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
-        return ArticleFormDto.of(
-                1L,
-                userAccountDto,
-                articleFileDto,
-                title,
-                content,
-                articleType,
-                articleCategory,
-                LocalDateTime.now(),
-                userAccountDto.email(),
-                LocalDateTime.now(),
-                userAccountDto.email()
-        );
-    }
-
     public static DimensionDto getDimensionDto(Long dimensionId) {
         return DimensionDto.of(
                 dimensionId,
@@ -145,32 +79,11 @@ public class FixtureDto {
         return FixtureDto.getDimensionDto(1L);
     }
 
-    public static DimensionOptionDto getDimensionOptionDto(Long dimensionOptionId) {
-        return DimensionOptionDto.of(
-                dimensionOptionId,
-                "option10"
-        );
-    }
-
-    public static DimensionOptionDto getDimensionOptionDto() {
-        return FixtureDto.getDimensionOptionDto(1L);
-    }
-
     private static DimensionOptionWithDimensionDto getDimensionOptionWithDimensionDto() {
         DimensionDto dimensionDto = FixtureDto.getDimensionDto();
         return DimensionOptionWithDimensionDto.of(
                 "option10",
                 List.of(dimensionDto)
-        );
-    }
-
-    public static UsernamePasswordAuthenticationToken getAuthentication(String nickname, UserRole userRole) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto(nickname, userRole);
-        BoardPrincipal principal = BoardPrincipal.from(userAccountDto);
-        return new UsernamePasswordAuthenticationToken(
-                principal,
-                null,
-                principal.getAuthorities()
         );
     }
 

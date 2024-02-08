@@ -9,9 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 
-/**
- * 1. BoardPrincipal 로 변환
- */
 public record UserAccountDto(
         Long id,
         String email,

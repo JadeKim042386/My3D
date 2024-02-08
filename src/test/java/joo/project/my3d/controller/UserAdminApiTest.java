@@ -2,41 +2,27 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.api.UserAdminApi;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.domain.Company;
-import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
-import joo.project.my3d.dto.properties.JwtProperties;
-import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureCookie;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.security.CustomOAuth2SuccessHandler;
-import joo.project.my3d.security.SecurityConfig;
-import joo.project.my3d.security.TokenProvider;
 import joo.project.my3d.service.CompanyServiceInterface;
-import joo.project.my3d.service.impl.AlarmService;
-import joo.project.my3d.service.impl.CompanyService;
 import joo.project.my3d.service.impl.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")

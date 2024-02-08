@@ -2,9 +2,7 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.api.EmailApi;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.fixture.FixtureCookie;
-import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.impl.EmailService;
 import joo.project.my3d.service.impl.UserAccountService;
 import org.junit.jupiter.api.*;

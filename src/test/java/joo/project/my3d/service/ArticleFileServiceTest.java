@@ -5,7 +5,6 @@ import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.repository.ArticleFileRepository;
 import joo.project.my3d.service.impl.ArticleFileService;
-import joo.project.my3d.service.impl.S3Service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.*;

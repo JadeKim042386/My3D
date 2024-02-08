@@ -5,7 +5,6 @@ import joo.project.my3d.domain.Company;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.UserRefreshToken;
 import joo.project.my3d.domain.constant.UserRole;
-import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 

@@ -1,8 +1,6 @@
 package joo.project.my3d.api;
 
-import joo.project.my3d.dto.request.DuplicatedCheckRequest;
 import joo.project.my3d.dto.request.SignUpRequest;
-import joo.project.my3d.dto.response.DuplicatedCheckResponse;
 import joo.project.my3d.dto.response.ExceptionResponse;
 import joo.project.my3d.exception.SignUpException;
 import joo.project.my3d.exception.ValidatedException;
@@ -17,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;

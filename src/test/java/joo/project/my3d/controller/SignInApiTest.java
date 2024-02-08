@@ -2,32 +2,23 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.api.SignInApi;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.domain.UserAccount;
-import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.request.SignUpRequest;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.fixture.FixtureCookie;
 import joo.project.my3d.service.UserAccountServiceInterface;
-import joo.project.my3d.service.impl.CompanyService;
-import joo.project.my3d.service.impl.UserAccountService;
-import joo.project.my3d.util.FormDataEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

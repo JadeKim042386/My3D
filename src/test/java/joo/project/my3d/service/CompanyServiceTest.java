@@ -2,7 +2,6 @@ package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Company;
 import joo.project.my3d.dto.CompanyDto;
-import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.CompanyRepository;
