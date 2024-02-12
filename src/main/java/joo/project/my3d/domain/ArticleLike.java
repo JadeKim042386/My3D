@@ -23,7 +23,7 @@ public class ArticleLike extends AuditingFields implements Persistable<Long> {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userAccountId")
+    @JoinColumn(name = "userAccountId", unique = true)
     private UserAccount userAccount;
 
     @ToString.Exclude

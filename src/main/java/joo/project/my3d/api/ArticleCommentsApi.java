@@ -22,7 +22,7 @@ public class ArticleCommentsApi {
     private final ArticleCommentServiceInterface articleCommentService;
 
     /**
-     *  댓글 추가
+     * 댓글 추가
      */
     @PostMapping
     public ResponseEntity<ArticleCommentResponse> postNewComment(

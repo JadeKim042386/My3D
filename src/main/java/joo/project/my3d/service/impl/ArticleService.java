@@ -146,4 +146,9 @@ public class ArticleService implements ArticleServiceInterface {
             throw new ArticleException(ErrorCode.CONFLICT_DELETE, e);
         }
     }
+
+    @Override
+    public boolean isExistsArticleByEmail(Long articleId, String email) {
+        return articleRepository.existsByIdAndUserAccount_Email(articleId, email);
+    }
 }

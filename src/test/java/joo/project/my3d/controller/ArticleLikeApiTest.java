@@ -4,6 +4,7 @@ import joo.project.my3d.api.ArticleLikeApi;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.fixture.FixtureCookie;
 import joo.project.my3d.service.impl.ArticleLikeService;
+import joo.project.my3d.service.impl.ArticleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,8 @@ class ArticleLikeApiTest {
 
     @Autowired
     private MockMvc mvc;
-
+    @MockBean
+    private ArticleService articleService;
     @MockBean
     private ArticleLikeService articleLikeService;
 
@@ -43,6 +45,7 @@ class ArticleLikeApiTest {
     void addArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
+        given(articleService.isExistsArticleByEmail(anyLong(), anyString())).willReturn(false);
         given(articleLikeService.addArticleLike(anyLong(), anyString())).willReturn(0);
         // When
         mvc.perform(post("/api/v1/articles/" + articleId + "/like")
@@ -60,6 +63,7 @@ class ArticleLikeApiTest {
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
+        given(articleService.isExistsArticleByEmail(anyLong(), anyString())).willReturn(false);
         given(articleLikeService.deleteArticleLike(anyLong(), anyString())).willReturn(1);
         // When
         mvc.perform(delete("/api/v1/articles/" + articleId + "/like")

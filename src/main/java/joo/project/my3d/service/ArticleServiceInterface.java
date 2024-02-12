@@ -40,4 +40,9 @@ public interface ArticleServiceInterface {
      * 게시글 삭제
      */
     void deleteArticle(Long articleId, String email);
+
+    /**
+     * 게시글 작성자인지 확인
+     */
+    boolean isExistsArticleByEmail(Long articleId, String email);
 }

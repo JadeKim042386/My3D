@@ -40,8 +40,6 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     @Override
     public int addArticleLike(Long articleId, String email) {
         try {
-            // TODO: 이미 좋아요를 눌렀는지 확인 (중복 요청 확인)
-            // TODO: 게시글 작성자는 좋아요를 요청할 수 없음
             articleLikeRepository.save(ArticleLike.of(
                     // TODO: userAccount과의 relation은 필요없을 것 같음
                     userAccountRepository.getReferenceByEmail(email), articleRepository.getReferenceById(articleId)));
@@ -60,8 +58,6 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     @Override
     public int deleteArticleLike(Long articleId, String email) {
         try {
-            // TODO: 이미 좋아요를 취소했는지 확인 (중복 요청 확인)
-            // TODO: 게시글 작성자는 좋아요를 취소할 수 없음
             articleLikeRepository.deleteByArticleIdAndUserAccount_Email(articleId, email);
             articleRepository.deleteArticleLikeCount();
             return getLikeCountByArticleId(articleId);

@@ -48,10 +48,12 @@ public interface ArticleRepository
     Optional<Article> findByIdFetchDetail(Long id);
 
     @Modifying
-    @Query("update Article a  set a.likeCount = a.likeCount + 1")
+    @Query("update Article a set a.likeCount = a.likeCount + 1")
     void addArticleLikeCount();
 
     @Modifying
-    @Query("update Article a  set a.likeCount = a.likeCount - 1")
+    @Query("update Article a set a.likeCount = a.likeCount - 1")
     void deleteArticleLikeCount();
+
+    boolean existsByIdAndUserAccount_Email(Long articleId, String email);
 }
