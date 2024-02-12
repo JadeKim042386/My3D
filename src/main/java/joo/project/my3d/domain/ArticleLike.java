@@ -12,7 +12,10 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(
         name = "article_like",
-        indexes = {@Index(columnList = "id")})
+        indexes = {
+                @Index(columnList = "id"),
+                @Index(columnList = "userAccountId, articleId")
+        })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleLike extends AuditingFields implements Persistable<Long> {
@@ -23,7 +26,7 @@ public class ArticleLike extends AuditingFields implements Persistable<Long> {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userAccountId", unique = true)
+    @JoinColumn(name = "userAccountId")
     private UserAccount userAccount;
 
     @ToString.Exclude

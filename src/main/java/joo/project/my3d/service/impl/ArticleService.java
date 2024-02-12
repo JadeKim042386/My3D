@@ -99,21 +99,15 @@ public class ArticleService implements ArticleServiceInterface {
         Article article = articleRepository
                 .findByIdAndUserAccount_Email(articleId, requestEmail)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); // 작성자
-
         // 작성자와 수정자가 같은지 확인
-        if (Objects.equals(article.getUserAccount().getEmail(), requestEmail)) {
-            // 파일 수정
-            articleFileService.updateArticleFile(articleFormRequest, articleId);
-            // 게시글 수정
-            Optional.ofNullable(articleFormRequest.getTitle()).ifPresent(article::setTitle);
-            Optional.ofNullable(articleFormRequest.getContent()).ifPresent(article::setContent);
-            Optional.ofNullable(articleFormRequest.getArticleCategory())
-                    .ifPresent(category -> article.setArticleCategory(ArticleCategory.valueOf(category)));
-        } else {
-            log.error(
-                    "작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}", article.getUserAccount().getEmail(), requestEmail);
-            throw new ArticleException(ErrorCode.NOT_WRITER);
-        }
+        equalsRequestUserAndWriter(article.getId(), requestEmail);
+        // 파일 수정
+        articleFileService.updateArticleFile(articleFormRequest, articleId);
+        // 게시글 수정
+        Optional.ofNullable(articleFormRequest.getTitle()).ifPresent(article::setTitle);
+        Optional.ofNullable(articleFormRequest.getContent()).ifPresent(article::setContent);
+        Optional.ofNullable(articleFormRequest.getArticleCategory())
+                .ifPresent(category -> article.setArticleCategory(ArticleCategory.valueOf(category)));
     }
 
     /**
@@ -123,21 +117,14 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public void deleteArticle(Long articleId, String email) {
         try {
-            Article article = articleRepository.getReferenceById(articleId); // 작성자
             // 작성자와 삭제를 요청한 유저가 같은지 확인
-            if (article.getUserAccount().getEmail().equals(email)) {
-                // S3 파일 삭제
-                articleFileService.deleteFile(articleId);
-                // 게시글에 속한 댓글, 좋아요도 같이 삭제
-                article.deleteAll();
-                articleRepository.delete(article);
-            } else {
-                log.error(
-                        "작성자와 수정자가 다릅니다. 작성자: {}, 삭제 요청자: {}",
-                        article.getUserAccount().getEmail(),
-                        email);
-                throw new ArticleException(ErrorCode.NOT_WRITER);
-            }
+            equalsRequestUserAndWriter(articleId, email);
+            Article article = articleRepository.getReferenceById(articleId); // 작성자
+            // 파일 삭제
+            articleFileService.deleteFile(articleId);
+            // 게시글에 속한 댓글, 좋아요도 같이 삭제
+            article.deleteAll();
+            articleRepository.delete(article);
         } catch (EntityNotFoundException e) {
             throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);
         } catch (IllegalArgumentException e) {
@@ -150,5 +137,15 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public boolean isExistsArticleByEmail(Long articleId, String email) {
         return articleRepository.existsByIdAndUserAccount_Email(articleId, email);
+    }
+
+    private void equalsRequestUserAndWriter(Long articleId, String email) {
+        if (!isExistsArticleByEmail(articleId, email)) {
+            log.error(
+                    "작성자와 요청자가 다릅니다. articleId: {}, 요청자: {}",
+                    articleId,
+                    email);
+            throw new ArticleException(ErrorCode.NOT_WRITER);
+        }
     }
 }

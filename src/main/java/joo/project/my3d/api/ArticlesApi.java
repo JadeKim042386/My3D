@@ -1,12 +1,10 @@
 package joo.project.my3d.api;
 
+import joo.project.my3d.aop.BindingResultHandler;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.dto.response.ApiResponse;
-import joo.project.my3d.dto.response.ExceptionResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
-import joo.project.my3d.exception.ValidatedException;
-import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.service.ArticleFileServiceInterface;
 import joo.project.my3d.service.ArticleServiceInterface;
 import joo.project.my3d.utils.FileUtils;
@@ -34,19 +32,13 @@ public class ArticlesApi {
     /**
      * 게시글 저장 요청
      */
+    @BindingResultHandler(message = "validation error during add article")
     @PostMapping
     public ResponseEntity<ApiResponse> postNewArticle(
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        if (bindingResult.hasErrors()) {
-            log.warn("bindingResult={}", bindingResult);
-            throw new ValidatedException(
-                    ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult("validation error during add article", bindingResult));
-        }
+            BindingResult bindingResult) {
 
-        // 게시글 저장
         Article article = articleService.saveArticle(boardPrincipal.email(), articleFormRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(String.valueOf(article.getId())));
@@ -55,18 +47,13 @@ public class ArticlesApi {
     /**
      * 특정 게시글 수정 요청
      */
+    @BindingResultHandler(message = "validation error during updated article")
     @PutMapping("/{articleId}")
     public ResponseEntity<ApiResponse> postUpdateArticle(
             @PathVariable Long articleId,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        if (bindingResult.hasErrors()) {
-            log.warn("formBindingResult={}", bindingResult);
-            throw new ValidatedException(
-                    ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult("validation error during updated article", bindingResult));
-        }
+            BindingResult bindingResult) {
 
         articleService.updateArticle(articleFormRequest, articleId, boardPrincipal.email());
 
@@ -79,6 +66,7 @@ public class ArticlesApi {
     @DeleteMapping("/{articleId}")
     public ResponseEntity<ApiResponse> deleteArticle(
             @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of("You successfully deleted article"));

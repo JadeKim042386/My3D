@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.aop.BindingResultHandlerAspect;
 import joo.project.my3d.api.ArticlesApi;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.Article;
@@ -10,6 +11,7 @@ import joo.project.my3d.service.impl.ArticleFileService;
 import joo.project.my3d.service.impl.ArticleService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -31,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 게시글")
-@Import(TestSecurityConfig.class)
+@Import({TestSecurityConfig.class, AopAutoConfiguration.class, BindingResultHandlerAspect.class})
 @WebMvcTest(ArticlesApi.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class ArticlesApiTest {

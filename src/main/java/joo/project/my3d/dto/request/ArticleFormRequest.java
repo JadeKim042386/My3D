@@ -5,8 +5,8 @@ import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.validation.InCategory;
 import joo.project.my3d.dto.validation.MultipartFileSizeValid;
+import joo.project.my3d.dto.validation.ValidEnum;
 import joo.project.my3d.utils.FileUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +37,7 @@ public class ArticleFormRequest {
     @MultipartFileSizeValid
     private MultipartFile modelFile;
 
-    @InCategory
+    @ValidEnum(enumClass = ArticleCategory.class)
     private String articleCategory;
 
     /**

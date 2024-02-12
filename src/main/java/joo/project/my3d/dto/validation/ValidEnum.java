@@ -10,12 +10,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({FIELD})
 @Retention(RUNTIME)
-@Constraint(validatedBy = InCategoryValidator.class)
-public @interface InCategory {
+@Constraint(validatedBy = EnumValidator.class)
+public @interface ValidEnum {
 
-    String message() default "다시 선택해주세요.";
+    String message() default "Invalid value";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    Class<? extends Enum<?>> enumClass();
 }
