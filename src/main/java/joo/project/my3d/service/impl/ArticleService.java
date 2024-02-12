@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -141,10 +140,7 @@ public class ArticleService implements ArticleServiceInterface {
 
     private void equalsRequestUserAndWriter(Long articleId, String email) {
         if (!isExistsArticleByEmail(articleId, email)) {
-            log.error(
-                    "작성자와 요청자가 다릅니다. articleId: {}, 요청자: {}",
-                    articleId,
-                    email);
+            log.error("작성자와 요청자가 다릅니다. articleId: {}, 요청자: {}", articleId, email);
             throw new ArticleException(ErrorCode.NOT_WRITER);
         }
     }

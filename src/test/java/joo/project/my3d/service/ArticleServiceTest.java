@@ -182,7 +182,8 @@ class ArticleServiceTest {
                 1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
-        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willReturn(Optional.of(savedArticle));
         willDoNothing().given(articleFileService).updateArticleFile(any(), anyLong());
@@ -240,7 +241,8 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle();
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleRepository).delete(any());
@@ -255,7 +257,8 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
         given(articleRepository.getReferenceById(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
@@ -272,7 +275,8 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         String email = "notwriter@gmail.com";
-        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString())).willReturn(false);
+        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(false);
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
                 .isInstanceOf(ArticleException.class)
@@ -287,7 +291,8 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle();
         Long articleId = 1L;
         String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
                 .given(articleFileService)

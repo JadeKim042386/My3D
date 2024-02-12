@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.aop.BindingResultHandlerAspect;
 import joo.project.my3d.api.EmailApi;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.fixture.FixtureCookie;
@@ -7,6 +8,7 @@ import joo.project.my3d.service.impl.EmailService;
 import joo.project.my3d.service.impl.UserAccountService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("View 컨트롤러 - 이메일")
-@Import(TestSecurityConfig.class)
+@Import({TestSecurityConfig.class, AopAutoConfiguration.class, BindingResultHandlerAspect.class})
 @WebMvcTest(EmailApi.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class EmailApiTest {

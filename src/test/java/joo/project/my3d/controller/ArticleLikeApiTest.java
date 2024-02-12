@@ -33,8 +33,10 @@ class ArticleLikeApiTest {
 
     @Autowired
     private MockMvc mvc;
+
     @MockBean
     private ArticleService articleService;
+
     @MockBean
     private ArticleLikeService articleLikeService;
 
