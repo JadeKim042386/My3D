@@ -18,15 +18,53 @@ public record ArticleDto(
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
-        String modifiedBy
-) {
+        String modifiedBy) {
 
-    public static ArticleDto of(Long id, UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFileWithDimensionDto articleFileDto, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleDto(id, userAccountDto, title, content, articleType, articleCategory, articleFileDto, createdAt, createdBy, modifiedAt, modifiedBy);
+    public static ArticleDto of(
+            Long id,
+            UserAccountDto userAccountDto,
+            String title,
+            String content,
+            ArticleType articleType,
+            ArticleCategory articleCategory,
+            ArticleFileWithDimensionDto articleFileDto,
+            LocalDateTime createdAt,
+            String createdBy,
+            LocalDateTime modifiedAt,
+            String modifiedBy) {
+        return new ArticleDto(
+                id,
+                userAccountDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                articleFileDto,
+                createdAt,
+                createdBy,
+                modifiedAt,
+                modifiedBy);
     }
 
-    public static ArticleDto of(UserAccountDto userAccountDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFileWithDimensionDto articleFileDto) {
-        return new ArticleDto(null, userAccountDto, title, content, articleType, articleCategory, articleFileDto, null, null, null, null);
+    public static ArticleDto of(
+            UserAccountDto userAccountDto,
+            String title,
+            String content,
+            ArticleType articleType,
+            ArticleCategory articleCategory,
+            ArticleFileWithDimensionDto articleFileDto) {
+        return new ArticleDto(
+                null,
+                userAccountDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                articleFileDto,
+                null,
+                null,
+                null,
+                null);
     }
 
     public static ArticleDto from(Article article) {
@@ -41,18 +79,10 @@ public record ArticleDto(
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),
-                article.getModifiedBy()
-        );
+                article.getModifiedBy());
     }
 
     public Article toEntity(UserAccount userAccount) {
-        return Article.of(
-            userAccount,
-            articleFileDto.toEntity(),
-            title,
-            content,
-            articleType,
-            articleCategory
-        );
+        return Article.of(userAccount, articleFileDto.toEntity(), title, content, articleType, articleCategory);
     }
 }

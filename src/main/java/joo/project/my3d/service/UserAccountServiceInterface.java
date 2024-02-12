@@ -15,6 +15,7 @@ public interface UserAccountServiceInterface {
      * 이메일 또는 닉네임 존재 유무 조회
      */
     boolean isExistsUserEmailOrNickname(String email, String nickname);
+
     boolean isExistsUserEmailOrNickname(String email);
 
     /**

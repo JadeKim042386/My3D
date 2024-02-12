@@ -31,9 +31,7 @@ public class UserAdminApi {
     public ResponseEntity<ApiResponse> updateUserData(UserAdminRequest userAdminRequest) {
         userAccountService.updateUser(userAdminRequest.toDto());
 
-        return ResponseEntity.ok(
-                ApiResponse.of("You successfully updated user account")
-        );
+        return ResponseEntity.ok(ApiResponse.of("You successfully updated user account"));
     }
 
     /**
@@ -41,14 +39,10 @@ public class UserAdminApi {
      */
     @PutMapping("/password")
     public ResponseEntity<ApiResponse> changePassword(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            UserAdminRequest userAdminRequest
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal, UserAdminRequest userAdminRequest) {
         userAccountService.changePassword(boardPrincipal.email(), userAdminRequest.password());
 
-        return ResponseEntity.ok(
-                ApiResponse.of("You successfully changed password")
-        );
+        return ResponseEntity.ok(ApiResponse.of("You successfully changed password"));
     }
 
     /**
@@ -56,12 +50,8 @@ public class UserAdminApi {
      */
     @PutMapping("/company")
     public ResponseEntity<CompanyDto> updateCompany(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            CompanyAdminRequest companyAdminRequest
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal, CompanyAdminRequest companyAdminRequest) {
 
-        return ResponseEntity.ok(
-                companyService.updateCompany(companyAdminRequest, boardPrincipal.email())
-        );
+        return ResponseEntity.ok(companyService.updateCompany(companyAdminRequest, boardPrincipal.email()));
     }
 }

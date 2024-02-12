@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @DisplayName("테스트 도구 - Form 데이터 인코더")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = {FormDataEncoder.class, ObjectMapper.class})
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.NONE,
+        classes = {FormDataEncoder.class, ObjectMapper.class})
 class FormDataEncoderTest {
     private final FormDataEncoder formDataEncoder;
 
@@ -32,22 +34,19 @@ class FormDataEncoderTest {
                 3.14,
                 false,
                 BigDecimal.TEN,
-                TestEnum.THREE
-        );
+                TestEnum.THREE);
         // When
         String result = formDataEncoder.encode(obj);
         // Then
-        Assertions.assertThat(result).isEqualTo(
-                "str=This%20'is'%20%22test%22%20string." +
-                        "&listStr1=%5Bhello,my,friend%5D" +
-                        "&listStr2=hello,my,friend" +
-                        "&nullStr" +
-                        "&number=1234" +
-                        "&floatingNumber=3.14" +
-                        "&bool=false" +
-                        "&bigDecimal=10" +
-                        "&testEnum=THREE"
-        );
+        Assertions.assertThat(result)
+                .isEqualTo("str=This%20'is'%20%22test%22%20string." + "&listStr1=%5Bhello,my,friend%5D"
+                        + "&listStr2=hello,my,friend"
+                        + "&nullStr"
+                        + "&number=1234"
+                        + "&floatingNumber=3.14"
+                        + "&bool=false"
+                        + "&bigDecimal=10"
+                        + "&testEnum=THREE");
     }
 
     record TestObject(
@@ -59,10 +58,11 @@ class FormDataEncoderTest {
             Double floatingNumber,
             Boolean bool,
             BigDecimal bigDecimal,
-            TestEnum testEnum
-    ) {}
+            TestEnum testEnum) {}
 
     enum TestEnum {
-        ONE, TWO, THREE
+        ONE,
+        TWO,
+        THREE
     }
 }

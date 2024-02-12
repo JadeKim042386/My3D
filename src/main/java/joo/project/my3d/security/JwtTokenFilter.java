@@ -36,7 +36,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String accessToken = parseToken(request, true);
         try {
             if (!StringUtils.hasText(accessToken)) {
@@ -60,7 +61,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private String parseToken(HttpServletRequest request, boolean isAccessToken) {
         String token;
-        //헤더에 토큰이 없을 경우 쿠키에서 토큰을 파싱
+        // 헤더에 토큰이 없을 경우 쿠키에서 토큰을 파싱
         if (isAccessToken) {
             token = parseBearerToken(request, ACCESS_TOKEN_HEADER);
             if (!StringUtils.hasText(token)) {
@@ -90,13 +91,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    private void reissueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws IOException {
+    private void reissueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken)
+            throws IOException {
         try {
             String oldAccessToken = parseToken(request, true);
             tokenProvider.validateRefreshToken(refreshToken, oldAccessToken);
             String newAccessToken = tokenProvider.regenerateAccessToken(oldAccessToken);
             setAuthentication(request, tokenProvider.parseOrValidateClaims(newAccessToken), newAccessToken);
-            //response.setHeader("New-Access-Token", newAccessToken);
+            // response.setHeader("New-Access-Token", newAccessToken);
             Cookie cookie = new Cookie(ACCESS_TOKEN_COOKIE, newAccessToken);
             cookie.setPath("/");
             response.addCookie(cookie);
@@ -111,7 +113,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
      */
     private void setAuthentication(HttpServletRequest request, Claims claims, String accessToken) {
         BoardPrincipal boardPrincipal = tokenProvider.getUserDetails(claims);
-        UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(boardPrincipal, accessToken, boardPrincipal.getAuthorities());
+        UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
+                boardPrincipal, accessToken, boardPrincipal.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
     }

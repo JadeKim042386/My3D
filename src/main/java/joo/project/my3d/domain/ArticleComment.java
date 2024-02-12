@@ -15,11 +15,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(
         name = "article_comment",
-        indexes = {
-                @Index(columnList = "id"),
-                @Index(columnList = "articleId")
-        }
-)
+        indexes = {@Index(columnList = "id"), @Index(columnList = "articleId")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleComment extends AuditingFields implements Persistable<Long> {
@@ -49,10 +45,9 @@ public class ArticleComment extends AuditingFields implements Persistable<Long> 
     @ToString.Exclude
     @OrderBy("createdAt ASC")
     @OneToMany(mappedBy = "parentCommentId", cascade = CascadeType.ALL)
-    private Set<ArticleComment> childComments = new LinkedHashSet<>();
+    private final Set<ArticleComment> childComments = new LinkedHashSet<>();
 
-    protected ArticleComment() {
-    }
+    protected ArticleComment() {}
 
     private ArticleComment(UserAccount userAccount, Article article, String content, Long parentCommentId) {
         this.userAccount = userAccount;

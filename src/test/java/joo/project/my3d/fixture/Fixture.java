@@ -14,7 +14,8 @@ import java.util.List;
 @Slf4j
 public class Fixture {
 
-    public static Article getArticle(String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static Article getArticle(
+            String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccount userAccount = Fixture.getUserAccount();
         ArticleFile articleFile = Fixture.getArticleFile();
         return Article.of(userAccount, articleFile, title, content, articleType, articleCategory);
@@ -37,7 +38,15 @@ public class Fixture {
     }
 
     public static UserAccount getUserAccount(String email, String userPassword, String nickname, UserRole userRole) {
-        return UserAccount.of(email, userPassword, nickname, null, Address.of(null, null, null), userRole, Fixture.getUserRefreshToken(), Company.of(null, null));
+        return UserAccount.of(
+                email,
+                userPassword,
+                nickname,
+                null,
+                Address.of(null, null, null),
+                userRole,
+                Fixture.getUserRefreshToken(),
+                Company.of(null, null));
     }
 
     public static UserAccount getUserAccount() {
@@ -63,12 +72,7 @@ public class Fixture {
     public static MockMultipartFile getMultipartFile(String content) {
         String fileName = "test.txt";
 
-        return new MockMultipartFile(
-                "modelFile",
-                fileName,
-                "text/plain",
-                content.getBytes(StandardCharsets.UTF_8)
-        );
+        return new MockMultipartFile("modelFile", fileName, "text/plain", content.getBytes(StandardCharsets.UTF_8));
     }
 
     public static DimensionOption getDimensionOption() {
@@ -96,7 +100,8 @@ public class Fixture {
         ArticleFormRequest articleFormRequest = new ArticleFormRequest();
         FieldUtils.writeField(articleFormRequest, "title", "new title", true);
         FieldUtils.writeField(articleFormRequest, "content", "new content", true);
-        FieldUtils.writeField(articleFormRequest, "dimensionOptions", List.of(Fixture.getDimensionOptionRequest()), true);
+        FieldUtils.writeField(
+                articleFormRequest, "dimensionOptions", List.of(Fixture.getDimensionOptionRequest()), true);
         FieldUtils.writeField(articleFormRequest, "modelFile", file, true);
         FieldUtils.writeField(articleFormRequest, "articleCategory", ArticleCategory.ARCHITECTURE.toString(), true);
         return articleFormRequest;
@@ -111,6 +116,4 @@ public class Fixture {
     public static UserRefreshToken getUserRefreshToken() {
         return UserRefreshToken.of("refreshToken");
     }
-
-
 }

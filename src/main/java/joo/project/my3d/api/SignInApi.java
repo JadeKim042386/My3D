@@ -29,9 +29,7 @@ public class SignInApi {
     @PostMapping
     public ResponseEntity<LoginResponse> requestLogin(UserLoginRequest loginRequest) {
 
-        return ResponseEntity.ok(
-                userAccountService.login(loginRequest.email(), loginRequest.password())
-        );
+        return ResponseEntity.ok(userAccountService.login(loginRequest.email(), loginRequest.password()));
     }
 
     /**
@@ -43,15 +41,14 @@ public class SignInApi {
             @RequestParam String email,
             @RequestParam String nickname,
             @RequestParam boolean signup,
-            RedirectAttributes redirectAttributes
-    ) {
-        //회원가입이 안되어있다면 회원가입 페이지로 email과 nickmame와 같이 redirect
+            RedirectAttributes redirectAttributes) {
+        // 회원가입이 안되어있다면 회원가입 페이지로 email과 nickmame와 같이 redirect
         if (!signup) {
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("nickname", nickname);
         }
 
-        //회원가입이 되어있다면 로그인처리
+        // 회원가입이 되어있다면 로그인처리
         return ResponseEntity.ok(userAccountService.oauthLogin(email, nickname));
     }
 
@@ -60,11 +57,9 @@ public class SignInApi {
      */
     @GetMapping("/info")
     public ResponseEntity<UserInfo> parseSpecificationFromToken(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
         return ResponseEntity.ok(
-                UserInfo.of(boardPrincipal.email(), boardPrincipal.nickname(), boardPrincipal.getUserRole())
-        );
+                UserInfo.of(boardPrincipal.email(), boardPrincipal.nickname(), boardPrincipal.getUserRole()));
     }
 }

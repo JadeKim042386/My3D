@@ -5,8 +5,7 @@ public class FileUtils {
     private static final int NOT_FOUND = -1;
     private static final String EXTENSION_SEPARATOR = ".";
 
-    protected FileUtils() {
-    }
+    protected FileUtils() {}
 
     /**
      * 확장자 index 반환
@@ -27,9 +26,9 @@ public class FileUtils {
         }
         final int index = indexOfExtension(filename);
         if (index == NOT_FOUND) {
-            return new String[]{filename, ""};
+            return new String[] {filename, ""};
         } else {
-            return new String[]{filename.substring(0, index), filename.substring(index + 1)};
+            return new String[] {filename.substring(0, index), filename.substring(index + 1)};
         }
     }
 
@@ -47,5 +46,4 @@ public class FileUtils {
             return filename.substring(index + 1);
         }
     }
-
 }

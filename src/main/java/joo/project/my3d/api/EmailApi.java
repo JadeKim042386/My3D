@@ -31,7 +31,7 @@ public class EmailApi {
     @PostMapping("/send_code")
     public ResponseEntity<EmailResponse> sendEmailCertification(@RequestParam String email) {
         validateEmail(email);
-        //이메일 중복 체크
+        // 이메일 중복 체크
         if (userAccountService.isExistsUserEmailOrNickname(email)) {
             throw new MailException(ErrorCode.ALREADY_EXIST_EMAIL_OR_NICKNAME);
         }
@@ -46,16 +46,12 @@ public class EmailApi {
     @PostMapping("/find_pass")
     public ResponseEntity<ApiResponse> sendEmailFindPass(@RequestParam String email) {
         validateEmail(email);
-        //유저의 존재 유무 확인
+        // 유저의 존재 유무 확인
         if (!userAccountService.isExistsUserEmailOrNickname(email)) {
             throw new MailException(ErrorCode.NOT_FOUND_EMAIL);
         }
-        //DB에 비밀번호를 변경해준 후 임시 비밀번호를 메일로 전송
-        emailService.sendEmail(
-                email,
-                "[My3D] 이메일 임시 비밀번호",
-                userAccountService.sendTemporaryPassword(email)
-        );
+        // DB에 비밀번호를 변경해준 후 임시 비밀번호를 메일로 전송
+        emailService.sendEmail(email, "[My3D] 이메일 임시 비밀번호", userAccountService.sendTemporaryPassword(email));
         return ResponseEntity.ok(ApiResponse.of("Successfully send temporary password."));
     }
 

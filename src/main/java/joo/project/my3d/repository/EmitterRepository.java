@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor
 public class EmitterRepository {
 
-    private Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+    private final Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
     public SseEmitter save(String email, SseEmitter sseEmitter) {
         final String key = getKey(email);

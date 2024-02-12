@@ -23,14 +23,9 @@ public class ArticleLikeApi {
      */
     @PostMapping
     public ResponseEntity<ArticleLikeResponse> addArticleLike(
-            @PathVariable Long articleId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         return ResponseEntity.ok(
-                ArticleLikeResponse.of(
-                        articleLikeService.addArticleLike(articleId, boardPrincipal.email())
-                )
-        );
+                ArticleLikeResponse.of(articleLikeService.addArticleLike(articleId, boardPrincipal.email())));
     }
 
     /**
@@ -38,14 +33,8 @@ public class ArticleLikeApi {
      */
     @DeleteMapping
     public ResponseEntity<ArticleLikeResponse> deleteArticleLike(
-            @PathVariable Long articleId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(
-                        ArticleLikeResponse.of(
-                                articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())
-                        )
-                );
+                .body(ArticleLikeResponse.of(articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())));
     }
 }

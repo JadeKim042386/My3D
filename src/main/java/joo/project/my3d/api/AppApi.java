@@ -14,12 +14,9 @@ public class AppApi {
 
     @GetMapping("/profile")
     public String getProfile() {
-        return Arrays.stream(env.getActiveProfiles())
-                .findFirst()
-                .orElse("local");
+        return Arrays.stream(env.getActiveProfiles()).findFirst().orElse("local");
     }
 
     @GetMapping("favicon.ico")
-    void returnNoFavicon() {
-    }
+    void returnNoFavicon() {}
 }

@@ -26,8 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @WebMvcTest(AlarmApi.class)
 class AlarmApiTest {
-    @Autowired private MockMvc mvc;
-    @MockBean private AlarmServiceInterface alarmService;
+    @Autowired
+    private MockMvc mvc;
+
+    @MockBean
+    private AlarmServiceInterface alarmService;
+
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
     @DisplayName("[GET] 알람 리스트 조회")
@@ -36,14 +40,10 @@ class AlarmApiTest {
         // Given
         given(alarmService.getAlarms(anyString())).willReturn(List.of());
         // When
-        mvc.perform(
-                        get("/api/v1/alarm")
-                            .cookie(userCookie)
-                )
+        mvc.perform(get("/api/v1/alarm").cookie(userCookie))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(0))
-        ;
+                .andExpect(jsonPath("$.size()").value(0));
         // Then
     }
 
@@ -53,13 +53,9 @@ class AlarmApiTest {
         // Given
         given(alarmService.connectAlarm(anyString())).willReturn(null);
         // When
-        mvc.perform(
-                        get("/api/v1/alarm/subscribe")
-                            .cookie(userCookie)
-            )
+        mvc.perform(get("/api/v1/alarm/subscribe").cookie(userCookie))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").doesNotExist())
-        ;
+                .andExpect(jsonPath("$").doesNotExist());
         // Then
     }
 }

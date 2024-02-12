@@ -28,18 +28,11 @@ public class ArticleCommentsApi {
     public ResponseEntity<ArticleCommentResponse> postNewComment(
             @PathVariable Long articleId,
             ArticleCommentRequest articleCommentRequest,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         ArticleCommentDto commentDto = articleCommentService.saveComment(
-                articleCommentRequest.toDto(
-                        articleId,
-                        boardPrincipal.nickname(),
-                        boardPrincipal.email()
-                )
-        );
+                articleCommentRequest.toDto(articleId, boardPrincipal.nickname(), boardPrincipal.email()));
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ArticleCommentResponse.from(commentDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ArticleCommentResponse.from(commentDto));
     }
 
     /**
@@ -47,12 +40,9 @@ public class ArticleCommentsApi {
      */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponse> deleteComment(
-            @PathVariable Long commentId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @PathVariable Long commentId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiResponse.of("You successfully deleted comment"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of("You successfully deleted comment"));
     }
 }

@@ -13,10 +13,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(
         name = "company",
-        indexes = {
-                @Index(columnList = "id")
-        }
-)
+        indexes = {@Index(columnList = "id")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Company extends AuditingFields implements Persistable<Long> {
@@ -28,6 +25,7 @@ public class Company extends AuditingFields implements Persistable<Long> {
     @Setter
     @Column
     private String companyName;
+
     @Setter
     @Column
     private String homepage;
@@ -36,8 +34,7 @@ public class Company extends AuditingFields implements Persistable<Long> {
     @OneToOne(mappedBy = "company")
     private UserAccount userAccount;
 
-    protected Company() {
-    }
+    protected Company() {}
 
     private Company(String companyName, String homepage) {
         this.companyName = companyName;

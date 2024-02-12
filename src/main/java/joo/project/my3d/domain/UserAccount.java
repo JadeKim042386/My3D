@@ -17,14 +17,32 @@ import java.util.Set;
 @Table(
         name = "user_account",
         indexes = {
-                @Index(columnList = "id"),
-                @Index(columnList = "email", unique = true),
-                @Index(columnList = "nickname", unique = true)
-        }
-)
+            @Index(columnList = "id"),
+            @Index(columnList = "email", unique = true),
+            @Index(columnList = "nickname", unique = true)
+        })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserAccount extends AuditingAt implements Persistable<Long> {
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private final Set<Article> articles = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
+    private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
+    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "userAccount")
+    private final Set<Alarm> alarms = new LinkedHashSet<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -66,29 +84,17 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     @JoinColumn(name = "companyId")
     private Company company;
 
-    @ToString.Exclude
-    @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private final Set<Article> articles = new LinkedHashSet<>();
+    protected UserAccount() {}
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
-    private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
-    private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
-
-    @ToString.Exclude
-    @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount")
-    private final Set<Alarm> alarms = new LinkedHashSet<>();
-
-    protected UserAccount() {
-    }
-
-    private UserAccount(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company) {
+    private UserAccount(
+            String email,
+            String userPassword,
+            String nickname,
+            String phone,
+            Address address,
+            UserRole userRole,
+            UserRefreshToken userRefreshToken,
+            Company company) {
         this.email = email;
         this.userPassword = userPassword;
         this.nickname = nickname;
@@ -103,7 +109,8 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
      * 회원 저장(saveUser)시 사용<br>
      * 폰번호, 주소, 기업 제외
      */
-    public static UserAccount of(String email, String userPassword, String nickname, UserRole userRole, UserRefreshToken userRefreshToken) {
+    public static UserAccount of(
+            String email, String userPassword, String nickname, UserRole userRole, UserRefreshToken userRefreshToken) {
         return new UserAccount(
                 email,
                 userPassword,
@@ -112,24 +119,22 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
                 Address.of(null, null, null),
                 userRole,
                 userRefreshToken,
-                Company.of(null, null)
-        );
+                Company.of(null, null));
     }
 
     /**
      * 모든 필드 주입
      */
-    public static UserAccount of(String email, String userPassword, String nickname, String phone, Address address, UserRole userRole, UserRefreshToken userRefreshToken, Company company) {
-        return new UserAccount(
-                email,
-                userPassword,
-                nickname,
-                phone,
-                address,
-                userRole,
-                userRefreshToken,
-                company
-        );
+    public static UserAccount of(
+            String email,
+            String userPassword,
+            String nickname,
+            String phone,
+            Address address,
+            UserRole userRole,
+            UserRefreshToken userRefreshToken,
+            Company company) {
+        return new UserAccount(email, userPassword, nickname, phone, address, userRole, userRefreshToken, company);
     }
 
     @Override

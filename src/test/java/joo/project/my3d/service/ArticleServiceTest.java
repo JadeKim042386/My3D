@@ -47,12 +47,23 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("비지니스 로직 - 모델 게시글")
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
-    @InjectMocks private ArticleService articleService;
-    @Mock private ArticleRepository articleRepository;
-    @Mock private UserAccountRepository userAccountRepository;
-    @Mock private ArticleFileService articleFileService;
-    @Mock private ArticleLikeService articleLikeService;
-    @Mock private FileServiceInterface fileService;
+    @InjectMocks
+    private ArticleService articleService;
+
+    @Mock
+    private ArticleRepository articleRepository;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
+    @Mock
+    private ArticleFileService articleFileService;
+
+    @Mock
+    private ArticleLikeService articleLikeService;
+
+    @Mock
+    private FileServiceInterface fileService;
 
     @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
@@ -85,7 +96,8 @@ class ArticleServiceTest {
         assertThat(articleFormDto.content()).isEqualTo("content");
         assertThat(articleFormDto.articleType()).isEqualTo(ArticleType.MODEL);
         assertThat(articleFormDto.articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
-        assertThat(articleFormDto.articleFileWithDimensionDto().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleFormDto.articleFileWithDimensionDto().originalFileName())
+                .isEqualTo("test.stp");
         then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 
@@ -116,7 +128,8 @@ class ArticleServiceTest {
         given(articleLikeService.getLikeCountByArticleId(anyLong())).willReturn(2);
         given(articleLikeService.addedLike(anyLong(), anyString())).willReturn(true);
         // When
-        ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(1L, article.getUserAccount().getEmail());
+        ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(
+                1L, article.getUserAccount().getEmail());
         // Then
         assertThat(articleDetailResponse.likeCount()).isEqualTo(2);
         assertThat(articleDetailResponse.addedLike()).isEqualTo(true);
@@ -124,7 +137,8 @@ class ArticleServiceTest {
         assertThat(articleDetailResponse.article().content()).isEqualTo("content");
         assertThat(articleDetailResponse.article().articleType()).isEqualTo(ArticleType.MODEL);
         assertThat(articleDetailResponse.article().articleCategory()).isEqualTo(ArticleCategory.ARCHITECTURE);
-        assertThat(articleDetailResponse.article().articleFile().originalFileName()).isEqualTo("test.stp");
+        assertThat(articleDetailResponse.article().articleFile().originalFileName())
+                .isEqualTo("test.stp");
         assertThat(articleDetailResponse.article().articleComments().size()).isEqualTo(1);
     }
 
@@ -146,8 +160,10 @@ class ArticleServiceTest {
     @Test
     void saveArticle() throws IllegalAccessException {
         // Given
-        ArticleDto articleDto = FixtureDto.getArticleDto(1L, "title",  "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
-        Article article = Fixture.getArticle(articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
+        ArticleDto articleDto =
+                FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        Article article = Fixture.getArticle(
+                articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         willDoNothing().given(fileService).uploadFile(any(), anyString());
@@ -162,14 +178,18 @@ class ArticleServiceTest {
     @Test
     void updateArticle() throws IllegalAccessException, IOException {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(
+                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willReturn(Optional.of(savedArticle));
         willDoNothing().given(articleFileService).updateArticleFile(any(), anyLong());
         // When
-        articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, updatedArticle.userAccountDto().email());
+        articleService.updateArticle(
+                Fixture.getArticleFormRequest(),
+                1L,
+                updatedArticle.userAccountDto().email());
         // Then
         assertThat(savedArticle)
                 .hasFieldOrPropertyWithValue("title", "new title")
@@ -180,11 +200,15 @@ class ArticleServiceTest {
     @Test
     void updateArticle_NotExistArticle() {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(
+                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, updatedArticle.userAccountDto().email()))
+        assertThatThrownBy(() -> articleService.updateArticle(
+                        Fixture.getArticleFormRequest(),
+                        1L,
+                        updatedArticle.userAccountDto().email()))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -194,13 +218,15 @@ class ArticleServiceTest {
     @Test
     void updateArticle_NotEqualWriter() throws IllegalAccessException {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleDto updatedArticle = FixtureDto.getArticleDto(
+                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willReturn(Optional.of(savedArticle));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "notWriter@gmail.com"))
+        assertThatThrownBy(
+                        () -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "notWriter@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
@@ -262,7 +288,8 @@ class ArticleServiceTest {
         String email = "jk042386@gmail.com";
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
-                .given(articleFileService).deleteFile(anyLong());
+                .given(articleFileService)
+                .deleteFile(anyLong());
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
                 .isInstanceOf(FileException.class)

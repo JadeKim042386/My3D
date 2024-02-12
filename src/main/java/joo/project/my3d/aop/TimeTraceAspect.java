@@ -13,8 +13,7 @@ import org.springframework.util.StopWatch;
 @Aspect
 public class TimeTraceAspect {
     @Pointcut("@annotation(joo.project.my3d.aop.TimeTrace)")
-    private void timeTracePointcut() {
-    }
+    private void timeTracePointcut() {}
 
     @Around("timeTracePointcut()")
     public Object traceTime(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -25,7 +24,8 @@ public class TimeTraceAspect {
             return joinPoint.proceed(); // 실제 타겟 호출
         } finally {
             stopWatch.stop();
-            log.debug("{} - Total time = {}s = {}ms",
+            log.debug(
+                    "{} - Total time = {}s = {}ms",
                     joinPoint.getSignature().toShortString(),
                     stopWatch.getTotalTimeSeconds(),
                     stopWatch.getTotalTimeMillis());

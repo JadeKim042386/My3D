@@ -23,7 +23,7 @@
     <!--모델 뷰-->
     <attr sel="#model" th:each="article : ${articles}">
         <attr sel="div.model_view/div"
-              th:model="${filePath} + ${article.articleFile.fileName}" />
+              th:model="${filePath} + ${article.articleFile.fileName}"/>
         <attr sel="#title" th:text="${article.title}" th:href="@{'/' + ${article.id}}"/>
         <attr sel="div.nickname" th:text="${article.nickname} + ' · ' + ${article.createdAt}"/>
         <attr sel="div.like/span" th:text="${article.likeCount}"/>

@@ -39,12 +39,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SignUpApi.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class SignUpApiTest {
-    @Autowired private MockMvc mvc;
-    @Autowired private FormDataEncoder formDataEncoder;
-    @Autowired private UserAccountServiceInterface userAccountService;
-    @Autowired private TokenProvider tokenProvider;
-    @MockBean private CompanyServiceInterface companyService;
-    @MockBean private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private FormDataEncoder formDataEncoder;
+
+    @Autowired
+    private UserAccountServiceInterface userAccountService;
+
+    @Autowired
+    private TokenProvider tokenProvider;
+
+    @MockBean
+    private CompanyServiceInterface companyService;
+
+    @MockBean
+    private BCryptPasswordEncoder passwordEncoder;
+
     private static Cookie anonymousCookie = FixtureCookie.createAnonymousCookie();
 
     @Order(0)
@@ -53,20 +65,20 @@ class SignUpApiTest {
     void requestSignup() throws Exception {
         // Given
         String email = "tester@gmail.com";
-        SignUpRequest request = new SignUpRequest(email, UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
-        given(userAccountService.isExistsUserEmailOrNickname(anyString(), anyString())).willReturn(false);
+        SignUpRequest request =
+                new SignUpRequest(email, UserRole.USER, null, "tester", "pw1234@@", "1234", "address", "detailAddress");
+        given(userAccountService.isExistsUserEmailOrNickname(anyString(), anyString()))
+                .willReturn(false);
         given(tokenProvider.generateRefreshToken()).willReturn("refreshToken");
         willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
         given(userAccountService.login(anyString(), anyString()))
                 .willReturn(LoginResponse.of("accessToken", "refreshToken"));
         // When
-        mvc.perform(
-                        post("/api/v1/signup")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(request))
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/signup")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formDataEncoder.encode(request))
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").value("accessToken"))
                 .andExpect(jsonPath("$.refreshToken").value("refreshToken"));
@@ -79,19 +91,18 @@ class SignUpApiTest {
     void requestSignup_validationError() throws Exception {
         // Given
         String email = "tester@gmail.com";
-        SignUpRequest request = new SignUpRequest(email, UserRole.USER, null, "", "pw1234@@", "1234", "address", "detailAddress");
+        SignUpRequest request =
+                new SignUpRequest(email, UserRole.USER, null, "", "pw1234@@", "1234", "address", "detailAddress");
         given(tokenProvider.generateRefreshToken()).willReturn("refreshToken");
         willDoNothing().given(userAccountService).saveUser(any(UserAccount.class));
         given(userAccountService.login(anyString(), anyString()))
                 .willReturn(LoginResponse.of("accessToken", "refreshToken"));
         // When
-        mvc.perform(
-                        post("/api/v1/signup")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(formDataEncoder.encode(request))
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/signup")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(formDataEncoder.encode(request))
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.errors.size()").value(1));

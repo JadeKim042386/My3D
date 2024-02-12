@@ -8,9 +8,12 @@ import java.util.Optional;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     Optional<UserAccount> findByCompanyId(Long companyId);
+
     @EntityGraph(attributePaths = {"company", "userRefreshToken"})
     Optional<UserAccount> findByEmail(String email);
+
     @EntityGraph(attributePaths = {"company", "userRefreshToken"})
     UserAccount getReferenceByEmail(String email);
+
     boolean existsByEmailOrNickname(String email, String nickname);
 }

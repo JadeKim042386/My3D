@@ -35,12 +35,10 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
      */
     @Override
     public ArticleCommentDto saveComment(ArticleCommentDto dto) {
-        try{
+        try {
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
-            ArticleComment articleComment = dto.toEntity(
-                    articleRepository.getReferenceById(dto.articleId()),
-                    userAccount
-            );
+            ArticleComment articleComment =
+                    dto.toEntity(articleRepository.getReferenceById(dto.articleId()), userAccount);
             if (dto.parentCommentId() != null) {
                 ArticleComment parentComment = articleCommentRepository.getReferenceById(dto.parentCommentId());
                 parentComment.addChildComment(articleComment);
@@ -64,9 +62,12 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
     @Override
     public void deleteComment(Long articleCommentId, String email) {
         ArticleComment articleComment = articleCommentRepository.getReferenceById(articleCommentId);
-        //작성자와 삭제 요청 유저가 같은지 확인
+        // 작성자와 삭제 요청 유저가 같은지 확인
         if (!articleComment.getUserAccount().getEmail().equals(email)) {
-            log.error("작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}", articleComment.getUserAccount().getEmail(), email);
+            log.error(
+                    "작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}",
+                    articleComment.getUserAccount().getEmail(),
+                    email);
             throw new CommentException(ErrorCode.NOT_WRITER);
         }
 

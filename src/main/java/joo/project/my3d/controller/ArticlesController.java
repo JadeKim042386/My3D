@@ -50,16 +50,12 @@ public class ArticlesController {
      */
     @GetMapping
     public String articleBoard(
-            @PageableDefault(size=9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @QuerydslPredicate(root = Article.class) Predicate predicate,
-            Model model
-    ) {
-        model.addAttribute(
-                "articles",
-                articleService.getArticlesForPreview(predicate, pageable)
-        );
+            Model model) {
+        model.addAttribute("articles", articleService.getArticlesForPreview(predicate, pageable));
         model.addAttribute("filePath", AppConfig.filePath);
-        //파일 경로, 카테고리 리스트, 페이지네이션 바 숫자 리스트는 프론트엔드에서 처리
+        // 파일 경로, 카테고리 리스트, 페이지네이션 바 숫자 리스트는 프론트엔드에서 처리
         return "index";
     }
 
@@ -77,10 +73,7 @@ public class ArticlesController {
      */
     @GetMapping("/form")
     public String articleAddForm(Model model) {
-        model.addAttribute(
-                "article",
-                ArticleFormResponse.of(CREATE)
-        );
+        model.addAttribute("article", ArticleFormResponse.of(CREATE));
         return "articles/form";
     }
 
@@ -97,17 +90,8 @@ public class ArticlesController {
      * }
      */
     @GetMapping("/{articleId}/form")
-    public String articleUpdateForm(
-            @PathVariable Long articleId,
-            Model model
-    ) {
-        model.addAttribute(
-                "article",
-                ArticleFormResponse.from(
-                        articleService.getArticleForm(articleId),
-                        UPDATE
-                )
-        );
+    public String articleUpdateForm(@PathVariable Long articleId, Model model) {
+        model.addAttribute("article", ArticleFormResponse.from(articleService.getArticleForm(articleId), UPDATE));
         return "articles/form";
     }
 
@@ -125,16 +109,12 @@ public class ArticlesController {
             @PathVariable Long articleId,
             @RequestParam(required = false) Long alarmId,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
-    ) {
-        //알람을 통해 이동될 경우 읽음 처리
+            Model model) {
+        // 알람을 통해 이동될 경우 읽음 처리
         if (!Objects.isNull(alarmId)) {
             alarmService.checkAlarm(alarmId);
         }
-        model.addAttribute(
-                "article",
-                articleService.getArticleWithComments(articleId, boardPrincipal.email())
-        );
+        model.addAttribute("article", articleService.getArticleWithComments(articleId, boardPrincipal.email()));
         model.addAttribute("filePath", AppConfig.filePath);
         return "articles/detail";
     }

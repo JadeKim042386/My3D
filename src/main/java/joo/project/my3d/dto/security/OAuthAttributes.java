@@ -14,12 +14,14 @@ public class OAuthAttributes {
     private String email;
     private String provider;
 
-    public static OAuthAttributes of(String name, String email, String provider, Map<String, Object> attributes, String nameAttributeKey) {
+    public static OAuthAttributes of(
+            String name, String email, String provider, Map<String, Object> attributes, String nameAttributeKey) {
         return new OAuthAttributes(attributes, nameAttributeKey, name, email, provider);
     }
 
-    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        if("naver".equals(registrationId)) {
+    public static OAuthAttributes of(
+            String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+        if ("naver".equals(registrationId)) {
             return ofNaver("id", attributes);
         } else if ("kakao".equals(registrationId)) {
             return ofKakao("id", attributes);
@@ -34,8 +36,7 @@ public class OAuthAttributes {
                 (String) attributes.get("email"),
                 "Google",
                 attributes,
-                userNameAttributeName
-        );
+                userNameAttributeName);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,8 +48,7 @@ public class OAuthAttributes {
                 (String) response.get("email"),
                 "Naver",
                 response,
-                userNameAttributeName
-        );
+                userNameAttributeName);
     }
 
     @SuppressWarnings("unchecked")
@@ -61,7 +61,6 @@ public class OAuthAttributes {
                 (String) response.get("email"),
                 "Kakao",
                 attributes,
-                userNameAttributeName
-        );
+                userNameAttributeName);
     }
 }

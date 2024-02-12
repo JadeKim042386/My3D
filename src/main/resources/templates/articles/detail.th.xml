@@ -9,7 +9,8 @@
 
     <attr sel="#article-main" th:object="${article.article}">
         <!--게시글 수정&삭제-->
-        <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{email} == ${#authentication.name}">
+        <attr sel="#article-buttons"
+              th:if="${#authorization.expression('isAuthenticated()')} and *{email} == ${#authentication.name}">
             <attr sel="#update-article" th:href="@{'/' + *{id} + '/form'}"/>
         </attr>
         <!--닉네임&작성일시-->
@@ -24,8 +25,8 @@
         <attr sel="#dimensionTable">
             <attr sel="tbody">
                 <attr sel="tr[0]"
-                  th:each="dimension : *{articleFile.dimensionOption.dimensions}"
-            >
+                      th:each="dimension : *{articleFile.dimensionOption.dimensions}"
+                >
                     <attr sel="td[0]" th:text="${dimension.dimName}"/>
                     <attr sel="td[1]" th:text="${dimension.dimValue}"/>
                     <attr sel="td[2]" th:text="${dimension.dimUnit}"/>

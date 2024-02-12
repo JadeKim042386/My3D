@@ -36,12 +36,23 @@ public class JpaRepositoryTest {
     @Nested
     public class ArticleJpaTest {
 
-        @Autowired private ArticleRepository articleRepository;
-        @Autowired private ArticleCommentRepository articleCommentRepository;
-        @Autowired private ArticleLikeRepository articleLikeRepository;
-        @Autowired private ArticleFileRepository articleFileRepository;
-        @Autowired private DimensionRepository dimensionRepository;
-        @Autowired private DimensionOptionRepository dimensionOptionRepository;
+        @Autowired
+        private ArticleRepository articleRepository;
+
+        @Autowired
+        private ArticleCommentRepository articleCommentRepository;
+
+        @Autowired
+        private ArticleLikeRepository articleLikeRepository;
+
+        @Autowired
+        private ArticleFileRepository articleFileRepository;
+
+        @Autowired
+        private DimensionRepository dimensionRepository;
+
+        @Autowired
+        private DimensionOptionRepository dimensionOptionRepository;
 
         @DisplayName("게시글 findAll")
         @Test
@@ -110,7 +121,6 @@ public class JpaRepositoryTest {
             assertThat(article).hasFieldOrPropertyWithValue("title", modified_title);
             assertThat(article.getModifiedBy()).isEqualTo(article.getCreatedBy());
             assertThat(article.getModifiedAt()).isNotEqualTo(previousModifiedAt);
-
         }
 
         @DisplayName("게시글&파일 delete")
@@ -151,10 +161,17 @@ public class JpaRepositoryTest {
     @Nested
     public class UserAccountJpaTest {
 
-        @Autowired private UserAccountRepository userAccountRepository;
-        @Autowired private ArticleRepository articleRepository;
-        @Autowired private ArticleCommentRepository articleCommentRepository;
-        @Autowired private ArticleLikeRepository articleLikeRepository;
+        @Autowired
+        private UserAccountRepository userAccountRepository;
+
+        @Autowired
+        private ArticleRepository articleRepository;
+
+        @Autowired
+        private ArticleCommentRepository articleCommentRepository;
+
+        @Autowired
+        private ArticleLikeRepository articleLikeRepository;
 
         @DisplayName("유저 계정 findAll")
         @Test
@@ -228,16 +245,16 @@ public class JpaRepositoryTest {
             log.info("previousArticleCommentCount: {}", previousArticleCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
-            articleRepository.findAllByUserAccount_Email(email)
-                    .forEach(Article::deleteAll);
-            UserAccount userAccount = userAccountRepository.findById(userAccountId).get();
+            articleRepository.findAllByUserAccount_Email(email).forEach(Article::deleteAll);
+            UserAccount userAccount =
+                    userAccountRepository.findById(userAccountId).get();
             userAccount.getArticleComments().clear();
             userAccount.getArticleLikes().clear();
             userAccountRepository.deleteById(userAccountId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
             assertThat(articleRepository.count()).isEqualTo(previousArticleCount - 5);
-            assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 9); //부모 + 자식 댓글 + 게시글
+            assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - 9); // 부모 + 자식 댓글 + 게시글
             assertThat(articleLikeRepository.count()).isEqualTo(previousLikeCount - 3);
         }
     }
@@ -250,9 +267,14 @@ public class JpaRepositoryTest {
     @Nested
     public class ArticleCommentJpaTest {
 
-        @Autowired private ArticleCommentRepository articleCommentRepository;
-        @Autowired private UserAccountRepository userAccountRepository;
-        @Autowired private ArticleRepository articleRepository;
+        @Autowired
+        private ArticleCommentRepository articleCommentRepository;
+
+        @Autowired
+        private UserAccountRepository userAccountRepository;
+
+        @Autowired
+        private ArticleRepository articleRepository;
 
         @DisplayName("댓글 findAll")
         @Test
@@ -281,7 +303,10 @@ public class JpaRepositoryTest {
         void saveArticleComment() {
             // Given
             Long userAccountId = 1L;
-            ArticleComment articleComment = ArticleComment.of(userAccountRepository.findById(userAccountId).get(), articleRepository.findById(1L).get(), "content");
+            ArticleComment articleComment = ArticleComment.of(
+                    userAccountRepository.findById(userAccountId).get(),
+                    articleRepository.findById(1L).get(),
+                    "content");
             long previousCount = articleCommentRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -322,7 +347,7 @@ public class JpaRepositoryTest {
             // When
             articleCommentRepository.deleteById(articleCommentId);
             // Then
-            assertThat(articleCommentRepository.count()).isEqualTo(previousCount - 2); //부모 + 자식 댓글
+            assertThat(articleCommentRepository.count()).isEqualTo(previousCount - 2); // 부모 + 자식 댓글
         }
     }
 
@@ -334,9 +359,14 @@ public class JpaRepositoryTest {
     @Nested
     public class ArticleLikeJpaTest {
 
-        @Autowired private UserAccountRepository userAccountRepository;
-        @Autowired private ArticleRepository articleRepository;
-        @Autowired private ArticleLikeRepository articleLikeRepository;
+        @Autowired
+        private UserAccountRepository userAccountRepository;
+
+        @Autowired
+        private ArticleRepository articleRepository;
+
+        @Autowired
+        private ArticleLikeRepository articleLikeRepository;
 
         @DisplayName("좋아요 findAll")
         @Test
@@ -365,7 +395,9 @@ public class JpaRepositoryTest {
         void saveArticleLike() {
             // Given
             Long userAccountId = 1L;
-            ArticleLike articleLike = ArticleLike.of(userAccountRepository.findById(userAccountId).get(), articleRepository.findById(1L).get());
+            ArticleLike articleLike = ArticleLike.of(
+                    userAccountRepository.findById(userAccountId).get(),
+                    articleRepository.findById(1L).get());
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -374,9 +406,7 @@ public class JpaRepositoryTest {
             long afterCount = articleLikeRepository.count();
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedArticleLike)
-                    .hasFieldOrPropertyWithValue("id", 7L)
-                    .hasNoNullFieldsOrProperties();
+            assertThat(savedArticleLike).hasFieldOrPropertyWithValue("id", 7L).hasNoNullFieldsOrProperties();
         }
 
         @DisplayName("좋아요 delete")
@@ -400,10 +430,17 @@ public class JpaRepositoryTest {
     @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
     @Nested
     public class ArticleFileJpaTest {
-        @Autowired private ArticleRepository articleRepository;
-        @Autowired private ArticleFileRepository articleFileRepository;
-        @Autowired private DimensionOptionRepository dimensionOptionRepository;
-        @Autowired private DimensionRepository dimensionRepository;
+        @Autowired
+        private ArticleRepository articleRepository;
+
+        @Autowired
+        private ArticleFileRepository articleFileRepository;
+
+        @Autowired
+        private DimensionOptionRepository dimensionOptionRepository;
+
+        @Autowired
+        private DimensionRepository dimensionRepository;
 
         @DisplayName("파일 findAll")
         @Test
@@ -436,8 +473,11 @@ public class JpaRepositoryTest {
     @Nested
     public class DimensionOptionJpaTest {
 
-        @Autowired private ArticleFileRepository articleFileRepository;
-        @Autowired private DimensionOptionRepository dimensionOptionRepository;
+        @Autowired
+        private ArticleFileRepository articleFileRepository;
+
+        @Autowired
+        private DimensionOptionRepository dimensionOptionRepository;
 
         @DisplayName("치수 옵션 findAll")
         @Test
@@ -474,8 +514,7 @@ public class JpaRepositoryTest {
             long afterCount = dimensionOptionRepository.count();
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedDimensionOption)
-                    .hasFieldOrPropertyWithValue("id", 11L);
+            assertThat(savedDimensionOption).hasFieldOrPropertyWithValue("id", 11L);
         }
 
         @DisplayName("치수 옵션 update")
@@ -502,8 +541,11 @@ public class JpaRepositoryTest {
     @Nested
     public class DimensionJpaTest {
 
-        @Autowired private DimensionRepository dimensionRepository;
-        @Autowired private DimensionOptionRepository dimensionOptionRepository;
+        @Autowired
+        private DimensionRepository dimensionRepository;
+
+        @Autowired
+        private DimensionOptionRepository dimensionOptionRepository;
 
         @DisplayName("치수 findAll")
         @Test
@@ -558,7 +600,6 @@ public class JpaRepositoryTest {
             assertThat(dimension).hasFieldOrPropertyWithValue("dimUnit", modified_unit);
             assertThat(dimension.getModifiedBy()).isEqualTo(dimension.getCreatedBy());
             assertThat(dimension.getModifiedAt()).isNotEqualTo(previousModifiedAt);
-
         }
 
         @DisplayName("치수 delete")
@@ -583,8 +624,11 @@ public class JpaRepositoryTest {
     @Nested
     public class AlarmJpaTest {
 
-        @Autowired private AlarmRepository alarmRepository;
-        @Autowired private UserAccountRepository userAccountRepository;
+        @Autowired
+        private AlarmRepository alarmRepository;
+
+        @Autowired
+        private UserAccountRepository userAccountRepository;
 
         @DisplayName("알람 findAll")
         @Test
@@ -623,8 +667,7 @@ public class JpaRepositoryTest {
             long afterCount = alarmRepository.count();
             log.info("afterCount: {}", afterCount);
             assertThat(afterCount).isEqualTo(previousCount + 1);
-            assertThat(savedAlarm)
-                    .hasFieldOrPropertyWithValue("id", 3L);
+            assertThat(savedAlarm).hasFieldOrPropertyWithValue("id", 3L);
         }
 
         @DisplayName("알람 delete")

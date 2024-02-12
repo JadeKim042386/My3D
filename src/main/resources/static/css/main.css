@@ -22,12 +22,13 @@ p {
     color: #068d06;
 }
 
- .alarm-dropdown {
-     max-width: 326px;
-     max-height: 280px;
-     overflow-y: auto;
+.alarm-dropdown {
+    max-width: 326px;
+    max-height: 280px;
+    overflow-y: auto;
 
- }
+}
+
 .alarm-content {
     word-break: break-all;
     white-space: normal;

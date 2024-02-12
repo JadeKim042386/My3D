@@ -22,8 +22,11 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("비지니스 로직 - 기업")
 @ExtendWith(MockitoExtension.class)
 class CompanyServiceTest {
-    @InjectMocks private CompanyService companyService;
-    @Mock private CompanyRepository companyRepository;
+    @InjectMocks
+    private CompanyService companyService;
+
+    @Mock
+    private CompanyRepository companyRepository;
 
     @DisplayName("기업 조회")
     @Test

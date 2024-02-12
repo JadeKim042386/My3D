@@ -11,5 +11,4 @@ public class My3DApplication {
     public static void main(String[] args) {
         SpringApplication.run(My3DApplication.class, args);
     }
-
 }

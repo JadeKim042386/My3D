@@ -17,10 +17,31 @@ public record ArticleFormDto(
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
-        String modifiedBy
-) {
-    public static ArticleFormDto of(Long id, UserAccountDto userAccountDto, ArticleFileWithDimensionDto articleFileDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new ArticleFormDto(id, userAccountDto, articleFileDto, title, content, articleType, articleCategory, createdAt, createdBy, modifiedAt, modifiedBy);
+        String modifiedBy) {
+    public static ArticleFormDto of(
+            Long id,
+            UserAccountDto userAccountDto,
+            ArticleFileWithDimensionDto articleFileDto,
+            String title,
+            String content,
+            ArticleType articleType,
+            ArticleCategory articleCategory,
+            LocalDateTime createdAt,
+            String createdBy,
+            LocalDateTime modifiedAt,
+            String modifiedBy) {
+        return new ArticleFormDto(
+                id,
+                userAccountDto,
+                articleFileDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                createdAt,
+                createdBy,
+                modifiedAt,
+                modifiedBy);
     }
 
     public static ArticleFormDto from(Article article) {
@@ -35,7 +56,6 @@ public record ArticleFormDto(
                 article.getCreatedAt(),
                 article.getCreatedBy(),
                 article.getModifiedAt(),
-                article.getModifiedBy()
-        );
+                article.getModifiedBy());
     }
 }

@@ -19,11 +19,8 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import java.util.List;
 import java.util.Optional;
 
-public interface ArticleRepository extends
-        JpaRepository<Article, Long>,
-        QuerydslPredicateExecutor<Article>,
-        QuerydslBinderCustomizer<QArticle>
-{
+public interface ArticleRepository
+        extends JpaRepository<Article, Long>, QuerydslPredicateExecutor<Article>, QuerydslBinderCustomizer<QArticle> {
     @Override
     default void customize(QuerydslBindings bindings, QArticle root) {
         bindings.excludeUnlistedProperties(true);

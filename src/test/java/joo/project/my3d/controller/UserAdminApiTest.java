@@ -30,52 +30,51 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @WebMvcTest(UserAdminApi.class)
 class UserAdminApiTest {
-    @Autowired private MockMvc mvc;
-    @Autowired private UserAccountService userAccountService;
-    @MockBean private CompanyServiceInterface companyService;
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private UserAccountService userAccountService;
+
+    @MockBean
+    private CompanyServiceInterface companyService;
+
     private static Cookie userCookie = FixtureCookie.createUserCookie();
     private static Cookie companyCookie = FixtureCookie.createCompanyCookie();
 
     @DisplayName("[POST] 사용자 정보 수정 요청")
     @Test
     void updateUserData() throws Exception {
-        //given
+        // given
         willDoNothing().given(userAccountService).updateUser(any(UserAccountDto.class));
-        //when
-        mvc.perform(
-                        put("/api/v1/admin")
-                                .param("nickname", "nickname")
-                                .param("password", "pw")
-                                .param("phone", "01011111111")
-                                .param("email", "example@gmail.com")
-                                .param("detail", "123")
-                                .param("street", "강원특별자치도")
-                                .param("zipcode", "12345")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        // when
+        mvc.perform(put("/api/v1/admin")
+                        .param("nickname", "nickname")
+                        .param("password", "pw")
+                        .param("phone", "01011111111")
+                        .param("email", "example@gmail.com")
+                        .param("detail", "123")
+                        .param("street", "강원특별자치도")
+                        .param("zipcode", "12345")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isNotEmpty())
-        ;
-        //then
+                .andExpect(jsonPath("$").isNotEmpty());
+        // then
     }
 
     @DisplayName("[POST] 비밀번호 변경 요청")
     @Test
     void changePassword() throws Exception {
-        //given
+        // given
         willDoNothing().given(userAccountService).changePassword(anyString(), anyString());
-        //when
-        mvc.perform(
-                put("/api/v1/admin/password")
-                        .cookie(userCookie)
-                        .with(csrf())
-        )
+        // when
+        mvc.perform(put("/api/v1/admin/password").cookie(userCookie).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isNotEmpty());
-        //then
+        // then
     }
 
     @DisplayName("[POST] 기업 정보 수정 요청")
@@ -84,16 +83,10 @@ class UserAdminApiTest {
         // Given
         given(companyService.updateCompany(any(), anyString())).willReturn(FixtureDto.getCompanyDto());
         // When
-        mvc.perform(
-                put("/api/v1/admin/company")
-                        .cookie(companyCookie)
-                        .with(csrf())
-        )
+        mvc.perform(put("/api/v1/admin/company").cookie(companyCookie).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.companyName").value("company"));
         // Then
     }
-
-
 }

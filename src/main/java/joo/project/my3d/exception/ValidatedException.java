@@ -5,7 +5,7 @@ import joo.project.my3d.exception.constant.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ValidatedException extends CustomException{
+public class ValidatedException extends CustomException {
     private final ExceptionResponse exceptionResponse;
 
     public ValidatedException(ErrorCode errorCode, ExceptionResponse exceptionResponse) {

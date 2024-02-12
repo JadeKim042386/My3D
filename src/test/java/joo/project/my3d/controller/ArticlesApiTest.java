@@ -36,9 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class ArticlesApiTest {
 
-    @Autowired private MockMvc mvc;
-    @MockBean private ArticleService articleService;
-    @MockBean private ArticleFileService articleFileService;
+    @Autowired
+    private MockMvc mvc;
+
+    @MockBean
+    private ArticleService articleService;
+
+    @MockBean
+    private ArticleFileService articleFileService;
+
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
     @Order(0)
@@ -50,24 +56,21 @@ class ArticlesApiTest {
         Article article = Fixture.getArticle();
         given(articleService.saveArticle(anyString(), any())).willReturn(article);
         // When
-        mvc.perform(
-                    multipart(HttpMethod.POST, "/api/v1/articles")
-                            .file(multipartFile)
-                            .contentType(MediaType.MULTIPART_FORM_DATA)
-                            .param("title", "title")
-                            .param("content", "content")
-                            .param("articleCategory", "MUSIC")
-                            .param("dimensionOptions[0].optionName", "option1")
-                            .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                            .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                            .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                            .cookie(userCookie)
-                            .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.POST, "/api/v1/articles")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").isNotEmpty())
-        ;
+                .andExpect(jsonPath("$.message").isNotEmpty());
 
         // Then
     }
@@ -78,22 +81,20 @@ class ArticlesApiTest {
     void addNewModelArticle_WithoutFile() throws Exception {
         // Given
         // When
-        mvc.perform(
-                        multipart(HttpMethod.POST, "/api/v1/articles")
-                                .file("modelFile", new byte[]{})
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.POST, "/api/v1/articles")
+                        .file("modelFile", new byte[] {})
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -108,22 +109,20 @@ class ArticlesApiTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
-        mvc.perform(
-                        multipart(HttpMethod.POST, "/api/v1/articles")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("content", "content")
-                                .param("articleCategory", "카테고리를 선택해주세요.")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.POST, "/api/v1/articles")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("content", "content")
+                        .param("articleCategory", "카테고리를 선택해주세요.")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -139,16 +138,14 @@ class ArticlesApiTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
-        mvc.perform(
-                        multipart(HttpMethod.POST, "/api/v1/articles")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.POST, "/api/v1/articles")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -165,25 +162,22 @@ class ArticlesApiTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         willDoNothing().given(articleService).updateArticle(any(), anyLong(), anyString());
         // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/api/v1/articles/1")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
-                .andExpect(status().isOk())
-                ;
+        mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("summary", "summary")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
+                .andExpect(status().isOk());
 
         // Then
     }
@@ -194,23 +188,21 @@ class ArticlesApiTest {
     void updateRequestModelArticle_WithoutCategory() throws Exception {
         // Given
         // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/api/v1/articles/1")
-                                .file("modelFile", new byte[]{})
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
+                        .file("modelFile", new byte[] {})
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("summary", "summary")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -225,23 +217,21 @@ class ArticlesApiTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/api/v1/articles/1")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "카테고리를 선택해주세요.")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("summary", "summary")
+                        .param("content", "content")
+                        .param("articleCategory", "카테고리를 선택해주세요.")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -256,17 +246,15 @@ class ArticlesApiTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/api/v1/articles/1")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("summary", "summary")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty())
@@ -280,29 +268,28 @@ class ArticlesApiTest {
     void updateRequestModelArticle_FailedArticleUpdate() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willThrow(new ArticleException(ARTICLE_NOT_FOUND)).given(articleService).updateArticle(any(), anyLong(), anyString());
+        willThrow(new ArticleException(ARTICLE_NOT_FOUND))
+                .given(articleService)
+                .updateArticle(any(), anyLong(), anyString());
         // When
-        mvc.perform(
-                        multipart(HttpMethod.PUT, "/api/v1/articles/1")
-                                .file(multipartFile)
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .param("title", "title")
-                                .param("summary", "summary")
-                                .param("content", "content")
-                                .param("articleCategory", "MUSIC")
-                                .param("dimensionOptions[0].optionName", "option1")
-                                .param("dimensionOptions[0].printingTech", "123")
-                                .param("dimensionOptions[0].material", "123")
-                                .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
-                                .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
-                                .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("title", "title")
+                        .param("summary", "summary")
+                        .param("content", "content")
+                        .param("articleCategory", "MUSIC")
+                        .param("dimensionOptions[0].optionName", "option1")
+                        .param("dimensionOptions[0].printingTech", "123")
+                        .param("dimensionOptions[0].material", "123")
+                        .param("dimensionOptions[0].dimensions[0].dimName", "dimName")
+                        .param("dimensionOptions[0].dimensions[0].dimValue", String.valueOf(100.0))
+                        .param("dimensionOptions[0].dimensions[0].dimUnit", "MM")
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(ARTICLE_NOT_FOUND.getMessage()))
-        ;
+                .andExpect(jsonPath("$.message").value(ARTICLE_NOT_FOUND.getMessage()));
         // Then
     }
 
@@ -314,12 +301,10 @@ class ArticlesApiTest {
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleService).deleteArticle(anyLong(), anyString());
         // When
-        mvc.perform(
-                        delete("/api/v1/articles/1")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(delete("/api/v1/articles/1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").isNotEmpty());
@@ -334,12 +319,10 @@ class ArticlesApiTest {
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willThrow(new ArticleException(FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
         // When
-        mvc.perform(
-                        delete("/api/v1/articles/1")
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .cookie(userCookie)
-                                .with(csrf())
-                )
+        mvc.perform(delete("/api/v1/articles/1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .cookie(userCookie)
+                        .with(csrf()))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(FAILED_DELETE.getMessage()));
@@ -350,17 +333,13 @@ class ArticlesApiTest {
     @DisplayName("[GET] 게시글 파일 다운로드 - 정상")
     @Test
     void downloadArticleFile() throws Exception {
-        //given
+        // given
         given(articleFileService.searchFileName(anyLong())).willReturn("fileName");
-        given(articleFileService.download(anyString())).willReturn(new byte[]{1});
-        //when
-        mvc.perform(
-                get("/api/v1/articles/1/download")
-                        .cookie(userCookie)
-        )
+        given(articleFileService.download(anyString())).willReturn(new byte[] {1});
+        // when
+        mvc.perform(get("/api/v1/articles/1/download").cookie(userCookie))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").exists())
-                ;
-        //then
+                .andExpect(jsonPath("$").exists());
+        // then
     }
 }

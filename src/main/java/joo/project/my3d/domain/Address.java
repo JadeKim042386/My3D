@@ -7,12 +7,11 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 public class Address {
-    private String zipcode; //우편번호
-    private String street; //주소
-    private String detail; //상세주소
+    private String zipcode; // 우편번호
+    private String street; // 주소
+    private String detail; // 상세주소
 
-    protected Address() {
-    }
+    protected Address() {}
 
     private Address(String zipcode, String street, String detail) {
         this.zipcode = zipcode;

@@ -14,11 +14,7 @@ import static javax.persistence.FetchType.LAZY;
 @ToString(callSuper = true)
 @Table(
         name = "article_file",
-        indexes = {
-                @Index(columnList = "id"),
-                @Index(columnList = "fileName", unique = true)
-        }
-)
+        indexes = {@Index(columnList = "id"), @Index(columnList = "fileName", unique = true)})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleFile extends AuditingFields implements Persistable<Long> {
@@ -29,10 +25,13 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
 
     @Column(nullable = false)
     private Long byteSize;
+
     @Column(nullable = false)
-    private String originalFileName; //사용자가 지정한 파일명
+    private String originalFileName; // 사용자가 지정한 파일명
+
     @Column(nullable = false)
-    private String fileName; //서버에 저장된 파일명
+    private String fileName; // 서버에 저장된 파일명
+
     @Column(nullable = false)
     private String fileExtension;
 
@@ -45,10 +44,14 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
     @JoinColumn(name = "dimensionOptionId")
     private DimensionOption dimensionOption;
 
-    protected ArticleFile() {
-    }
+    protected ArticleFile() {}
 
-    private ArticleFile(Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOption dimensionOption) {
+    private ArticleFile(
+            Long byteSize,
+            String originalFileName,
+            String fileName,
+            String fileExtension,
+            DimensionOption dimensionOption) {
         this.byteSize = byteSize;
         this.originalFileName = originalFileName;
         this.fileName = fileName;
@@ -56,7 +59,12 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
         this.dimensionOption = dimensionOption;
     }
 
-    public static ArticleFile of(Long byteSize, String originalFileName, String fileName, String fileExtension, DimensionOption dimensionOption) {
+    public static ArticleFile of(
+            Long byteSize,
+            String originalFileName,
+            String fileName,
+            String fileExtension,
+            DimensionOption dimensionOption) {
         return new ArticleFile(byteSize, originalFileName, fileName, fileExtension, dimensionOption);
     }
 

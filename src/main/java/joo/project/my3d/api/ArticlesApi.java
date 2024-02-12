@@ -38,27 +38,18 @@ public class ArticlesApi {
     public ResponseEntity<ApiResponse> postNewArticle(
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
             throw new ValidatedException(
                     ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult(
-                            "validation error during add article",
-                            bindingResult
-                    )
-            );
+                    ExceptionResponse.fromBindingResult("validation error during add article", bindingResult));
         }
 
-        //게시글 저장
-        Article article = articleService.saveArticle(
-                boardPrincipal.email(),
-                articleFormRequest
-        );
+        // 게시글 저장
+        Article article = articleService.saveArticle(boardPrincipal.email(), articleFormRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(String.valueOf(article.getId())));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(String.valueOf(article.getId())));
     }
 
     /**
@@ -69,28 +60,17 @@ public class ArticlesApi {
             @PathVariable Long articleId,
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         if (bindingResult.hasErrors()) {
             log.warn("formBindingResult={}", bindingResult);
             throw new ValidatedException(
                     ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult(
-                            "validation error during updated article",
-                            bindingResult
-                    )
-            );
+                    ExceptionResponse.fromBindingResult("validation error during updated article", bindingResult));
         }
 
-        articleService.updateArticle(
-                articleFormRequest,
-                articleId,
-                boardPrincipal.email()
-        );
+        articleService.updateArticle(articleFormRequest, articleId, boardPrincipal.email());
 
-        return ResponseEntity.ok(
-                ApiResponse.of(String.valueOf(articleId))
-        );
+        return ResponseEntity.ok(ApiResponse.of(String.valueOf(articleId)));
     }
 
     /**
@@ -98,13 +78,10 @@ public class ArticlesApi {
      */
     @DeleteMapping("/{articleId}")
     public ResponseEntity<ApiResponse> deleteArticle(
-            @PathVariable Long articleId,
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
+            @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         articleService.deleteArticle(articleId, boardPrincipal.email());
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ApiResponse.of("You successfully deleted article"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of("You successfully deleted article"));
     }
 
     /**
@@ -118,8 +95,6 @@ public class ArticlesApi {
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         httpHeaders.setContentLength(file.length);
         httpHeaders.setContentDispositionFormData("attachment", "model." + FileUtils.getExtension(fileName));
-        return ResponseEntity.status(HttpStatus.OK)
-                .headers(httpHeaders)
-                .body(file);
+        return ResponseEntity.status(HttpStatus.OK).headers(httpHeaders).body(file);
     }
 }

@@ -23,9 +23,14 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 class ArticleFileServiceTest {
 
-    @InjectMocks private ArticleFileService articleFileService;
-    @Mock private ArticleFileRepository articleFileRepository;
-    @Mock private FileServiceInterface fileService;
+    @InjectMocks
+    private ArticleFileService articleFileService;
+
+    @Mock
+    private ArticleFileRepository articleFileRepository;
+
+    @Mock
+    private FileServiceInterface fileService;
 
     @DisplayName("모델 파일 수정")
     @Test

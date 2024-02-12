@@ -3,14 +3,9 @@ package joo.project.my3d.dto;
 import joo.project.my3d.domain.ArticleFile;
 import joo.project.my3d.domain.DimensionOption;
 
-public record ArticleFileDto(
-        Long id,
-        Long byteSize,
-        String originalFileName,
-        String fileName,
-        String fileExtension
-) {
-    public static ArticleFileDto of(Long id, Long byteSize, String originalFileName, String fineName, String fileExtension) {
+public record ArticleFileDto(Long id, Long byteSize, String originalFileName, String fileName, String fileExtension) {
+    public static ArticleFileDto of(
+            Long id, Long byteSize, String originalFileName, String fineName, String fileExtension) {
         return new ArticleFileDto(id, byteSize, originalFileName, fineName, fileExtension);
     }
 
@@ -24,17 +19,10 @@ public record ArticleFileDto(
                 articleFile.getByteSize(),
                 articleFile.getOriginalFileName(),
                 articleFile.getFileName(),
-                articleFile.getFileExtension()
-        );
+                articleFile.getFileExtension());
     }
 
     public ArticleFile toEntity(DimensionOption dimensionOption) {
-        return ArticleFile.of(
-                byteSize,
-                originalFileName,
-                fileName,
-                fileExtension,
-                dimensionOption
-        );
+        return ArticleFile.of(byteSize, originalFileName, fileName, fileExtension, dimensionOption);
     }
 }

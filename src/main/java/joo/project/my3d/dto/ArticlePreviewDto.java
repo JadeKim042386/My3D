@@ -16,10 +16,27 @@ public record ArticlePreviewDto(
         ArticleType articleType,
         ArticleCategory articleCategory,
         ArticleFileDto articleFile,
-        String createdAt
-) {
-    public static ArticlePreviewDto of(Long id, Integer likeCount, String nickname, String title, String content, ArticleType articleType, ArticleCategory articleCategory, ArticleFileDto articleFileDto, LocalDateTime createdAt) {
-        return new ArticlePreviewDto(id, likeCount, nickname, title, content, articleType, articleCategory, articleFileDto, LocalDateTimeUtils.passedTime(createdAt));
+        String createdAt) {
+    public static ArticlePreviewDto of(
+            Long id,
+            Integer likeCount,
+            String nickname,
+            String title,
+            String content,
+            ArticleType articleType,
+            ArticleCategory articleCategory,
+            ArticleFileDto articleFileDto,
+            LocalDateTime createdAt) {
+        return new ArticlePreviewDto(
+                id,
+                likeCount,
+                nickname,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                articleFileDto,
+                LocalDateTimeUtils.passedTime(createdAt));
     }
 
     public static ArticlePreviewDto from(Article article) {
@@ -32,7 +49,6 @@ public record ArticlePreviewDto(
                 article.getArticleType(),
                 article.getArticleCategory(),
                 ArticleFileDto.from(article.getArticleFile()),
-                article.getCreatedAt()
-        );
+                article.getCreatedAt());
     }
 }

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My3D</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="/css/main.css" rel="stylesheet">
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
     <meta name="_csrf"/>
@@ -14,9 +15,11 @@
     #save-companyName {
         display: none;
     }
+
     #save-homepage {
         display: none;
     }
+
     #apply {
         display: none;
     }
@@ -79,7 +82,8 @@
                             기업명
                         </div>
                         <div class="row pb-4">
-                            <input type="text" id="companyName" name="companyName" class="form-control col-lg-7" placeholder="(주)My3D" disabled/>
+                            <input type="text" id="companyName" name="companyName" class="form-control col-lg-7"
+                                   placeholder="(주)My3D" disabled/>
                             <button id="edit-companyName" type="button" class="btn-info btn col-lg-1 ms-2">수정</button>
                             <button id="save-companyName" type="button" class="btn-info btn col-lg-1 ms-2">저장</button>
                         </div>
@@ -88,7 +92,8 @@
                             홈페이지
                         </div>
                         <div class="row pb-4">
-                            <input type="text" id="homepage" name="homepage" class="form-control col-lg-7" placeholder="www.my3d.com" disabled/>
+                            <input type="text" id="homepage" name="homepage" class="form-control col-lg-7"
+                                   placeholder="www.my3d.com" disabled/>
                             <button id="edit-homepage" type="button" class="btn-info btn col-lg-1 ms-2">수정</button>
                             <button id="save-homepage" type="button" class="btn-info btn col-lg-1 ms-2">저장</button>
                         </div>
@@ -111,10 +116,13 @@
 <!--푸터-->
 <footer id="footer"></footer>
 <!--스크립트-->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script src="/js/sb-admin-2.min.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
+        crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/initHeader.js"></script>
 <script>
     /**
@@ -144,35 +152,38 @@
             }
         })
     })
+
     function getCompanyName() {
         return $("#companyName").val();
     }
+
     function getHomepage() {
         return $("#homepage").val();
     }
-    $(window).on('load', function(){
+
+    $(window).on('load', function () {
         var prevCompanyName = getCompanyName();
         var prevHomepage = getHomepage();
 
         //기업명 수정/저장
-        $("#edit-companyName").click(function() {
+        $("#edit-companyName").click(function () {
             $("#companyName").removeAttr("disabled").attr("required", "required");
             $(this).toggle();
             $("#save-companyName").toggle();
         })
-        $("#save-companyName").click(function() {
+        $("#save-companyName").click(function () {
             $("#companyName").attr("disabled", "disabled");
             $(this).toggle();
             $("#edit-companyName").toggle();
             changeCheck();
         })
         //홈페이지 수정/저장
-        $("#edit-homepage").click(function() {
+        $("#edit-homepage").click(function () {
             $("#homepage").removeAttr("disabled");
             $(this).toggle();
             $("#save-homepage").toggle();
         })
-        $("#save-homepage").click(function() {
+        $("#save-homepage").click(function () {
             $("#homepage").attr("disabled", "disabled");
             $(this).toggle();
             $("#edit-homepage").toggle();

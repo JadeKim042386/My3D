@@ -33,11 +33,20 @@ import static org.mockito.BDDMockito.then;
 @DisplayName("비지니스 로직 - 회원 계정")
 @ExtendWith(MockitoExtension.class)
 class UserAccountServiceTest {
-    @InjectMocks private UserAccountService userAccountService;
-    @Mock private UserAccountRepository userAccountRepository;
-    @Mock private UserRefreshTokenRepository userRefreshTokenRepository;
-    @Mock private TokenProvider tokenProvider;
-    @Mock private BCryptPasswordEncoder encoder;
+    @InjectMocks
+    private UserAccountService userAccountService;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
+    @Mock
+    private UserRefreshTokenRepository userRefreshTokenRepository;
+
+    @Mock
+    private TokenProvider tokenProvider;
+
+    @Mock
+    private BCryptPasswordEncoder encoder;
 
     @DisplayName("회원 조회")
     @Test
@@ -93,17 +102,18 @@ class UserAccountServiceTest {
     @DisplayName("로그인")
     @Test
     void login() {
-        //given
+        // given
         String email = "abc@gmail.com";
         String password = "pw";
         given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(Fixture.getUserAccount()));
         given(encoder.matches(anyString(), anyString())).willReturn(true);
-        given(tokenProvider.generateAccessToken(anyString(), anyString(), anyString())).willReturn("accessToken");
+        given(tokenProvider.generateAccessToken(anyString(), anyString(), anyString()))
+                .willReturn("accessToken");
         given(tokenProvider.generateRefreshToken()).willReturn("refreshToken");
         given(userRefreshTokenRepository.findById(anyLong())).willReturn(Optional.of(Fixture.getUserRefreshToken()));
-        //when
+        // when
         LoginResponse loginResponse = userAccountService.login(email, password);
-        //then
+        // then
         assertThat(loginResponse.accessToken()).isEqualTo("accessToken");
     }
 

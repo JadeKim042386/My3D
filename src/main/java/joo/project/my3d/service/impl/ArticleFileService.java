@@ -36,23 +36,21 @@ public class ArticleFileService implements ArticleFileServiceInterface {
     @Override
     public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
         try {
-            ArticleFile articleFile = articleFileRepository.findByArticleId(articleId)
+            ArticleFile articleFile = articleFileRepository
+                    .findByArticleId(articleId)
                     .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
 
             updateFile(articleFile, articleFormRequest.getModelFile());
 
-            //치수 옵션 업데이트
+            // 치수 옵션 업데이트
             DimensionOption dimensionOption = articleFile.getDimensionOption();
             dimensionOption.setOptionName(
-                    articleFormRequest.getDimensionOptions().get(0).getOptionName()
-            );
+                    articleFormRequest.getDimensionOptions().get(0).getOptionName());
 
-            //치수 업데이트
+            // 치수 업데이트
             dimensionOption.updateDimensions(
-                    articleFormRequest.getDimensionOptions().get(0)
-                            .toDimensionEntities(dimensionOption)
-            );
-        }  catch (FileException e) {
+                    articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption));
+        } catch (FileException e) {
             log.error("게시글 id: {} 에 해당하는 파일을 찾을 수 없습니다.", articleId);
             throw e;
         }
@@ -80,19 +78,19 @@ public class ArticleFileService implements ArticleFileServiceInterface {
     public void updateFile(ArticleFile articleFile, MultipartFile file) {
         String fileName = "";
         try {
-            //업데이트 여부 확인
+            // 업데이트 여부 확인
             if (!new String(file.getBytes()).equals("NotUpdated") && file.getSize() > 0) {
-                //S3에 저장한 파일 삭제
+                // S3에 저장한 파일 삭제
                 fileName = articleFile.getFileName();
                 fileService.deleteFile(fileName);
 
                 String originalFileName = file.getOriginalFilename();
                 String extension = FileUtils.getExtension(originalFileName);
                 fileName = UUID.randomUUID() + "." + extension;
-                //업데이트된 파일로 S3에 저장
+                // 업데이트된 파일로 S3에 저장
                 fileService.uploadFile(file, fileName);
 
-                //파일 업데이트
+                // 파일 업데이트
                 long byteSize = file.getSize();
                 articleFile.update(byteSize, originalFileName, fileName, extension);
             }
@@ -104,7 +102,8 @@ public class ArticleFileService implements ArticleFileServiceInterface {
 
     @Override
     public String searchFileName(Long articleId) {
-        return articleFileRepository.findFileNameByArticleId(articleId)
+        return articleFileRepository
+                .findFileNameByArticleId(articleId)
                 .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
                 .getFileName();
     }

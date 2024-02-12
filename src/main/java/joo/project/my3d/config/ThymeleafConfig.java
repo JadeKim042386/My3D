@@ -12,13 +12,12 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 public class ThymeleafConfig {
     @Bean
     public SpringResourceTemplateResolver thymeleafTemplateResolver(
-            SpringResourceTemplateResolver defaultTemplateResolver,
-            Thymeleaf3Properties thymeleaf3Properties
-    ) {
+            SpringResourceTemplateResolver defaultTemplateResolver, Thymeleaf3Properties thymeleaf3Properties) {
         defaultTemplateResolver.setUseDecoupledLogic(thymeleaf3Properties.isDecoupledLogic());
 
         return defaultTemplateResolver;
     }
+
     @RequiredArgsConstructor
     @Getter
     @ConstructorBinding

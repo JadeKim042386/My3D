@@ -14,10 +14,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(
         name = "dimension",
-        indexes = {
-                @Index(columnList = "id")
-        }
-)
+        indexes = {@Index(columnList = "id")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Dimension extends AuditingFields implements Persistable<Long> {
@@ -29,9 +26,11 @@ public class Dimension extends AuditingFields implements Persistable<Long> {
     @Setter
     @Column(nullable = false)
     private String dimName;
+
     @Setter
     @Column(nullable = false)
     private Float dimValue = 0.0f;
+
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,8 +41,7 @@ public class Dimension extends AuditingFields implements Persistable<Long> {
     @JoinColumn(name = "dimensionOptionId")
     private DimensionOption dimensionOption;
 
-    protected Dimension() {
-    }
+    protected Dimension() {}
 
     private Dimension(DimensionOption dimensionOption, String dimName, Float dimValue, DimUnit dimUnit) {
         this.dimensionOption = dimensionOption;

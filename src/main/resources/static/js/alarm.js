@@ -12,7 +12,7 @@ function getAlarms() {
         url: "/api/v1/alarm",
         type: "GET",
         success: function (result) {
-            if (isIterable(result)){
+            if (isIterable(result)) {
                 setAlarms(result);
             }
         },
@@ -35,7 +35,7 @@ function setAlarms(result) {
     for (var alarm of result) {
         var email = alarm['fromUserNickname'];
         var createdAt = alarm['createdAt'];
-        var url = '/'+ alarm["targetId"] + '?alarmId=' + alarm["id"];
+        var url = '/' + alarm["targetId"] + '?alarmId=' + alarm["id"];
         var content;
         if (alarm['alarmType'] === 'NEW_COMMENT_ON_POST') {
             content = '님이 댓글을 달았습니다';

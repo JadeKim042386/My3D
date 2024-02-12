@@ -10,13 +10,18 @@ public record ArticleFormResponse(
         ArticleFileWithDimensionDto modelFile,
         String title,
         String content,
-        String articleCategory
-) {
+        String articleCategory) {
     public static ArticleFormResponse of(FormStatus formStatus) {
-        return ArticleFormResponse.of(null, formStatus, null,  null, null, null);
+        return ArticleFormResponse.of(null, formStatus, null, null, null, null);
     }
 
-    public static ArticleFormResponse of(Long id, FormStatus formStatus, ArticleFileWithDimensionDto modelFile, String title, String content, String articleCategory) {
+    public static ArticleFormResponse of(
+            Long id,
+            FormStatus formStatus,
+            ArticleFileWithDimensionDto modelFile,
+            String title,
+            String content,
+            String articleCategory) {
         return new ArticleFormResponse(id, formStatus, modelFile, title, content, articleCategory);
     }
 
@@ -31,7 +36,6 @@ public record ArticleFormResponse(
                 dto.articleFileWithDimensionDto(),
                 dto.title(),
                 dto.content(),
-                dto.articleCategory().name()
-        );
+                dto.articleCategory().name());
     }
 }

@@ -30,14 +30,8 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers(
-                "/static/**",
-                "/models/**",
-                "/node_modules/**",
-                "/oAuth-Buttons/**",
-                "/js/**",
-                "/css/**"
-        );
+        return (web) -> web.ignoring()
+                .antMatchers("/static/**", "/models/**", "/node_modules/**", "/oAuth-Buttons/**", "/js/**", "/css/**");
     }
 
     @Bean
@@ -45,86 +39,69 @@ public class SecurityConfig {
             HttpSecurity http,
             OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService,
             JwtTokenFilter jwtTokenFilter,
-            CustomOAuth2SuccessHandler customOAuth2SuccessHandler
-    ) throws Exception {
-        return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .mvcMatchers(
-                                "/",
-                                "/profile"
-                        ).permitAll()
-                        .regexMatchers(
-                                "/api/v1/mail.*",
-                                "/api/v1/signin",
-                                "/api/v1/signup.*",
-                                "/signin.*",
-                                "/signup.*"
-                        ).hasRole("ANONYMOUS")
-                        .regexMatchers(
-                                "/api/v1/admin/company",
-                                "/admin/company"
-                        ).hasAnyRole("COMPANY", "ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .csrf((csrf) -> csrf
-                        .csrfTokenRepository(new CookieCsrfTokenRepository())
-                )
+            CustomOAuth2SuccessHandler customOAuth2SuccessHandler)
+            throws Exception {
+        return http.authorizeHttpRequests(auth -> auth.requestMatchers(
+                                PathRequest.toStaticResources().atCommonLocations())
+                        .permitAll()
+                        .mvcMatchers("/", "/profile")
+                        .permitAll()
+                        .regexMatchers("/api/v1/mail.*", "/api/v1/signin", "/api/v1/signup.*", "/signin.*", "/signup.*")
+                        .hasRole("ANONYMOUS")
+                        .regexMatchers("/api/v1/admin/company", "/admin/company")
+                        .hasAnyRole("COMPANY", "ADMIN")
+                        .anyRequest()
+                        .authenticated())
+                .csrf((csrf) -> csrf.csrfTokenRepository(new CookieCsrfTokenRepository()))
                 .exceptionHandling()
                 .and()
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션이 아닌 JWT를 이용하여 인증 진행
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션이 아닌 JWT를 이용하여 인증 진행
                 .and()
-                    .formLogin().disable()
-                    .oauth2Login(oAuth -> oAuth
-                            .loginPage("/signin")
-                            .userInfoEndpoint(userInfo -> userInfo
-                                    .userService(oAuth2UserService))
-                            .successHandler(customOAuth2SuccessHandler) //OAuth 로그인 후 cookie에 jwt 토큰 저장
-                    )
-                    //cookie에서 token을 가져와 authentication 등록
-                    .addFilterAfter(
-                            jwtTokenFilter,
-                            SessionManagementFilter.class
-                    )
+                .formLogin()
+                .disable()
+                .oauth2Login(
+                        oAuth -> oAuth.loginPage("/signin")
+                                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                                .successHandler(customOAuth2SuccessHandler) // OAuth 로그인 후 cookie에 jwt 토큰 저장
+                        )
+                // cookie에서 token을 가져와 authentication 등록
+                .addFilterAfter(jwtTokenFilter, SessionManagementFilter.class)
                 .build();
     }
 
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService(
-            UserAccountService userAccountService,
-            PasswordEncoder passwordEncoder
-    ) {
+            UserAccountService userAccountService, PasswordEncoder passwordEncoder) {
         final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 
         return userRequest -> {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
             String registrationId = userRequest.getClientRegistration().getRegistrationId();
-            String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-            OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+            String userNameAttributeName = userRequest
+                    .getClientRegistration()
+                    .getProviderDetails()
+                    .getUserInfoEndpoint()
+                    .getUserNameAttributeName();
+            OAuthAttributes attributes =
+                    OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
             String email = attributes.getEmail();
             String dummyPassword = passwordEncoder.encode("{bcrypt}" + UUID.randomUUID());
 
-            //회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
+            // 회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
             try {
                 UserAccountDto userAccountDto = userAccountService.searchUser(email);
                 return BoardPrincipal.from(userAccountDto);
             } catch (UsernameNotFoundException e) {
                 return BoardPrincipal.from(
-                        UserAccountDto.of(
-                            email,
-                            dummyPassword,
-                            attributes.getName(),
-                            UserRole.ANONYMOUS
-                        )
-                );
+                        UserAccountDto.of(email, dummyPassword, attributes.getName(), UserRole.ANONYMOUS));
             }
         };
     }
 
     @Bean
     public UserDetailsService userDetailsService(UserAccountService userAccountService) {
-        //loadUserByUsername
+        // loadUserByUsername
         return userAccountService::getUserPrincipal;
     }
 

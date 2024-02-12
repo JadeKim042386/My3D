@@ -26,14 +26,10 @@ public class AlarmApi {
      * 현재 로그인한 사용자에게 온 알람 조회
      */
     @GetMapping
-    public ResponseEntity<List<AlarmResponse>> getAlarms(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal
-    ) {
-        return ResponseEntity.ok(
-                alarmService.getAlarms(boardPrincipal.email()).stream()
-                        .map(AlarmResponse::from)
-                        .collect(Collectors.toList())
-        );
+    public ResponseEntity<List<AlarmResponse>> getAlarms(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        return ResponseEntity.ok(alarmService.getAlarms(boardPrincipal.email()).stream()
+                .map(AlarmResponse::from)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -42,8 +38,6 @@ public class AlarmApi {
     @GetMapping("/subscribe")
     public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        return ResponseEntity.ok(
-                alarmService.connectAlarm(boardPrincipal.email())
-        );
+        return ResponseEntity.ok(alarmService.connectAlarm(boardPrincipal.email()));
     }
 }

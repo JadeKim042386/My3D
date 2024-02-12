@@ -36,31 +36,19 @@ public class SignUpApi {
      * 회원가입 요청
      */
     @PostMapping
-    public ResponseEntity<?> signup(
-            @Valid SignUpRequest signUpRequest,
-            BindingResult bindingResult
-    ) {
+    public ResponseEntity<?> signup(@Valid SignUpRequest signUpRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.warn("bindingResult={}", bindingResult);
             throw new ValidatedException(
                     ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult(
-                            "signup validated error",
-                            bindingResult
-                    )
-            );
+                    ExceptionResponse.fromBindingResult("signup validated error", bindingResult));
         }
         duplicatedEmailOrNicknameOrCompanyNameCheck(
-                signUpRequest.email(),
-                signUpRequest.nickname(),
-                signUpRequest.companyName()
-        );
+                signUpRequest.email(), signUpRequest.nickname(), signUpRequest.companyName());
         String refreshToken = tokenProvider.generateRefreshToken();
-        userAccountService.saveUser(
-                signUpRequest.toEntity(signUpRequest.email(), refreshToken, encoder)
-        );
+        userAccountService.saveUser(signUpRequest.toEntity(signUpRequest.email(), refreshToken, encoder));
 
-        //로그인 처리
+        // 로그인 처리
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userAccountService.login(signUpRequest.email(), signUpRequest.password()));
     }
@@ -68,10 +56,9 @@ public class SignUpApi {
     /**
      * 이메일, 닉네임, 기업명 중복 체크
      */
-    private void duplicatedEmailOrNicknameOrCompanyNameCheck(
-            String email, String nickname, String companyName
-    ) {
-        if ((StringUtils.hasText(email) || StringUtils.hasText(nickname)) && userAccountService.isExistsUserEmailOrNickname(email, nickname)) {
+    private void duplicatedEmailOrNicknameOrCompanyNameCheck(String email, String nickname, String companyName) {
+        if ((StringUtils.hasText(email) || StringUtils.hasText(nickname))
+                && userAccountService.isExistsUserEmailOrNickname(email, nickname)) {
             throw new SignUpException(ErrorCode.ALREADY_EXIST_EMAIL_OR_NICKNAME);
         }
         if (StringUtils.hasText(companyName) && companyService.isExistsByCompanyName(companyName)) {

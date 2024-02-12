@@ -6,7 +6,8 @@
     <meta name="author" content="Joo">
     <title>My3D</title>
     <link rel="stylesheet" href="/css/main.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
 <!--헤더-->
@@ -24,7 +25,8 @@
                         </div>
                         <div class="row align-items-center mb-2">
                             <div class="col-9 pe-0">
-                                <input type="text" id="companyCCC" name="b_no" class="form-control" placeholder="-없이 숫자 열자리를 입력해주세요"/>
+                                <input type="text" id="companyCCC" name="b_no" class="form-control"
+                                       placeholder="-없이 숫자 열자리를 입력해주세요"/>
                             </div>
                             <div class="col-3 ps-2 text-start">
                                 <a id="submit-button" class="btn btn-dark" role="button">기업확인</a>
@@ -41,7 +43,8 @@
 <!--스크립트-->
 <script src="/js/hiddenUrlParameter.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="/js/initHeader.js"></script>
 <script id="inline-js">
     var serviceKey = [[${serviceKey}]];
@@ -76,7 +79,7 @@
                     contentType: "application/json",
                     accept: "application/json",
                     beforeSend: function () {
-                      $('html').css('cursor', 'wait');
+                        $('html').css('cursor', 'wait');
                     },
                     timeout: 10000,
                     success: function (result) {

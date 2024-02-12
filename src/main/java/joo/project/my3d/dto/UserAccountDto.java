@@ -17,27 +17,47 @@ public record UserAccountDto(
         String phone,
         AddressDto addressDto,
         UserRole userRole,
-        CompanyDto companyDto
-) {
+        CompanyDto companyDto) {
 
     /**
      * 모든 필드 주입
      */
-    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole, CompanyDto company) {
+    public static UserAccountDto of(
+            Long id,
+            String email,
+            String userPassword,
+            String nickname,
+            String phone,
+            AddressDto addressDto,
+            UserRole userRole,
+            CompanyDto company) {
         return new UserAccountDto(id, email, userPassword, nickname, phone, addressDto, userRole, company);
     }
 
     /**
      * 회사 정보 제외 (개인 사용자)
      */
-    public static UserAccountDto of(Long id, String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
+    public static UserAccountDto of(
+            Long id,
+            String email,
+            String userPassword,
+            String nickname,
+            String phone,
+            AddressDto addressDto,
+            UserRole userRole) {
         return UserAccountDto.of(id, email, userPassword, nickname, phone, addressDto, userRole, CompanyDto.of());
     }
 
     /**
      * boardPrincipal -> DTO
      */
-    public static UserAccountDto of(String email, String userPassword, String nickname, String phone, AddressDto addressDto, UserRole userRole) {
+    public static UserAccountDto of(
+            String email,
+            String userPassword,
+            String nickname,
+            String phone,
+            AddressDto addressDto,
+            UserRole userRole) {
         return UserAccountDto.of(null, email, userPassword, nickname, phone, addressDto, userRole);
     }
 
@@ -68,8 +88,7 @@ public record UserAccountDto(
                 userAccount.getPhone(),
                 Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
                 userAccount.getUserRole(),
-                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company)
-        );
+                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company));
     }
 
     /**
@@ -87,8 +106,7 @@ public record UserAccountDto(
                 userAccount.getPhone(),
                 Objects.isNull(address) ? AddressDto.of() : AddressDto.from(address),
                 userAccount.getUserRole(),
-                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company)
-        );
+                Objects.isNull(company) ? CompanyDto.of() : CompanyDto.from(company));
     }
 
     public UserAccount toEntity(String refreshToken) {
@@ -100,8 +118,6 @@ public record UserAccountDto(
                 addressDto.toEntity(),
                 userRole,
                 UserRefreshToken.of(refreshToken),
-                companyDto.toEntity()
-        );
+                companyDto.toEntity());
     }
-
 }

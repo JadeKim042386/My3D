@@ -21,10 +21,18 @@ public record BoardPrincipal(
         Collection<? extends GrantedAuthority> authorities,
         String nickname,
         Address address,
-        Map<String, Object> oAuth2Attributes
-) implements UserDetails, OAuth2User {
+        Map<String, Object> oAuth2Attributes)
+        implements UserDetails, OAuth2User {
 
-    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address, Map<String, Object> oAuth2Attributes) {
+    public static BoardPrincipal of(
+            Long id,
+            String email,
+            String password,
+            String phone,
+            String nickname,
+            UserRole userRole,
+            Address address,
+            Map<String, Object> oAuth2Attributes) {
         return new BoardPrincipal(
                 id,
                 email,
@@ -33,37 +41,19 @@ public record BoardPrincipal(
                 Set.of(new SimpleGrantedAuthority(userRole.getName())),
                 nickname,
                 address,
-                oAuth2Attributes
-        );
+                oAuth2Attributes);
     }
 
-    public static BoardPrincipal of(Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address) {
-        return BoardPrincipal.of(
-                id,
-                email,
-                password,
-                phone,
-                nickname,
-                userRole,
-                address,
-                Map.of()
-        );
+    public static BoardPrincipal of(
+            Long id, String email, String password, String phone, String nickname, UserRole userRole, Address address) {
+        return BoardPrincipal.of(id, email, password, phone, nickname, userRole, address, Map.of());
     }
 
     /**
      * JWT Token to BoardPrincipal
      */
     public static BoardPrincipal of(Long id, String email, String nickname, UserRole userRole) {
-        return BoardPrincipal.of(
-                id,
-                email,
-                null,
-                null,
-                nickname,
-                userRole,
-                Address.of(null, null, null),
-                Map.of()
-        );
+        return BoardPrincipal.of(id, email, null, null, nickname, userRole, Address.of(null, null, null), Map.of());
     }
 
     public static BoardPrincipal from(UserAccountDto dto) {
@@ -74,33 +64,23 @@ public record BoardPrincipal(
                 dto.phone(),
                 dto.nickname(),
                 dto.userRole(),
-                dto.addressDto().toEntity()
-        );
+                dto.addressDto().toEntity());
     }
 
     public UserAccountDto toDto() {
-        return UserAccountDto.of(
-                id,
-                email,
-                password,
-                nickname,
-                phone,
-                AddressDto.from(address),
-                getUserRole()
-        );
+        return UserAccountDto.of(id, email, password, nickname, phone, AddressDto.from(address), getUserRole());
     }
 
     public UserRole getUserRole() {
         return UserRole.valueOf(
-                authorities.stream().toList().get(0).getAuthority()
-                        .split("_")[1]
-        );
+                authorities.stream().toList().get(0).getAuthority().split("_")[1]);
     }
 
     @Override
     public Map<String, Object> getAttributes() {
         return oAuth2Attributes;
     }
+
     @Override
     public String getName() {
         return email;
@@ -115,6 +95,7 @@ public record BoardPrincipal(
     public String getPassword() {
         return password;
     }
+
     @Override
     public String getUsername() {
         return email;
@@ -124,14 +105,17 @@ public record BoardPrincipal(
     public boolean isAccountNonExpired() {
         return true;
     }
+
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
     @Override
     public boolean isEnabled() {
         return true;

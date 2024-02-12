@@ -17,6 +17,7 @@ public class LocalFileService implements FileServiceInterface {
 
     @Value("${file.save-path}")
     private String path;
+
     @Override
     public void uploadFile(MultipartFile file, String fileName) throws FileException {
         try (FileOutputStream fos = new FileOutputStream(createFile(fileName))) {

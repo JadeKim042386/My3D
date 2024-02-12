@@ -22,16 +22,21 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ArticleFormRequest {
+    @NotNull
+    @Size(min = 1, max = 1, message = "상품 옵션 1개만 추가해주세요")
+    private final List<DimensionOptionRequest> dimensionOptions = new ArrayList<>();
+
     private Long id;
+
     @NotBlank
     private String title;
+
     @NotBlank
     private String content;
-    @NotNull
-    @Size(min=1, max=1, message = "상품 옵션 1개만 추가해주세요")
-    private final List<DimensionOptionRequest> dimensionOptions = new ArrayList<>();
+
     @MultipartFileSizeValid
     private MultipartFile modelFile;
+
     @InCategory
     private String articleCategory;
 
@@ -45,8 +50,7 @@ public class ArticleFormRequest {
                 title,
                 content,
                 articleType,
-                ArticleCategory.valueOf(articleCategory)
-        );
+                ArticleCategory.valueOf(articleCategory));
     }
 
     public ArticleFile toArticleFileEntity() {
@@ -58,7 +62,6 @@ public class ArticleFormRequest {
                 originalFileName,
                 UUID.randomUUID() + "." + extension,
                 extension,
-                dimensionOptions.get(0).toDimensionOptionEntity()
-        );
+                dimensionOptions.get(0).toDimensionOptionEntity());
     }
 }

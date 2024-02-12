@@ -30,8 +30,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ArticleLikeApi.class)
 class ArticleLikeApiTest {
 
-    @Autowired private MockMvc mvc;
-    @MockBean private ArticleLikeService articleLikeService;
+    @Autowired
+    private MockMvc mvc;
+
+    @MockBean
+    private ArticleLikeService articleLikeService;
+
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
     @DisplayName("[POST] 게시글 좋아요 추가")
@@ -41,11 +45,9 @@ class ArticleLikeApiTest {
         Long articleId = 1L;
         given(articleLikeService.addArticleLike(anyLong(), anyString())).willReturn(0);
         // When
-        mvc.perform(
-                post("/api/v1/articles/" + articleId + "/like")
+        mvc.perform(post("/api/v1/articles/" + articleId + "/like")
                         .cookie(userCookie)
-                        .with(csrf())
-        )
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.likeCount").value(0));
@@ -60,11 +62,9 @@ class ArticleLikeApiTest {
         Long articleId = 1L;
         given(articleLikeService.deleteArticleLike(anyLong(), anyString())).willReturn(1);
         // When
-        mvc.perform(
-                delete("/api/v1/articles/" + articleId + "/like")
+        mvc.perform(delete("/api/v1/articles/" + articleId + "/like")
                         .cookie(userCookie)
-                        .with(csrf())
-        )
+                        .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.likeCount").value(1));

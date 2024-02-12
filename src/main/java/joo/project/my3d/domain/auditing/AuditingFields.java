@@ -14,9 +14,9 @@ import javax.persistence.MappedSuperclass;
 public abstract class AuditingFields extends AuditingAt {
     @CreatedBy
     @Column(nullable = false, length = 100, updatable = false)
-    protected String createdBy; //생성자
+    protected String createdBy; // 생성자
 
     @LastModifiedBy
     @Column(nullable = false, length = 100)
-    protected String modifiedBy; //수정자
+    protected String modifiedBy; // 수정자
 }

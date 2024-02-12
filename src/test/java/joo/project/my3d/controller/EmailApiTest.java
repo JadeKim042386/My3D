@@ -27,9 +27,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class EmailApiTest {
 
-    @Autowired private MockMvc mvc;
-    @Autowired private UserAccountService userAccountService;
-    @MockBean private EmailService emailService;
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private UserAccountService userAccountService;
+
+    @MockBean
+    private EmailService emailService;
+
     private static Cookie anonymousCookie = FixtureCookie.createAnonymousCookie();
 
     @Order(0)
@@ -42,12 +48,10 @@ class EmailApiTest {
         given(userAccountService.isExistsUserEmailOrNickname(anyString())).willReturn(false);
         willDoNothing().given(emailService).sendEmail(eq(email), eq(subject), anyString());
         // When
-        mvc.perform(
-                        post("/api/v1/mail/send_code")
-                                .queryParam("email", email)
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/mail/send_code")
+                        .queryParam("email", email)
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(email));
         // Then
@@ -61,12 +65,10 @@ class EmailApiTest {
         String email = "jk042386@gmail.com";
         given(userAccountService.isExistsUserEmailOrNickname(anyString())).willReturn(true);
         // When
-        mvc.perform(
-                        post("/api/v1/mail/send_code")
-                                .queryParam("email", email)
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/mail/send_code")
+                        .queryParam("email", email)
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
@@ -79,12 +81,10 @@ class EmailApiTest {
         // Given
         String email = "jk042386gmail.com";
         // When
-        mvc.perform(
-                        post("/api/v1/mail/send_code")
-                                .queryParam("email", email)
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/mail/send_code")
+                        .queryParam("email", email)
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
@@ -100,12 +100,10 @@ class EmailApiTest {
         willDoNothing().given(emailService).sendEmail(anyString(), anyString(), anyString());
         given(userAccountService.sendTemporaryPassword(anyString())).willReturn("abcde123");
         // When
-        mvc.perform(
-                post("/api/v1/mail/find_pass")
+        mvc.perform(post("/api/v1/mail/find_pass")
                         .queryParam("email", email)
                         .cookie(anonymousCookie)
-                        .with(csrf())
-        )
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").isNotEmpty());
         // Then
@@ -119,12 +117,10 @@ class EmailApiTest {
         String email = "tester@gmail.com";
         given(userAccountService.isExistsUserEmailOrNickname(anyString())).willReturn(false);
         // Whe
-        mvc.perform(
-                        post("/api/v1/mail/find_pass")
-                                .queryParam("email", email)
-                                .cookie(anonymousCookie)
-                                .with(csrf())
-                )
+        mvc.perform(post("/api/v1/mail/find_pass")
+                        .queryParam("email", email)
+                        .cookie(anonymousCookie)
+                        .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").isNotEmpty());
         // Then

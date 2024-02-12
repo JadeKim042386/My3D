@@ -18,13 +18,14 @@ import static javax.persistence.FetchType.LAZY;
 @ToString(callSuper = true)
 @Table(
         name = "dimension_option",
-        indexes = {
-                @Index(columnList = "id")
-        }
-)
+        indexes = {@Index(columnList = "id")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DimensionOption extends AuditingFields implements Persistable<Long> {
+    @ToString.Exclude
+    @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final Set<Dimension> dimensions = new LinkedHashSet<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -32,18 +33,13 @@ public class DimensionOption extends AuditingFields implements Persistable<Long>
 
     @Setter
     @Column(nullable = false)
-    private String optionName; //치수명
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Set<Dimension> dimensions = new LinkedHashSet<>();
+    private String optionName; // 치수명
 
     @ToString.Exclude
     @OneToOne(mappedBy = "dimensionOption")
     private ArticleFile articleFile;
 
-    protected DimensionOption() {
-    }
+    protected DimensionOption() {}
 
     private DimensionOption(String optionName) {
         this.optionName = optionName;

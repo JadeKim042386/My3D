@@ -26,9 +26,15 @@ import static org.mockito.BDDMockito.*;
 class ArticleLikeServiceTest {
     @InjectMocks
     ArticleLikeService articleLikeService;
-    @Mock ArticleLikeRepository articleLikeRepository;
-    @Mock ArticleRepository articleRepository;
-    @Mock UserAccountRepository userAccountRepository;
+
+    @Mock
+    ArticleLikeRepository articleLikeRepository;
+
+    @Mock
+    ArticleRepository articleRepository;
+
+    @Mock
+    UserAccountRepository userAccountRepository;
 
     @DisplayName("좋아요 추가")
     @Test

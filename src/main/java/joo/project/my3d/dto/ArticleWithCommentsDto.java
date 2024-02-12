@@ -24,10 +24,29 @@ public record ArticleWithCommentsDto(
         ArticleType articleType,
         ArticleCategory articleCategory,
         Set<ArticleCommentDto> articleComments,
-        String createdAt
-) {
-    public static ArticleWithCommentsDto of(Long id, String email, String nickname, ArticleFileWithDimensionDto articleFileWithDimensionDto, String title, String content, ArticleType articleType, ArticleCategory articleCategory, Set<ArticleCommentDto> articleCommentDtos, LocalDateTime createdAt) {
-        return new ArticleWithCommentsDto(id, email, nickname, articleFileWithDimensionDto, title, content, articleType, articleCategory, articleCommentDtos, LocalDateTimeUtils.format(createdAt));
+        String createdAt) {
+    public static ArticleWithCommentsDto of(
+            Long id,
+            String email,
+            String nickname,
+            ArticleFileWithDimensionDto articleFileWithDimensionDto,
+            String title,
+            String content,
+            ArticleType articleType,
+            ArticleCategory articleCategory,
+            Set<ArticleCommentDto> articleCommentDtos,
+            LocalDateTime createdAt) {
+        return new ArticleWithCommentsDto(
+                id,
+                email,
+                nickname,
+                articleFileWithDimensionDto,
+                title,
+                content,
+                articleType,
+                articleCategory,
+                articleCommentDtos,
+                LocalDateTimeUtils.format(createdAt));
     }
 
     public static ArticleWithCommentsDto from(Article article) {
@@ -41,28 +60,23 @@ public record ArticleWithCommentsDto(
                 article.getArticleType(),
                 article.getArticleCategory(),
                 organizeChildComments(article.getArticleComments()),
-                article.getCreatedAt()
-        );
+                article.getCreatedAt());
     }
 
     private static Set<ArticleCommentDto> organizeChildComments(Set<ArticleComment> comments) {
         Map<Long, ArticleCommentDto> map = comments.stream()
                 .map(ArticleCommentDto::from)
                 .collect(Collectors.toMap(ArticleCommentDto::id, Function.identity()));
-        //부모 댓글을 가지는 자식 댓글을 filtering하여 부모 댓글 안에 삽입
-        map.values().stream()
-                .filter(ArticleCommentDto::hasParentComment)
-                .forEach(comment -> {
-                    ArticleCommentDto parentComment = map.get(comment.parentCommentId());
-                    parentComment.childComments().add(comment);
-                });
+        // 부모 댓글을 가지는 자식 댓글을 filtering하여 부모 댓글 안에 삽입
+        map.values().stream().filter(ArticleCommentDto::hasParentComment).forEach(comment -> {
+            ArticleCommentDto parentComment = map.get(comment.parentCommentId());
+            parentComment.childComments().add(comment);
+        });
 
-        //부모 댓글만 filtering하고 정렬
+        // 부모 댓글만 filtering하고 정렬
         return map.values().stream()
                 .filter(comment -> !comment.hasParentComment())
-                .collect(Collectors.toCollection(() ->
-                        new TreeSet<>(Comparator.comparing(ArticleCommentDto::id).reversed()
-                        )
-                ));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(
+                        Comparator.comparing(ArticleCommentDto::id).reversed())));
     }
 }

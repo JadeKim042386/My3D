@@ -31,8 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class SignInApiTest {
 
-    @Autowired private MockMvc mvc;
-    @Autowired private UserAccountServiceInterface userAccountService;
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private UserAccountServiceInterface userAccountService;
+
     private static Cookie anonymousCookie = FixtureCookie.createAnonymousCookie();
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
@@ -40,62 +44,54 @@ class SignInApiTest {
     @DisplayName("[POST] 로그인 요청")
     @Test
     void requestLogin() throws Exception {
-        //given
+        // given
         given(userAccountService.login(anyString(), anyString()))
                 .willReturn(LoginResponse.of("accessToken", "refreshToken"));
-        //when
-        mvc.perform(
-                post("/api/v1/signin")
+        // when
+        mvc.perform(post("/api/v1/signin")
                         .param("email", "a@gmail.com")
                         .param("password", "pw")
                         .cookie(anonymousCookie)
-                        .with(csrf())
-        )
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.accessToken").value("accessToken"))
                 .andExpect(jsonPath("$.refreshToken").value("refreshToken"));
-        //then
+        // then
     }
 
     @Order(1)
     @DisplayName("[GET] OAuth 로그인 후 응답 API")
     @Test
     void oauthResponse() throws Exception {
-        //given
+        // given
         given(userAccountService.oauthLogin(anyString(), anyString()))
                 .willReturn(LoginResponse.of("accessToken", "refreshToken"));
-        //when
-        mvc.perform(
-                get("/api/v1/signin/oauth")
+        // when
+        mvc.perform(get("/api/v1/signin/oauth")
                         .param("email", "a@gmail.com")
                         .param("nickname", "nickname")
                         .param("signup", "true")
-                        .cookie(anonymousCookie)
-            )
+                        .cookie(anonymousCookie))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.accessToken").value("accessToken"))
                 .andExpect(jsonPath("$.refreshToken").value("refreshToken"));
-        //then
+        // then
     }
 
     @Order(2)
     @DisplayName("[GET] 토큰을 통해 userRole 확인")
     @Test
     void parseSpecificationFromToken() throws Exception {
-        //given
-        //when
-        mvc.perform(
-                get("/api/v1/signin/info")
-                        .cookie(userCookie)
-
-        )
+        // given
+        // when
+        mvc.perform(get("/api/v1/signin/info").cookie(userCookie))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.email").value("jooUser@gmail.com"))
                 .andExpect(jsonPath("$.nickname").value("jooUser"))
                 .andExpect(jsonPath("$.userRole").value("USER"));
-        //then
+        // then
     }
 }

@@ -32,8 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ArticleCommentsApi.class)
 class ArticleCommentsApiTest {
 
-    @Autowired private MockMvc mvc;
-    @MockBean private ArticleCommentService articleCommentService;
+    @Autowired
+    private MockMvc mvc;
+
+    @MockBean
+    private ArticleCommentService articleCommentService;
+
     private static String apiUrl = "/api/v1/articles/1/comments";
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
@@ -44,12 +48,7 @@ class ArticleCommentsApiTest {
         given(articleCommentService.saveComment(any(ArticleCommentDto.class)))
                 .willReturn(FixtureDto.getArticleCommentDto("content"));
         // When
-        mvc.perform(
-            post(apiUrl)
-                .param("content", "content")
-                .cookie(userCookie)
-                .with(csrf())
-        )
+        mvc.perform(post(apiUrl).param("content", "content").cookie(userCookie).with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.content").value("content"));
         // Then
@@ -63,11 +62,7 @@ class ArticleCommentsApiTest {
         long articleCommentId = 1L;
         willDoNothing().given(articleCommentService).deleteComment(anyLong(), anyString());
         // When
-        mvc.perform(
-                        delete(apiUrl + "/" + articleCommentId)
-                            .cookie(userCookie)
-                            .with(csrf())
-                )
+        mvc.perform(delete(apiUrl + "/" + articleCommentId).cookie(userCookie).with(csrf()))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").isNotEmpty());
         // Then

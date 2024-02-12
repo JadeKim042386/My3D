@@ -56,15 +56,12 @@ public class TokenProvider {
         String spec = decoded.get(KEY_SPEC);
         long userAccountId = Long.parseLong(spec.split(":")[0]);
         // 조회하려는 refresh token은 재발행 횟수 제한보다 적게 재발행이 되어야한다.
-        UserRefreshToken refreshToken = userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
+        UserRefreshToken refreshToken = userRefreshTokenRepository
+                .findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
                 .orElseThrow(() -> new AuthException(ErrorCode.EXCEED_REISSUE));
         refreshToken.increaseReissueCount();
 
-        return generateAccessToken(
-                decoded.get(KEY_EMAIL),
-                decoded.get(KEY_NICKNAME),
-                spec
-        );
+        return generateAccessToken(decoded.get(KEY_EMAIL), decoded.get(KEY_NICKNAME), spec);
     }
 
     public String generateRefreshToken() {
@@ -80,10 +77,12 @@ public class TokenProvider {
      */
     @Transactional(readOnly = true)
     public void validateRefreshToken(String refreshToken, String accessToken) throws JsonProcessingException {
-        parseOrValidateClaims(refreshToken); //validation
-        long userAccountId = Long.parseLong(decodeExpiredToken(accessToken).get(KEY_SPEC).split(":")[0]);
+        parseOrValidateClaims(refreshToken); // validation
+        long userAccountId =
+                Long.parseLong(decodeExpiredToken(accessToken).get(KEY_SPEC).split(":")[0]);
         // 조회하려는 refresh token은 현재 유저의 실제 refresh token과 일치해야한다.
-        userRefreshTokenRepository.findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
+        userRefreshTokenRepository
+                .findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
                 .filter(token -> token.equalRefreshToken(refreshToken))
                 .orElseThrow(() -> new AuthException(ErrorCode.NOT_EQUAL_TOKEN));
     }
@@ -110,11 +109,11 @@ public class TokenProvider {
     public String[] parseSpecification(Claims claims) {
         try {
             String[] spec = claims.get(TokenProvider.KEY_SPEC, String.class).split(":");
-            return new String[]{
-                    spec[0], //id
-                    claims.get(TokenProvider.KEY_EMAIL, String.class),
-                    claims.get(TokenProvider.KEY_NICKNAME, String.class),
-                    spec[1] //authority
+            return new String[] {
+                spec[0], // id
+                claims.get(TokenProvider.KEY_EMAIL, String.class),
+                claims.get(TokenProvider.KEY_NICKNAME, String.class),
+                spec[1] // authority
             };
         } catch (RequiredTypeException e) {
             return null;
@@ -127,7 +126,7 @@ public class TokenProvider {
     public BoardPrincipal getUserDetails(Claims claims) {
         String[] parsed = Optional.ofNullable(claims)
                 .map(this::parseSpecification)
-                .orElse(new String[]{null, ANONYMOUS, ANONYMOUS, ANONYMOUS});
+                .orElse(new String[] {null, ANONYMOUS, ANONYMOUS, ANONYMOUS});
 
         return BoardPrincipal.of(Long.parseLong(parsed[0]), parsed[1], parsed[2], UserRole.valueOf(parsed[3]));
     }
@@ -135,8 +134,7 @@ public class TokenProvider {
     private Map<String, String> decodeExpiredToken(String oldAccessToken) throws JsonProcessingException {
         return objectMapper.readValue(
                 new String(Base64.getDecoder().decode(oldAccessToken.split("\\.")[1]), StandardCharsets.UTF_8),
-                new TypeReference<Map<String, String>>() {}
-        );
+                new TypeReference<Map<String, String>>() {});
     }
 
     private String getSpec(String token) {

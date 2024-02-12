@@ -27,11 +27,14 @@ public class FixtureDto {
     }
 
     public static ArticleFileWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
-        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto = FixtureDto.getDimensionOptionWithDimensionDto();
-        return ArticleFileWithDimensionDto.of(11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
+        DimensionOptionWithDimensionDto dimensionOptionWithDimensionDto =
+                FixtureDto.getDimensionOptionWithDimensionDto();
+        return ArticleFileWithDimensionDto.of(
+                11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
     }
 
-    public static ArticleDto getArticleDto(Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+    public static ArticleDto getArticleDto(
+            Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
         ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
         return ArticleDto.of(
@@ -45,8 +48,7 @@ public class FixtureDto {
                 LocalDateTime.now(),
                 userAccountDto.email(),
                 LocalDateTime.now(),
-                userAccountDto.email()
-        );
+                userAccountDto.email());
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content) {
@@ -62,17 +64,11 @@ public class FixtureDto {
                 LocalDateTime.now(),
                 userAccountDto.nickname(),
                 userAccountDto.email(),
-                parentCommentId
-        );
+                parentCommentId);
     }
 
     public static DimensionDto getDimensionDto(Long dimensionId) {
-        return DimensionDto.of(
-                dimensionId,
-                "너비",
-                10.0f,
-                DimUnit.MM
-        );
+        return DimensionDto.of(dimensionId, "너비", 10.0f, DimUnit.MM);
     }
 
     public static DimensionDto getDimensionDto() {
@@ -81,10 +77,7 @@ public class FixtureDto {
 
     private static DimensionOptionWithDimensionDto getDimensionOptionWithDimensionDto() {
         DimensionDto dimensionDto = FixtureDto.getDimensionDto();
-        return DimensionOptionWithDimensionDto.of(
-                "option10",
-                List.of(dimensionDto)
-        );
+        return DimensionOptionWithDimensionDto.of("option10", List.of(dimensionDto));
     }
 
     public static AddressDto getAddressDto() {
@@ -96,7 +89,8 @@ public class FixtureDto {
     }
 
     public static BoardPrincipal getPrincipal(String nickname, UserRole userRole) {
-        return BoardPrincipal.of(1L, nickname + "@gmail.com", "pw", "phone", nickname, userRole, Address.of(null, null, null), Map.of());
+        return BoardPrincipal.of(
+                1L, nickname + "@gmail.com", "pw", "phone", nickname, userRole, Address.of(null, null, null), Map.of());
     }
 
     public static CompanyAdminRequest getCompanyAdminRequest() throws IllegalAccessException {

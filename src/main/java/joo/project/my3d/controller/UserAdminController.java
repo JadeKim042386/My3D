@@ -35,10 +35,7 @@ public class UserAdminController {
      * }
      */
     @GetMapping
-    public String account(
-        @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-        Model model
-    ) {
+    public String account(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
         UserAccountDto userAccountDto = userAccountService.searchUser(boardPrincipal.email());
         model.addAttribute(
                 "userData",
@@ -46,9 +43,7 @@ public class UserAdminController {
                         userAccountDto.nickname(),
                         userAccountDto.phone(),
                         userAccountDto.email(),
-                        userAccountDto.addressDto()
-                )
-        );
+                        userAccountDto.addressDto()));
         return "admin/account";
     }
 
@@ -61,18 +56,9 @@ public class UserAdminController {
      * }
      */
     @GetMapping("/company")
-    public String company(
-            @AuthenticationPrincipal BoardPrincipal boardPrincipal,
-            Model model
-    ) {
+    public String company(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
         CompanyDto company = companyService.getCompanyDto(boardPrincipal.email());
-        model.addAttribute(
-                "companyData",
-                CompanyAdminResponse.of(
-                        company.companyName(),
-                        company.homepage()
-                )
-        );
+        model.addAttribute("companyData", CompanyAdminResponse.of(company.companyName(), company.homepage()));
         return "admin/company";
     }
     /**

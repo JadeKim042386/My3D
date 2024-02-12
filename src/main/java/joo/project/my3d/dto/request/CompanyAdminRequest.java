@@ -7,9 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class CompanyAdminRequest{
+public class CompanyAdminRequest {
     @NotBlank
     private String companyName;
+
     @NotBlank
     private String homepage;
 }

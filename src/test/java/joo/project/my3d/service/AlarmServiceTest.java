@@ -25,16 +25,22 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("비지니스 로직 - 알람")
 @ExtendWith(MockitoExtension.class)
 class AlarmServiceTest {
-    @InjectMocks private AlarmService alarmService;
-    @Mock private AlarmRepository alarmRepository;
-    @Mock private EmitterRepository emitterRepository;
+    @InjectMocks
+    private AlarmService alarmService;
+
+    @Mock
+    private AlarmRepository alarmRepository;
+
+    @Mock
+    private EmitterRepository emitterRepository;
 
     @DisplayName("알람 조회")
     @Test
     void getAlarms() {
         // Given
         UserAccount userAccount = Fixture.getUserAccount();
-        given(alarmRepository.findAllByUserAccount_Email(userAccount.getEmail())).willReturn(List.of());
+        given(alarmRepository.findAllByUserAccount_Email(userAccount.getEmail()))
+                .willReturn(List.of());
         // When
         alarmService.getAlarms(userAccount.getEmail());
         // Then

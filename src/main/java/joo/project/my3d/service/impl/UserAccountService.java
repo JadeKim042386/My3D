@@ -35,7 +35,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public UserAccountDto searchUser(String email) {
-        return userAccountRepository.findByEmail(email)
+        return userAccountRepository
+                .findByEmail(email)
                 .map(UserAccountDto::from)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
@@ -121,7 +122,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     public LoginResponse login(String email, String password) {
         UserAccountDto userAccountDto = searchUser(email);
 
-        //비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
+        // 비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
         if (!encoder.matches(password, userAccountDto.userPassword())) {
             throw new AuthException(ErrorCode.INVALID_PASSWORD);
         }
@@ -149,26 +150,21 @@ public class UserAccountService implements UserAccountServiceInterface {
     public String getAccessToken(String email, String nickname, UserAccountDto userAccountDto) {
 
         return tokenProvider.generateAccessToken(
-                email,
-                nickname,
-                String.format("%s:%s", userAccountDto.id(), userAccountDto.userRole())
-        );
+                email, nickname, String.format("%s:%s", userAccountDto.id(), userAccountDto.userRole()));
     }
 
     @Override
     public void updateRefreshToken(Long id, String refreshToken) {
 
-        userRefreshTokenRepository.findById(id)
+        userRefreshTokenRepository
+                .findById(id)
                 .ifPresentOrElse(
                         it -> it.updateRefreshToken(refreshToken),
-                        () -> userRefreshTokenRepository.save(UserRefreshToken.of(refreshToken))
-                );
+                        () -> userRefreshTokenRepository.save(UserRefreshToken.of(refreshToken)));
     }
 
     @Override
     public String getRoleFromToken(String token) {
-        return tokenProvider.parseSpecification(
-                tokenProvider.parseOrValidateClaims(token)
-        )[3];
+        return tokenProvider.parseSpecification(tokenProvider.parseOrValidateClaims(token))[3];
     }
 }

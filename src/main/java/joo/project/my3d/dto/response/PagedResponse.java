@@ -7,23 +7,16 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public record PagedResponse<T>(
-        List<T> content,
-        int page,
-        int size,
-        long totalElements,
-        int totalPages,
-        boolean first,
-        boolean last
-) {
+        List<T> content, int page, int size, long totalElements, int totalPages, boolean first, boolean last) {
     public static PagedResponse<ArticlePreviewDto> fromArticlePreview(Page<ArticlePreviewDto> content) {
         return new PagedResponse<>(
-                content.filter(articleDto -> articleDto.articleType() == ArticleType.MODEL).toList(),
+                content.filter(articleDto -> articleDto.articleType() == ArticleType.MODEL)
+                        .toList(),
                 content.getNumber(),
                 content.getSize(),
                 content.getTotalElements(),
                 content.getTotalPages(),
                 content.isFirst(),
-                content.isLast()
-            );
+                content.isLast());
     }
 }

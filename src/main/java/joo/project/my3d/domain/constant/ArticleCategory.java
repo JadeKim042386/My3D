@@ -2,7 +2,7 @@ package joo.project.my3d.domain.constant;
 
 import lombok.Getter;
 
-//TODO: value를 int로 변경하여 코드 최적화
+// TODO: value를 int로 변경하여 코드 최적화
 public enum ArticleCategory {
     ANIMALS_PETS("동물"),
     ARCHITECTURE("건축"),

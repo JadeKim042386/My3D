@@ -30,7 +30,8 @@ public class CompanyService implements CompanyServiceInterface {
 
     @Override
     public Company getCompany(String email) {
-        return companyRepository.findByUserAccount_Email(email)
+        return companyRepository
+                .findByUserAccount_Email(email)
                 .orElseThrow(() -> new AuthException(ErrorCode.NOT_FOUND_COMPANY));
     }
 

@@ -54,7 +54,8 @@ public class ArticleService implements ArticleServiceInterface {
      */
     @Override
     public ArticleFormDto getArticleForm(Long articleId) {
-        return articleRepository.findByIdFetchForm(articleId)
+        return articleRepository
+                .findByIdFetchForm(articleId)
                 .map(ArticleFormDto::from)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
@@ -64,13 +65,12 @@ public class ArticleService implements ArticleServiceInterface {
      */
     @Override
     public ArticleDetailResponse getArticleWithComments(Long articleId, String email) {
-        return articleRepository.findByIdFetchDetail(articleId)
+        return articleRepository
+                .findByIdFetchDetail(articleId)
                 .map(article -> ArticleDetailResponse.of(
                         ArticleWithCommentsDto.from(article),
                         articleLikeService.getLikeCountByArticleId(articleId),
-                        articleLikeService.addedLike(articleId, email)
-                        )
-                )
+                        articleLikeService.addedLike(articleId, email)))
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
@@ -78,17 +78,14 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public Article saveArticle(String email, ArticleFormRequest articleFormRequest) {
         UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
-        Article savedArticle = articleRepository.save(
-                articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL)
-        );
+        Article savedArticle =
+                articleRepository.save(articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL));
         DimensionOption dimensionOption = savedArticle.getArticleFile().getDimensionOption();
-        dimensionOption.getDimensions().addAll(
-                articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption)
-        );
+        dimensionOption
+                .getDimensions()
+                .addAll(articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption));
         fileService.uploadFile(
-                articleFormRequest.getModelFile(),
-                savedArticle.getArticleFile().getFileName()
-        );
+                articleFormRequest.getModelFile(), savedArticle.getArticleFile().getFileName());
         log.debug("{}에 의해 게시글이 저장되었습니다.", email);
         return savedArticle;
     }
@@ -99,23 +96,22 @@ public class ArticleService implements ArticleServiceInterface {
     @Transactional
     @Override
     public void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, String requestEmail) {
-        Article article = articleRepository.findByIdAndUserAccount_Email(articleId, requestEmail)
-                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); //작성자
+        Article article = articleRepository
+                .findByIdAndUserAccount_Email(articleId, requestEmail)
+                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); // 작성자
 
-        //작성자와 수정자가 같은지 확인
+        // 작성자와 수정자가 같은지 확인
         if (Objects.equals(article.getUserAccount().getEmail(), requestEmail)) {
-            //파일 수정
+            // 파일 수정
             articleFileService.updateArticleFile(articleFormRequest, articleId);
-            //게시글 수정
-            Optional.ofNullable(articleFormRequest.getTitle())
-                    .ifPresent(article::setTitle);
-            Optional.ofNullable(articleFormRequest.getContent())
-                    .ifPresent(article::setContent);
+            // 게시글 수정
+            Optional.ofNullable(articleFormRequest.getTitle()).ifPresent(article::setTitle);
+            Optional.ofNullable(articleFormRequest.getContent()).ifPresent(article::setContent);
             Optional.ofNullable(articleFormRequest.getArticleCategory())
                     .ifPresent(category -> article.setArticleCategory(ArticleCategory.valueOf(category)));
         } else {
-            log.error("작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}",
-                    article.getUserAccount().getEmail(), requestEmail);
+            log.error(
+                    "작성자와 수정자가 다릅니다. 작성자: {}, 수정자: {}", article.getUserAccount().getEmail(), requestEmail);
             throw new ArticleException(ErrorCode.NOT_WRITER);
         }
     }
@@ -127,17 +123,19 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public void deleteArticle(Long articleId, String email) {
         try {
-            Article article = articleRepository.getReferenceById(articleId); //작성자
-            //작성자와 삭제를 요청한 유저가 같은지 확인
+            Article article = articleRepository.getReferenceById(articleId); // 작성자
+            // 작성자와 삭제를 요청한 유저가 같은지 확인
             if (article.getUserAccount().getEmail().equals(email)) {
-                //S3 파일 삭제
+                // S3 파일 삭제
                 articleFileService.deleteFile(articleId);
-                //게시글에 속한 댓글, 좋아요도 같이 삭제
+                // 게시글에 속한 댓글, 좋아요도 같이 삭제
                 article.deleteAll();
                 articleRepository.delete(article);
-            }else {
-                log.error("작성자와 수정자가 다릅니다. 작성자: {}, 삭제 요청자: {}",
-                        article.getUserAccount().getEmail(), email);
+            } else {
+                log.error(
+                        "작성자와 수정자가 다릅니다. 작성자: {}, 삭제 요청자: {}",
+                        article.getUserAccount().getEmail(),
+                        email);
                 throw new ArticleException(ErrorCode.NOT_WRITER);
             }
         } catch (EntityNotFoundException e) {

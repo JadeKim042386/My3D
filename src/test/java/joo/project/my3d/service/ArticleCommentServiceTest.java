@@ -30,11 +30,20 @@ import static org.mockito.BDDMockito.*;
 @DisplayName("비지니스 로직 - 댓글")
 @ExtendWith(MockitoExtension.class)
 class ArticleCommentServiceTest {
-    @InjectMocks private ArticleCommentService articleCommentService;
-    @Mock private ArticleRepository articleRepository;
-    @Mock private UserAccountRepository userAccountRepository;
-    @Mock private ArticleCommentRepository articleCommentRepository;
-    @Mock private AlarmService alarmService;
+    @InjectMocks
+    private ArticleCommentService articleCommentService;
+
+    @Mock
+    private ArticleRepository articleRepository;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
+    @Mock
+    private ArticleCommentRepository articleCommentRepository;
+
+    @Mock
+    private AlarmService alarmService;
 
     @DisplayName("댓글 저장")
     @Test
@@ -87,11 +96,12 @@ class ArticleCommentServiceTest {
 
     @DisplayName("댓글 삭제")
     @Test
-     void deleteComment() {
+    void deleteComment() {
         // Given
         Long articleCommentId = 1L;
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.getReferenceById(articleCommentId))
+                .willReturn(Fixture.getArticleComment("content"));
         willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
         // When
         articleCommentService.deleteComment(articleCommentId, articleCommentDto.email());
@@ -105,7 +115,8 @@ class ArticleCommentServiceTest {
     void deleteCommentNotWriter() {
         // Given
         Long articleCommentId = 1L;
-        given(articleCommentRepository.getReferenceById(articleCommentId)).willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.getReferenceById(articleCommentId))
+                .willReturn(Fixture.getArticleComment("content"));
         // When
         assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, "a"))
                 .isInstanceOf(CommentException.class)

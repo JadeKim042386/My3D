@@ -16,11 +16,13 @@ import java.util.Arrays;
 @Configuration
 public class AppConfig {
 
+    public static String filePath;
+
     @Value("${file.path}")
     private String localPath;
+
     @Value("${aws.s3.url}")
     private String s3Path;
-    public static String filePath;
 
     @Bean
     public S3Client s3Client() {
@@ -32,7 +34,8 @@ public class AppConfig {
 
     @Bean
     public FileServiceInterface fileService(Environment env, S3Service s3Service, LocalFileService localFileService) {
-        String activatedProfile = Arrays.stream(env.getActiveProfiles()).findFirst().orElse("local");
+        String activatedProfile =
+                Arrays.stream(env.getActiveProfiles()).findFirst().orElse("local");
         if (activatedProfile.startsWith("prod")) {
             filePath = s3Path;
             return s3Service;

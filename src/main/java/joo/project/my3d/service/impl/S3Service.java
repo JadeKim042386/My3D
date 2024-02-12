@@ -45,28 +45,29 @@ public class S3Service implements FileServiceInterface {
                 .bucket(bucketName)
                 .key(key)
                 .uploadId(uploadId)
-                .partNumber(1).build();
+                .partNumber(1)
+                .build();
 
         try {
-            String etag1 = s3.uploadPart(uploadPartRequest, RequestBody.fromBytes(file.getBytes())).eTag();
-            CompletedPart part = CompletedPart.builder().partNumber(1).eTag(etag1).build();
+            String etag1 = s3.uploadPart(uploadPartRequest, RequestBody.fromBytes(file.getBytes()))
+                    .eTag();
+            CompletedPart part =
+                    CompletedPart.builder().partNumber(1).eTag(etag1).build();
 
             // Finally call completeMultipartUpload operation to tell S3 to merge all uploaded
             // parts and finish the multipart operation.
-            CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload.builder()
-                    .parts(part)
+            CompletedMultipartUpload completedMultipartUpload =
+                    CompletedMultipartUpload.builder().parts(part).build();
+
+            CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .uploadId(uploadId)
+                    .multipartUpload(completedMultipartUpload)
                     .build();
 
-            CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                    CompleteMultipartUploadRequest.builder()
-                            .bucket(bucketName)
-                            .key(key)
-                            .uploadId(uploadId)
-                            .multipartUpload(completedMultipartUpload)
-                            .build();
-
             s3.completeMultipartUpload(completeMultipartUploadRequest);
-        } catch(IOException e){
+        } catch (IOException e) {
             throw new FileException(ErrorCode.FILE_CANT_SAVE);
         }
     }
@@ -79,10 +80,8 @@ public class S3Service implements FileServiceInterface {
     @Override
     public void deleteFile(String key) {
         try {
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build();
+            DeleteObjectRequest deleteObjectRequest =
+                    DeleteObjectRequest.builder().bucket(bucketName).key(key).build();
             s3.deleteObject(deleteObjectRequest);
         } catch (SdkClientException | S3Exception e) {
             throw new FileException(ErrorCode.FAILED_DELETE);
@@ -96,11 +95,8 @@ public class S3Service implements FileServiceInterface {
     @Override
     public byte[] downloadFile(String key) {
         try {
-            GetObjectRequest objectRequest = GetObjectRequest
-                    .builder()
-                    .key(key)
-                    .bucket(bucketName)
-                    .build();
+            GetObjectRequest objectRequest =
+                    GetObjectRequest.builder().key(key).bucket(bucketName).build();
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
 
             return objectBytes.asByteArray();

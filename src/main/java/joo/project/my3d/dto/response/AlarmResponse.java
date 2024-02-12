@@ -16,11 +16,30 @@ public record AlarmResponse(
         String createdAt,
         String createdBy,
         String modifiedAt,
-        String modifiedBy
+        String modifiedBy) {
 
-) {
-    public static AlarmResponse of(Long id, AlarmType alarmType, String fromUserNickname, Long targetId, String text, boolean isChecked, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
-        return new AlarmResponse(id, alarmType, fromUserNickname, targetId, text, isChecked, LocalDateTimeUtils.passedTime(createdAt), createdBy, LocalDateTimeUtils.passedTime(modifiedAt), modifiedBy);
+    public static AlarmResponse of(
+            Long id,
+            AlarmType alarmType,
+            String fromUserNickname,
+            Long targetId,
+            String text,
+            boolean isChecked,
+            LocalDateTime createdAt,
+            String createdBy,
+            LocalDateTime modifiedAt,
+            String modifiedBy) {
+        return new AlarmResponse(
+                id,
+                alarmType,
+                fromUserNickname,
+                targetId,
+                text,
+                isChecked,
+                LocalDateTimeUtils.passedTime(createdAt),
+                createdBy,
+                LocalDateTimeUtils.passedTime(modifiedAt),
+                modifiedBy);
     }
 
     public static AlarmResponse from(AlarmDto dto) {
@@ -34,7 +53,6 @@ public record AlarmResponse(
                 dto.createdAt(),
                 dto.createdBy(),
                 dto.modifiedAt(),
-                dto.modifiedBy()
-        );
+                dto.modifiedBy());
     }
 }

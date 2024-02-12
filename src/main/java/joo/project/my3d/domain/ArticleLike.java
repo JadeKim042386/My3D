@@ -12,10 +12,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(
         name = "article_like",
-        indexes = {
-                @Index(columnList = "id")
-        }
-)
+        indexes = {@Index(columnList = "id")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleLike extends AuditingFields implements Persistable<Long> {
@@ -34,8 +31,7 @@ public class ArticleLike extends AuditingFields implements Persistable<Long> {
     @JoinColumn(name = "articleId")
     private Article article;
 
-    protected ArticleLike() {
-    }
+    protected ArticleLike() {}
 
     private ArticleLike(UserAccount userAccount, Article article) {
         this.userAccount = userAccount;

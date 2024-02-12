@@ -14,18 +14,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class DimensionOptionRequest {
-        private String optionName;
-        @NotNull
-        private final List<DimensionRequest> dimensions = new ArrayList<>();
+    @NotNull
+    private final List<DimensionRequest> dimensions = new ArrayList<>();
 
-        public DimensionOption toDimensionOptionEntity() {
-                return DimensionOption.of(optionName);
-        }
+    private String optionName;
 
-        public List<Dimension> toDimensionEntities(DimensionOption dimensionOption) {
-                return dimensions.stream()
-                        .map((dimension) -> dimension.toEntity(dimensionOption))
-                        .toList();
-        }
+    public DimensionOption toDimensionOptionEntity() {
+        return DimensionOption.of(optionName);
+    }
 
+    public List<Dimension> toDimensionEntities(DimensionOption dimensionOption) {
+        return dimensions.stream()
+                .map((dimension) -> dimension.toEntity(dimensionOption))
+                .toList();
+    }
 }

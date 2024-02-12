@@ -21,11 +21,10 @@ public class SignUpController {
      */
     @GetMapping
     public String signUp(
-        @RequestParam(required = false) String email,
-        @RequestParam(required = false) String nickname,
-        @RequestParam UserRole userRole,
-        Model model
-    ) {
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String nickname,
+            @RequestParam UserRole userRole,
+            Model model) {
         model.addAttribute("signUpData", SignUpData.of(email, nickname, userRole));
         return "signup/signup";
     }

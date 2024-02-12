@@ -2,11 +2,7 @@ package joo.project.my3d.dto;
 
 import joo.project.my3d.domain.Address;
 
-public record AddressDto(
-        String zipcode,
-        String street,
-        String detail
-) {
+public record AddressDto(String zipcode, String street, String detail) {
     public static AddressDto of() {
         return AddressDto.of(null, null, null);
     }
@@ -16,11 +12,7 @@ public record AddressDto(
     }
 
     public static AddressDto from(Address address) {
-        return new AddressDto(
-                address.getZipcode(),
-                address.getStreet(),
-                address.getDetail()
-        );
+        return new AddressDto(address.getZipcode(), address.getStreet(), address.getDetail());
     }
 
     public Address toEntity() {

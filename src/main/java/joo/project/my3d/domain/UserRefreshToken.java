@@ -11,13 +11,14 @@ public class UserRefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
+
     @OneToOne(mappedBy = "userRefreshToken")
     private UserAccount userAccount;
+
     private String refreshToken;
     private long reissueCount = 0;
 
-    protected UserRefreshToken() {
-    }
+    protected UserRefreshToken() {}
 
     private UserRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;

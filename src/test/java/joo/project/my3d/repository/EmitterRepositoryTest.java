@@ -16,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = EmitterRepository.class)
 class EmitterRepositoryTest {
 
-    @Autowired private EmitterRepository emitterRepository;
+    @Autowired
+    private EmitterRepository emitterRepository;
 
     @DisplayName("Emitter 저장")
     @Test
