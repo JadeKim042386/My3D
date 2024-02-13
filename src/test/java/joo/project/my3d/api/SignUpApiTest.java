@@ -1,5 +1,6 @@
 package joo.project.my3d.api;
 
+import joo.project.my3d.aop.BindingResultHandlerAspect;
 import joo.project.my3d.config.TestSecurityConfig;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.UserRole;
@@ -13,6 +14,7 @@ import joo.project.my3d.util.FormDataEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -35,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @ActiveProfiles("test")
 @DisplayName("View 컨트롤러 - 로그인")
-@Import({TestSecurityConfig.class, FormDataEncoder.class})
+@Import({TestSecurityConfig.class, FormDataEncoder.class, AopAutoConfiguration.class, BindingResultHandlerAspect.class})
 @WebMvcTest(SignUpApi.class)
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class SignUpApiTest {

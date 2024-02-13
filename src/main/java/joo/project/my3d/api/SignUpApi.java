@@ -1,9 +1,8 @@
 package joo.project.my3d.api;
 
+import joo.project.my3d.aop.BindingResultHandler;
 import joo.project.my3d.dto.request.SignUpRequest;
-import joo.project.my3d.dto.response.ExceptionResponse;
 import joo.project.my3d.exception.SignUpException;
-import joo.project.my3d.exception.ValidatedException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.security.TokenProvider;
 import joo.project.my3d.service.CompanyServiceInterface;
@@ -35,14 +34,10 @@ public class SignUpApi {
     /**
      * 회원가입 요청
      */
+    @BindingResultHandler(message = "signup validated error")
     @PostMapping
     public ResponseEntity<?> signup(@Valid SignUpRequest signUpRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.warn("bindingResult={}", bindingResult);
-            throw new ValidatedException(
-                    ErrorCode.INVALID_REQUEST,
-                    ExceptionResponse.fromBindingResult("signup validated error", bindingResult));
-        }
+
         duplicatedEmailOrNicknameOrCompanyNameCheck(
                 signUpRequest.email(), signUpRequest.nickname(), signUpRequest.companyName());
         String refreshToken = tokenProvider.generateRefreshToken();

@@ -1,5 +1,6 @@
 package joo.project.my3d.api;
 
+import joo.project.my3d.aop.BindingResultHandler;
 import joo.project.my3d.dto.request.UserLoginRequest;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.response.UserInfo;
@@ -10,8 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -26,8 +30,10 @@ public class SignInApi {
      * @param loginRequest 로그인 폼에 입력된 이메일, 비밀번호를 담은 DTO
      * @throws AuthException 로그인에 실패할 경우 발생하는 예외
      */
+    @BindingResultHandler(message = "validation error during login")
     @PostMapping
-    public ResponseEntity<LoginResponse> requestLogin(UserLoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> requestLogin(
+            @Valid UserLoginRequest loginRequest, BindingResult bindingResult) {
 
         return ResponseEntity.ok(userAccountService.login(loginRequest.email(), loginRequest.password()));
     }
