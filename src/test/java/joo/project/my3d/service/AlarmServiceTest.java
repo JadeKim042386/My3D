@@ -39,47 +39,42 @@ class AlarmServiceTest {
     void getAlarms() {
         // Given
         UserAccount userAccount = Fixture.getUserAccount();
-        given(alarmRepository.findAllByUserAccount_Email(userAccount.getEmail()))
-                .willReturn(List.of());
+        given(alarmRepository.findAllByReceiver_Email(userAccount.getEmail())).willReturn(List.of());
         // When
         alarmService.getAlarms(userAccount.getEmail());
         // Then
-        then(alarmRepository).should().findAllByUserAccount_Email(userAccount.getEmail());
+        then(alarmRepository).should().findAllByReceiver_Email(userAccount.getEmail());
     }
 
     @DisplayName("알람 전송")
     @Test
     void sendAlarm() throws IllegalAccessException {
         // Given
-        String email = "jujoo042386@gmail.com";
-        String nickname = "nickname";
-        UserAccount userAccount = Fixture.getUserAccount();
-        Long articleId = 1L;
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
+        Long targetId = 1L;
         SseEmitter sseEmitter = new SseEmitter(60L * 60 * 1000);
-        Alarm alarm = Fixture.getAlarm(userAccount);
+        Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(alarmRepository.save(any())).willReturn(alarm);
-        given(emitterRepository.get(email)).willReturn(Optional.of(sseEmitter));
+        given(emitterRepository.get(anyString())).willReturn(Optional.of(sseEmitter));
         // When
-        alarmService.send(email, nickname, articleId, userAccount);
+        alarmService.send(targetId, sender, receiver);
         // Then
-        then(emitterRepository).should().get(email);
     }
 
     @DisplayName("알람 전송 - 연결 실패")
     @Test
     void sendAlarmFailed() {
         // Given
-        String email = "jujoo042386@gmail.com";
-        String nickname = "nickname";
-        UserAccount userAccount = Fixture.getUserAccount();
-        Long articleId = 1L;
-        given(alarmRepository.save(any())).willReturn(Fixture.getAlarm(userAccount));
-        given(emitterRepository.get(email)).willReturn(Optional.empty());
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
+        Long targetId = 1L;
+        given(alarmRepository.save(any())).willReturn(Fixture.getAlarm(sender, receiver));
+        given(emitterRepository.get(anyString())).willReturn(Optional.empty());
         // When
-        alarmService.send(email, nickname, articleId, userAccount);
+        alarmService.send(targetId, sender, receiver);
         // Then
-        then(emitterRepository).should().get(email);
     }
 
     @DisplayName("SSE 연결")

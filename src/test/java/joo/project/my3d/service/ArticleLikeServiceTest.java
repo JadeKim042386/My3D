@@ -43,8 +43,9 @@ class ArticleLikeServiceTest {
         Long articleId = 1L;
         String userId = "joo";
         ArticleLike articleLike = Fixture.getArticleLike();
-        UserAccount userAccount = Fixture.getUserAccount();
-        Alarm alarm = Fixture.getAlarm(userAccount);
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
+        Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
         given(userAccountRepository.getReferenceByEmail(userId)).willReturn(articleLike.getUserAccount());

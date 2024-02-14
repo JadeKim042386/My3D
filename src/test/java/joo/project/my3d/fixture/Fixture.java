@@ -87,8 +87,8 @@ public class Fixture {
         return Company.of("company", "homepage");
     }
 
-    public static Alarm getAlarm(UserAccount userAccount) {
-        return Alarm.of(AlarmType.NEW_COMMENT_ON_POST, "a@gmail.com", 1L, false, userAccount);
+    public static Alarm getAlarm(UserAccount sender, UserAccount receiver) {
+        return Alarm.of(AlarmType.NEW_COMMENT, 1L, false, sender, receiver);
     }
 
     public static ArticleFormRequest getArticleFormRequest() throws IllegalAccessException {

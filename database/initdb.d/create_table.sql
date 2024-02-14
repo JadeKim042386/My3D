@@ -126,14 +126,13 @@ CREATE TABLE `article_like` (
 CREATE TABLE `alarm` (
      `id`	bigint	AUTO_INCREMENT NOT NULL,
      `alarm_type` varchar(50) NOT NULL,
-     `from_user_nickname` varchar(50) NOT NULL,
      `target_id` bigint NOT NULL,
-     `user_account_id` bigint	NOT NULL,
      `is_checked` boolean DEFAULT false NOT NULL,
+     `sender_id` bigint NOT NULL,
+     `receiver_id` bigint NOT NULL,
      `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
      `modified_at`	datetime	NOT NULL,
-     `created_by`	varchar(100)	NOT NULL,
-     `modified_by`	varchar(100)	NOT NULL,
      PRIMARY KEY (`id`),
-     FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
+     FOREIGN KEY (`sender_id`) REFERENCES `user_account` (`id`),
+     FOREIGN KEY (`receiver_id`) REFERENCES `user_account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='알람';

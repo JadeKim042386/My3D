@@ -2,13 +2,13 @@ package joo.project.my3d.repository;
 
 import joo.project.my3d.domain.ArticleComment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface ArticleCommentRepository extends JpaRepository<ArticleComment, Long> {
-    List<ArticleComment> findAllByArticleId(Long articleId);
+    boolean existsByIdAndUserAccount_Email(Long articleCommentId, String email);
 
-    void deleteByArticleId(Long articleId);
-
-    void deleteByUserAccount_Email(String email);
+    @Query("select ac.article.id from ArticleComment ac where ac.id = ?1")
+    Optional<Long> findArticleIdById(Long articleCommentId);
 }

@@ -9,37 +9,30 @@ public record AlarmDto(
         Long id,
         AlarmType alarmType,
         String fromUserNickname,
-        Long targetId,
+        Long articleId,
         boolean isChecked,
         LocalDateTime createdAt,
-        String createdBy,
-        LocalDateTime modifiedAt,
-        String modifiedBy) {
+        LocalDateTime modifiedAt) {
 
     public static AlarmDto of(
             Long id,
             AlarmType alarmType,
             String fromUserNickname,
-            Long targetId,
+            Long articleId,
             boolean isChecked,
             LocalDateTime createdAt,
-            String createdBy,
-            LocalDateTime modifiedAt,
-            String modifiedBy) {
-        return new AlarmDto(
-                id, alarmType, fromUserNickname, targetId, isChecked, createdAt, createdBy, modifiedAt, modifiedBy);
+            LocalDateTime modifiedAt) {
+        return new AlarmDto(id, alarmType, fromUserNickname, articleId, isChecked, createdAt, modifiedAt);
     }
 
-    public static AlarmDto from(Alarm alarm) {
+    public static AlarmDto from(Alarm alarm, Long articleId) {
         return AlarmDto.of(
                 alarm.getId(),
                 alarm.getAlarmType(),
-                alarm.getFromUserNickname(),
-                alarm.getTargetId(),
+                alarm.getSender().getNickname(),
+                articleId,
                 alarm.isChecked(),
                 alarm.getCreatedAt(),
-                alarm.getCreatedBy(),
-                alarm.getModifiedAt(),
-                alarm.getModifiedBy());
+                alarm.getModifiedAt());
     }
 }

@@ -11,6 +11,10 @@ public interface UserAccountServiceInterface {
      */
     UserAccountDto searchUser(String email);
 
+    UserAccount searchUserEntity(String email);
+
+    UserAccount searchUserEntityByArticleId(Long articleId);
+
     /**
      * 이메일 또는 닉네임 존재 유무 조회
      */

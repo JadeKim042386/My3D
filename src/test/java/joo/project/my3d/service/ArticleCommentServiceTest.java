@@ -51,15 +51,15 @@ class ArticleCommentServiceTest {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
         ArticleComment articleComment = Fixture.getArticleComment("content");
-        UserAccount userAccount = Fixture.getUserAccount();
-        Alarm alarm = Fixture.getAlarm(userAccount);
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
+        Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(anyString(), anyString(), anyLong(), any());
+        willDoNothing().given(alarmService).send(isNull(), any(), any());
         // When
-        articleCommentService.saveComment(articleCommentDto);
+        articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then
     }
 
@@ -68,10 +68,12 @@ class ArticleCommentServiceTest {
     void saveCommentNotExistArticle() {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
         given(articleRepository.getReferenceById(anyLong()))
                 .willThrow(new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleCommentService.saveComment(articleCommentDto))
+        assertThatThrownBy(() -> articleCommentService.saveComment(articleCommentDto, sender, receiver))
                 .isInstanceOf(CommentException.class);
         // Then
     }
@@ -82,15 +84,16 @@ class ArticleCommentServiceTest {
         // Given
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content", 5L);
         ArticleComment articleComment = Fixture.getArticleComment("content");
-        UserAccount userAccount = Fixture.getUserAccount();
-        Alarm alarm = Fixture.getAlarm(userAccount);
+        FieldUtils.writeField(articleComment, "id", 2L, true);
+        UserAccount sender = Fixture.getUserAccount();
+        UserAccount receiver = Fixture.getUserAccount();
+        Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
-        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(articleComment.getUserAccount());
         given(articleCommentRepository.getReferenceById(anyLong())).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(anyString(), anyString(), anyLong(), any());
+        willDoNothing().given(alarmService).send(isNull(), any(), any());
         // When
-        articleCommentService.saveComment(articleCommentDto);
+        articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then
     }
 
@@ -102,7 +105,8 @@ class ArticleCommentServiceTest {
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
         given(articleCommentRepository.getReferenceById(articleCommentId))
                 .willReturn(Fixture.getArticleComment("content"));
-        willDoNothing().given(articleCommentRepository).deleteById(articleCommentId);
+        given(articleCommentRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+                .willReturn(true);
         // When
         articleCommentService.deleteComment(articleCommentId, articleCommentDto.email());
         // Then

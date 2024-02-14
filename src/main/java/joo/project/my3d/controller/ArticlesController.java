@@ -1,8 +1,6 @@
 package joo.project.my3d.controller;
 
 import com.querydsl.core.types.Predicate;
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.MeterRegistry;
 import joo.project.my3d.aop.TimeTrace;
 import joo.project.my3d.config.AppConfig;
 import joo.project.my3d.domain.Article;
@@ -33,7 +31,6 @@ import static joo.project.my3d.domain.constant.FormStatus.UPDATE;
 @RequestMapping
 @RequiredArgsConstructor
 public class ArticlesController {
-    private final MeterRegistry meterRegistry;
     private final ArticleServiceInterface articleService;
     private final AlarmServiceInterface<SseEmitter> alarmService;
 

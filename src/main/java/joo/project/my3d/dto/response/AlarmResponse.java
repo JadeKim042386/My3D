@@ -14,9 +14,7 @@ public record AlarmResponse(
         String text,
         boolean isChecked,
         String createdAt,
-        String createdBy,
-        String modifiedAt,
-        String modifiedBy) {
+        String modifiedAt) {
 
     public static AlarmResponse of(
             Long id,
@@ -26,9 +24,7 @@ public record AlarmResponse(
             String text,
             boolean isChecked,
             LocalDateTime createdAt,
-            String createdBy,
-            LocalDateTime modifiedAt,
-            String modifiedBy) {
+            LocalDateTime modifiedAt) {
         return new AlarmResponse(
                 id,
                 alarmType,
@@ -37,9 +33,7 @@ public record AlarmResponse(
                 text,
                 isChecked,
                 LocalDateTimeUtils.passedTime(createdAt),
-                createdBy,
-                LocalDateTimeUtils.passedTime(modifiedAt),
-                modifiedBy);
+                LocalDateTimeUtils.passedTime(modifiedAt));
     }
 
     public static AlarmResponse from(AlarmDto dto) {
@@ -47,12 +41,10 @@ public record AlarmResponse(
                 dto.id(),
                 dto.alarmType(),
                 dto.fromUserNickname(),
-                dto.targetId(),
+                dto.articleId(),
                 dto.alarmType().getAlarmText(),
                 dto.isChecked(),
                 dto.createdAt(),
-                dto.createdBy(),
-                dto.modifiedAt(),
-                dto.modifiedBy());
+                dto.modifiedAt());
     }
 }

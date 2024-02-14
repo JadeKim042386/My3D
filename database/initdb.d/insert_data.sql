@@ -89,6 +89,6 @@ insert into article_like (article_id, user_account_id, created_at, modified_at, 
 (6, 3, '2023-06-23 21:19:43', '2023-06-23 21:19:43', 'jujoo', 'jujoo');
 
 -- 알람
-insert into alarm (user_account_id, alarm_type, from_user_nickname, target_id, is_checked, created_by, modified_at, modified_by, created_at) values
-(3, 'NEW_COMMENT_ON_POST', 'a', 4, false, 'a', now(), 'a', now()),
-(3, 'NEW_COMMENT_ON_POST', 'a', 4, false, 'a', now(), 'a', now());
+insert into alarm (receiver_id, alarm_type, sender_id, target_id, is_checked, modified_at, created_at) values
+(3, 'NEW_COMMENT', 2, 4, false, now(), now()),
+(3, 'NEW_COMMENT', 1, 4, false, now(), now());

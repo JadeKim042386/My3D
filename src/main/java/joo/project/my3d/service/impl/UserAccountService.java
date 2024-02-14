@@ -35,9 +35,20 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public UserAccountDto searchUser(String email) {
+        return UserAccountDto.from(searchUserEntity(email));
+    }
+
+    @Override
+    public UserAccount searchUserEntity(String email) {
         return userAccountRepository
                 .findByEmail(email)
-                .map(UserAccountDto::from)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
+    }
+
+    @Override
+    public UserAccount searchUserEntityByArticleId(Long articleId) {
+        return userAccountRepository
+                .findByArticleId(articleId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
 

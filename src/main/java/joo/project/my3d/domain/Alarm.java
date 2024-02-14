@@ -1,6 +1,6 @@
 package joo.project.my3d.domain;
 
-import joo.project.my3d.domain.auditing.AuditingFields;
+import joo.project.my3d.domain.auditing.AuditingAt;
 import joo.project.my3d.domain.constant.AlarmType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import javax.persistence.*;
         indexes = {@Index(columnList = "id")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Alarm extends AuditingFields implements Persistable<Long> {
+public class Alarm extends AuditingAt implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -28,10 +28,7 @@ public class Alarm extends AuditingFields implements Persistable<Long> {
     private AlarmType alarmType;
 
     @Column(nullable = false)
-    private String fromUserNickname; // 알람을 발생시킨 유저
-
-    @Column(nullable = false)
-    private Long targetId; // 게시글 id
+    private Long targetId; // 댓글 id
 
     @Setter
     @Column(nullable = false)
@@ -39,23 +36,27 @@ public class Alarm extends AuditingFields implements Persistable<Long> {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "userAccountId")
-    private UserAccount userAccount; // 알람을 받는 유저
+    @JoinColumn(name = "senderId")
+    private UserAccount sender; // 알람을 받는 유저
+
+    @ToString.Exclude
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiverId")
+    private UserAccount receiver; // 알람을 받는 유저
 
     protected Alarm() {}
 
-    private Alarm(
-            AlarmType alarmType, String fromUserNickname, Long targetId, boolean isChecked, UserAccount userAccount) {
+    private Alarm(AlarmType alarmType, Long targetId, boolean isChecked, UserAccount sender, UserAccount receiver) {
         this.alarmType = alarmType;
-        this.fromUserNickname = fromUserNickname;
+        this.sender = sender;
         this.targetId = targetId;
         this.isChecked = isChecked;
-        this.userAccount = userAccount;
+        this.receiver = receiver;
     }
 
     public static Alarm of(
-            AlarmType alarmType, String fromUserNickname, Long targetId, boolean isChecked, UserAccount userAccount) {
-        return new Alarm(alarmType, fromUserNickname, targetId, isChecked, userAccount);
+            AlarmType alarmType, Long targetId, boolean isChecked, UserAccount sender, UserAccount receiver) {
+        return new Alarm(alarmType, targetId, isChecked, sender, receiver);
     }
 
     @Override

@@ -40,8 +40,13 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount")
-    private final Set<Alarm> alarms = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "sender", orphanRemoval = true)
+    private final Set<Alarm> senderAlarms = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
+    @OneToMany(mappedBy = "receiver", orphanRemoval = true)
+    private final Set<Alarm> receiverAlarms = new LinkedHashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

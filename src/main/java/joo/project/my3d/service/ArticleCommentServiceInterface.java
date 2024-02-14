@@ -1,12 +1,13 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.ArticleCommentDto;
 
 public interface ArticleCommentServiceInterface {
     /**
      * 댓글 저장
      */
-    ArticleCommentDto saveComment(ArticleCommentDto dto);
+    ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount sender, UserAccount receiver);
 
     /**
      * 댓글 삭제

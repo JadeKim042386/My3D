@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
-    List<Alarm> findAllByUserAccount_Email(String email);
+    List<Alarm> findAllByReceiver_Email(String email);
 }

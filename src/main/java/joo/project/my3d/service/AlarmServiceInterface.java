@@ -15,7 +15,7 @@ public interface AlarmServiceInterface<T> {
     /**
      * 알람 전송
      */
-    void send(String email, String nickname, Long articleId, UserAccount userAccount);
+    void send(Long targetId, UserAccount sender, UserAccount receiver);
 
     /**
      * 특정 유저와의 연결 시도
@@ -30,5 +30,5 @@ public interface AlarmServiceInterface<T> {
     /**
      * 알람 저장
      */
-    Alarm saveAlarm(Long articleId, String nickname, UserAccount userAccount);
+    Alarm saveAlarm(Long targetId, UserAccount sender, UserAccount receiver);
 }

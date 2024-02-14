@@ -2,10 +2,11 @@ package joo.project.my3d.controller;
 
 import joo.project.my3d.api.ArticleCommentsApi;
 import joo.project.my3d.config.TestSecurityConfig;
-import joo.project.my3d.dto.ArticleCommentDto;
+import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureCookie;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.service.impl.ArticleCommentService;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ class ArticleCommentsApiTest {
     @MockBean
     private ArticleCommentService articleCommentService;
 
+    @Autowired
+    private UserAccountService userAccountService;
+
     private static String apiUrl = "/api/v1/articles/1/comments";
     private static Cookie userCookie = FixtureCookie.createUserCookie();
 
@@ -45,7 +49,9 @@ class ArticleCommentsApiTest {
     @Test
     void addComment() throws Exception {
         // Given
-        given(articleCommentService.saveComment(any(ArticleCommentDto.class)))
+        given(userAccountService.searchUserEntity(anyString())).willReturn(Fixture.getUserAccount());
+        given(userAccountService.searchUserEntityByArticleId(anyLong())).willReturn(Fixture.getUserAccount());
+        given(articleCommentService.saveComment(any(), any(), any()))
                 .willReturn(FixtureDto.getArticleCommentDto("content"));
         // When
         mvc.perform(post(apiUrl).param("content", "content").cookie(userCookie).with(csrf()))

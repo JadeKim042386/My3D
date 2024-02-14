@@ -250,6 +250,8 @@ public class JpaRepositoryTest {
                     userAccountRepository.findById(userAccountId).get();
             userAccount.getArticleComments().clear();
             userAccount.getArticleLikes().clear();
+            userAccount.getSenderAlarms().clear();
+            userAccount.getReceiverAlarms().clear();
             userAccountRepository.deleteById(userAccountId);
             // Then
             assertThat(userAccountRepository.count()).isEqualTo(previousCount - 1);
@@ -394,10 +396,9 @@ public class JpaRepositoryTest {
         @Test
         void saveArticleLike() {
             // Given
-            Long userAccountId = 1L;
             ArticleLike articleLike = ArticleLike.of(
-                    userAccountRepository.findById(userAccountId).get(),
-                    articleRepository.findById(1L).get());
+                    userAccountRepository.findById(1L).get(),
+                    articleRepository.findById(3L).get());
             long previousCount = articleLikeRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
@@ -656,9 +657,11 @@ public class JpaRepositoryTest {
         @Test
         void saveAlarm() {
             // Given
-            Long userAccountId = 3L;
-            UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
-            Alarm alarm = Fixture.getAlarm(userAccount);
+            Long senderId = 3L;
+            Long receiverId = 3L;
+            UserAccount sender = userAccountRepository.getReferenceById(senderId);
+            UserAccount receiver = userAccountRepository.getReferenceById(receiverId);
+            Alarm alarm = Fixture.getAlarm(sender, receiver);
             long previousCount = alarmRepository.count();
             log.info("previousCount: {}", previousCount);
             // When
