@@ -138,9 +138,4 @@ public class Article extends AuditingFields implements Persistable<Long> {
         this.articleComments.clear();
         this.articleLikes.clear();
     }
-
-    public void updateLikeCount(boolean isAdd) {
-        if (isAdd) likeCount++;
-        else likeCount--;
-    }
 }

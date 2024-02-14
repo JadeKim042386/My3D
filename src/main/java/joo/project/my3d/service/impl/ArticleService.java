@@ -135,7 +135,7 @@ public class ArticleService implements ArticleServiceInterface {
 
     @Override
     public boolean isExistsArticleByEmail(Long articleId, String email) {
-        return articleRepository.existsByIdAndUserAccount_Email(articleId, email);
+        return articleRepository.existsByIdAndCreatedBy(articleId, email);
     }
 
     private void equalsRequestUserAndWriter(Long articleId, String email) {

@@ -55,5 +55,5 @@ public interface ArticleRepository
     @Query("update Article a set a.likeCount = a.likeCount - 1")
     void deleteArticleLikeCount();
 
-    boolean existsByIdAndUserAccount_Email(Long articleId, String email);
+    boolean existsByIdAndCreatedBy(Long articleId, String email);
 }
