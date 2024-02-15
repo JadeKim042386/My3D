@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.Cookie;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,7 +39,7 @@ class AlarmApiTest {
     @Test
     void getAlarms() throws Exception {
         // Given
-        given(alarmService.getAlarms(anyString())).willReturn(List.of());
+        given(alarmService.getAlarms(anyLong())).willReturn(List.of());
         // When
         mvc.perform(get("/api/v1/alarm").cookie(userCookie))
                 .andExpect(status().isOk())

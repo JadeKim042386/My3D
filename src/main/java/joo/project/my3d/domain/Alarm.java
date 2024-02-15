@@ -14,7 +14,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @Table(
         name = "alarm",
-        indexes = {@Index(columnList = "id")})
+        indexes = {@Index(name = "receiver_idx", columnList = "receiverId")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Alarm extends AuditingAt implements Persistable<Long> {

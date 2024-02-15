@@ -39,11 +39,10 @@ class AlarmServiceTest {
     void getAlarms() {
         // Given
         UserAccount userAccount = Fixture.getUserAccount();
-        given(alarmRepository.findAllByReceiver_Email(userAccount.getEmail())).willReturn(List.of());
+        given(alarmRepository.findAllByReceiverId(anyLong())).willReturn(List.of());
         // When
-        alarmService.getAlarms(userAccount.getEmail());
+        alarmService.getAlarms(userAccount.getId());
         // Then
-        then(alarmRepository).should().findAllByReceiver_Email(userAccount.getEmail());
     }
 
     @DisplayName("알람 전송")

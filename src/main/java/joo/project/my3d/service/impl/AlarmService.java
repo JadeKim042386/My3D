@@ -33,8 +33,8 @@ public class AlarmService implements AlarmServiceInterface<SseEmitter> {
     private final ArticleCommentRepository articleCommentRepository;
 
     @Override
-    public List<AlarmDto> getAlarms(String email) {
-        return alarmRepository.findAllByReceiver_Email(email).stream()
+    public List<AlarmDto> getAlarms(Long receiverId) {
+        return alarmRepository.findAllByReceiverId(receiverId).stream()
                 .map(alarm -> AlarmDto.from(alarm, getArticleId(alarm)))
                 .sorted(Comparator.comparing(AlarmDto::createdAt).reversed())
                 .toList();
