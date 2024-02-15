@@ -1,7 +1,7 @@
 package joo.project.my3d.controller;
 
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.response.SignUpData;
+import joo.project.my3d.dto.response.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +25,7 @@ public class SignUpController {
             @RequestParam(required = false) String nickname,
             @RequestParam UserRole userRole,
             Model model) {
-        model.addAttribute("signUpData", SignUpData.of(email, nickname, userRole));
+        model.addAttribute("signUpData", UserInfo.of(email, nickname, userRole));
         return "signup/signup";
     }
 

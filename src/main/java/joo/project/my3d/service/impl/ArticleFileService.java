@@ -104,7 +104,6 @@ public class ArticleFileService implements ArticleFileServiceInterface {
     public String searchFileName(Long articleId) {
         return articleFileRepository
                 .findFileNameByArticleId(articleId)
-                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND))
-                .getFileName();
+                .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
     }
 }

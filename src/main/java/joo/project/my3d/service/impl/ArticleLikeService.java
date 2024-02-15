@@ -41,7 +41,6 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     public int addArticleLike(Long articleId, String email) {
         try {
             articleLikeRepository.save(ArticleLike.of(
-                    // TODO: userAccount과의 relation은 필요없을 것 같음
                     userAccountRepository.getReferenceByEmail(email), articleRepository.getReferenceById(articleId)));
             articleRepository.addArticleLikeCount();
             return getLikeCountByArticleId(articleId);

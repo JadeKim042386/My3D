@@ -36,7 +36,7 @@ class CompanyServiceTest {
         Company company = Fixture.getCompany();
         given(companyRepository.findByUserAccount_Email(anyString())).willReturn(Optional.of(company));
         // When
-        companyService.getCompany(email);
+        companyService.getCompanyEntity(email);
         // Then
     }
 

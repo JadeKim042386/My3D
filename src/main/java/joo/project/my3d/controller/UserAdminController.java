@@ -36,7 +36,7 @@ public class UserAdminController {
      */
     @GetMapping
     public String account(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
-        UserAccountDto userAccountDto = userAccountService.searchUser(boardPrincipal.email());
+        UserAccountDto userAccountDto = userAccountService.searchUserDto(boardPrincipal.email());
         model.addAttribute(
                 "userData",
                 UserAdminResponse.of(

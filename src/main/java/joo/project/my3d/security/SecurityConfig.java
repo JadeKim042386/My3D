@@ -97,11 +97,10 @@ public class SecurityConfig {
 
             // 회원이 존재하지 않는다면 저장하지 않고 회원가입이 안된 상태로 반환
             try {
-                UserAccountDto userAccountDto = userAccountService.searchUser(email);
+                UserAccountDto userAccountDto = userAccountService.searchUserDto(email);
                 return BoardPrincipal.from(userAccountDto);
             } catch (UsernameNotFoundException e) {
-                return BoardPrincipal.from(
-                        UserAccountDto.of(email, dummyPassword, attributes.getName(), UserRole.ANONYMOUS));
+                return BoardPrincipal.of(email, dummyPassword, attributes.getName(), UserRole.ANONYMOUS);
             }
         };
     }

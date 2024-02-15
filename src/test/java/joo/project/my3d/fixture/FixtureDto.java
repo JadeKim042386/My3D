@@ -18,12 +18,12 @@ public class FixtureDto {
 
     public static UserAccountDto getUserAccountDto() {
         AddressDto addressDto = FixtureDto.getAddressDto();
-        return UserAccountDto.of("jk042386@gmail.com", "pw", "01011111111", "Joo", addressDto, UserRole.USER);
+        return UserAccountDto.of(11L, "jk042386@gmail.com", "pw", "01011111111", "Joo", addressDto, UserRole.USER);
     }
 
     public static UserAccountDto getUserAccountDto(String nickname, UserRole userRole) {
         AddressDto addressDto = FixtureDto.getAddressDto();
-        return UserAccountDto.of(nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, userRole);
+        return UserAccountDto.of(11L, nickname + "@gmail.com", "pw", nickname, "01011111111", addressDto, userRole);
     }
 
     public static ArticleFileWithDimensionDto getArticleFileWithDimensionOptionWithDimensionDto() {
@@ -31,24 +31,6 @@ public class FixtureDto {
                 FixtureDto.getDimensionOptionWithDimensionDto();
         return ArticleFileWithDimensionDto.of(
                 11L, 5555L, "test.stp", "uuid.stp", "stp", dimensionOptionWithDimensionDto);
-    }
-
-    public static ArticleDto getArticleDto(
-            Long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
-        UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        ArticleFileWithDimensionDto articleFileDto = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
-        return ArticleDto.of(
-                id,
-                userAccountDto,
-                title,
-                content,
-                articleType,
-                articleCategory,
-                articleFileDto,
-                LocalDateTime.now(),
-                userAccountDto.email(),
-                LocalDateTime.now(),
-                userAccountDto.email());
     }
 
     public static ArticleCommentDto getArticleCommentDto(String content) {
@@ -98,5 +80,11 @@ public class FixtureDto {
         FieldUtils.writeField(request, "companyName", "companyName", true);
         FieldUtils.writeField(request, "homepage", "homepage", true);
         return request;
+    }
+
+    public static ArticleFormDto getArticleFormDto(
+            long id, String title, String content, ArticleType articleType, ArticleCategory articleCategory) {
+        ArticleFileWithDimensionDto articleFile = FixtureDto.getArticleFileWithDimensionOptionWithDimensionDto();
+        return ArticleFormDto.of(id, articleFile, title, content, articleType, articleCategory);
     }
 }

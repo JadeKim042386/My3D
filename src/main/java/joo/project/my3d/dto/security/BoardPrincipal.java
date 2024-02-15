@@ -2,7 +2,6 @@ package joo.project.my3d.dto.security;
 
 import joo.project.my3d.domain.Address;
 import joo.project.my3d.domain.constant.UserRole;
-import joo.project.my3d.dto.AddressDto;
 import joo.project.my3d.dto.UserAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -56,6 +55,14 @@ public record BoardPrincipal(
         return BoardPrincipal.of(id, email, null, null, nickname, userRole, Address.of(null, null, null), Map.of());
     }
 
+    /**
+     * OAuth2UserService
+     */
+    public static BoardPrincipal of(String email, String password, String nickname, UserRole userRole) {
+        return BoardPrincipal.of(
+                null, email, password, null, nickname, userRole, Address.of(null, null, null), Map.of());
+    }
+
     public static BoardPrincipal from(UserAccountDto dto) {
         return BoardPrincipal.of(
                 dto.id(),
@@ -65,10 +72,6 @@ public record BoardPrincipal(
                 dto.nickname(),
                 dto.userRole(),
                 dto.addressDto().toEntity());
-    }
-
-    public UserAccountDto toDto() {
-        return UserAccountDto.of(id, email, password, nickname, phone, AddressDto.from(address), getUserRole());
     }
 
     public UserRole getUserRole() {

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     private final BCryptPasswordEncoder encoder;
 
     @Override
-    public UserAccountDto searchUser(String email) {
+    public UserAccountDto searchUserDto(String email) {
         return UserAccountDto.from(searchUserEntity(email));
     }
 
@@ -67,7 +68,7 @@ public class UserAccountService implements UserAccountServiceInterface {
      */
     @Override
     public BoardPrincipal getUserPrincipal(String email) {
-        return BoardPrincipal.from(searchUser(email));
+        return BoardPrincipal.from(searchUserDto(email));
     }
 
     /**
@@ -108,18 +109,10 @@ public class UserAccountService implements UserAccountServiceInterface {
     public void updateUser(UserAccountDto dto) {
         try {
             UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
-            if (dto.nickname() != null) {
-                userAccount.setNickname(dto.nickname());
-            }
-            if (dto.phone() != null) {
-                userAccount.setPhone(dto.phone());
-            }
-            if (dto.userPassword() != null) {
-                userAccount.setUserPassword(dto.userPassword());
-            }
-            if (dto.addressDto() != null) {
-                userAccount.setAddress(dto.addressDto().toEntity());
-            }
+            Optional.ofNullable(dto.nickname()).ifPresent(userAccount::setNickname);
+            Optional.ofNullable(dto.phone()).ifPresent(userAccount::setPhone);
+            Optional.ofNullable(dto.userPassword()).ifPresent(userAccount::setUserPassword);
+            Optional.of(dto.addressDto().toEntity()).ifPresent(userAccount::setAddress);
         } catch (EntityNotFoundException e) {
             throw new AuthException(ErrorCode.INVALID_USER, e);
         }
@@ -131,7 +124,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Transactional
     @Override
     public LoginResponse login(String email, String password) {
-        UserAccountDto userAccountDto = searchUser(email);
+        UserAccountDto userAccountDto = searchUserDto(email);
 
         // 비밀번호 일치 확인 (DB에 저장된 비밀번호는 encoded password)
         if (!encoder.matches(password, userAccountDto.userPassword())) {
@@ -147,7 +140,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Transactional
     @Override
     public LoginResponse oauthLogin(String email, String nickname) {
-        UserAccountDto userAccountDto = searchUser(email);
+        UserAccountDto userAccountDto = searchUserDto(email);
         if (!nickname.equals(userAccountDto.nickname())) {
             throw new AuthException(ErrorCode.NOT_EQUAL_NICKNAME);
         }

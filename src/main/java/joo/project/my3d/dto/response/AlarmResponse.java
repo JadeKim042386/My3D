@@ -10,7 +10,7 @@ public record AlarmResponse(
         Long id,
         AlarmType alarmType,
         String fromUserNickname,
-        Long targetId,
+        Long articleId,
         String text,
         boolean isChecked,
         String createdAt,

@@ -55,7 +55,7 @@ class UserAccountServiceTest {
         String email = "jk042386@gmail.com";
         given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
-        UserAccountDto userAccountDto = userAccountService.searchUser(email);
+        UserAccountDto userAccountDto = userAccountService.searchUserDto(email);
         // Then
         assertThat(userAccountDto.email()).isEqualTo(email);
     }
@@ -92,7 +92,7 @@ class UserAccountServiceTest {
         // Given
         String email = "jk042386@gmail.com";
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        given(userAccountRepository.getReferenceByEmail(email)).willReturn(userAccountDto.toEntity("refreshToken"));
+        given(userAccountRepository.getReferenceByEmail(email)).willReturn(Fixture.getUserAccount());
         // When
         userAccountService.updateUser(userAccountDto);
         // Then

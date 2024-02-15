@@ -6,7 +6,6 @@ import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.QArticle;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
-import joo.project.my3d.dto.ArticleDto;
 import joo.project.my3d.dto.ArticleFormDto;
 import joo.project.my3d.dto.ArticlePreviewDto;
 import joo.project.my3d.dto.response.ArticleDetailResponse;
@@ -32,7 +31,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -160,8 +158,8 @@ class ArticleServiceTest {
     @Test
     void saveArticle() throws IllegalAccessException {
         // Given
-        ArticleDto articleDto =
-                FixtureDto.getArticleDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
+        ArticleFormDto articleDto =
+                FixtureDto.getArticleFormDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(
                 articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
         given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
@@ -176,10 +174,8 @@ class ArticleServiceTest {
 
     @DisplayName("7. 게시글 수정")
     @Test
-    void updateArticle() throws IllegalAccessException, IOException {
+    void updateArticle() throws IllegalAccessException {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(
-                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(true);
@@ -187,10 +183,7 @@ class ArticleServiceTest {
                 .willReturn(Optional.of(savedArticle));
         willDoNothing().given(articleFileService).updateArticleFile(any(), anyLong());
         // When
-        articleService.updateArticle(
-                Fixture.getArticleFormRequest(),
-                1L,
-                updatedArticle.userAccountDto().email());
+        articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "a@gmail.com");
         // Then
         assertThat(savedArticle)
                 .hasFieldOrPropertyWithValue("title", "new title")
@@ -201,15 +194,10 @@ class ArticleServiceTest {
     @Test
     void updateArticle_NotExistArticle() {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(
-                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(
-                        Fixture.getArticleFormRequest(),
-                        1L,
-                        updatedArticle.userAccountDto().email()))
+        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "a@gmail.com"))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -219,8 +207,6 @@ class ArticleServiceTest {
     @Test
     void updateArticle_NotEqualWriter() throws IllegalAccessException {
         // Given
-        ArticleDto updatedArticle = FixtureDto.getArticleDto(
-                1L, "new title", "new content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))

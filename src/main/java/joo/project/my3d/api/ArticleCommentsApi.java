@@ -32,12 +32,12 @@ public class ArticleCommentsApi {
             @PathVariable Long articleId,
             ArticleCommentRequest articleCommentRequest,
             @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        UserAccount sender = userAccountService.searchUserEntity(boardPrincipal.email());
-        UserAccount receiver = userAccountService.searchUserEntityByArticleId(articleId);
+        UserAccount commentWriter = userAccountService.searchUserEntity(boardPrincipal.email());
+        UserAccount articleWriter = userAccountService.searchUserEntityByArticleId(articleId);
         ArticleCommentDto commentDto = articleCommentService.saveComment(
                 articleCommentRequest.toDto(articleId, boardPrincipal.nickname(), boardPrincipal.email()),
-                sender,
-                receiver);
+                commentWriter,
+                articleWriter);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ArticleCommentResponse.from(commentDto));
     }

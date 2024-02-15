@@ -9,7 +9,7 @@ public interface UserAccountServiceInterface {
     /**
      * 유저 정보 조회
      */
-    UserAccountDto searchUser(String email);
+    UserAccountDto searchUserDto(String email);
 
     UserAccount searchUserEntity(String email);
 

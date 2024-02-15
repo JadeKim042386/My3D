@@ -12,7 +12,7 @@ public interface CompanyServiceInterface {
     /**
      * 기업 Entity 조회
      */
-    Company getCompany(String email);
+    Company getCompanyEntity(String email);
     /**
      * 기업 존재 유무 조회
      */

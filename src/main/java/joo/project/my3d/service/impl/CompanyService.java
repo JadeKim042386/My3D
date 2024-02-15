@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,11 +26,11 @@ public class CompanyService implements CompanyServiceInterface {
 
     @Override
     public CompanyDto getCompanyDto(String email) {
-        return CompanyDto.from(getCompany(email));
+        return CompanyDto.from(getCompanyEntity(email));
     }
 
     @Override
-    public Company getCompany(String email) {
+    public Company getCompanyEntity(String email) {
         return companyRepository
                 .findByUserAccount_Email(email)
                 .orElseThrow(() -> new AuthException(ErrorCode.NOT_FOUND_COMPANY));
@@ -47,13 +48,9 @@ public class CompanyService implements CompanyServiceInterface {
     @Override
     public CompanyDto updateCompany(CompanyAdminRequest request, String email) {
         try {
-            Company company = getCompany(email);
-            if (request.getCompanyName() != null) {
-                company.setCompanyName(request.getCompanyName());
-            }
-            if (request.getHomepage() != null) {
-                company.setHomepage(request.getHomepage());
-            }
+            Company company = getCompanyEntity(email);
+            Optional.ofNullable(request.getCompanyName()).ifPresent(company::setCompanyName);
+            Optional.ofNullable(request.getHomepage()).ifPresent(company::setHomepage);
             return CompanyDto.from(company);
         } catch (EntityNotFoundException e) {
             throw new AuthException(ErrorCode.NOT_FOUND_COMPANY, e);

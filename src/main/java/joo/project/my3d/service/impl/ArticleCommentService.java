@@ -29,21 +29,22 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
     private final AlarmServiceInterface<SseEmitter> alarmService;
 
     /**
-     * @param sender 댓글 작성자
-     * @param receiver 게시글 작성자 (알람을 받을 대상)
+     * @param commentWriter 댓글 작성자
+     * @param articleWriter 게시글 작성자 (알람을 받을 대상)
      * @throws CommentException 댓글 저장에 필요한 게시글, 유저 정보를 찾을 수 없거나 저장에 실패했을 경우 발생하는 예외
      */
     @Override
-    public ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount sender, UserAccount receiver) {
+    public ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount commentWriter, UserAccount articleWriter) {
         try {
-            ArticleComment articleComment = dto.toEntity(articleRepository.getReferenceById(dto.articleId()), sender);
+            ArticleComment articleComment =
+                    dto.toEntity(articleRepository.getReferenceById(dto.articleId()), commentWriter);
             if (dto.parentCommentId() != null) {
                 ArticleComment parentComment = articleCommentRepository.getReferenceById(dto.parentCommentId());
                 parentComment.addChildComment(articleComment);
             } else {
                 articleCommentRepository.save(articleComment);
             }
-            alarmService.send(articleComment.getId(), sender, receiver);
+            alarmService.send(articleComment.getId(), commentWriter, articleWriter);
             return ArticleCommentDto.from(articleComment);
         } catch (EntityNotFoundException e) {
             throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);
