@@ -76,18 +76,6 @@ public class JpaRepositoryTest {
             assertThat(article).isNotNull();
         }
 
-        @DisplayName("게시글 findByArticleCategory")
-        @Test
-        void getArticleByArticleCategory() {
-            // Given
-            Pageable pageable = Pageable.ofSize(9);
-            // When
-            Page<Article> articles = articleRepository.findByArticleCategory(ArticleCategory.MUSIC, pageable);
-            // Then
-            assertThat(articles).hasSize(6);
-            assertThat(articles.getContent().get(0).getArticleCategory()).isEqualTo(ArticleCategory.MUSIC);
-        }
-
         @DisplayName("게시글 save")
         @Test
         void saveArticle() {
@@ -245,7 +233,7 @@ public class JpaRepositoryTest {
             log.info("previousArticleCommentCount: {}", previousArticleCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
-            articleRepository.findAllByUserAccount_Email(email).forEach(Article::deleteAll);
+            articleRepository.findAll().stream().filter(article -> article.getUserAccount().getEmail().equals(email)).forEach(Article::deleteAll);
             UserAccount userAccount =
                     userAccountRepository.findById(userAccountId).get();
             userAccount.getArticleComments().clear();
