@@ -39,7 +39,7 @@ public class ArticlesApi {
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult) {
 
-        Article article = articleService.saveArticle(boardPrincipal.email(), articleFormRequest);
+        Article article = articleService.saveArticle(boardPrincipal.id(), articleFormRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(String.valueOf(article.getId())));
     }
@@ -55,7 +55,7 @@ public class ArticlesApi {
             @ModelAttribute("article") @Valid ArticleFormRequest articleFormRequest,
             BindingResult bindingResult) {
 
-        articleService.updateArticle(articleFormRequest, articleId, boardPrincipal.email());
+        articleService.updateArticle(articleFormRequest, articleId, boardPrincipal.id());
 
         return ResponseEntity.ok(ApiResponse.of(String.valueOf(articleId)));
     }
@@ -67,7 +67,7 @@ public class ArticlesApi {
     public ResponseEntity<ApiResponse> deleteArticle(
             @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
 
-        articleService.deleteArticle(articleId, boardPrincipal.email());
+        articleService.deleteArticle(articleId, boardPrincipal.id());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of("You successfully deleted article"));
     }

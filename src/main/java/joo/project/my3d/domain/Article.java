@@ -52,7 +52,7 @@ import java.util.Set;
             @Index(name = "likeCount_idx", columnList = "likeCount"),
             @Index(name = "title_idx", columnList = "title"),
             @Index(name = "articleCategory_idx", columnList = "articleCategory"),
-            @Index(name = "article_id_and_created_by_idx", columnList = "id, createdBy")
+            @Index(name = "article_id_and_user_id_idx", columnList = "id, userAccountId")
         })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

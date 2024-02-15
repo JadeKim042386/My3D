@@ -29,7 +29,7 @@ public class ArticleLikeApi {
     public ResponseEntity<ArticleLikeResponse> addArticleLike(
             @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         // 게시글 작성자는 좋아요를 요청할 수 없음
-        isWriter(articleId, boardPrincipal.email());
+        isWriter(articleId, boardPrincipal.id());
         return ResponseEntity.ok(
                 ArticleLikeResponse.of(articleLikeService.addArticleLike(articleId, boardPrincipal.email())));
     }
@@ -41,7 +41,7 @@ public class ArticleLikeApi {
     public ResponseEntity<ArticleLikeResponse> deleteArticleLike(
             @PathVariable Long articleId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         // 게시글 작성자는 좋아요를 취소할 수 없음
-        isWriter(articleId, boardPrincipal.email());
+        isWriter(articleId, boardPrincipal.id());
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(ArticleLikeResponse.of(articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())));
     }
@@ -49,8 +49,8 @@ public class ArticleLikeApi {
     /**
      * 작성자는 좋아요를 추가하거나 취소할 수 없음
      */
-    private void isWriter(Long articleId, String email) {
-        if (articleService.isExistsArticleByEmail(articleId, email)) {
+    private void isWriter(Long articleId, Long userAccountId) {
+        if (articleService.isExistsArticleByUserAccountId(articleId, userAccountId)) {
             throw new ArticleLikeException(ErrorCode.INVALID_REQUEST);
         }
     }

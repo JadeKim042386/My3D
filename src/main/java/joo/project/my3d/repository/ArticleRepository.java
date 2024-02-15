@@ -27,7 +27,8 @@ public interface ArticleRepository
         bindings.bind(root.articleCategory).first(EnumExpression::eq);
     }
 
-    Optional<Article> findByIdAndUserAccount_Email(Long id, String email);
+    Optional<Article> findByIdAndUserAccountId(Long articleId, Long userAccountId);
+    boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
     @EntityGraph(value = "Article.fetchPreview", type = EntityGraph.EntityGraphType.LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
@@ -48,5 +49,6 @@ public interface ArticleRepository
     @Query("update Article a set a.likeCount = a.likeCount - 1")
     void deleteArticleLikeCount();
 
-    boolean existsByIdAndCreatedBy(Long articleId, String email);
+    @Query("select a.articleFile.fileName from Article a where a.id = ?1")
+    Optional<String> findFileNameById(Long articleId);
 }

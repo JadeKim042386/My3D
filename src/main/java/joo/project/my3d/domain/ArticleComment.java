@@ -15,7 +15,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(
         name = "article_comment",
-        indexes = {@Index(columnList = "comment_id_and_user_account_id_idx"), @Index(columnList = "id, userAccountId")})
+        indexes = {@Index(name = "comment_id_and_user_account_id_idx", columnList = "id, userAccountId")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleComment extends AuditingFields implements Persistable<Long> {

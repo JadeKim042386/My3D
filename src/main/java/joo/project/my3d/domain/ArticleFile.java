@@ -12,9 +12,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @ToString(callSuper = true)
-@Table(
-        name = "article_file",
-        indexes = {@Index(columnList = "id"), @Index(columnList = "fileName", unique = true)})
+@Table(name = "article_file")
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ArticleFile extends AuditingFields implements Persistable<Long> {
@@ -29,7 +27,7 @@ public class ArticleFile extends AuditingFields implements Persistable<Long> {
     @Column(nullable = false)
     private String originalFileName; // 사용자가 지정한 파일명
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String fileName; // 서버에 저장된 파일명
 
     @Column(nullable = false)

@@ -75,8 +75,8 @@ public class ArticleService implements ArticleServiceInterface {
 
     @Transactional
     @Override
-    public Article saveArticle(String email, ArticleFormRequest articleFormRequest) {
-        UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
+    public Article saveArticle(Long userAccountId, ArticleFormRequest articleFormRequest) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
         Article savedArticle =
                 articleRepository.save(articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL));
         DimensionOption dimensionOption = savedArticle.getArticleFile().getDimensionOption();
@@ -85,7 +85,7 @@ public class ArticleService implements ArticleServiceInterface {
                 .addAll(articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption));
         fileService.uploadFile(
                 articleFormRequest.getModelFile(), savedArticle.getArticleFile().getFileName());
-        log.debug("{}에 의해 게시글이 저장되었습니다.", email);
+        log.debug("userAccountId-{}에 의해 게시글이 저장되었습니다.", userAccountId);
         return savedArticle;
     }
 
@@ -94,14 +94,14 @@ public class ArticleService implements ArticleServiceInterface {
      */
     @Transactional
     @Override
-    public void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, String requestEmail) {
+    public void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, Long requestUserAccountId) {
         Article article = articleRepository
-                .findByIdAndUserAccount_Email(articleId, requestEmail)
+                .findByIdAndUserAccountId(articleId, requestUserAccountId)
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); // 작성자
         // 작성자와 수정자가 같은지 확인
-        equalsRequestUserAndWriter(article.getId(), requestEmail);
+        equalsRequestUserAndWriter(article.getId(), requestUserAccountId);
         // 파일 수정
-        articleFileService.updateArticleFile(articleFormRequest, articleId);
+        articleFileService.updateArticleFile(articleFormRequest, article.getArticleFile());
         // 게시글 수정
         Optional.ofNullable(articleFormRequest.getTitle()).ifPresent(article::setTitle);
         Optional.ofNullable(articleFormRequest.getContent()).ifPresent(article::setContent);
@@ -114,10 +114,10 @@ public class ArticleService implements ArticleServiceInterface {
      */
     @Transactional
     @Override
-    public void deleteArticle(Long articleId, String email) {
+    public void deleteArticle(Long articleId, Long userAccountId) {
         try {
             // 작성자와 삭제를 요청한 유저가 같은지 확인
-            equalsRequestUserAndWriter(articleId, email);
+            equalsRequestUserAndWriter(articleId, userAccountId);
             Article article = articleRepository.getReferenceById(articleId); // 작성자
             // 파일 삭제
             articleFileService.deleteFile(articleId);
@@ -134,13 +134,13 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public boolean isExistsArticleByEmail(Long articleId, String email) {
-        return articleRepository.existsByIdAndCreatedBy(articleId, email);
+    public boolean isExistsArticleByUserAccountId(Long articleId, Long userAccountId) {
+        return articleRepository.existsByIdAndUserAccountId(articleId, userAccountId);
     }
 
-    private void equalsRequestUserAndWriter(Long articleId, String email) {
-        if (!isExistsArticleByEmail(articleId, email)) {
-            log.error("작성자와 요청자가 다릅니다. articleId: {}, 요청자: {}", articleId, email);
+    private void equalsRequestUserAndWriter(Long articleId, Long userAccountId) {
+        if (!isExistsArticleByUserAccountId(articleId, userAccountId)) {
+            log.error("작성자와 요청자가 다릅니다. articleId: {}, userAccountId: {}", articleId, userAccountId);
             throw new ArticleException(ErrorCode.NOT_WRITER);
         }
     }
