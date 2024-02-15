@@ -12,5 +12,5 @@ public interface ArticleCommentServiceInterface {
     /**
      * 댓글 삭제
      */
-    void deleteComment(Long articleCommentId, String email);
+    void deleteComment(Long articleCommentId, Long userAccountId);
 }

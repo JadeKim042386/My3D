@@ -48,7 +48,7 @@ public class ArticleCommentsApi {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponse> deleteComment(
             @PathVariable Long commentId, @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
-        articleCommentService.deleteComment(commentId, boardPrincipal.getUsername());
+        articleCommentService.deleteComment(commentId, boardPrincipal.id());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of("You successfully deleted comment"));
     }

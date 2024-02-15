@@ -59,14 +59,14 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
      * @throws CommentException 댓글 작성자와 삭제 요청자가 다를 경우 또는 삭제에 실패할 경우 발생하는 예외
      */
     @Override
-    public void deleteComment(Long articleCommentId, String email) {
+    public void deleteComment(Long articleCommentId, Long userAccountId) {
         ArticleComment articleComment = articleCommentRepository.getReferenceById(articleCommentId);
         // 작성자와 삭제 요청 유저가 같은지 확인
-        if (!articleCommentRepository.existsByIdAndUserAccount_Email(articleCommentId, email)) {
+        if (!articleCommentRepository.existsByIdAndUserAccountId(articleCommentId, userAccountId)) {
             log.error(
                     "작성자와 삭제 요청 유저가 다릅니다. 작성자: {} - 삭제 요청: {}",
-                    articleComment.getUserAccount().getEmail(),
-                    email);
+                    articleComment.getUserAccount().getId(),
+                    userAccountId);
             throw new CommentException(ErrorCode.NOT_WRITER);
         }
 
