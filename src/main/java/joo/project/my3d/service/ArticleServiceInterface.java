@@ -22,7 +22,7 @@ public interface ArticleServiceInterface {
     /**
      * 게시글 상세 정보 조회
      */
-    ArticleDetailResponse getArticleWithComments(Long articleId, String email);
+    ArticleDetailResponse getArticleWithComments(Long articleId, Long userAccountId);
 
     /**
      * 게시글 저장

@@ -28,6 +28,7 @@ public interface ArticleRepository
     }
 
     Optional<Article> findByIdAndUserAccountId(Long articleId, Long userAccountId);
+
     boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
     @EntityGraph(value = "Article.fetchPreview", type = EntityGraph.EntityGraphType.LOAD)

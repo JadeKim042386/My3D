@@ -5,7 +5,6 @@ import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.repository.ArticleFileRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.service.ArticleFileServiceInterface;
 import joo.project.my3d.service.FileServiceInterface;
@@ -93,7 +92,8 @@ public class ArticleFileService implements ArticleFileServiceInterface {
 
     @Override
     public String searchFileName(Long articleId) {
-        return articleRepository.findFileNameById(articleId)
+        return articleRepository
+                .findFileNameById(articleId)
                 .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
     }
 }

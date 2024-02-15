@@ -124,10 +124,10 @@ class ArticleServiceTest {
         article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
         given(articleLikeService.getLikeCountByArticleId(anyLong())).willReturn(2);
-        given(articleLikeService.addedLike(anyLong(), anyString())).willReturn(true);
+        given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(true);
         // When
         ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(
-                1L, article.getUserAccount().getEmail());
+                1L, article.getUserAccount().getId());
         // Then
         assertThat(articleDetailResponse.likeCount()).isEqualTo(2);
         assertThat(articleDetailResponse.addedLike()).isEqualTo(true);
@@ -147,7 +147,7 @@ class ArticleServiceTest {
         given(articleRepository.findByIdFetchDetail(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.getArticleWithComments(1L, "a@gmail.com"))
+        assertThatThrownBy(() -> articleService.getArticleWithComments(1L, 1L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then

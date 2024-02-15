@@ -4,9 +4,9 @@ import joo.project.my3d.domain.ArticleLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
-    void deleteByArticleIdAndUserAccount_Email(Long articleId, String email);
+    void deleteByArticleIdAndUserAccountId(Long articleId, Long userAccountId);
 
     int countByArticleId(Long articleId);
 
-    boolean existsByArticleIdAndUserAccount_Email(Long articleId, String email);
+    boolean existsByArticleIdAndUserAccountId(Long articleId, Long userAccountId);
 }

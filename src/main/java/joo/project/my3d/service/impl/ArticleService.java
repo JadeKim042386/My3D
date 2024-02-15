@@ -63,13 +63,13 @@ public class ArticleService implements ArticleServiceInterface {
      * @throws ArticleException 게시글을 찾을 수 없을 경우 발생하는 예외
      */
     @Override
-    public ArticleDetailResponse getArticleWithComments(Long articleId, String email) {
+    public ArticleDetailResponse getArticleWithComments(Long articleId, Long userAccountId) {
         return articleRepository
                 .findByIdFetchDetail(articleId)
                 .map(article -> ArticleDetailResponse.of(
                         ArticleWithCommentsDto.from(article),
                         articleLikeService.getLikeCountByArticleId(articleId),
-                        articleLikeService.addedLike(articleId, email)))
+                        articleLikeService.addedLike(articleId, userAccountId)))
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 

@@ -41,14 +41,14 @@ class ArticleLikeServiceTest {
     void addArticleLike() throws IllegalAccessException {
         // Given
         Long articleId = 1L;
-        String userId = "joo";
+        Long userId = 1L;
         ArticleLike articleLike = Fixture.getArticleLike();
         UserAccount sender = Fixture.getUserAccount();
         UserAccount receiver = Fixture.getUserAccount();
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        given(userAccountRepository.getReferenceByEmail(userId)).willReturn(articleLike.getUserAccount());
+        given(userAccountRepository.getReferenceById(anyLong())).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
         given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When
@@ -62,11 +62,11 @@ class ArticleLikeServiceTest {
     void deleteArticleLike() {
         // Given
         Long articleId = 1L;
-        String email = "a@gmail.com";
-        willDoNothing().given(articleLikeRepository).deleteByArticleIdAndUserAccount_Email(anyLong(), anyString());
+        Long userId = 1L;
+        willDoNothing().given(articleLikeRepository).deleteByArticleIdAndUserAccountId(anyLong(), anyLong());
         given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When
-        int likeCount = articleLikeService.deleteArticleLike(articleId, email);
+        int likeCount = articleLikeService.deleteArticleLike(articleId, userId);
         // Then
         assertThat(likeCount).isEqualTo(1);
     }

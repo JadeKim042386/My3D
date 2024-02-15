@@ -31,7 +31,7 @@ public class ArticleLikeApi {
         // 게시글 작성자는 좋아요를 요청할 수 없음
         isWriter(articleId, boardPrincipal.id());
         return ResponseEntity.ok(
-                ArticleLikeResponse.of(articleLikeService.addArticleLike(articleId, boardPrincipal.email())));
+                ArticleLikeResponse.of(articleLikeService.addArticleLike(articleId, boardPrincipal.id())));
     }
 
     /**
@@ -43,7 +43,7 @@ public class ArticleLikeApi {
         // 게시글 작성자는 좋아요를 취소할 수 없음
         isWriter(articleId, boardPrincipal.id());
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ArticleLikeResponse.of(articleLikeService.deleteArticleLike(articleId, boardPrincipal.email())));
+                .body(ArticleLikeResponse.of(articleLikeService.deleteArticleLike(articleId, boardPrincipal.id())));
     }
 
     /**
