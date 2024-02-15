@@ -52,6 +52,6 @@ public class UserAdminApi {
     public ResponseEntity<CompanyDto> updateCompany(
             @AuthenticationPrincipal BoardPrincipal boardPrincipal, CompanyAdminRequest companyAdminRequest) {
 
-        return ResponseEntity.ok(companyService.updateCompany(companyAdminRequest, boardPrincipal.email()));
+        return ResponseEntity.ok(companyService.updateCompany(companyAdminRequest, boardPrincipal.id()));
     }
 }

@@ -5,6 +5,7 @@ import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.CompanyRepository;
+import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.CompanyService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,16 +28,18 @@ class CompanyServiceTest {
 
     @Mock
     private CompanyRepository companyRepository;
+    @Mock
+    private UserAccountRepository userAccountRepository;
 
     @DisplayName("기업 조회")
     @Test
     void getCompany() {
         // Given
-        String email = "a@gmail.com";
+        Long userAccountId = 1L;
         Company company = Fixture.getCompany();
-        given(companyRepository.findByUserAccount_Email(anyString())).willReturn(Optional.of(company));
+        given(userAccountRepository.findCompanyById(anyLong())).willReturn(Optional.of(company));
         // When
-        companyService.getCompanyEntity(email);
+        companyService.getCompanyEntity(userAccountId);
         // Then
     }
 
@@ -45,11 +48,10 @@ class CompanyServiceTest {
     void updateCompany() throws IllegalAccessException {
         // Given
         CompanyDto companyDto = FixtureDto.getCompanyDto();
-        String email = "a@gmail.com";
-        given(companyRepository.findByUserAccount_Email(anyString())).willReturn(Optional.of(companyDto.toEntity()));
+        Long userAccountId = 1L;
+        given(userAccountRepository.findCompanyById(anyLong())).willReturn(Optional.of(companyDto.toEntity()));
         // When
-        companyService.updateCompany(FixtureDto.getCompanyAdminRequest(), email);
+        companyService.updateCompany(FixtureDto.getCompanyAdminRequest(), userAccountId);
         // Then
-        then(companyRepository).should().findByUserAccount_Email(anyString());
     }
 }

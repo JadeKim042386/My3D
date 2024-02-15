@@ -11,9 +11,8 @@ import javax.persistence.*;
 
 @Getter
 @ToString(callSuper = true)
-@Table(
-        name = "company",
-        indexes = {@Index(columnList = "id")})
+@Table(name = "company",
+        indexes = {@Index(name = "company_name_idx", columnList = "companyName")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Company extends AuditingFields implements Persistable<Long> {

@@ -81,7 +81,7 @@ class UserAdminApiTest {
     @Test
     void updateCompany() throws Exception {
         // Given
-        given(companyService.updateCompany(any(), anyString())).willReturn(FixtureDto.getCompanyDto());
+        given(companyService.updateCompany(any(), anyLong())).willReturn(FixtureDto.getCompanyDto());
         // When
         mvc.perform(put("/api/v1/admin/company").cookie(companyCookie).with(csrf()))
                 .andExpect(status().isOk())

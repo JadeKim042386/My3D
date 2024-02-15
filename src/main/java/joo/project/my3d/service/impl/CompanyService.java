@@ -7,6 +7,7 @@ import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.CompanyException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.CompanyRepository;
+import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.CompanyServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +23,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CompanyService implements CompanyServiceInterface {
 
+    private final UserAccountRepository userAccountRepository;
     private final CompanyRepository companyRepository;
 
     @Override
-    public CompanyDto getCompanyDto(String email) {
-        return CompanyDto.from(getCompanyEntity(email));
+    public CompanyDto getCompanyDto(Long userAccountId) {
+        return CompanyDto.from(getCompanyEntity(userAccountId));
     }
 
     @Override
-    public Company getCompanyEntity(String email) {
-        return companyRepository
-                .findByUserAccount_Email(email)
+    public Company getCompanyEntity(Long userAccountId) {
+        return userAccountRepository
+                .findCompanyById(userAccountId)
                 .orElseThrow(() -> new AuthException(ErrorCode.NOT_FOUND_COMPANY));
     }
 
@@ -46,9 +48,9 @@ public class CompanyService implements CompanyServiceInterface {
      */
     @Transactional
     @Override
-    public CompanyDto updateCompany(CompanyAdminRequest request, String email) {
+    public CompanyDto updateCompany(CompanyAdminRequest request, Long userAccountId) {
         try {
-            Company company = getCompanyEntity(email);
+            Company company = getCompanyEntity(userAccountId);
             Optional.ofNullable(request.getCompanyName()).ifPresent(company::setCompanyName);
             Optional.ofNullable(request.getHomepage()).ifPresent(company::setHomepage);
             return CompanyDto.from(company);

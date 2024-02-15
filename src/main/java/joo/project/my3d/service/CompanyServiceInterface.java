@@ -8,11 +8,11 @@ public interface CompanyServiceInterface {
     /**
      * 기업 DTO 조회
      */
-    CompanyDto getCompanyDto(String email);
+    CompanyDto getCompanyDto(Long userAccountId);
     /**
      * 기업 Entity 조회
      */
-    Company getCompanyEntity(String email);
+    Company getCompanyEntity(Long userAccountId);
     /**
      * 기업 존재 유무 조회
      */
@@ -21,5 +21,5 @@ public interface CompanyServiceInterface {
     /**
      * 기업 정보 수정
      */
-    CompanyDto updateCompany(CompanyAdminRequest request, String email);
+    CompanyDto updateCompany(CompanyAdminRequest request, Long userAccountId);
 }
