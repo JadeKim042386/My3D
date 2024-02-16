@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -23,11 +24,10 @@ public class Company extends AuditingFields implements Persistable<Long> {
     private Long id;
 
     @Setter
-    @Column
+    @Column(nullable = false)
     private String companyName;
 
     @Setter
-    @Column
     private String homepage;
 
     @ToString.Exclude
