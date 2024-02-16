@@ -57,7 +57,7 @@ public class UserAdminController {
      */
     @GetMapping("/company")
     public String company(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
-        CompanyDto company = companyService.getCompanyDto(boardPrincipal.email());
+        CompanyDto company = companyService.getCompanyDto(boardPrincipal.id());
         model.addAttribute("companyData", CompanyAdminResponse.of(company.companyName(), company.homepage()));
         return "admin/company";
     }

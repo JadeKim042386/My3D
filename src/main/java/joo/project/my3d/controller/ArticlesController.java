@@ -115,7 +115,7 @@ public class ArticlesController {
         if (!Objects.isNull(alarmId)) {
             alarmService.checkAlarm(alarmId);
         }
-        model.addAttribute("article", articleService.getArticleWithComments(articleId, boardPrincipal.email()));
+        model.addAttribute("article", articleService.getArticleWithComments(articleId, boardPrincipal.id()));
         model.addAttribute("filePath", AppConfig.filePath);
         return "articles/detail";
     }

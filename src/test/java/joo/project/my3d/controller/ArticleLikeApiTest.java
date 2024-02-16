@@ -47,8 +47,8 @@ class ArticleLikeApiTest {
     void addArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsArticleByEmail(anyLong(), anyString())).willReturn(false);
-        given(articleLikeService.addArticleLike(anyLong(), anyString())).willReturn(0);
+        given(articleService.isExistsArticleByUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleLikeService.addArticleLike(anyLong(), anyLong())).willReturn(0);
         // When
         mvc.perform(post("/api/v1/articles/" + articleId + "/like")
                         .cookie(userCookie)
@@ -65,8 +65,8 @@ class ArticleLikeApiTest {
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsArticleByEmail(anyLong(), anyString())).willReturn(false);
-        given(articleLikeService.deleteArticleLike(anyLong(), anyString())).willReturn(1);
+        given(articleService.isExistsArticleByUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleLikeService.deleteArticleLike(anyLong(), anyLong())).willReturn(1);
         // When
         mvc.perform(delete("/api/v1/articles/" + articleId + "/like")
                         .cookie(userCookie)

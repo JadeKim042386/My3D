@@ -5,7 +5,7 @@ import joo.project.my3d.domain.DimensionOption;
 import joo.project.my3d.dto.request.ArticleFormRequest;
 import joo.project.my3d.exception.FileException;
 import joo.project.my3d.exception.constant.ErrorCode;
-import joo.project.my3d.repository.ArticleFileRepository;
+import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.service.ArticleFileServiceInterface;
 import joo.project.my3d.service.FileServiceInterface;
 import joo.project.my3d.utils.FileUtils;
@@ -25,8 +25,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArticleFileService implements ArticleFileServiceInterface {
-
-    private final ArticleFileRepository articleFileRepository;
+    private final ArticleRepository articleRepository;
     private final FileServiceInterface fileService;
 
     /**
@@ -34,26 +33,17 @@ public class ArticleFileService implements ArticleFileServiceInterface {
      */
     @Transactional
     @Override
-    public void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId) {
-        try {
-            ArticleFile articleFile = articleFileRepository
-                    .findByArticleId(articleId)
-                    .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
+    public void updateArticleFile(ArticleFormRequest articleFormRequest, ArticleFile articleFile) {
+        updateFile(articleFile, articleFormRequest.getModelFile());
 
-            updateFile(articleFile, articleFormRequest.getModelFile());
+        // 치수 옵션 업데이트
+        DimensionOption dimensionOption = articleFile.getDimensionOption();
+        dimensionOption.setOptionName(
+                articleFormRequest.getDimensionOptions().get(0).getOptionName());
 
-            // 치수 옵션 업데이트
-            DimensionOption dimensionOption = articleFile.getDimensionOption();
-            dimensionOption.setOptionName(
-                    articleFormRequest.getDimensionOptions().get(0).getOptionName());
-
-            // 치수 업데이트
-            dimensionOption.updateDimensions(
-                    articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption));
-        } catch (FileException e) {
-            log.error("게시글 id: {} 에 해당하는 파일을 찾을 수 없습니다.", articleId);
-            throw e;
-        }
+        // 치수 업데이트
+        dimensionOption.updateDimensions(
+                articleFormRequest.getDimensionOptions().get(0).toDimensionEntities(dimensionOption));
     }
 
     /**
@@ -102,8 +92,8 @@ public class ArticleFileService implements ArticleFileServiceInterface {
 
     @Override
     public String searchFileName(Long articleId) {
-        return articleFileRepository
-                .findFileNameByArticleId(articleId)
+        return articleRepository
+                .findFileNameById(articleId)
                 .orElseThrow(() -> new FileException(ErrorCode.FILE_NOT_FOUND));
     }
 }

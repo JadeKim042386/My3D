@@ -56,7 +56,7 @@ class ArticlesApiTest {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         Article article = Fixture.getArticle();
-        given(articleService.saveArticle(anyString(), any())).willReturn(article);
+        given(articleService.saveArticle(anyLong(), any())).willReturn(article);
         // When
         mvc.perform(multipart(HttpMethod.POST, "/api/v1/articles")
                         .file(multipartFile)
@@ -162,7 +162,7 @@ class ArticlesApiTest {
     void updateRequestModelArticle() throws Exception {
         // Given
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
-        willDoNothing().given(articleService).updateArticle(any(), anyLong(), anyString());
+        willDoNothing().given(articleService).updateArticle(any(), anyLong(), anyLong());
         // When
         mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
                         .file(multipartFile)
@@ -272,7 +272,7 @@ class ArticlesApiTest {
         MockMultipartFile multipartFile = Fixture.getMultipartFile();
         willThrow(new ArticleException(ARTICLE_NOT_FOUND))
                 .given(articleService)
-                .updateArticle(any(), anyLong(), anyString());
+                .updateArticle(any(), anyLong(), anyLong());
         // When
         mvc.perform(multipart(HttpMethod.PUT, "/api/v1/articles/1")
                         .file(multipartFile)
@@ -301,7 +301,7 @@ class ArticlesApiTest {
     void deleteModelArticle() throws Exception {
         // Given
         willDoNothing().given(articleFileService).deleteFile(anyLong());
-        willDoNothing().given(articleService).deleteArticle(anyLong(), anyString());
+        willDoNothing().given(articleService).deleteArticle(anyLong(), anyLong());
         // When
         mvc.perform(delete("/api/v1/articles/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -319,7 +319,7 @@ class ArticlesApiTest {
     void deleteModelArticle_FailedDeleteArticle() throws Exception {
         // Given
         willDoNothing().given(articleFileService).deleteFile(anyLong());
-        willThrow(new ArticleException(FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyString());
+        willThrow(new ArticleException(FAILED_DELETE)).given(articleService).deleteArticle(anyLong(), anyLong());
         // When
         mvc.perform(delete("/api/v1/articles/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

@@ -36,16 +36,13 @@ class ArticleFileServiceTest {
     @Test
     void updateArticleFile() throws IllegalAccessException {
         // Given
-        Long articleId = 1L;
         ArticleFile articleFile = Fixture.getArticleFile();
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest();
-        given(articleFileRepository.findByArticleId(anyLong())).willReturn(Optional.of(articleFile));
         willDoNothing().given(fileService).deleteFile(anyString());
         willDoNothing().given(fileService).uploadFile(eq(articleFormRequest.getModelFile()), anyString());
         // When
-        articleFileService.updateArticleFile(articleFormRequest, articleId);
+        articleFileService.updateArticleFile(articleFormRequest, articleFile);
         // Then
-        then(articleFileRepository).should().findByArticleId(anyLong());
         then(fileService).should().deleteFile(anyString());
         then(fileService).should().uploadFile(eq(articleFormRequest.getModelFile()), anyString());
     }
@@ -54,15 +51,12 @@ class ArticleFileServiceTest {
     @Test
     void updateArticleFile_NotChange() throws IllegalAccessException {
         // Given
-        Long articleId = 1L;
         MockMultipartFile file = Fixture.getMultipartFile("NotUpdated");
         ArticleFormRequest articleFormRequest = Fixture.getArticleFormRequest(file);
         ArticleFile articleFile = Fixture.getArticleFile();
-        given(articleFileRepository.findByArticleId(anyLong())).willReturn(Optional.of(articleFile));
         // When
-        articleFileService.updateArticleFile(articleFormRequest, articleId);
+        articleFileService.updateArticleFile(articleFormRequest, articleFile);
         // Then
-        then(articleFileRepository).should().findByArticleId(anyLong());
         then(fileService).shouldHaveNoInteractions();
     }
 }

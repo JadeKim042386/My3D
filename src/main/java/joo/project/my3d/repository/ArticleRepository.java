@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.QArticle;
-import joo.project.my3d.domain.constant.ArticleCategory;
+import joo.project.my3d.domain.UserAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -16,7 +16,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ArticleRepository
@@ -24,17 +23,14 @@ public interface ArticleRepository
     @Override
     default void customize(QuerydslBindings bindings, QArticle root) {
         bindings.excludeUnlistedProperties(true);
-        bindings.including(root.title, root.content, root.articleCategory);
+        bindings.including(root.title, root.articleCategory);
         bindings.bind(root.title).first(StringExpression::containsIgnoreCase);
-        bindings.bind(root.content).first(StringExpression::containsIgnoreCase);
         bindings.bind(root.articleCategory).first(EnumExpression::eq);
     }
 
-    Page<Article> findByArticleCategory(ArticleCategory articleCategory, Pageable pageable);
+    Optional<Article> findByIdAndUserAccountId(Long articleId, Long userAccountId);
 
-    List<Article> findAllByUserAccount_Email(String email);
-
-    Optional<Article> findByIdAndUserAccount_Email(Long id, String email);
+    boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
     @EntityGraph(value = "Article.fetchPreview", type = EntityGraph.EntityGraphType.LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
@@ -55,5 +51,9 @@ public interface ArticleRepository
     @Query("update Article a set a.likeCount = a.likeCount - 1")
     void deleteArticleLikeCount();
 
-    boolean existsByIdAndCreatedBy(Long articleId, String email);
+    @Query("select a.articleFile.fileName from Article a where a.id = ?1")
+    Optional<String> findFileNameById(Long articleId);
+
+    @Query("select a.userAccount from Article a where a.id = ?1")
+    Optional<UserAccount> findUserAccountById(Long articleId);
 }

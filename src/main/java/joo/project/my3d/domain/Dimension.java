@@ -12,9 +12,7 @@ import javax.persistence.*;
 
 @Getter
 @ToString(callSuper = true)
-@Table(
-        name = "dimension",
-        indexes = {@Index(columnList = "id")})
+@Table(name = "dimension")
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Dimension extends AuditingFields implements Persistable<Long> {

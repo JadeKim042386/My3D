@@ -66,7 +66,7 @@ class ArticleCommentsApiTest {
     void deleteComment() throws Exception {
         // Given
         long articleCommentId = 1L;
-        willDoNothing().given(articleCommentService).deleteComment(anyLong(), anyString());
+        willDoNothing().given(articleCommentService).deleteComment(anyLong(), anyLong());
         // When
         mvc.perform(delete(apiUrl + "/" + articleCommentId).cookie(userCookie).with(csrf()))
                 .andExpect(status().isNoContent())

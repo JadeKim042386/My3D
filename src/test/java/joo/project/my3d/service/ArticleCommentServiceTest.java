@@ -37,9 +37,6 @@ class ArticleCommentServiceTest {
     private ArticleRepository articleRepository;
 
     @Mock
-    private UserAccountRepository userAccountRepository;
-
-    @Mock
     private ArticleCommentRepository articleCommentRepository;
 
     @Mock
@@ -105,10 +102,10 @@ class ArticleCommentServiceTest {
         ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
         given(articleCommentRepository.getReferenceById(articleCommentId))
                 .willReturn(Fixture.getArticleComment("content"));
-        given(articleCommentRepository.existsByIdAndUserAccount_Email(anyLong(), anyString()))
+        given(articleCommentRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(true);
         // When
-        articleCommentService.deleteComment(articleCommentId, articleCommentDto.email());
+        articleCommentService.deleteComment(articleCommentId, 1L);
         // Then
         then(articleCommentRepository).should().getReferenceById(articleCommentId);
         then(articleCommentRepository).should().deleteById(articleCommentId);
@@ -122,7 +119,7 @@ class ArticleCommentServiceTest {
         given(articleCommentRepository.getReferenceById(articleCommentId))
                 .willReturn(Fixture.getArticleComment("content"));
         // When
-        assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, "a"))
+        assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, 1L))
                 .isInstanceOf(CommentException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then

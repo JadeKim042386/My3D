@@ -22,27 +22,27 @@ public interface ArticleServiceInterface {
     /**
      * 게시글 상세 정보 조회
      */
-    ArticleDetailResponse getArticleWithComments(Long articleId, String email);
+    ArticleDetailResponse getArticleWithComments(Long articleId, Long userAccountId);
 
     /**
      * 게시글 저장
      */
-    Article saveArticle(String email, ArticleFormRequest articleFormRequest);
+    Article saveArticle(Long userAccountId, ArticleFormRequest articleFormRequest);
     /**
      * 게시글 수정
      * @param articleFormRequest 게시글 수정 입력 정보
      * @param articleId 수정하려는 게시글 ID
-     * @param requestEmail 수정하려는 사용자의 이메일
+     * @param requestUserAccountId 수정하려는 사용자의 id
      */
-    void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, String requestEmail);
+    void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, Long requestUserAccountId);
 
     /**
      * 게시글 삭제
      */
-    void deleteArticle(Long articleId, String email);
+    void deleteArticle(Long articleId, Long userAccountId);
 
     /**
      * 게시글 작성자인지 확인
      */
-    boolean isExistsArticleByEmail(Long articleId, String email);
+    boolean isExistsArticleByUserAccountId(Long articleId, Long userAccountId);
 }

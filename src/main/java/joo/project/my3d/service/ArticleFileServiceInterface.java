@@ -8,7 +8,7 @@ public interface ArticleFileServiceInterface {
     /**
      * DB의 ArticleFile 수정
      */
-    void updateArticleFile(ArticleFormRequest articleFormRequest, Long articleId);
+    void updateArticleFile(ArticleFormRequest articleFormRequest, ArticleFile articleFile);
     /**
      * File 삭제
      */

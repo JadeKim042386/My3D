@@ -24,8 +24,8 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     private final ArticleLikeRepository articleLikeRepository;
 
     @Override
-    public boolean addedLike(Long articleId, String email) {
-        return articleLikeRepository.existsByArticleIdAndUserAccount_Email(articleId, email);
+    public boolean addedLike(Long articleId, Long userAccountId) {
+        return articleLikeRepository.existsByArticleIdAndUserAccountId(articleId, userAccountId);
     }
 
     @Override
@@ -38,10 +38,11 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
      */
     @Transactional
     @Override
-    public int addArticleLike(Long articleId, String email) {
+    public int addArticleLike(Long articleId, Long userAccountId) {
         try {
             articleLikeRepository.save(ArticleLike.of(
-                    userAccountRepository.getReferenceByEmail(email), articleRepository.getReferenceById(articleId)));
+                    userAccountRepository.getReferenceById(userAccountId),
+                    articleRepository.getReferenceById(articleId)));
             articleRepository.addArticleLikeCount();
             return getLikeCountByArticleId(articleId);
         } catch (EntityNotFoundException e) {
@@ -55,9 +56,9 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
 
     @Transactional
     @Override
-    public int deleteArticleLike(Long articleId, String email) {
+    public int deleteArticleLike(Long articleId, Long userAccountId) {
         try {
-            articleLikeRepository.deleteByArticleIdAndUserAccount_Email(articleId, email);
+            articleLikeRepository.deleteByArticleIdAndUserAccountId(articleId, userAccountId);
             articleRepository.deleteArticleLikeCount();
             return getLikeCountByArticleId(articleId);
         } catch (EntityNotFoundException e) {

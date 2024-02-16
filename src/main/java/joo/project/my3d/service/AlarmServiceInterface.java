@@ -10,7 +10,7 @@ public interface AlarmServiceInterface<T> {
     /**
      * 특정 유저의 모든 알람 조회
      */
-    List<AlarmDto> getAlarms(String email);
+    List<AlarmDto> getAlarms(Long receiverId);
 
     /**
      * 알람 전송

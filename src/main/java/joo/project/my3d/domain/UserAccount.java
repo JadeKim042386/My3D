@@ -16,11 +16,8 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(
         name = "user_account",
-        indexes = {
-            @Index(columnList = "id"),
-            @Index(columnList = "email", unique = true),
-            @Index(columnList = "nickname", unique = true)
-        })
+        indexes = {@Index(name = "email_idx", columnList = "email", unique = true),
+                @Index(name = "nickname_idx", columnList = "nickname", unique = true)})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserAccount extends AuditingAt implements Persistable<Long> {
@@ -79,9 +76,7 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     @Column(nullable = false)
     private UserRole userRole;
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "userRefreshTokenId")
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private UserRefreshToken userRefreshToken;
 
     @ToString.Exclude

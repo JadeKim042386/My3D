@@ -48,7 +48,12 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(
         name = "article",
-        indexes = {@Index(columnList = "id")})
+        indexes = {
+            @Index(name = "likeCount_idx", columnList = "likeCount"),
+            @Index(name = "title_idx", columnList = "title"),
+            @Index(name = "articleCategory_idx", columnList = "articleCategory"),
+            @Index(name = "article_id_and_user_id_idx", columnList = "id, userAccountId")
+        })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Article extends AuditingFields implements Persistable<Long> {

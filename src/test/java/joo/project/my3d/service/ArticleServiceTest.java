@@ -124,10 +124,10 @@ class ArticleServiceTest {
         article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
         given(articleLikeService.getLikeCountByArticleId(anyLong())).willReturn(2);
-        given(articleLikeService.addedLike(anyLong(), anyString())).willReturn(true);
+        given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(true);
         // When
         ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(
-                1L, article.getUserAccount().getEmail());
+                1L, article.getUserAccount().getId());
         // Then
         assertThat(articleDetailResponse.likeCount()).isEqualTo(2);
         assertThat(articleDetailResponse.addedLike()).isEqualTo(true);
@@ -147,7 +147,7 @@ class ArticleServiceTest {
         given(articleRepository.findByIdFetchDetail(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.getArticleWithComments(1L, "a@gmail.com"))
+        assertThatThrownBy(() -> articleService.getArticleWithComments(1L, 1L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -162,13 +162,13 @@ class ArticleServiceTest {
                 FixtureDto.getArticleFormDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(
                 articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
-        given(userAccountRepository.getReferenceByEmail(anyString())).willReturn(article.getUserAccount());
+        given(userAccountRepository.getReferenceById(anyLong())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         willDoNothing().given(fileService).uploadFile(any(), anyString());
         // When
-        articleService.saveArticle(article.getUserAccount().getEmail(), Fixture.getArticleFormRequest());
+        articleService.saveArticle(article.getUserAccount().getId(), Fixture.getArticleFormRequest());
         // Then
-        then(userAccountRepository).should().getReferenceByEmail(anyString());
+        then(userAccountRepository).should().getReferenceById(anyLong());
         then(articleRepository).should().save(any(Article.class));
     }
 
@@ -178,12 +178,12 @@ class ArticleServiceTest {
         // Given
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
-        given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(true);
-        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
+        given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(Optional.of(savedArticle));
-        willDoNothing().given(articleFileService).updateArticleFile(any(), anyLong());
+        willDoNothing().given(articleFileService).updateArticleFile(any(), any());
         // When
-        articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "a@gmail.com");
+        articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 1L);
         // Then
         assertThat(savedArticle)
                 .hasFieldOrPropertyWithValue("title", "new title")
@@ -194,10 +194,10 @@ class ArticleServiceTest {
     @Test
     void updateArticle_NotExistArticle() {
         // Given
-        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+        given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "a@gmail.com"))
+        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 1L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -209,11 +209,11 @@ class ArticleServiceTest {
         // Given
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
-        given(articleRepository.findByIdAndUserAccount_Email(anyLong(), anyString()))
+        given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(Optional.of(savedArticle));
         // When
         assertThatThrownBy(
-                        () -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, "notWriter@gmail.com"))
+                        () -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 2L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
@@ -225,13 +225,13 @@ class ArticleServiceTest {
         // Given
         Article article = Fixture.getArticle();
         Long articleId = 1L;
-        String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(true);
+        Long userAccountId = 1L;
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleRepository).delete(any());
         // When
-        articleService.deleteArticle(articleId, email);
+        articleService.deleteArticle(articleId, userAccountId);
         // Then
     }
 
@@ -240,12 +240,12 @@ class ArticleServiceTest {
     void deleteArticle_NotExist() {
         // Given
         Long articleId = 1L;
-        String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(true);
+        Long userAccountId = 1L;
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
         given(articleRepository.getReferenceById(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, userAccountId))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -257,10 +257,10 @@ class ArticleServiceTest {
     void deleteArticle_NotEqualWriter() {
         // Given
         Long articleId = 1L;
-        String email = "notwriter@gmail.com";
-        given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(false);
+        Long userAccountId = 1L;
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
         // When
-        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, userAccountId))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
@@ -272,14 +272,14 @@ class ArticleServiceTest {
         // Given
         Article article = Fixture.getArticle();
         Long articleId = 1L;
-        String email = "jk042386@gmail.com";
-        given(articleRepository.existsByIdAndCreatedBy(anyLong(), anyString())).willReturn(true);
+        Long userAccountId = 1L;
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(article);
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
                 .given(articleFileService)
                 .deleteFile(anyLong());
         // When
-        assertThatThrownBy(() -> articleService.deleteArticle(articleId, email))
+        assertThatThrownBy(() -> articleService.deleteArticle(articleId, userAccountId))
                 .isInstanceOf(FileException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FAILED_DELETE);
         // Then
