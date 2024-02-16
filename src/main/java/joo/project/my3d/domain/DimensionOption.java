@@ -16,9 +16,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @ToString(callSuper = true)
-@Table(
-        name = "dimension_option",
-        indexes = {@Index(columnList = "id")})
+@Table(name = "dimension_option")
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DimensionOption extends AuditingFields implements Persistable<Long> {
