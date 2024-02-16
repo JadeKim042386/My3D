@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingAt;
 import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
@@ -56,7 +57,7 @@ import java.util.Set;
         })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Article extends AuditingFields implements Persistable<Long> {
+public class Article extends AuditingAt implements Persistable<Long> {
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article", orphanRemoval = true)
@@ -136,7 +137,7 @@ public class Article extends AuditingFields implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return this.createdAt == null;
+        return this.id == null;
     }
 
     public void deleteAll() {

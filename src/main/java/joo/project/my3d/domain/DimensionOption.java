@@ -19,7 +19,7 @@ import static javax.persistence.FetchType.LAZY;
 @Table(name = "dimension_option")
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class DimensionOption extends AuditingFields implements Persistable<Long> {
+public class DimensionOption implements Persistable<Long> {
     @ToString.Exclude
     @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Dimension> dimensions = new LinkedHashSet<>();
@@ -49,7 +49,7 @@ public class DimensionOption extends AuditingFields implements Persistable<Long>
 
     @Override
     public boolean isNew() {
-        return this.createdAt == null;
+        return this.id == null;
     }
 
     public void updateDimensions(Collection<Dimension> dimensions) {

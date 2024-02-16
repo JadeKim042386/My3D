@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingAt;
 import joo.project.my3d.domain.auditing.AuditingFields;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,14 +18,13 @@ import javax.persistence.*;
         indexes = {@Index(name = "company_name_idx", columnList = "companyName")})
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Company extends AuditingFields implements Persistable<Long> {
+public class Company implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
     @Setter
-    @Column(nullable = false)
     private String companyName;
 
     @Setter
@@ -47,6 +47,6 @@ public class Company extends AuditingFields implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return this.id == null;
     }
 }

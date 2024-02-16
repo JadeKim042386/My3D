@@ -61,6 +61,6 @@ public class Alarm extends AuditingAt implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return this.createdAt == null;
+        return this.id == null;
     }
 }

@@ -1,5 +1,6 @@
 package joo.project.my3d.domain;
 
+import joo.project.my3d.domain.auditing.AuditingAt;
 import joo.project.my3d.domain.auditing.AuditingFields;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import javax.persistence.*;
         })
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ArticleLike extends AuditingFields implements Persistable<Long> {
+public class ArticleLike extends AuditingAt implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -47,6 +48,6 @@ public class ArticleLike extends AuditingFields implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return this.createdAt == null;
+        return this.id == null;
     }
 }

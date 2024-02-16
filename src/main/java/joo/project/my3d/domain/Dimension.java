@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Table(name = "dimension")
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Dimension extends AuditingFields implements Persistable<Long> {
+public class Dimension implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -54,6 +54,6 @@ public class Dimension extends AuditingFields implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return this.createdAt == null;
+        return this.id == null;
     }
 }

@@ -1,11 +1,7 @@
 ﻿CREATE TABLE `company` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
-    `company_name` varchar(100) NOT NULL,
+    `company_name` varchar(100) NULL,
     `homepage` varchar(255) NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     INDEX company_name_idx (company_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='기업';
@@ -42,10 +38,6 @@ CREATE TABLE `user_refresh_token` (
 CREATE TABLE `dimension_option` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,
     `option_name`	varchar(50)	NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수 옵션';
 
@@ -56,10 +48,6 @@ CREATE TABLE `article_file` (
     `original_file_name`	varchar(100)	NOT NULL,
     `file_name`	varchar(100)    UNIQUE  NOT NULL,
     `file_extension`	varchar(100)	NOT NULL,
-    `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-    `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`dimension_option_id`) REFERENCES `dimension_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='파일';
@@ -75,8 +63,6 @@ CREATE TABLE `article` (
     `like_count` int DEFAULT 0 NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,
-    `created_by`	varchar(100)	NOT NULL,
-    `modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     INDEX likeCount_idx (like_count),
     INDEX title_idx (title),
@@ -92,10 +78,6 @@ CREATE TABLE `dimension` (
      `dim_name`	varchar(50)	NOT NULL,
      `dim_value`	float	default 0 NOT NULL,
      `dim_unit`	varchar(10)	NOT NULL,
-     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
-     `modified_at`	datetime	NOT NULL,
-     `created_by`	varchar(100)	NOT NULL,
-     `modified_by`	varchar(100)	NOT NULL,
      PRIMARY KEY (`id`),
      FOREIGN KEY (`dimension_option_id`) REFERENCES `dimension_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='치수';
@@ -108,8 +90,6 @@ CREATE TABLE `article_comment` (
 	`parent_comment_id`	bigint	NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
-	`created_by`	varchar(100)	NOT NULL,
-	`modified_by`	varchar(100)	NOT NULL,
     PRIMARY KEY (`id`),
     INDEX comment_id_and_user_account_id_idx (id, user_account_id),
     FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`),
@@ -122,8 +102,6 @@ CREATE TABLE `article_like` (
 	`user_account_id`	bigint	NOT NULL,
 	`created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
 	`modified_at`	datetime	NOT NULL,
-	`created_by`	varchar(100)	NOT NULL,
-	`modified_by`	varchar(100)	NOT NULL,
 	PRIMARY KEY (`id`),
     INDEX user_account_id_and_article_id_idx (user_account_id, article_id),
     INDEX article_id_idx (article_id),

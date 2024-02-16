@@ -1,16 +1,19 @@
 package joo.project.my3d.domain;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 
+@Getter
 @Entity
 @Table(
         name = "user_refresh_token",
         indexes = {@Index(name = "user_account_id_and_reissue_count_idx", columnList = "userAccountId, reissueCount")})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UserRefreshToken {
+public class UserRefreshToken implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -44,5 +47,10 @@ public class UserRefreshToken {
 
     public void increaseReissueCount() {
         this.reissueCount++;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.id == null;
     }
 }

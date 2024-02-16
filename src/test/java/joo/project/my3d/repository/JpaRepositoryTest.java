@@ -107,7 +107,6 @@ public class JpaRepositoryTest {
             articleRepository.saveAndFlush(article);
             // Then
             assertThat(article).hasFieldOrPropertyWithValue("title", modified_title);
-            assertThat(article.getModifiedBy()).isEqualTo(article.getCreatedBy());
             assertThat(article.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
 
@@ -323,7 +322,6 @@ public class JpaRepositoryTest {
             articleCommentRepository.saveAndFlush(articleComment);
             // Then
             assertThat(articleComment).hasFieldOrPropertyWithValue("content", modified_content);
-            assertThat(articleComment.getModifiedBy()).isEqualTo(articleComment.getCreatedBy());
             assertThat(articleComment.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
 
@@ -512,13 +510,11 @@ public class JpaRepositoryTest {
             // Given
             Long dimensionOptionId = 1L;
             DimensionOption dimensionOption = dimensionOptionRepository.getReferenceById(dimensionOptionId);
-            LocalDateTime previousModifiedAt = dimensionOption.getModifiedAt();
             dimensionOption.setOptionName("option3");
             // When
             dimensionOptionRepository.saveAndFlush(dimensionOption);
             // Then
-            assertThat(dimensionOption.getModifiedBy()).isEqualTo(dimensionOption.getCreatedBy());
-            assertThat(dimensionOption.getModifiedAt()).isNotEqualTo(previousModifiedAt);
+            assertThat(dimensionOption.getOptionName()).isEqualTo("option3");
         }
     }
 
@@ -582,13 +578,10 @@ public class JpaRepositoryTest {
             DimUnit modified_unit = DimUnit.INCH;
             Dimension dimension = dimensionRepository.getReferenceById(dimensionId);
             dimension.setDimUnit(modified_unit);
-            LocalDateTime previousModifiedAt = dimension.getModifiedAt();
             // When
             dimensionRepository.saveAndFlush(dimension);
             // Then
             assertThat(dimension).hasFieldOrPropertyWithValue("dimUnit", modified_unit);
-            assertThat(dimension.getModifiedBy()).isEqualTo(dimension.getCreatedBy());
-            assertThat(dimension.getModifiedAt()).isNotEqualTo(previousModifiedAt);
         }
 
         @DisplayName("치수 delete")
