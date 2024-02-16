@@ -7,10 +7,7 @@ import joo.project.my3d.domain.constant.ArticleType;
 import joo.project.my3d.utils.LocalDateTimeUtils;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,8 +66,8 @@ public record ArticleWithCommentsDto(
                 .collect(Collectors.toMap(ArticleCommentDto::id, Function.identity()));
         // 부모 댓글을 가지는 자식 댓글을 filtering하여 부모 댓글 안에 삽입
         map.values().stream().filter(ArticleCommentDto::hasParentComment).forEach(comment -> {
-            ArticleCommentDto parentComment = map.get(comment.parentCommentId());
-            parentComment.childComments().add(comment);
+            Optional.of(map.get(comment.parentCommentId()))
+                    .ifPresent(parentComment -> parentComment.childComments().add(comment));
         });
 
         // 부모 댓글만 filtering하고 정렬

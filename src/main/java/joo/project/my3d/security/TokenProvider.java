@@ -53,7 +53,7 @@ public class TokenProvider {
     @Transactional
     public String regenerateAccessToken(String token) throws JsonProcessingException {
         Map<String, String> decoded = decodeExpiredToken(token);
-        String spec = decoded.get(KEY_SPEC);
+        String spec = getSpec(decoded);
         long userAccountId = Long.parseLong(spec.split(":")[0]);
         // 조회하려는 refresh token은 재발행 횟수 제한보다 적게 재발행이 되어야한다.
         UserRefreshToken refreshToken = userRefreshTokenRepository
@@ -78,8 +78,8 @@ public class TokenProvider {
     @Transactional(readOnly = true)
     public void validateRefreshToken(String refreshToken, String accessToken) throws JsonProcessingException {
         parseOrValidateClaims(refreshToken); // validation
-        long userAccountId =
-                Long.parseLong(decodeExpiredToken(accessToken).get(KEY_SPEC).split(":")[0]);
+        String spec = getSpec(decodeExpiredToken(accessToken));
+        long userAccountId = Long.parseLong(spec.split(":")[0]);
         // 조회하려는 refresh token은 현재 유저의 실제 refresh token과 일치해야한다.
         userRefreshTokenRepository
                 .findByUserAccountIdAndReissueCountLessThan(userAccountId, getReissueLimit())
@@ -137,8 +137,9 @@ public class TokenProvider {
                 new TypeReference<Map<String, String>>() {});
     }
 
-    private String getSpec(String token) {
-        return parseOrValidateClaims(token).get(KEY_SPEC, String.class);
+    private String getSpec(Map<String, String> decoded) {
+        return Optional.of(decoded.get(KEY_SPEC))
+                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
     }
 
     private Key getKey(String key) {

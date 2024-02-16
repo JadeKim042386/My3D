@@ -209,6 +209,8 @@ gradle-app.setting
 ###
 .env
 **/static/models/
+infer-out/
+.idea/
 
 ### redis
 dump.rdb
