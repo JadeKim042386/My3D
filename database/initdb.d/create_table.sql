@@ -1,11 +1,4 @@
-﻿CREATE TABLE `user_refresh_token` (
-    `id` bigint	AUTO_INCREMENT NOT NULL,
-    `refresh_token`	varchar(255)	NOT NULL,
-    `reissue_count` bigint default 0 NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
-
-CREATE TABLE `company` (
+﻿CREATE TABLE `company` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
     `company_name` varchar(100) NOT NULL,
     `homepage` varchar(255) NULL,
@@ -18,7 +11,6 @@ CREATE TABLE `company` (
 
 CREATE TABLE `user_account` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
-    `user_refresh_token_id`	bigint NOT NULL,
     `company_id`	bigint,
     `email`	varchar(100)	NOT NULL,
     `user_password`	varchar(255)	NOT NULL,
@@ -33,9 +25,17 @@ CREATE TABLE `user_account` (
     PRIMARY KEY (`id`),
     UNIQUE (`nickname`),
     UNIQUE (`email`),
-    FOREIGN KEY (`user_refresh_token_id`) REFERENCES `user_refresh_token` (`id`),
     FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
+
+CREATE TABLE `user_refresh_token` (
+      `id` bigint	AUTO_INCREMENT NOT NULL,
+      `user_account_id`	bigint NOT NULL,
+      `refresh_token`	varchar(255)	NOT NULL,
+      `reissue_count` bigint default 0 NOT NULL,
+      PRIMARY KEY (`id`),
+      FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
 
 CREATE TABLE `dimension_option` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,

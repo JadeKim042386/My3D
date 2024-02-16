@@ -1,18 +1,18 @@
--- Refresh Token
-insert into user_refresh_token (refresh_token, reissue_count) values
-('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
-('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
-('eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0);
-
 -- 기업
 insert into company (company_name, homepage, created_at, modified_at, created_by, modified_by) values
 ('(주)My3D', 'www.my3d.com', now(), now(), 'jujoo', 'jujoo');
 
 -- 테스트 계정 3개
-insert into user_account (user_refresh_token_id, company_id, email, user_password, nickname, phone, detail, street, zipcode, user_role, created_at, modified_at) values
-(1, null, 'jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', 'detail', 'street', '11111', 'ADMIN', now(), now()),
-(2, null, 'a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', 'detail', 'street', '11111', 'USER', now(), now()),
-(3, 1, 'jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', 'detail', 'street', '11111', 'COMPANY', now(), now());
+insert into user_account (company_id, email, user_password, nickname, phone, detail, street, zipcode, user_role, created_at, modified_at) values
+(null, 'jk042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Joo', '01012341234', 'detail', 'street', '11111', 'ADMIN', now(), now()),
+(null, 'a@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'A', '01011111111', 'detail', 'street', '11111', 'USER', now(), now()),
+(1, 'jujoo042386@gmail.com', '$2a$10$P3b4xJ2sY4t6zMhEroFV5OeVcyspmj8EA4.dskRDwaU/H0Wd5Alfa', 'Jujoo', '01022222222', 'detail', 'street', '11111', 'COMPANY', now(), now());
+
+-- Refresh Token
+insert into user_refresh_token (user_account_id, refresh_token, reissue_count) values
+(1, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+(2, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0),
+(3, 'eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MDUwNTkzNjAsImV4cCI6MTczNjU5OTM2MH0.Zz-gxdujoo71RZvV59zImALwFY-_kzKTZlwOAoJgIqQ', 0);
 
 -- 치수 옵션
 insert into dimension_option (option_name, created_at, modified_at, created_by, modified_by) values

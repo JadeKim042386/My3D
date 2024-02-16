@@ -1,10 +1,14 @@
 package joo.project.my3d.domain;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
+@Table(
+        name = "user_refresh_token",
+        indexes = {@Index(name = "user_account_id_and_reissue_count_idx", columnList = "userAccountId, reissueCount")})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserRefreshToken {
     @Id
@@ -12,7 +16,9 @@ public class UserRefreshToken {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToOne(mappedBy = "userRefreshToken")
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userAccountId")
     private UserAccount userAccount;
 
     private String refreshToken;
