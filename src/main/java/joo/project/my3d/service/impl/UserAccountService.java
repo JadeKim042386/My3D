@@ -7,6 +7,7 @@ import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.dto.security.BoardPrincipal;
 import joo.project.my3d.exception.AuthException;
 import joo.project.my3d.exception.constant.ErrorCode;
+import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserAccountService implements UserAccountServiceInterface {
 
+    private final ArticleRepository articleRepository;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserAccountRepository userAccountRepository;
     private final TokenProvider tokenProvider;
@@ -48,8 +50,8 @@ public class UserAccountService implements UserAccountServiceInterface {
 
     @Override
     public UserAccount searchUserEntityByArticleId(Long articleId) {
-        return userAccountRepository
-                .findByArticleId(articleId)
+        return articleRepository
+                .findUserAccountById(articleId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
     }
 

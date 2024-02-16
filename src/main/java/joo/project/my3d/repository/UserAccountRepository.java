@@ -15,10 +15,10 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @EntityGraph(attributePaths = {"company", "userRefreshToken"})
     UserAccount getReferenceByEmail(String email);
 
-    boolean existsByEmailOrNickname(String email, String nickname);
+    @EntityGraph(attributePaths = {"company", "userRefreshToken"})
+    UserAccount getReferenceById(Long userAccountId);
 
-    @Query("select ua from UserAccount ua where ua.id = (select a.userAccount.id from Article a where a.id = ?1)")
-    Optional<UserAccount> findByArticleId(Long articleId);
+    boolean existsByEmailOrNickname(String email, String nickname);
 
     @Query("select ua.company from UserAccount ua where ua.id = ?1")
     Optional<Company> findCompanyById(Long userAccountId);

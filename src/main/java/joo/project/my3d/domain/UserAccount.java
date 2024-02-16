@@ -17,7 +17,6 @@ import java.util.Set;
 @Table(
         name = "user_account",
         indexes = {
-            @Index(columnList = "id"),
             @Index(columnList = "email", unique = true),
             @Index(columnList = "nickname", unique = true)
         })

@@ -6,6 +6,7 @@ import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.LoginResponse;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
+import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.repository.UserRefreshTokenRepository;
 import joo.project.my3d.security.TokenProvider;
@@ -35,6 +36,9 @@ import static org.mockito.BDDMockito.then;
 class UserAccountServiceTest {
     @InjectMocks
     private UserAccountService userAccountService;
+
+    @Mock
+    private ArticleRepository articleRepository;
 
     @Mock
     private UserAccountRepository userAccountRepository;

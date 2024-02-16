@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.EnumExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.QArticle;
+import joo.project.my3d.domain.UserAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -52,4 +53,7 @@ public interface ArticleRepository
 
     @Query("select a.articleFile.fileName from Article a where a.id = ?1")
     Optional<String> findFileNameById(Long articleId);
+
+    @Query("select a.userAccount from Article a where a.id = ?1")
+    Optional<UserAccount> findUserAccountById(Long articleId);
 }
