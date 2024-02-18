@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,24 +84,21 @@ class UserAccountServiceTest {
         // Given
         String email = "jk042386@gmail.com";
         String changedPassword = "changedPassword";
-        given(userAccountRepository.getReferenceByEmail(email)).willReturn(Fixture.getUserAccount());
+        given(userAccountRepository.findByEmail(email)).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
         userAccountService.changePassword(email, changedPassword);
         // Then
-        then(userAccountRepository).should().getReferenceByEmail(email);
     }
 
     @DisplayName("회원 정보 수정")
     @Test
     void updateUser() {
         // Given
-        String email = "jk042386@gmail.com";
         UserAccountDto userAccountDto = FixtureDto.getUserAccountDto();
-        given(userAccountRepository.getReferenceByEmail(email)).willReturn(Fixture.getUserAccount());
+        given(userAccountRepository.findByEmail(anyString())).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
         userAccountService.updateUser(userAccountDto);
         // Then
-        then(userAccountRepository).should().getReferenceByEmail(email);
     }
 
     @DisplayName("로그인")

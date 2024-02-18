@@ -15,10 +15,7 @@ import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
-import joo.project.my3d.service.ArticleFileServiceInterface;
-import joo.project.my3d.service.ArticleLikeServiceInterface;
-import joo.project.my3d.service.ArticleServiceInterface;
-import joo.project.my3d.service.FileServiceInterface;
+import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -37,7 +34,7 @@ import java.util.Optional;
 public class ArticleService implements ArticleServiceInterface {
 
     private final ArticleRepository articleRepository;
-    private final UserAccountRepository userAccountRepository;
+    private final UserAccountServiceInterface userAccountService;
     private final ArticleFileServiceInterface articleFileService;
     private final ArticleLikeServiceInterface articleLikeService;
     private final FileServiceInterface fileService;
@@ -68,7 +65,6 @@ public class ArticleService implements ArticleServiceInterface {
                 .findByIdFetchDetail(articleId)
                 .map(article -> ArticleDetailResponse.of(
                         ArticleWithCommentsDto.from(article),
-                        articleLikeService.getLikeCountByArticleId(articleId),
                         articleLikeService.addedLike(articleId, userAccountId)))
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
@@ -76,7 +72,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Transactional
     @Override
     public Article saveArticle(Long userAccountId, ArticleFormRequest articleFormRequest) {
-        UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
+        UserAccount userAccount = userAccountService.searchUserEntity(userAccountId);
         Article savedArticle =
                 articleRepository.save(articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL));
         DimensionOption dimensionOption = savedArticle.getArticleFile().getDimensionOption();

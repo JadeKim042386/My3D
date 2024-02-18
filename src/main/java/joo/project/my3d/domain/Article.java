@@ -14,37 +14,6 @@ import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@NamedEntityGraph(
-        name = "Article.fetchDetail",
-        attributeNodes = {
-            @NamedAttributeNode(value = "userAccount", subgraph = "company"),
-            @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
-            @NamedAttributeNode(value = "articleComments"),
-            @NamedAttributeNode(value = "articleLikes")
-        },
-        subgraphs = {
-            @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
-            @NamedSubgraph(name = "dimensionOption", attributeNodes = @NamedAttributeNode(value = "dimensionOption"))
-        })
-@NamedEntityGraph(
-        name = "Article.fetchForm",
-        attributeNodes = {
-            @NamedAttributeNode(value = "userAccount", subgraph = "company"),
-            @NamedAttributeNode(value = "articleFile", subgraph = "dimensionOption"),
-        },
-        subgraphs = {
-            @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
-            @NamedSubgraph(name = "dimensionOption", attributeNodes = @NamedAttributeNode(value = "dimensionOption"))
-        })
-@NamedEntityGraph(
-        name = "Article.fetchPreview",
-        attributeNodes = {
-            @NamedAttributeNode(value = "userAccount", subgraph = "company"),
-            @NamedAttributeNode(value = "articleFile"),
-        },
-        subgraphs = {
-            @NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),
-        })
 @Getter
 @ToString(callSuper = true)
 @Table(

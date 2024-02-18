@@ -1,5 +1,6 @@
 package joo.project.my3d.controller;
 
+import joo.project.my3d.aop.TimeTrace;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.UserAccountDto;
 import joo.project.my3d.dto.response.CompanyAdminResponse;
@@ -34,6 +35,7 @@ public class UserAdminController {
      *     zipcode: String
      * }
      */
+    @TimeTrace
     @GetMapping
     public String account(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
         UserAccountDto userAccountDto = userAccountService.searchUserDto(boardPrincipal.email());
@@ -55,6 +57,7 @@ public class UserAdminController {
      *     homepage: String
      * }
      */
+    @TimeTrace
     @GetMapping("/company")
     public String company(@AuthenticationPrincipal BoardPrincipal boardPrincipal, Model model) {
         CompanyDto company = companyService.getCompanyDto(boardPrincipal.id());

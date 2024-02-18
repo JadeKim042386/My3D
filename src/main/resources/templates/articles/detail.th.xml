@@ -38,7 +38,7 @@
         <attr sel="#like-button" th:if="${#authorization.expression('isAuthenticated()')}">
             <attr sel="#notLike" th:hidden="${article.addedLike}"/>
             <attr sel="#like" th:hidden="${!article.addedLike}"/>
-            <attr sel="#likeCount" th:text="${article.likeCount}"/>
+            <attr sel="#likeCount" th:text="*{likeCount}"/>
         </attr>
         <!--댓글 작성 폼-->
         <attr sel=".comment-form"/>

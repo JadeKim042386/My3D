@@ -27,8 +27,6 @@ class CompanyServiceTest {
     private CompanyService companyService;
 
     @Mock
-    private CompanyRepository companyRepository;
-    @Mock
     private UserAccountRepository userAccountRepository;
 
     @DisplayName("기업 조회")
@@ -36,8 +34,7 @@ class CompanyServiceTest {
     void getCompany() {
         // Given
         Long userAccountId = 1L;
-        Company company = Fixture.getCompany();
-        given(userAccountRepository.findCompanyById(anyLong())).willReturn(Optional.of(company));
+        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
         companyService.getCompanyEntity(userAccountId);
         // Then
@@ -47,9 +44,8 @@ class CompanyServiceTest {
     @Test
     void updateCompany() throws IllegalAccessException {
         // Given
-        CompanyDto companyDto = FixtureDto.getCompanyDto();
         Long userAccountId = 1L;
-        given(userAccountRepository.findCompanyById(anyLong())).willReturn(Optional.of(companyDto.toEntity()));
+        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(Fixture.getUserAccount()));
         // When
         companyService.updateCompany(FixtureDto.getCompanyAdminRequest(), userAccountId);
         // Then

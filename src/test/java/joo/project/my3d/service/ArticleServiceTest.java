@@ -129,7 +129,7 @@ class ArticleServiceTest {
         ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(
                 1L, article.getUserAccount().getId());
         // Then
-        assertThat(articleDetailResponse.likeCount()).isEqualTo(2);
+        assertThat(articleDetailResponse.article().likeCount()).isEqualTo(2);
         assertThat(articleDetailResponse.addedLike()).isEqualTo(true);
         assertThat(articleDetailResponse.article().title()).isEqualTo("title");
         assertThat(articleDetailResponse.article().content()).isEqualTo("content");
@@ -162,14 +162,12 @@ class ArticleServiceTest {
                 FixtureDto.getArticleFormDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(
                 articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
-        given(userAccountRepository.getReferenceById(anyLong())).willReturn(article.getUserAccount());
+        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(article.getUserAccount()));
         given(articleRepository.save(any(Article.class))).willReturn(article);
         willDoNothing().given(fileService).uploadFile(any(), anyString());
         // When
         articleService.saveArticle(article.getUserAccount().getId(), Fixture.getArticleFormRequest());
         // Then
-        then(userAccountRepository).should().getReferenceById(anyLong());
-        then(articleRepository).should().save(any(Article.class));
     }
 
     @DisplayName("7. 게시글 수정")

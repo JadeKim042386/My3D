@@ -6,9 +6,18 @@
     INDEX company_name_idx (company_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='기업';
 
+CREATE TABLE `user_refresh_token` (
+    `id` bigint	AUTO_INCREMENT NOT NULL,
+    `refresh_token`	varchar(255)	NOT NULL,
+    `reissue_count` bigint default 0 NOT NULL,
+    PRIMARY KEY (`id`),
+    INDEX reissue_count_idx (reissue_count)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
+
 CREATE TABLE `user_account` (
     `id` bigint	AUTO_INCREMENT NOT NULL,
     `company_id`	bigint,
+    `user_refresh_token_id`	bigint NOT NULL,
     `email`	varchar(100)	NOT NULL,
     `user_password`	varchar(255)	NOT NULL,
     `nickname`	varchar(100)	NOT NULL,
@@ -22,18 +31,9 @@ CREATE TABLE `user_account` (
     PRIMARY KEY (`id`),
     UNIQUE INDEX nickname_idx (`nickname`),
     UNIQUE INDEX email_idx (`email`),
-    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+    FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+    FOREIGN KEY (`user_refresh_token_id`) REFERENCES `user_refresh_token` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저';
-
-CREATE TABLE `user_refresh_token` (
-    `id` bigint	AUTO_INCREMENT NOT NULL,
-    `user_account_id`	bigint NOT NULL,
-    `refresh_token`	varchar(255)	NOT NULL,
-    `reissue_count` bigint default 0 NOT NULL,
-    PRIMARY KEY (`id`),
-    INDEX user_account_id_and_reissue_count_idx (user_account_id, reissue_count),
-    FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='RefreshToken';
 
 CREATE TABLE `dimension_option` (
     `id`	bigint	AUTO_INCREMENT NOT NULL,

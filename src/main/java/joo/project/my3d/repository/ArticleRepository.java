@@ -18,6 +18,8 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 
 import java.util.Optional;
 
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.LOAD;
+
 public interface ArticleRepository
         extends JpaRepository<Article, Long>, QuerydslPredicateExecutor<Article>, QuerydslBinderCustomizer<QArticle> {
     @Override
@@ -32,15 +34,31 @@ public interface ArticleRepository
 
     boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
-    @EntityGraph(value = "Article.fetchPreview", type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"userAccount", "articleFile"}, type = LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
 
-    @EntityGraph(value = "Article.fetchForm", type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select a from Article a where a.id = ?1")
+    @Query(
+            "select distinct a " +
+            "from Article a " +
+            "left outer join fetch a.userAccount ua " +
+            "left outer join fetch a.articleFile af " +
+            "left outer join fetch af.dimensionOption do " +
+            "left outer join fetch do.dimensions " +
+            "where a.id = ?1"
+    )
     Optional<Article> findByIdFetchForm(Long id);
 
-    @EntityGraph(value = "Article.fetchDetail", type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select a from Article a where a.id = ?1")
+    @Query(
+            "select distinct a " +
+            "from Article a " +
+            "left outer join fetch a.userAccount ua " +
+            "left outer join fetch a.articleFile af " +
+            "left outer join fetch af.dimensionOption do " +
+            "left outer join fetch do.dimensions " +
+            "left outer join fetch a.articleComments ac " +
+            "left outer join fetch ac.userAccount " +
+            "where a.id = ?1"
+    )
     Optional<Article> findByIdFetchDetail(Long id);
 
     @Modifying

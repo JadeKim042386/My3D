@@ -49,6 +49,13 @@ public class UserAccountService implements UserAccountServiceInterface {
     }
 
     @Override
+    public UserAccount searchUserEntity(Long userAccountId) {
+        return userAccountRepository
+                .findById(userAccountId)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다."));
+    }
+
+    @Override
     public UserAccount searchUserEntityByArticleId(Long articleId) {
         return articleRepository
                 .findUserAccountById(articleId)
@@ -91,7 +98,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Transactional
     @Override
     public void changePassword(String email, String changedPassword) {
-        UserAccount userAccount = userAccountRepository.getReferenceByEmail(email);
+        UserAccount userAccount = searchUserEntity(email);
         userAccount.setUserPassword(encoder.encode(changedPassword));
     }
 
@@ -110,7 +117,7 @@ public class UserAccountService implements UserAccountServiceInterface {
     @Override
     public void updateUser(UserAccountDto dto) {
         try {
-            UserAccount userAccount = userAccountRepository.getReferenceByEmail(dto.email());
+            UserAccount userAccount = searchUserEntity(dto.email());
             Optional.ofNullable(dto.nickname()).ifPresent(userAccount::setNickname);
             Optional.ofNullable(dto.phone()).ifPresent(userAccount::setPhone);
             Optional.ofNullable(dto.userPassword()).ifPresent(userAccount::setUserPassword);

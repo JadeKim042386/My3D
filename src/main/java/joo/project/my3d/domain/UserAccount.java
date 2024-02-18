@@ -76,7 +76,9 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     @Column(nullable = false)
     private UserRole userRole;
 
-    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userRefreshTokenId")
     private UserRefreshToken userRefreshToken;
 
     @ToString.Exclude

@@ -42,7 +42,7 @@ public record ArticlePreviewDto(
     public static ArticlePreviewDto from(Article article) {
         return ArticlePreviewDto.of(
                 article.getId(),
-                article.getArticleLikes().size(),
+                article.getLikeCount(),
                 article.getUserAccount().getNickname(),
                 article.getTitle(),
                 article.getContent(),

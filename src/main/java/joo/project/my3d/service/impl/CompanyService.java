@@ -1,6 +1,7 @@
 package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.Company;
+import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.dto.request.CompanyAdminRequest;
 import joo.project.my3d.exception.AuthException;
@@ -34,7 +35,8 @@ public class CompanyService implements CompanyServiceInterface {
     @Override
     public Company getCompanyEntity(Long userAccountId) {
         return userAccountRepository
-                .findCompanyById(userAccountId)
+                .findById(userAccountId)
+                .map(UserAccount::getCompany)
                 .orElseThrow(() -> new AuthException(ErrorCode.NOT_FOUND_COMPANY));
     }
 

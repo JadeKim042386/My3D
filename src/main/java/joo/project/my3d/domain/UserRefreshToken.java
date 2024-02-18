@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(
         name = "user_refresh_token",
-        indexes = {@Index(name = "user_account_id_and_reissue_count_idx", columnList = "userAccountId, reissueCount")})
+        indexes = {@Index(name = "reissue_count_idx", columnList = "reissueCount")})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserRefreshToken implements Persistable<Long> {
     @Id
@@ -19,9 +19,7 @@ public class UserRefreshToken implements Persistable<Long> {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userAccountId")
+    @OneToOne(mappedBy = "userRefreshToken", cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
     private String refreshToken;

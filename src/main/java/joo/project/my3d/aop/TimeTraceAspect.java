@@ -8,6 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -25,7 +26,10 @@ public class TimeTraceAspect {
 
     @Around("timeTracePointcut()")
     public Object traceTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        Timer timer = Timer.builder("response_time_ms").register(meterRegistry);
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Timer timer = Timer.builder("response_time_ms")
+                .tag("method", signature.getMethod().getName())
+                .register(meterRegistry);
 
         StopWatch stopWatch = new StopWatch();
 

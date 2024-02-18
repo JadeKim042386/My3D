@@ -90,6 +90,7 @@ public class ArticlesController {
      *     articleCategory: String
      * }
      */
+    @TimeTrace
     @GetMapping("/{articleId}/form")
     public String articleUpdateForm(@PathVariable Long articleId, Model model) {
         model.addAttribute("article", ArticleFormResponse.from(articleService.getArticleForm(articleId), UPDATE));
@@ -105,6 +106,7 @@ public class ArticlesController {
      *     addedLike: boolean
      * }
      */
+    @TimeTrace
     @GetMapping("/{articleId}")
     public String articleDetail(
             @PathVariable Long articleId,
