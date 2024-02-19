@@ -31,8 +31,13 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
 
     @Override
     public ArticleComment searchComment(Long commentId) {
-        //TODO: join fetch childComments
         return articleCommentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    @Override
+    public ArticleComment searchCommentWithChildComments(Long commentId) {
+        return articleCommentRepository.findByFetchChildComments(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
@@ -68,7 +73,7 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
      */
     @Override
     public void deleteComment(Long articleCommentId, Long userAccountId) {
-        ArticleComment articleComment = searchComment(articleCommentId);
+        ArticleComment articleComment = searchCommentWithChildComments(articleCommentId);
         // 작성자와 삭제 요청 유저가 같은지 확인
         if (!articleCommentRepository.existsByIdAndUserAccountId(articleCommentId, userAccountId)) {
             log.error(

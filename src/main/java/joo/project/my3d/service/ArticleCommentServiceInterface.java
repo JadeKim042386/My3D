@@ -11,6 +11,11 @@ public interface ArticleCommentServiceInterface {
     ArticleComment searchComment(Long commentId);
 
     /**
+     * 대댓글 포함 댓글 조회
+     */
+    ArticleComment searchCommentWithChildComments(Long commentId);
+
+    /**
      * 댓글 저장
      */
     ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount sender, UserAccount receiver);
