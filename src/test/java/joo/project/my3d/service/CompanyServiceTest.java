@@ -1,10 +1,7 @@
 package joo.project.my3d.service;
 
-import joo.project.my3d.domain.Company;
-import joo.project.my3d.dto.CompanyDto;
 import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
-import joo.project.my3d.repository.CompanyRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.CompanyService;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 기업")

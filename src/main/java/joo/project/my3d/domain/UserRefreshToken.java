@@ -2,7 +2,6 @@ package joo.project.my3d.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;

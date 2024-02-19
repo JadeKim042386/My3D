@@ -1,7 +1,6 @@
 package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingAt;
-import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import lombok.EqualsAndHashCode;

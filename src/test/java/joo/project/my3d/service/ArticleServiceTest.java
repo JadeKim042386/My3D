@@ -19,7 +19,6 @@ import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.ArticleFileService;
 import joo.project.my3d.service.impl.ArticleLikeService;
 import joo.project.my3d.service.impl.ArticleService;
-import joo.project.my3d.service.impl.UserAccountService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

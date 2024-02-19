@@ -14,8 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
-
 import static org.mockito.BDDMockito.*;
 
 @ActiveProfiles("test")
