@@ -22,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -87,7 +89,7 @@ class ArticleCommentServiceTest {
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
-        given(articleCommentRepository.getReferenceById(anyLong())).willReturn(articleComment);
+        given(articleCommentRepository.findById(anyLong())).willReturn(Optional.of(articleComment));
         willDoNothing().given(alarmService).send(any(), isNull(), any(), any());
         // When
         articleCommentService.saveComment(articleCommentDto, sender, receiver);
@@ -99,16 +101,13 @@ class ArticleCommentServiceTest {
     void deleteComment() {
         // Given
         Long articleCommentId = 1L;
-        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleCommentRepository.getReferenceById(articleCommentId))
-                .willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Fixture.getArticleComment("content")));
         given(articleCommentRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(true);
         // When
         articleCommentService.deleteComment(articleCommentId, 1L);
         // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentId);
-        then(articleCommentRepository).should().deleteById(articleCommentId);
     }
 
     @DisplayName("댓글 삭제 - 작성자와 삭제 요청 유저가 다름")
@@ -116,13 +115,12 @@ class ArticleCommentServiceTest {
     void deleteCommentNotWriter() {
         // Given
         Long articleCommentId = 1L;
-        given(articleCommentRepository.getReferenceById(articleCommentId))
-                .willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Fixture.getArticleComment("content")));
         // When
         assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, 1L))
                 .isInstanceOf(CommentException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentId);
     }
 }

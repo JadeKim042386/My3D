@@ -83,8 +83,9 @@ public class Fixture {
         return Dimension.of(dimensionOption, "너비", 10.0f, DimUnit.MM);
     }
 
-    public static Alarm getAlarm(UserAccount sender, UserAccount receiver) {
+    public static Alarm getAlarm(UserAccount sender, UserAccount receiver) throws IllegalAccessException {
         Article article = Fixture.getArticle();
+        FieldUtils.writeField(article, "id", 1L, true);
         return Alarm.of(AlarmType.NEW_COMMENT, 1L, false, article, sender, receiver);
     }
 
@@ -111,6 +112,13 @@ public class Fixture {
     }
 
     public static UserRefreshToken getUserRefreshToken() {
-        return UserRefreshToken.of("refreshToken");
+        UserRefreshToken refreshToken = UserRefreshToken.of("refreshToken");
+        try {
+            FieldUtils.writeField(refreshToken, "id", 1L, true);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return refreshToken;
     }
 }

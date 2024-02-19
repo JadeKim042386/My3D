@@ -8,6 +8,7 @@ import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.ArticleLikeService;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class ArticleLikeServiceTest {
     ArticleRepository articleRepository;
 
     @Mock
-    UserAccountRepository userAccountRepository;
+    UserAccountService userAccountService;
 
     @DisplayName("좋아요 추가")
     @Test
@@ -50,7 +51,7 @@ class ArticleLikeServiceTest {
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(articleLike.getUserAccount()));
+        given(userAccountService.searchUserEntity(anyLong())).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
         given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When

@@ -64,7 +64,7 @@ class AlarmServiceTest {
 
     @DisplayName("알람 전송 - 연결 실패")
     @Test
-    void sendAlarmFailed() {
+    void sendAlarmFailed() throws IllegalAccessException {
         // Given
         UserAccount sender = Fixture.getUserAccount();
         UserAccount receiver = Fixture.getUserAccount();

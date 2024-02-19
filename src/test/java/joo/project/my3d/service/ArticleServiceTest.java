@@ -19,6 +19,7 @@ import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.ArticleFileService;
 import joo.project.my3d.service.impl.ArticleLikeService;
 import joo.project.my3d.service.impl.ArticleService;
+import joo.project.my3d.service.impl.UserAccountService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class ArticleServiceTest {
     private ArticleRepository articleRepository;
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserAccountService userAccountService;
 
     @Mock
     private ArticleFileService articleFileService;
@@ -119,11 +120,11 @@ class ArticleServiceTest {
         // Given
         Article article = Fixture.getArticle();
         FieldUtils.writeField(article, "createdAt", LocalDateTime.now(), true);
+        FieldUtils.writeField(article, "likeCount", 2, true);
         ArticleComment comment = Fixture.getArticleComment("comment");
         FieldUtils.writeField(comment, "id", 1L, true);
         article.getArticleComments().add(comment);
         given(articleRepository.findByIdFetchDetail(anyLong())).willReturn(Optional.of(article));
-        given(articleLikeService.getLikeCountByArticleId(anyLong())).willReturn(2);
         given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(true);
         // When
         ArticleDetailResponse articleDetailResponse = articleService.getArticleWithComments(
@@ -162,7 +163,7 @@ class ArticleServiceTest {
                 FixtureDto.getArticleFormDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(
                 articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
-        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(article.getUserAccount()));
+        given(userAccountService.searchUserEntity(anyLong())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         willDoNothing().given(fileService).uploadFile(any(), anyString());
         // When

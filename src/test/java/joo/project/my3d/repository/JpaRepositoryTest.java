@@ -636,7 +636,7 @@ public class JpaRepositoryTest {
 
         @DisplayName("알람 save")
         @Test
-        void saveAlarm() {
+        void saveAlarm() throws IllegalAccessException {
             // Given
             Long senderId = 3L;
             Long receiverId = 3L;
