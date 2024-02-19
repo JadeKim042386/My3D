@@ -31,6 +31,7 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
 
     @Override
     public ArticleComment searchComment(Long commentId) {
+        //TODO: join fetch childComments
         return articleCommentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
     }

@@ -14,6 +14,7 @@ import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
+import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ import java.util.Optional;
 public class ArticleService implements ArticleServiceInterface {
 
     private final ArticleRepository articleRepository;
-    private final UserAccountServiceInterface userAccountService;
+    private final UserAccountRepository userAccountRepository;
     private final ArticleFileServiceInterface articleFileService;
     private final ArticleLikeServiceInterface articleLikeService;
     private final FileServiceInterface fileService;
@@ -71,7 +72,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Transactional
     @Override
     public Article saveArticle(Long userAccountId, ArticleFormRequest articleFormRequest) {
-        UserAccount userAccount = userAccountService.searchUserEntity(userAccountId);
+        UserAccount userAccount = userAccountRepository.getReferenceById(userAccountId);
         Article savedArticle =
                 articleRepository.save(articleFormRequest.toArticleEntity(userAccount, ArticleType.MODEL));
         DimensionOption dimensionOption = savedArticle.getArticleFile().getDimensionOption();
@@ -91,10 +92,8 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public void updateArticle(ArticleFormRequest articleFormRequest, Long articleId, Long requestUserAccountId) {
         Article article = articleRepository
-                .findByIdAndUserAccountId(articleId, requestUserAccountId)
-                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND)); // 작성자
-        // 작성자와 수정자가 같은지 확인
-        equalsRequestUserAndWriter(article.getId(), requestUserAccountId);
+                .findByIdAndUserAccountId(articleId, requestUserAccountId) // 작성자와 수정자가 같은지 확인
+                .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // 파일 수정
         articleFileService.updateArticleFile(articleFormRequest, article.getArticleFile());
         // 게시글 수정
@@ -113,7 +112,8 @@ public class ArticleService implements ArticleServiceInterface {
         try {
             // 작성자와 삭제를 요청한 유저가 같은지 확인
             equalsRequestUserAndWriter(articleId, userAccountId);
-            Article article = articleRepository.getReferenceById(articleId); // 작성자
+            Article article = articleRepository.findByIdFetchAll(articleId)
+                    .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
             // 파일 삭제
             articleFileService.deleteFile(articleId);
             // 게시글에 속한 댓글, 좋아요도 같이 삭제

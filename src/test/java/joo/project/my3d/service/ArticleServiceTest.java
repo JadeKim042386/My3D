@@ -21,8 +21,7 @@ import joo.project.my3d.service.impl.ArticleLikeService;
 import joo.project.my3d.service.impl.ArticleService;
 import joo.project.my3d.service.impl.UserAccountService;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,6 +44,7 @@ import static org.mockito.BDDMockito.*;
 @ActiveProfiles("test")
 @DisplayName("비지니스 로직 - 모델 게시글")
 @ExtendWith(MockitoExtension.class)
+@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class ArticleServiceTest {
     @InjectMocks
     private ArticleService articleService;
@@ -53,7 +53,7 @@ class ArticleServiceTest {
     private ArticleRepository articleRepository;
 
     @Mock
-    private UserAccountService userAccountService;
+    private UserAccountRepository userAccountRepository;
 
     @Mock
     private ArticleFileService articleFileService;
@@ -64,7 +64,8 @@ class ArticleServiceTest {
     @Mock
     private FileServiceInterface fileService;
 
-    @DisplayName("1. 게시판에 표시할 전체 게시글 조회 (제목 검색)")
+    @Order(1)
+    @DisplayName("게시판에 표시할 전체 게시글 조회 (제목 검색)")
     @Test
     void getArticles_ForBoard() {
         // Given
@@ -82,7 +83,8 @@ class ArticleServiceTest {
         then(articleRepository).should().findAll(any(Predicate.class), any(Pageable.class));
     }
 
-    @DisplayName("2. 추가/수정을 위한 게시글 조회")
+    @Order(2)
+    @DisplayName("추가/수정을 위한 게시글 조회")
     @Test
     void getArticles_ForUpdate() {
         // Given
@@ -100,7 +102,8 @@ class ArticleServiceTest {
         then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 
-    @DisplayName("3. [예외 - 게시글 없음] 추가/수정을 위한 게시글 조회")
+    @Order(3)
+    @DisplayName("[예외 - 게시글 없음] 추가/수정을 위한 게시글 조회")
     @Test
     void getArticles_ForUpdate_Failed() {
         // Given
@@ -114,7 +117,8 @@ class ArticleServiceTest {
         then(articleRepository).should().findByIdFetchForm(anyLong());
     }
 
-    @DisplayName("4. 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
+    @Order(4)
+    @DisplayName("상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
     @Test
     void getArticleDetail() throws IllegalAccessException {
         // Given
@@ -141,7 +145,8 @@ class ArticleServiceTest {
         assertThat(articleDetailResponse.article().articleComments().size()).isEqualTo(1);
     }
 
-    @DisplayName("5. [예외 - 게시글 없음] 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
+    @Order(5)
+    @DisplayName("[예외 - 게시글 없음] 상세 정보를 포함한 게시글 조회 (댓글과 좋아요 개수를 포함)")
     @Test
     void getArticles_ForDetail_Failed() {
         // Given
@@ -155,7 +160,8 @@ class ArticleServiceTest {
         then(articleRepository).should().findByIdFetchDetail(anyLong());
     }
 
-    @DisplayName("6. 게시글 저장")
+    @Order(6)
+    @DisplayName("게시글 저장")
     @Test
     void saveArticle() throws IllegalAccessException {
         // Given
@@ -163,7 +169,7 @@ class ArticleServiceTest {
                 FixtureDto.getArticleFormDto(1L, "title", "content", ArticleType.MODEL, ArticleCategory.ARCHITECTURE);
         Article article = Fixture.getArticle(
                 articleDto.title(), articleDto.content(), articleDto.articleType(), articleDto.articleCategory());
-        given(userAccountService.searchUserEntity(anyLong())).willReturn(article.getUserAccount());
+        given(userAccountRepository.getReferenceById(anyLong())).willReturn(article.getUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(article);
         willDoNothing().given(fileService).uploadFile(any(), anyString());
         // When
@@ -171,13 +177,13 @@ class ArticleServiceTest {
         // Then
     }
 
-    @DisplayName("7. 게시글 수정")
+    @Order(7)
+    @DisplayName("게시글 수정")
     @Test
     void updateArticle() throws IllegalAccessException {
         // Given
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
-        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
         given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(Optional.of(savedArticle));
         willDoNothing().given(articleFileService).updateArticleFile(any(), any());
@@ -189,7 +195,8 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("content", "new content");
     }
 
-    @DisplayName("8. [예외 - 없는 게시글] 게시글 수정")
+    @Order(8)
+    @DisplayName("[예외 - 없는 게시글] 게시글 수정")
     @Test
     void updateArticle_NotExistArticle() {
         // Given
@@ -202,23 +209,25 @@ class ArticleServiceTest {
         // Then
     }
 
-    @DisplayName("9. [예외 - 작성자와 수정자가 상이] 게시글 수정")
+    @Order(9)
+    @DisplayName("[예외 - 작성자와 수정자가 상이] 게시글 수정")
     @Test
     void updateArticle_NotEqualWriter() throws IllegalAccessException {
         // Given
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
         given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
-                .willReturn(Optional.of(savedArticle));
+                .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
         assertThatThrownBy(
                         () -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 2L))
                 .isInstanceOf(ArticleException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
     }
 
-    @DisplayName("10. 게시글 삭제")
+    @Order(10)
+    @DisplayName("게시글 삭제")
     @Test
     void deleteArticle() {
         // Given
@@ -226,7 +235,7 @@ class ArticleServiceTest {
         Long articleId = 1L;
         Long userAccountId = 1L;
         given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
-        given(articleRepository.getReferenceById(anyLong())).willReturn(article);
+        given(articleRepository.findByIdFetchAll(anyLong())).willReturn(Optional.of(article));
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleRepository).delete(any());
         // When
@@ -234,24 +243,25 @@ class ArticleServiceTest {
         // Then
     }
 
-    @DisplayName("11. [예외 - 게시글 없음]게시글 삭제")
+    @Order(11)
+    @DisplayName("[예외 - 게시글 없음]게시글 삭제")
     @Test
     void deleteArticle_NotExist() {
         // Given
         Long articleId = 1L;
         Long userAccountId = 1L;
         given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
-        given(articleRepository.getReferenceById(anyLong()))
+        given(articleRepository.findByIdFetchAll(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, userAccountId))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
-        then(articleRepository).should().getReferenceById(anyLong());
     }
 
-    @DisplayName("12. [예외 - 작성자와 요청자 상이]게시글 삭제")
+    @Order(12)
+    @DisplayName("[예외 - 작성자와 요청자 상이]게시글 삭제")
     @Test
     void deleteArticle_NotEqualWriter() {
         // Given
@@ -265,7 +275,8 @@ class ArticleServiceTest {
         // Then
     }
 
-    @DisplayName("13. [예외 - 삭제 실패]게시글 삭제")
+    @Order(13)
+    @DisplayName("[예외 - 삭제 실패]게시글 삭제")
     @Test
     void deleteArticle_FailedDelete() {
         // Given
@@ -273,7 +284,7 @@ class ArticleServiceTest {
         Long articleId = 1L;
         Long userAccountId = 1L;
         given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
-        given(articleRepository.getReferenceById(anyLong())).willReturn(article);
+        given(articleRepository.findByIdFetchAll(anyLong())).willReturn(Optional.of(article));
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
                 .given(articleFileService)
                 .deleteFile(anyLong());
