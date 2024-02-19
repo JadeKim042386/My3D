@@ -32,6 +32,7 @@ public interface ArticleRepository
 
     Optional<Article> findByIdAndUserAccountId(Long articleId, Long userAccountId);
 
+    @Query("select (a.userAccount.id = ?2) from Article a where a.id = ?1")
     boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
     @EntityGraph(attributePaths = {"userAccount", "articleFile"}, type = LOAD)

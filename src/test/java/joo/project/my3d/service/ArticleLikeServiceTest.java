@@ -37,7 +37,7 @@ class ArticleLikeServiceTest {
     ArticleRepository articleRepository;
 
     @Mock
-    UserAccountService userAccountService;
+    UserAccountRepository userAccountRepository;
 
     @DisplayName("좋아요 추가")
     @Test
@@ -51,7 +51,7 @@ class ArticleLikeServiceTest {
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        given(userAccountService.searchUserEntity(anyLong())).willReturn(articleLike.getUserAccount());
+        given(userAccountRepository.getReferenceById(anyLong())).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
         given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When

@@ -14,7 +14,6 @@ import joo.project.my3d.dto.response.ArticleDetailResponse;
 import joo.project.my3d.exception.ArticleException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.ArticleRepository;
-import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,12 +129,12 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public boolean isExistsArticleByUserAccountId(Long articleId, Long userAccountId) {
+    public boolean isExistsByArticleIdAndUserAccountId(Long articleId, Long userAccountId) {
         return articleRepository.existsByIdAndUserAccountId(articleId, userAccountId);
     }
 
     private void equalsRequestUserAndWriter(Long articleId, Long userAccountId) {
-        if (!isExistsArticleByUserAccountId(articleId, userAccountId)) {
+        if (!isExistsByArticleIdAndUserAccountId(articleId, userAccountId)) {
             log.error("작성자와 요청자가 다릅니다. articleId: {}, userAccountId: {}", articleId, userAccountId);
             throw new ArticleException(ErrorCode.NOT_WRITER);
         }

@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.servlet.http.Cookie;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -47,7 +46,8 @@ class ArticleLikeApiTest {
     void addArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsArticleByUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(false);
         given(articleLikeService.addArticleLike(anyLong(), anyLong())).willReturn(0);
         // When
         mvc.perform(post("/api/v1/articles/" + articleId + "/like")
@@ -65,7 +65,8 @@ class ArticleLikeApiTest {
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsArticleByUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(true);
         given(articleLikeService.deleteArticleLike(anyLong(), anyLong())).willReturn(1);
         // When
         mvc.perform(delete("/api/v1/articles/" + articleId + "/like")

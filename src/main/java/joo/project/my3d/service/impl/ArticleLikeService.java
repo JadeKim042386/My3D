@@ -22,7 +22,7 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
 
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
-    private final UserAccountServiceInterface userAccountService;
+    private final UserAccountRepository userAccountRepository;
 
     @Override
     public boolean addedLike(Long articleId, Long userAccountId) {
@@ -42,7 +42,7 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     public int addArticleLike(Long articleId, Long userAccountId) {
         try {
             articleLikeRepository.save(ArticleLike.of(
-                    userAccountService.searchUserEntity(userAccountId),
+                    userAccountRepository.getReferenceById(userAccountId),
                     articleRepository.getReferenceById(articleId)));
             articleRepository.addArticleLikeCount();
             return getLikeCountByArticleId(articleId);
