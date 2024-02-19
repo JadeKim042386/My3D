@@ -54,7 +54,7 @@ class ArticleCommentServiceTest {
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(isNull(), any(), any());
+        willDoNothing().given(alarmService).send(any(), isNull(), any(), any());
         // When
         articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then
@@ -88,7 +88,7 @@ class ArticleCommentServiceTest {
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
         given(articleCommentRepository.getReferenceById(anyLong())).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(isNull(), any(), any());
+        willDoNothing().given(alarmService).send(any(), isNull(), any(), any());
         // When
         articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then

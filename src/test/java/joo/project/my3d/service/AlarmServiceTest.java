@@ -58,7 +58,7 @@ class AlarmServiceTest {
         given(alarmRepository.save(any())).willReturn(alarm);
         given(emitterRepository.get(anyString())).willReturn(Optional.of(sseEmitter));
         // When
-        alarmService.send(targetId, sender, receiver);
+        alarmService.send(Fixture.getArticle(), targetId, sender, receiver);
         // Then
     }
 
@@ -72,7 +72,7 @@ class AlarmServiceTest {
         given(alarmRepository.save(any())).willReturn(Fixture.getAlarm(sender, receiver));
         given(emitterRepository.get(anyString())).willReturn(Optional.empty());
         // When
-        alarmService.send(targetId, sender, receiver);
+        alarmService.send(Fixture.getArticle(), targetId, sender, receiver);
         // Then
     }
 

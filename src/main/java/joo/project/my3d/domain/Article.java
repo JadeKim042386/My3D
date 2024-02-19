@@ -36,6 +36,10 @@ public class Article extends AuditingAt implements Persistable<Long> {
     @OneToMany(mappedBy = "article", orphanRemoval = true)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    private final Set<Alarm> alarms = new LinkedHashSet<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include

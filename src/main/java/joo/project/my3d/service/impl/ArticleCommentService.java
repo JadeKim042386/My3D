@@ -1,5 +1,6 @@
 package joo.project.my3d.service.impl;
 
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.ArticleCommentDto;
@@ -36,15 +37,16 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
     @Override
     public ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount commentWriter, UserAccount articleWriter) {
         try {
+            Article article = articleRepository.getReferenceById(dto.articleId());
             ArticleComment articleComment =
-                    dto.toEntity(articleRepository.getReferenceById(dto.articleId()), commentWriter);
+                    dto.toEntity(article, commentWriter);
             if (dto.parentCommentId() != null) {
                 ArticleComment parentComment = articleCommentRepository.getReferenceById(dto.parentCommentId());
                 parentComment.addChildComment(articleComment);
             } else {
                 articleCommentRepository.save(articleComment);
             }
-            alarmService.send(articleComment.getId(), commentWriter, articleWriter);
+            alarmService.send(article, articleComment.getId(), commentWriter, articleWriter);
             return ArticleCommentDto.from(articleComment);
         } catch (EntityNotFoundException e) {
             throw new CommentException(ErrorCode.DATA_FOR_COMMENT_NOT_FOUND, e);

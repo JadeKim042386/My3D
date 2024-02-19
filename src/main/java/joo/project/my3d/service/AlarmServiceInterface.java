@@ -1,6 +1,7 @@
 package joo.project.my3d.service;
 
 import joo.project.my3d.domain.Alarm;
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.AlarmDto;
 
@@ -15,7 +16,7 @@ public interface AlarmServiceInterface<T> {
     /**
      * 알람 전송
      */
-    void send(Long targetId, UserAccount sender, UserAccount receiver);
+    void send(Article article, Long targetId, UserAccount sender, UserAccount receiver);
 
     /**
      * 특정 유저와의 연결 시도
@@ -30,5 +31,5 @@ public interface AlarmServiceInterface<T> {
     /**
      * 알람 저장
      */
-    Alarm saveAlarm(Long targetId, UserAccount sender, UserAccount receiver);
+    Alarm saveAlarm(Long targetId, Article article, UserAccount sender, UserAccount receiver);
 }

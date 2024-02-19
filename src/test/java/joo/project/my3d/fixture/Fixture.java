@@ -83,12 +83,9 @@ public class Fixture {
         return Dimension.of(dimensionOption, "너비", 10.0f, DimUnit.MM);
     }
 
-    public static Company getCompany() {
-        return Company.of("company", "homepage");
-    }
-
     public static Alarm getAlarm(UserAccount sender, UserAccount receiver) {
-        return Alarm.of(AlarmType.NEW_COMMENT, 1L, false, sender, receiver);
+        Article article = Fixture.getArticle();
+        return Alarm.of(AlarmType.NEW_COMMENT, 1L, false, article, sender, receiver);
     }
 
     public static ArticleFormRequest getArticleFormRequest() throws IllegalAccessException {

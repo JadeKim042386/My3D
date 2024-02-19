@@ -25,12 +25,12 @@ public record AlarmDto(
         return new AlarmDto(id, alarmType, fromUserNickname, articleId, isChecked, createdAt, modifiedAt);
     }
 
-    public static AlarmDto from(Alarm alarm, Long articleId) {
+    public static AlarmDto from(Alarm alarm) {
         return AlarmDto.of(
                 alarm.getId(),
                 alarm.getAlarmType(),
                 alarm.getSender().getNickname(),
-                articleId,
+                alarm.getArticle().getId(),
                 alarm.isChecked(),
                 alarm.getCreatedAt(),
                 alarm.getModifiedAt());

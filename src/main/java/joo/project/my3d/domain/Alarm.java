@@ -36,6 +36,11 @@ public class Alarm extends AuditingAt implements Persistable<Long> {
 
     @ToString.Exclude
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "articleId")
+    private Article article;
+
+    @ToString.Exclude
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "senderId")
     private UserAccount sender; // 알람을 받는 유저
 
@@ -46,17 +51,18 @@ public class Alarm extends AuditingAt implements Persistable<Long> {
 
     protected Alarm() {}
 
-    private Alarm(AlarmType alarmType, Long targetId, boolean isChecked, UserAccount sender, UserAccount receiver) {
+    private Alarm(AlarmType alarmType, Long targetId, boolean isChecked, Article article, UserAccount sender, UserAccount receiver) {
         this.alarmType = alarmType;
         this.sender = sender;
         this.targetId = targetId;
+        this.article = article;
         this.isChecked = isChecked;
         this.receiver = receiver;
     }
 
     public static Alarm of(
-            AlarmType alarmType, Long targetId, boolean isChecked, UserAccount sender, UserAccount receiver) {
-        return new Alarm(alarmType, targetId, isChecked, sender, receiver);
+            AlarmType alarmType, Long targetId, boolean isChecked, Article article, UserAccount sender, UserAccount receiver) {
+        return new Alarm(alarmType, targetId, isChecked, article, sender, receiver);
     }
 
     @Override
