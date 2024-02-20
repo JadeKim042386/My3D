@@ -1,9 +1,20 @@
 package joo.project.my3d.service;
 
+import joo.project.my3d.domain.ArticleComment;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.dto.ArticleCommentDto;
 
 public interface ArticleCommentServiceInterface {
+    /**
+     * 댓글 조회
+     */
+    ArticleComment searchComment(Long commentId);
+
+    /**
+     * 대댓글 포함 댓글 조회
+     */
+    ArticleComment searchCommentWithChildComments(Long commentId);
+
     /**
      * 댓글 저장
      */

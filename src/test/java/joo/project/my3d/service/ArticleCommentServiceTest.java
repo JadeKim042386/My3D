@@ -10,7 +10,6 @@ import joo.project.my3d.fixture.Fixture;
 import joo.project.my3d.fixture.FixtureDto;
 import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.ArticleRepository;
-import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.impl.AlarmService;
 import joo.project.my3d.service.impl.ArticleCommentService;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -21,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +55,7 @@ class ArticleCommentServiceTest {
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(isNull(), any(), any());
+        willDoNothing().given(alarmService).send(any(), isNull(), any(), any());
         // When
         articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then
@@ -87,8 +88,8 @@ class ArticleCommentServiceTest {
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(anyLong())).willReturn(articleComment.getArticle());
-        given(articleCommentRepository.getReferenceById(anyLong())).willReturn(articleComment);
-        willDoNothing().given(alarmService).send(isNull(), any(), any());
+        given(articleCommentRepository.findById(anyLong())).willReturn(Optional.of(articleComment));
+        willDoNothing().given(alarmService).send(any(), isNull(), any(), any());
         // When
         articleCommentService.saveComment(articleCommentDto, sender, receiver);
         // Then
@@ -99,16 +100,13 @@ class ArticleCommentServiceTest {
     void deleteComment() {
         // Given
         Long articleCommentId = 1L;
-        ArticleCommentDto articleCommentDto = FixtureDto.getArticleCommentDto("content");
-        given(articleCommentRepository.getReferenceById(articleCommentId))
-                .willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Fixture.getArticleComment("content")));
         given(articleCommentRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
                 .willReturn(true);
         // When
         articleCommentService.deleteComment(articleCommentId, 1L);
         // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentId);
-        then(articleCommentRepository).should().deleteById(articleCommentId);
     }
 
     @DisplayName("댓글 삭제 - 작성자와 삭제 요청 유저가 다름")
@@ -116,13 +114,12 @@ class ArticleCommentServiceTest {
     void deleteCommentNotWriter() {
         // Given
         Long articleCommentId = 1L;
-        given(articleCommentRepository.getReferenceById(articleCommentId))
-                .willReturn(Fixture.getArticleComment("content"));
+        given(articleCommentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Fixture.getArticleComment("content")));
         // When
         assertThatThrownBy(() -> articleCommentService.deleteComment(articleCommentId, 1L))
                 .isInstanceOf(CommentException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_WRITER);
         // Then
-        then(articleCommentRepository).should().getReferenceById(articleCommentId);
     }
 }

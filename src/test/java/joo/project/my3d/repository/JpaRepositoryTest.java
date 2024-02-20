@@ -2,7 +2,6 @@ package joo.project.my3d.repository;
 
 import joo.project.my3d.config.TestJpaConfig;
 import joo.project.my3d.domain.*;
-import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.DimUnit;
 import joo.project.my3d.domain.constant.UserRole;
 import joo.project.my3d.fixture.Fixture;
@@ -636,7 +635,7 @@ public class JpaRepositoryTest {
 
         @DisplayName("알람 save")
         @Test
-        void saveAlarm() {
+        void saveAlarm() throws IllegalAccessException {
             // Given
             Long senderId = 3L;
             Long receiverId = 3L;

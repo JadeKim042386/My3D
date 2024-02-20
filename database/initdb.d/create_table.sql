@@ -114,12 +114,14 @@ CREATE TABLE `alarm` (
     `alarm_type` varchar(50) NOT NULL,
     `target_id` bigint NOT NULL,
     `is_checked` boolean DEFAULT false NOT NULL,
+    `article_id` bigint NOT NULL,
     `sender_id` bigint NOT NULL,
     `receiver_id` bigint NOT NULL,
     `created_at`	datetime	DEFAULT CURRENT_TIMESTAMP   NOT NULL,
     `modified_at`	datetime	NOT NULL,
     PRIMARY KEY (`id`),
     INDEX receiver_idx (receiver_id),
+    FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
     FOREIGN KEY (`sender_id`) REFERENCES `user_account` (`id`),
     FOREIGN KEY (`receiver_id`) REFERENCES `user_account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='알람';

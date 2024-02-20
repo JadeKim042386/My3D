@@ -1,7 +1,6 @@
 package joo.project.my3d.domain;
 
 import joo.project.my3d.domain.auditing.AuditingAt;
-import joo.project.my3d.domain.auditing.AuditingFields;
 import joo.project.my3d.domain.constant.ArticleCategory;
 import joo.project.my3d.domain.constant.ArticleType;
 import lombok.EqualsAndHashCode;
@@ -35,6 +34,10 @@ public class Article extends AuditingAt implements Persistable<Long> {
     @ToString.Exclude
     @OneToMany(mappedBy = "article", orphanRemoval = true)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    private final Set<Alarm> alarms = new LinkedHashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

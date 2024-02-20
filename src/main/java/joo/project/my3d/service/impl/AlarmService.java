@@ -1,14 +1,13 @@
 package joo.project.my3d.service.impl;
 
 import joo.project.my3d.domain.Alarm;
+import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.exception.AlarmException;
-import joo.project.my3d.exception.CommentException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
-import joo.project.my3d.repository.ArticleCommentRepository;
 import joo.project.my3d.repository.EmitterRepository;
 import joo.project.my3d.service.AlarmServiceInterface;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +29,11 @@ public class AlarmService implements AlarmServiceInterface<SseEmitter> {
     private static final String ALARM_NAME = "alarm";
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
-    private final ArticleCommentRepository articleCommentRepository;
 
     @Override
     public List<AlarmDto> getAlarms(Long receiverId) {
         return alarmRepository.findAllByReceiverId(receiverId).stream()
-                .map(alarm -> AlarmDto.from(alarm, getArticleId(alarm)))
+                .map(AlarmDto::from)
                 .sorted(Comparator.comparing(AlarmDto::createdAt).reversed())
                 .toList();
     }
@@ -46,8 +44,8 @@ public class AlarmService implements AlarmServiceInterface<SseEmitter> {
      */
     @Transactional
     @Override
-    public void send(Long targetId, UserAccount sender, UserAccount receiver) {
-        Long alarmId = saveAlarm(targetId, sender, receiver).getId();
+    public void send(Article article, Long targetId, UserAccount sender, UserAccount receiver) {
+        Long alarmId = saveAlarm(targetId, article, sender, receiver).getId();
         emitterRepository
                 .get(receiver.getEmail())
                 .ifPresentOrElse(
@@ -93,19 +91,7 @@ public class AlarmService implements AlarmServiceInterface<SseEmitter> {
 
     @Transactional
     @Override
-    public Alarm saveAlarm(Long targetId, UserAccount sender, UserAccount receiver) {
-        return alarmRepository.save(Alarm.of(AlarmType.NEW_COMMENT, targetId, false, sender, receiver));
-    }
-
-    /**
-     * 알람이 발생한 게시글 id를 조회합니다. 알람을 통해 게시글로 이동하기 위해 필요합니다.
-     */
-    private Long getArticleId(Alarm alarm) {
-        if (alarm.getAlarmType() == AlarmType.NEW_COMMENT) {
-            return articleCommentRepository
-                    .findArticleIdById(alarm.getTargetId())
-                    .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-        }
-        throw new AlarmException(ErrorCode.INVALID_REQUEST);
+    public Alarm saveAlarm(Long targetId, Article article, UserAccount sender, UserAccount receiver) {
+        return alarmRepository.save(Alarm.of(AlarmType.NEW_COMMENT, targetId, false, article, sender, receiver));
     }
 }

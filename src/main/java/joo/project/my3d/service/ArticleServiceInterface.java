@@ -42,7 +42,7 @@ public interface ArticleServiceInterface {
     void deleteArticle(Long articleId, Long userAccountId);
 
     /**
-     * 게시글 작성자인지 확인
+     * articleId에 해당하는 article의 작성자가 userAccountId인지 확인
      */
-    boolean isExistsArticleByUserAccountId(Long articleId, Long userAccountId);
+    boolean isExistsByArticleIdAndUserAccountId(Long articleId, Long userAccountId);
 }

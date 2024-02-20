@@ -1,12 +1,9 @@
 package joo.project.my3d.domain;
 
-import joo.project.my3d.domain.auditing.AuditingAt;
-import joo.project.my3d.domain.auditing.AuditingFields;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;

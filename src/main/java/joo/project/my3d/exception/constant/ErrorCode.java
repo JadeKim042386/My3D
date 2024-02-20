@@ -20,6 +20,8 @@ public enum ErrorCode {
     // Article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
     NOT_WRITER(HttpStatus.UNAUTHORIZED, "작성자와 요청 유저가 일치하지 않습니다."),
+    // Like
+    ALREADY_LIKE_ADD_OR_DELETE(HttpStatus.BAD_REQUEST, "이미 좋아요를 추가했거나 삭제했습니다."),
     // File
     FILE_CANT_SAVE(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 저장 할 수 없습니다. 파일 경로를 다시 확인해주세요."),
     FILE_CANT_READ(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 읽을 수 없습니다."),

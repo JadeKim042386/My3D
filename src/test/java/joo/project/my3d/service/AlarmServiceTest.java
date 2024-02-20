@@ -58,13 +58,13 @@ class AlarmServiceTest {
         given(alarmRepository.save(any())).willReturn(alarm);
         given(emitterRepository.get(anyString())).willReturn(Optional.of(sseEmitter));
         // When
-        alarmService.send(targetId, sender, receiver);
+        alarmService.send(Fixture.getArticle(), targetId, sender, receiver);
         // Then
     }
 
     @DisplayName("알람 전송 - 연결 실패")
     @Test
-    void sendAlarmFailed() {
+    void sendAlarmFailed() throws IllegalAccessException {
         // Given
         UserAccount sender = Fixture.getUserAccount();
         UserAccount receiver = Fixture.getUserAccount();
@@ -72,7 +72,7 @@ class AlarmServiceTest {
         given(alarmRepository.save(any())).willReturn(Fixture.getAlarm(sender, receiver));
         given(emitterRepository.get(anyString())).willReturn(Optional.empty());
         // When
-        alarmService.send(targetId, sender, receiver);
+        alarmService.send(Fixture.getArticle(), targetId, sender, receiver);
         // Then
     }
 

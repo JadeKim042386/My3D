@@ -17,8 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
 
@@ -50,7 +48,7 @@ class ArticleLikeServiceTest {
         Alarm alarm = Fixture.getAlarm(sender, receiver);
         FieldUtils.writeField(alarm, "id", 1L, true);
         given(articleRepository.getReferenceById(articleId)).willReturn(articleLike.getArticle());
-        given(userAccountRepository.findById(anyLong())).willReturn(Optional.of(articleLike.getUserAccount()));
+        given(userAccountRepository.getReferenceById(anyLong())).willReturn(articleLike.getUserAccount());
         given(articleLikeRepository.save(any(ArticleLike.class))).willReturn(articleLike);
         given(articleLikeRepository.countByArticleId(anyLong())).willReturn(1);
         // When

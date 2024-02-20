@@ -7,7 +7,6 @@ import joo.project.my3d.repository.ArticleLikeRepository;
 import joo.project.my3d.repository.ArticleRepository;
 import joo.project.my3d.repository.UserAccountRepository;
 import joo.project.my3d.service.ArticleLikeServiceInterface;
-import joo.project.my3d.service.UserAccountServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
 
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
-    private final UserAccountServiceInterface userAccountService;
+    private final UserAccountRepository userAccountRepository;
 
     @Override
     public boolean addedLike(Long articleId, Long userAccountId) {
@@ -42,7 +41,7 @@ public class ArticleLikeService implements ArticleLikeServiceInterface {
     public int addArticleLike(Long articleId, Long userAccountId) {
         try {
             articleLikeRepository.save(ArticleLike.of(
-                    userAccountService.searchUserEntity(userAccountId),
+                    userAccountRepository.getReferenceById(userAccountId),
                     articleRepository.getReferenceById(articleId)));
             articleRepository.addArticleLikeCount();
             return getLikeCountByArticleId(articleId);
