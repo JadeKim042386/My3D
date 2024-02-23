@@ -30,7 +30,7 @@
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white) ![S3](https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white) ![RDS](https://img.shields.io/badge/Amazon%20RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white) |
 | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)                                                                                                                                                                                                                                 |
-|   ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 | 자동 배포화                                                                                                                                                                                                                                                             | 
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -68,7 +68,7 @@
     WAS ->> WAS: validation
     WAS ->> DB: 유저 정보 저장
     WAS ->> WAS: JWT 토큰 생성
-    WAS -->>- client: 
+    WAS -->>- client: JWT 토큰 전달
     client ->> client: 홈페이지 redirect 
     deactivate client
 ```
@@ -85,9 +85,9 @@ sequenceDiagram
     activate WAS
     DB -->>- WAS: 유저 정보 반환
     WAS ->> WAS: 비밀번호 일치 확인
-    WAS ->> WAS: JWT 토큰 생성
-    WAS -->>- client: 
-    client ->> client: 로그인 이전 페이지로 이동
+    WAS ->> WAS: JWT 토큰, Refresh Token 생성
+    WAS -->>- client: Token 전달
+    client ->> client: 홈페이지로 이동
     deactivate client
 ```
 
@@ -102,14 +102,21 @@ sequenceDiagram
     activate WAS
     WAS ->> WAS: JWT 토큰 확인
     alt JWT 토큰이 유효한 경우
-        WAS ->>+ DB: 유저 정보 요청
-        DB -->>- WAS: 유저 정보 반환
-        WAS ->> WAS: Authentication 저장
+        WAS ->> WAS: 토큰 정보로 UserDetail 객체 생성
+        WAS ->> WAS: Authentication
         WAS -->> client: 인증 완료
+    else JWT 토큰이 만료된 경우
+        WAS ->> WAS: Refresh Token parsing & validation
+        alt Refresh Token이 유효한 경우
+            WAS ->> WAS: JWT 재발행
+            WAS ->> WAS: Authentication
+            WAS -->> client: 재발행된 JWT 토큰 전달
+        else Refresh Token이 유효하지않은 경우
+            WAS ->> client: 로그인 페이지 이동
+        end
     else JWT 토큰이 유효하지않은 경우
-        WAS -->> client: 
+        WAS -->> client: 로그인 페이지 이동
         deactivate WAS
-        client ->> client: 로그인 페이지 이동
         deactivate client
     end
 ```
