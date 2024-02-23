@@ -183,8 +183,7 @@ class ArticleServiceTest {
         // Given
         Article savedArticle = Fixture.getArticle();
         FieldUtils.writeField(savedArticle, "id", 1L, true);
-        given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
-                .willReturn(Optional.of(savedArticle));
+        given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong())).willReturn(Optional.of(savedArticle));
         willDoNothing().given(articleFileService).updateArticleFile(any(), any());
         // When
         articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 1L);
@@ -218,8 +217,7 @@ class ArticleServiceTest {
         given(articleRepository.findByIdAndUserAccountId(anyLong(), anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
-        assertThatThrownBy(
-                        () -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 2L))
+        assertThatThrownBy(() -> articleService.updateArticle(Fixture.getArticleFormRequest(), 1L, 2L))
                 .isInstanceOf(ArticleException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ARTICLE_NOT_FOUND);
         // Then
@@ -233,7 +231,8 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle();
         Long articleId = 1L;
         Long userAccountId = 1L;
-        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(true);
         given(articleRepository.findByIdFetchAll(anyLong())).willReturn(Optional.of(article));
         willDoNothing().given(articleFileService).deleteFile(anyLong());
         willDoNothing().given(articleRepository).delete(any());
@@ -249,7 +248,8 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         Long userAccountId = 1L;
-        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(true);
         given(articleRepository.findByIdFetchAll(anyLong()))
                 .willThrow(new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
         // When
@@ -266,7 +266,8 @@ class ArticleServiceTest {
         // Given
         Long articleId = 1L;
         Long userAccountId = 1L;
-        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(false);
         // When
         assertThatThrownBy(() -> articleService.deleteArticle(articleId, userAccountId))
                 .isInstanceOf(ArticleException.class)
@@ -282,7 +283,8 @@ class ArticleServiceTest {
         Article article = Fixture.getArticle();
         Long articleId = 1L;
         Long userAccountId = 1L;
-        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong())).willReturn(true);
+        given(articleRepository.existsByIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(true);
         given(articleRepository.findByIdFetchAll(anyLong())).willReturn(Optional.of(article));
         willThrow(new FileException(ErrorCode.FAILED_DELETE))
                 .given(articleFileService)

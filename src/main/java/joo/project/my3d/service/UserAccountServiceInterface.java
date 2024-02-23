@@ -12,6 +12,7 @@ public interface UserAccountServiceInterface {
     UserAccountDto searchUserDto(String email);
 
     UserAccount searchUserEntity(String email);
+
     UserAccount searchUserEntity(Long userAccountId);
 
     UserAccount searchUserEntityByArticleId(Long articleId);

@@ -206,7 +206,8 @@ public class JpaRepositoryTest {
             // Given
             Long userAccountId = 1L;
             String modified_phone = "01043214321";
-            UserAccount userAccount = userAccountRepository.findById(userAccountId).get();
+            UserAccount userAccount =
+                    userAccountRepository.findById(userAccountId).get();
             userAccount.setPhone(modified_phone);
             LocalDateTime previousModifiedAt = userAccount.getModifiedAt();
             // When
@@ -231,7 +232,9 @@ public class JpaRepositoryTest {
             log.info("previousArticleCommentCount: {}", previousArticleCommentCount);
             log.info("previousLikeCount: {}", previousLikeCount);
             // When
-            articleRepository.findAll().stream().filter(article -> article.getUserAccount().getEmail().equals(email)).forEach(Article::deleteAll);
+            articleRepository.findAll().stream()
+                    .filter(article -> article.getUserAccount().getEmail().equals(email))
+                    .forEach(Article::deleteAll);
             UserAccount userAccount =
                     userAccountRepository.findById(userAccountId).get();
             userAccount.getArticleComments().clear();

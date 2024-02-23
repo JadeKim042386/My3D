@@ -33,60 +33,50 @@ public interface ArticleRepository
     /**
      * 수정자와 작성자가 동일할 경우에만 반환
      */
-    @Query(
-            "select distinct a " +
-            "from Article a " +
-            "left outer join fetch a.articleFile af " +
-            "left outer join fetch af.dimensionOption do " +
-            "left outer join fetch do.dimensions " +
-            "where a.id = ?1"
-    )
+    @Query("select distinct a " + "from Article a "
+            + "left outer join fetch a.articleFile af "
+            + "left outer join fetch af.dimensionOption do "
+            + "left outer join fetch do.dimensions "
+            + "where a.id = ?1")
     Optional<Article> findByIdAndUserAccountId(Long articleId, Long userAccountId);
 
     @Query("select (a.userAccount.id = ?2) from Article a where a.id = ?1")
     boolean existsByIdAndUserAccountId(Long articleId, Long userAccountId);
 
-    @EntityGraph(attributePaths = {"userAccount", "articleFile"}, type = LOAD)
+    @EntityGraph(
+            attributePaths = {"userAccount", "articleFile"},
+            type = LOAD)
     Page<Article> findAll(Predicate predicate, Pageable pageable);
 
-    @Query(
-            "select distinct a " +
-            "from Article a " +
-            "left outer join fetch a.userAccount ua " +
-            "left outer join fetch a.articleFile af " +
-            "left outer join fetch af.dimensionOption do " +
-            "left outer join fetch do.dimensions " +
-            "where a.id = ?1"
-    )
+    @Query("select distinct a " + "from Article a "
+            + "left outer join fetch a.userAccount ua "
+            + "left outer join fetch a.articleFile af "
+            + "left outer join fetch af.dimensionOption do "
+            + "left outer join fetch do.dimensions "
+            + "where a.id = ?1")
     Optional<Article> findByIdFetchForm(Long id);
 
-    @Query(
-            "select distinct a " +
-            "from Article a " +
-            "left outer join fetch a.userAccount ua " +
-            "left outer join fetch a.articleFile af " +
-            "left outer join fetch af.dimensionOption do " +
-            "left outer join fetch do.dimensions " +
-            "left outer join fetch a.articleComments ac " +
-            "left outer join fetch ac.userAccount " +
-            "where a.id = ?1"
-    )
+    @Query("select distinct a " + "from Article a "
+            + "left outer join fetch a.userAccount ua "
+            + "left outer join fetch a.articleFile af "
+            + "left outer join fetch af.dimensionOption do "
+            + "left outer join fetch do.dimensions "
+            + "left outer join fetch a.articleComments ac "
+            + "left outer join fetch ac.userAccount "
+            + "where a.id = ?1")
     Optional<Article> findByIdFetchDetail(Long id);
 
-    @Query(
-            "select distinct a " +
-            "from Article a " +
-            "left outer join fetch a.userAccount ua " +
-            "left outer join fetch a.articleFile af " +
-            "left outer join fetch af.dimensionOption do " +
-            "left outer join fetch do.dimensions " +
-            "left outer join fetch a.articleComments ac " +
-            "left outer join fetch ac.childComments " +
-            "left outer join fetch ac.userAccount " +
-            "left outer join fetch a.articleLikes " +
-            "left outer join fetch a.alarms " +
-            "where a.id = ?1"
-    )
+    @Query("select distinct a " + "from Article a "
+            + "left outer join fetch a.userAccount ua "
+            + "left outer join fetch a.articleFile af "
+            + "left outer join fetch af.dimensionOption do "
+            + "left outer join fetch do.dimensions "
+            + "left outer join fetch a.articleComments ac "
+            + "left outer join fetch ac.childComments "
+            + "left outer join fetch ac.userAccount "
+            + "left outer join fetch a.articleLikes "
+            + "left outer join fetch a.alarms "
+            + "where a.id = ?1")
     Optional<Article> findByIdFetchAll(Long id);
 
     @Modifying

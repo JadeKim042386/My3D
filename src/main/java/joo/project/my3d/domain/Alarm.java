@@ -51,7 +51,13 @@ public class Alarm extends AuditingAt implements Persistable<Long> {
 
     protected Alarm() {}
 
-    private Alarm(AlarmType alarmType, Long targetId, boolean isChecked, Article article, UserAccount sender, UserAccount receiver) {
+    private Alarm(
+            AlarmType alarmType,
+            Long targetId,
+            boolean isChecked,
+            Article article,
+            UserAccount sender,
+            UserAccount receiver) {
         this.alarmType = alarmType;
         this.sender = sender;
         this.targetId = targetId;
@@ -61,7 +67,12 @@ public class Alarm extends AuditingAt implements Persistable<Long> {
     }
 
     public static Alarm of(
-            AlarmType alarmType, Long targetId, boolean isChecked, Article article, UserAccount sender, UserAccount receiver) {
+            AlarmType alarmType,
+            Long targetId,
+            boolean isChecked,
+            Article article,
+            UserAccount sender,
+            UserAccount receiver) {
         return new Alarm(alarmType, targetId, isChecked, article, sender, receiver);
     }
 

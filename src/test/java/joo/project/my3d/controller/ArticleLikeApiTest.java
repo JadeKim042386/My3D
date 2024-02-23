@@ -46,7 +46,8 @@ class ArticleLikeApiTest {
     void addArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(false);
         given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(false);
         given(articleLikeService.addArticleLike(anyLong(), anyLong())).willReturn(0);
         // When
@@ -65,7 +66,8 @@ class ArticleLikeApiTest {
     void deleteArticleLike() throws Exception {
         // Given
         Long articleId = 1L;
-        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong())).willReturn(false);
+        given(articleService.isExistsByArticleIdAndUserAccountId(anyLong(), anyLong()))
+                .willReturn(false);
         given(articleLikeService.addedLike(anyLong(), anyLong())).willReturn(true);
         given(articleLikeService.deleteArticleLike(anyLong(), anyLong())).willReturn(1);
         // When

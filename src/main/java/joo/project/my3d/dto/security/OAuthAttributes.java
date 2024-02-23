@@ -44,8 +44,8 @@ public class OAuthAttributes {
 
     @SuppressWarnings("unchecked")
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-        Map<String, Object> response = (Map<String, Object>) Optional.of(attributes.get("response"))
-                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
+        Map<String, Object> response = (Map<String, Object>)
+                Optional.of(attributes.get("response")).orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
 
         return OAuthAttributes.of(
                 (String) response.get("name"),
@@ -59,8 +59,8 @@ public class OAuthAttributes {
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) Optional.of(attributes.get("kakao_account"))
                 .orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
-        Map<String, Object> account = (Map<String, Object>) Optional.of(response.get("profile"))
-                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
+        Map<String, Object> account = (Map<String, Object>)
+                Optional.of(response.get("profile")).orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
 
         return OAuthAttributes.of(
                 (String) account.get("nickname"),

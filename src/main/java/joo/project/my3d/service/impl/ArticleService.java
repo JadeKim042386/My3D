@@ -67,8 +67,7 @@ public class ArticleService implements ArticleServiceInterface {
         return articleRepository
                 .findByIdFetchDetail(articleId)
                 .map(article -> ArticleDetailResponse.of(
-                        ArticleWithCommentsDto.from(article),
-                        articleLikeService.addedLike(articleId, userAccountId)))
+                        ArticleWithCommentsDto.from(article), articleLikeService.addedLike(articleId, userAccountId)))
                 .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
@@ -115,7 +114,8 @@ public class ArticleService implements ArticleServiceInterface {
         try {
             // 작성자와 삭제를 요청한 유저가 같은지 확인
             equalsRequestUserAndWriter(articleId, userAccountId);
-            Article article = articleRepository.findByIdFetchAll(articleId)
+            Article article = articleRepository
+                    .findByIdFetchAll(articleId)
                     .orElseThrow(() -> new ArticleException(ErrorCode.ARTICLE_NOT_FOUND));
             // 파일 삭제
             articleFileService.deleteFile(articleId);

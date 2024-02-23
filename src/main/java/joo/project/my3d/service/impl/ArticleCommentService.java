@@ -31,13 +31,15 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
 
     @Override
     public ArticleComment searchComment(Long commentId) {
-        return articleCommentRepository.findById(commentId)
+        return articleCommentRepository
+                .findById(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
     @Override
     public ArticleComment searchCommentWithChildComments(Long commentId) {
-        return articleCommentRepository.findByFetchChildComments(commentId)
+        return articleCommentRepository
+                .findByFetchChildComments(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
@@ -50,8 +52,7 @@ public class ArticleCommentService implements ArticleCommentServiceInterface {
     public ArticleCommentDto saveComment(ArticleCommentDto dto, UserAccount commentWriter, UserAccount articleWriter) {
         try {
             Article article = articleRepository.getReferenceById(dto.articleId());
-            ArticleComment articleComment =
-                    dto.toEntity(article, commentWriter);
+            ArticleComment articleComment = dto.toEntity(article, commentWriter);
             if (dto.parentCommentId() != null) {
                 searchComment(dto.parentCommentId()).addChildComment(articleComment);
             } else {

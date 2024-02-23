@@ -138,8 +138,7 @@ public class TokenProvider {
     }
 
     private String getSpec(Map<String, String> decoded) {
-        return Optional.of(decoded.get(KEY_SPEC))
-                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
+        return Optional.of(decoded.get(KEY_SPEC)).orElseThrow(() -> new AuthException(ErrorCode.INVALID_REQUEST));
     }
 
     private Key getKey(String key) {
