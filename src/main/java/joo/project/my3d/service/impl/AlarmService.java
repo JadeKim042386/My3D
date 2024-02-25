@@ -5,6 +5,7 @@ import joo.project.my3d.domain.Article;
 import joo.project.my3d.domain.UserAccount;
 import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.AlarmDto;
+import joo.project.my3d.dto.response.AlarmResponse;
 import joo.project.my3d.exception.AlarmException;
 import joo.project.my3d.exception.constant.ErrorCode;
 import joo.project.my3d.repository.AlarmRepository;
@@ -45,16 +46,16 @@ public class AlarmService implements AlarmServiceInterface<SseEmitter> {
     @Transactional
     @Override
     public void send(Article article, Long targetId, UserAccount sender, UserAccount receiver) {
-        Long alarmId = saveAlarm(targetId, article, sender, receiver).getId();
+        Alarm alarm = saveAlarm(targetId, article, sender, receiver);
         emitterRepository
                 .get(receiver.getEmail())
                 .ifPresentOrElse(
                         sseEmitter -> {
                             try {
                                 sseEmitter.send(SseEmitter.event()
-                                        .id(String.valueOf(alarmId))
+                                        .id(String.valueOf(alarm.getId()))
                                         .name(ALARM_NAME)
-                                        .data("new alarm"));
+                                        .data(AlarmResponse.fromEntity(alarm)));
                             } catch (IOException e) {
                                 emitterRepository.delete(receiver.getEmail());
                                 throw new AlarmException(ErrorCode.ALARM_CONNECT_ERROR, e);

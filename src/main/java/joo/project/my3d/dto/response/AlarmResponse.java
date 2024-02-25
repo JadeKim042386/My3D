@@ -1,5 +1,6 @@
 package joo.project.my3d.dto.response;
 
+import joo.project.my3d.domain.Alarm;
 import joo.project.my3d.domain.constant.AlarmType;
 import joo.project.my3d.dto.AlarmDto;
 import joo.project.my3d.utils.LocalDateTimeUtils;
@@ -11,7 +12,6 @@ public record AlarmResponse(
         AlarmType alarmType,
         String fromUserNickname,
         Long articleId,
-        String text,
         boolean isChecked,
         String createdAt,
         String modifiedAt) {
@@ -21,7 +21,6 @@ public record AlarmResponse(
             AlarmType alarmType,
             String fromUserNickname,
             Long targetId,
-            String text,
             boolean isChecked,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt) {
@@ -30,21 +29,30 @@ public record AlarmResponse(
                 alarmType,
                 fromUserNickname,
                 targetId,
-                text,
                 isChecked,
                 LocalDateTimeUtils.passedTime(createdAt),
                 LocalDateTimeUtils.passedTime(modifiedAt));
     }
 
-    public static AlarmResponse from(AlarmDto dto) {
+    public static AlarmResponse fromDto(AlarmDto dto) {
         return AlarmResponse.of(
                 dto.id(),
                 dto.alarmType(),
                 dto.fromUserNickname(),
                 dto.articleId(),
-                dto.alarmType().getAlarmText(),
                 dto.isChecked(),
                 dto.createdAt(),
                 dto.modifiedAt());
+    }
+
+    public static AlarmResponse fromEntity(Alarm alarm) {
+        return AlarmResponse.of(
+                alarm.getId(),
+                alarm.getAlarmType(),
+                alarm.getSender().getNickname(),
+                alarm.getArticle().getId(),
+                alarm.isChecked(),
+                alarm.getCreatedAt(),
+                alarm.getModifiedAt());
     }
 }

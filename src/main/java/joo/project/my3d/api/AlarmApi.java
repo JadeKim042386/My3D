@@ -28,7 +28,7 @@ public class AlarmApi {
     @GetMapping
     public ResponseEntity<List<AlarmResponse>> getAlarms(@AuthenticationPrincipal BoardPrincipal boardPrincipal) {
         return ResponseEntity.ok(alarmService.getAlarms(boardPrincipal.id()).stream()
-                .map(AlarmResponse::from)
+                .map(AlarmResponse::fromDto)
                 .collect(Collectors.toList()));
     }
 

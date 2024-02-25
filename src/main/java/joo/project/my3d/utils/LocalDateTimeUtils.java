@@ -42,7 +42,7 @@ public class LocalDateTimeUtils {
         }
         // ~시간 전
         long hours = ChronoUnit.HOURS.between(createdAt, now);
-        if (hours < 12) {
+        if (hours < 24) {
             return hours + "시간 전";
         }
         // ~일 전
