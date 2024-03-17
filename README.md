@@ -1,5 +1,13 @@
 # My3D
 
+3D 모델 중에는 재사용 가능한 것들이 많습니다. 그래서 누구나 3D 모델을 공유하여 사용할 수 있도록하는 서비스입니다.
+
+- [Project Structure](#project-structure)
+- [Tech Stack](#tech-stack)
+- [Preview](#preview)
+- [Flow Chart](#flow-chart)
+- [ERD](#erd)
+
 ## Project Structure
 
 ![](./imgs/my3d_project_structure.svg)
@@ -13,10 +21,11 @@
 
 ## Tech Stack
 
-| FrontEnd                                                                                                              |
-|-----------------------------------------------------------------------------------------------------------------------|
-| ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white) | 
-|️ ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white) |
+| FrontEnd                                                                                                                                                                                                                                                                                                                      |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![js](https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black) ![html](https://img.shields.io/badge/HTML-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![css](https://img.shields.io/badge/CSS-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) |
+| ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)                                                                                                                                                                                                         | 
+| ️ ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)                                                                                                                                                                                                       |
 
 | BackEnd                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -36,15 +45,59 @@
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) ![CODEDEPLOY](https://img.shields.io/badge/CODEDEPLOY-%232671E5?style=for-the-badge) |
 
+## Preview
+
+### 메인 페이지
+
+- 카테고리별 게시글 검색 가능
+- 좋아요, 작성일자 기준 게시글 정렬 가능
+- 게시글 제목 검색 가능
+
+![](./imgs/main_page.png)
+
+### 게시글 페이지
+
+- 게시글 수정/삭제 가능
+- 좋아요 추가/삭제 가능
+- 파일 다운로드 가능
+- 댓글/대댓글 작성 가능
+- 댓글 작성시 알람 전송
+
+![](./imgs/article_page.png)
+
+### 게시글 작성 페이지
+
+- 제목, 본문, 파일, 치수 정보, 카테고리 입력
+
+![](./imgs/article_write_page.gif)
+
+### 로그인 & 비밀번호 찾기 페이지
+
+- 구글, 네이버, 카카오 로그인 가능
+- 비밀번호 찾기 가능
+
+![](./imgs/login_page.gif)
+
+### 회원가입 페이지
+
+- 기업 유저는 사업자 인증을 수행
+- 기업/일반 유저는 본인 인증을 목적으로 이메일 인증을 수행
+
+![](./imgs/signup_page.gif)
+
+### 유저 정보 수정 페이지
+
+- 일반 유저와 기업 유저 구분
+- 기업 유저는 기업 정보를 수정할 수 있는 페이지가 추가됨
+
+![](./imgs/update_user_page.gif)
+
 ## Flow Chart
 
 1. [회원가입](#1-회원가입)
 2. [로그인](#2-로그인)
 3. [Authentication (인증)](#3-authentication-인증)
-4. [게시글 작성](#4-게시글-작성)
-5. [게시글 수정](#5-게시글-수정)
-6. [좋아요 기능](#6-좋아요-기능-user-a가-b-게시물에-좋아요를-누른-상황) 
-7. [댓글 기능](#7-댓글-기능-user-a가-b-게시물에-댓글을-남긴-상황)
+4. [알람](#4-알람)
 
 ### 1. 회원가입
 
@@ -121,78 +174,39 @@ sequenceDiagram
     end
 ```
 
-### 4. 게시글 작성
+### 4. 알람
 
+#### 4.1. 페이지 전환
 ```mermaid
 sequenceDiagram
     autonumber
     actor client
-    client ->>+ WAS: 게시글 작성 요청
-    activate client
-    WAS ->> WAS: validation
-    WAS ->> DB: 게시글 저장 요청
-    activate DB
-    WAS ->> DB: 파일 저장 요청
-    deactivate DB
-    WAS -->>- client: 
-    deactivate client
-```
-
-### 5. 게시글 수정
-
-```mermaid
-sequenceDiagram
-    autonumber
-    client ->> WAS: 게시글 수정 요청
+    client ->> WAS: GET /api/v1/alarm
     activate client
     activate WAS
-    WAS ->> WAS: validation
-    alt 파일이 수정되었을 경우
-        WAS ->> DB: 이전 파일 삭제 요청
-        activate DB
-        WAS ->> DB: 수정된 파일 저장 요청
-    end
-    WAS ->> DB: 게시글 수정 요청
-    deactivate DB
-    WAS -->> client: 
-    deactivate WAS
+    WAS ->>+ DB: 알람 정보 요청
+    DB -->>- WAS: 알람 정보 반환
+    WAS -->>- client: 알람 정보 전달
     deactivate client
 ```
-
-### 6. 좋아요 기능: User A가 B 게시물에 좋아요를 누른 상황
-
-```mermaid
-  sequenceDiagram
-    autonumber
-    actor client A
-    alt 좋아요를 추가한 경우
-        client A ->>+ WAS: 좋아요 요청
-        WAS ->> WAS: 게시글 좋아요 수 + 1
-        WAS ->> DB: 게시글의 좋아요 개수 수정
-    else 좋아요를 취소한 경우
-        client A ->>+ WAS: 좋아요 취소 요청
-        WAS ->> WAS: 게시글 좋아요 수 - 1
-        WAS ->> DB: 게시글의 좋아요 개수 수정
-    end
-```
-
-### 7. 댓글 기능: User A가 B 게시물에 댓글을 남긴 상황
-
+#### 4.2. 이벤트 발생 (댓글 작성)
 ```mermaid
 sequenceDiagram
     autonumber
-    actor client A
-    client A ->>+ WAS: 댓글 작성
-    WAS ->> WAS: 대댓글인지 확인
-    alt 대댓글인 경우
-        WAS ->> DB: 부모 댓글에 대댓글 추가
-        activate DB
-        WAS ->> DB: 대댓글 저장 요청
-    else 대댓글이 아닌 경우
-        WAS ->> DB: 댓글 저장 요청
-    end
-    WAS ->> DB: 댓글 알람 저장 요청
+    actor client
+    activate client
+    WAS ->>+ DB: 댓글 저장
+    activate WAS
+    WAS ->> DB: 알람 저장
     deactivate DB
-    actor client B
-    WAS -->>- client B: 알람 전송
+    alt 알람 수신자가 로그인 상태인 경우
+      WAS -->>- client: 알람 정보 전달 (SseEmitter, Websocket)
+    end
+    deactivate client
 ```
+
+## ERD
+
+- 이미지를 클릭하면 ERDCloud 페이지로 이동합니다.
+
+[![ERD](./imgs/my3d-erd.png)](https://www.erdcloud.com/p/z2Xw9K4cA8buyzSZQ)
