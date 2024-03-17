@@ -120,7 +120,6 @@ public class ArticleService implements ArticleServiceInterface {
             // 파일 삭제
             articleFileService.deleteFile(articleId);
             // 게시글에 속한 댓글, 좋아요도 같이 삭제
-            article.deleteAll();
             articleRepository.delete(article);
         } catch (EntityNotFoundException e) {
             throw new ArticleException(ErrorCode.ARTICLE_NOT_FOUND, e);

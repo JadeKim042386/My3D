@@ -1,4 +1,4 @@
-package joo.project.my3d.controller;
+package joo.project.my3d.api;
 
 import joo.project.my3d.aop.BindingResultHandlerAspect;
 import joo.project.my3d.api.ArticlesApi;

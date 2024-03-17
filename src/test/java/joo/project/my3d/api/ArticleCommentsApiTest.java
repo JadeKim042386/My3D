@@ -1,4 +1,4 @@
-package joo.project.my3d.controller;
+package joo.project.my3d.api;
 
 import joo.project.my3d.api.ArticleCommentsApi;
 import joo.project.my3d.config.TestSecurityConfig;

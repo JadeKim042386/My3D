@@ -29,22 +29,22 @@ public class UserAccount extends AuditingAt implements Persistable<Long> {
     private final Set<Article> articles = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "userAccount", orphanRemoval = true)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "sender", orphanRemoval = true)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private final Set<Alarm> senderAlarms = new LinkedHashSet<>();
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "receiver", orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private final Set<Alarm> receiverAlarms = new LinkedHashSet<>();
 
     @Id

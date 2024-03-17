@@ -28,15 +28,15 @@ import java.util.Set;
 public class Article extends AuditingAt implements Persistable<Long> {
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleLike> articleLikes = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<Alarm> alarms = new LinkedHashSet<>();
 
     @Id
@@ -110,10 +110,5 @@ public class Article extends AuditingAt implements Persistable<Long> {
     @Override
     public boolean isNew() {
         return this.id == null;
-    }
-
-    public void deleteAll() {
-        this.articleComments.clear();
-        this.articleLikes.clear();
     }
 }

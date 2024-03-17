@@ -20,7 +20,7 @@ import static javax.persistence.FetchType.LAZY;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DimensionOption implements Persistable<Long> {
     @ToString.Exclude
-    @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "dimensionOption", fetch = LAZY, cascade = CascadeType.ALL)
     private final Set<Dimension> dimensions = new LinkedHashSet<>();
 
     @Id
